@@ -1,8 +1,14 @@
 # What is GIT used for?
 
-In this course, unless otherwise explicitly stated, your exercises will be submitted via GitLab. The last commit pushed before the deadline to the master branch on GitLab is decisive for the evaluation, grading, and feedback. The feedback will be provided here, i.e., on GitLab in a **SUPD or DEAD milestone** respectively. To access these milestones check out the toolbar entry on the left named “Tickets” in German or “Issues” in English. The achieved points will be published using Moodle. 
+In this course, unless otherwise explicitly stated, your exercises will be submitted via GitLab. The last commit pushed before the deadline to the master branch on GitLab is decisive for the evaluation, grading, and feedback. The feedback will be provided here, i.e., on GitLab in a **DESIGN or FINAL milestone** respectively. To access these milestones check out the toolbar entry on the left named “Tickets” in German or “Issues” in English. The achieved points will be published using Moodle. 
 
 **Do not change the name of the master branch**: it must be called master. Only data that is in the master branch before the deadline (therefore committed and pushed before the deadline) will be taken into account during the submission interviews and evaluation. Double check that you use the correct repository (i.e., the one relevant for this semester and this course). 
+
+# Why are two different repositories available to me?
+
+We provide each student with two repositories. A **Team** repository and a **Private** repository. The team repository must be used by you and your team to submit and work on the assignment. In comparison, the private repository will only be available to you alone. Your team members will not be able to access it. You can use it, for example, to prepare drafts that you feel not yet ready to share with your team, to upload your programming task or worksheet progress, to receive tips and feedback from the tutors or lecturers on that uploads etc. For the latter aspect please start by contacting our tutors by creating a GitIssue. Please use the following Git handle @millerk97 while doing so in your issue message. If our tutors are not able to address your inquiry we will be informed by them. 
+
+The content upload to the team repository will be monitored and taken into account grading. Uploads to the private repository will **not** be taken into account while grading. 
 
 # How do I get local access to this repository?
 
