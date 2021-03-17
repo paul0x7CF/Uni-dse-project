@@ -4,11 +4,15 @@ In this course, unless otherwise explicitly stated, your exercises will be submi
 
 **Do not change the name of the master branch**: it must be called master. Only data that is in the master branch before the deadline (therefore committed and pushed before the deadline) will be taken into account during the submission interviews and evaluation. Double check that you use the correct repository (i.e., the one relevant for this semester and this course). 
 
-# Why are two different repositories available to me?
+# Why were two different repositories assigned to me?
 
-We provide each student with two repositories. A **Team** repository and a **Private** repository. Check out the repository name to determine which one you are currently using. The team repository must be used by you and your team to submit and work on the assignment. In comparison, the private repository will only be available to you alone. Your team members will not be able to access it. You can use it, for example, to prepare drafts that you feel not yet ready to share with your team, to upload your programming task or worksheet progress, to receive tips and feedback from the tutors or lecturers on such uploads etc. For the latter aspect please start by contacting our tutors by creating a Git Issue. Please use the following Git handle @millerk97 while doing so in your issue message. If our tutors are not able to address your inquiry we will be informed by them. 
+We provide each student with two repositories. A **Team** repository and a **Private** repository. Check out the repository name to determine which one you are currently using. The team repository must be used by you and your team to submit and work on the assignment. In comparison, the private repository will only be available to you alone. Your team members will not be able to access it. You can use it, for example, to prepare drafts that you feel not yet ready to share with your team, to upload your programming task or worksheet progress, to receive tips and feedback from the tutors or lecturers on such uploads etc. For the latter aspect please start by contacting our tutors by creating a Git Issue. Please use the following Git handle @millerk97 (Tutor Miller Kevin) while doing so in your issue message. If our tutors are not able to address your inquiry we will be informed by them. 
 
 The content upload (commited **&** pushed) to the team repository will be monitored and taken into account while grading. Uploads to the private repository will **not** be taken into account while grading. 
+
+# Is this repository the **Team** or the **Private** respository?
+
+This repository is the **Team** repository. Use it to work on and submit your assignment submission. You and all your teammates can access this respository. 
 
 # How do I get local access to this repository?
 
@@ -36,7 +40,7 @@ For general inquiries (which are relevant for multiple teams) please use the Moo
 
 For exceptional situations, such as, team building issues you can also contact your supervisor directly. Based on experience most Git issues are not related to us and instead focus on internal team communication. Hence, if you want to contact a tutor or supervisor, always use their Git handles in your issues such that the respective person is notified about your inquiry by GitLab.
 
-Your **team supervisor** can be identified based on your team’s id. The supervisor for team `10X` is Georg Simhandl (git handle @georgs74). For teams `20X` the supervisor is Kristof Böhmer (git handle @boehmek2). Use these git handles to specifically address a person in a Git issue. 
+Your **team supervisor** can be identified based on your team’s id. For teams `010X` the supervisor is Kristof Böhmer (git handle @boehmek2). Use these git handles to specifically address a person in a Git issue. 
 
 # Which functions should not be used?
 
