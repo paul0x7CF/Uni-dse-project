@@ -14,15 +14,7 @@ The content upload (commited **&** pushed) to the team repository will be monito
 
 # Is this repository the **Team** or the **Private** respository?
 
-This repository is the **Private** repository. Use it to work on and upload, for example, your programming task results. Only you are able to access this respository. 
-
-# What folders are given and what are they for?
-
-We have added some predefined folders for you. Use them to hand in/upload your programming task submission for the respective programming task exercise. While doing so please ensure:
-
-- That the implementation of the programming task is complete, compiles, and is executable.
-- That you have stored at most one programming task implementation in each folder. Use the one which you want us to take into account for grading. Please store additonal attempts from other programming tasks in a separate independent folder (i.e., not the predefined ones).
-- Please do not rename or change the predefined folders. Enable us to determine what task you have tackled by adding a short readme to your implementation. Let it clearly denote which programming task you tried to tackle. For example, by giving the name of the related lecture in the readme. 
+This repository is the **Team** repository. Use it to work on and submit your assignment submission. You and all your teammates can access this respository. 
 
 # How do I get local access to this repository?
 
