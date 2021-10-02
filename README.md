@@ -1,3 +1,5 @@
+[[_TOC_]]
+
 # What is GIT used for?
 
 In this course, unless otherwise explicitly stated, your exercises will be submitted via GitLab. The last commit pushed before the deadline to the master branch on GitLab is decisive for the evaluation, grading, and feedback. The feedback will be provided here, i.e., on GitLab in a **DESIGN or FINAL** (team repository) or **Programming Task** (private repository) milestone respectively. To access these milestones check out the toolbar entry on the left named “Tickets” in German or “Issues” in English. The achieved points will be published using Moodle. 
@@ -13,6 +15,13 @@ The content upload (commited **&** pushed) to the team repository will be monito
 # Is this repository the **Team** or the **Private** respository?
 
 This repository is the **Private** repository. Use it to work on and upload, for example, your programming task results. Only you are able to access this respository. 
+
+# What folders are given and what are they for?
+
+We have added two folders for you. Use them to hand in/upload your programming task submission for the respective programming task exercise. Ensure that:
+
+- Your submission is complete and covers the requirements given on Moodle on the respective programming task.
+- 
 
 # How do I get local access to this repository?
 
