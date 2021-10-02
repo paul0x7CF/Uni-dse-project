@@ -59,7 +59,7 @@ Your **team supervisor** can be identified based on your team’s id.
 - For teams `1XX` the supervisor is Kristof Böhmer (git handle @boehmek2). 
 - For teams `2XX` the supervisor is Georg Simhandl (git handle @georgs74). 
 
-Use these respective GitLab handles to specifically address a person in a Git issue. For this add the GitLab handle into the issue description. As a last resort, you can contact the course [email](mailto:dse@swa.univie.ac.at).. 
+Use these respective GitLab handles to specifically address a person in a Git issue. For this add the GitLab handle into the issue description. As a last resort, you can contact the course [email](mailto:dse@swa.univie.ac.at). 
 
 # Which functions should not be used?
 
