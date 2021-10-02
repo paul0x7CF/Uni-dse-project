@@ -1,14 +1,14 @@
 # What is GIT used for?
 
-In this course, unless otherwise explicitly stated, your exercises will be submitted via GitLab. The last commit pushed before the deadline to the master branch on GitLab is decisive for the evaluation, grading, and feedback. The feedback will be provided here, i.e., on GitLab in a **DESIGN or FINAL milestone** respectively. To access these milestones check out the toolbar entry on the left named “Tickets” in German or “Issues” in English. The achieved points will be published using Moodle. 
+In this course, unless otherwise explicitly stated, your exercises will be submitted via GitLab. The last commit pushed before the deadline to the master branch on GitLab is decisive for the evaluation, grading, and feedback. The feedback will be provided here, i.e., on GitLab in a **DESIGN or FINAL** (team repository) or **Programming Task** (private repository) milestone respectively. To access these milestones check out the toolbar entry on the left named “Tickets” in German or “Issues” in English. The achieved points will be published using Moodle. 
 
 **Do not change the name of the master branch**: it must be called master. Only data that is in the master branch before the deadline (therefore committed and pushed before the deadline) will be taken into account during the submission interviews and evaluation. Double check that you use the correct repository (i.e., the one relevant for this semester and this course). 
 
 # Why were two different repositories assigned to me?
 
-We provide each student with two repositories. A **Team** repository and a **Private** repository. Check out the repository name to determine which one you are currently using. The team repository must be used by you and your team to submit and work on the assignment. In comparison, the private repository will only be available to you alone. Your team members will not be able to access it. You can use it, for example, to prepare drafts that you feel not yet ready to share with your team, to upload your programming task or worksheet progress, to receive tips and feedback from the tutors or lecturers on such uploads etc. For the latter aspect please start by contacting our tutors by creating a Git Issue. Please use the following Git handle @millerk97 (Tutor Miller Kevin) while doing so in your issue message. If our tutors are not able to address your inquiry we will be informed by them. 
+We provide each student with two repositories. A **Team** repository and a **Private** repository. Check out the repository name to determine which one you are currently using. The team repository must be used by you and your team to submit and work on the assignment. In comparison, the private repository will only be available to you alone. Your team members will not be able to access it. You can use it, for example, to prepare drafts that you feel not yet ready to share with your team, to upload your programming task or worksheet progress, to receive tips and feedback from the tutors or lecturers on such uploads etc. For the latter aspect please start by contacting our tutors by creating a Git Issue.
 
-The content upload (commited **&** pushed) to the team repository will be monitored and taken into account while grading. Uploads to the private repository will **not** be taken into account while grading. 
+The content upload (commited **&** pushed) to the team repository will be monitored and taken into account while grading. Uploads to the private repository will **only** be taking into account while grading with regards to the programming task uploads. 
 
 # Is this repository the **Team** or the **Private** respository?
 
@@ -36,11 +36,20 @@ Use your **real name** (i.e., not a nickname or an abbreviation) and your offici
 
 # How are questions handled?
 
-For general inquiries (which are relevant for multiple teams) please use the Moodle forum. In case of individual inquiries please contact our **tutor first** - Miller Kevin (git handle @millerk97). If he is unable to provide assistance he will forward your inquiry to the relevant supervisor. 
+For general inquiries (which are relevant for multiple teams) please use the Moodle forums. In case of individual inquiries please contact our **tutors first**. For this create a GitLab issue and add the tutor's GitLab handle:
 
-For exceptional situations, such as, team building issues you can also contact your supervisor directly. Based on experience most Git issues are not related to us and instead focus on internal team communication. Hence, if you want to contact a tutor or supervisor, always use their Git handles in your issues such that the respective person is notified about your inquiry by GitLab.
+- Kevin Miller (git handle @millerk97)
 
-Your **team supervisor** can be identified based on your team’s id. For teams `010X` the supervisor is Kristof Böhmer (git handle @boehmek2). Use these git handles to specifically address a person in a Git issue. 
+If our tutors are unable to provide assistance they will forward your inquiry to the relevant supervisor. 
+
+For **exceptional situations**, such as, team building issues you can also contact your supervisor directly. Based on experience most Git issues are not related to us and instead focus on internal team communication. Hence, if you want to contact a tutor or supervisor, always use their Git handles in your issues such that the respective person is notified about your inquiry by GitLab.
+
+Your **team supervisor** can be identified based on your team’s id.
+
+- For teams `1XX` the supervisor is Kristof Böhmer (git handle @boehmek2). 
+- For teams `2XX` the supervisor is Georg Simhandl (git handle @georgs74). 
+
+Use these respective GitLab handles to specifically address a person in a Git issue. For this add the GitLab handle into the issue description. As a last resort, you can contact the course [email](mailto:dse@swa.univie.ac.at).. 
 
 # Which functions should not be used?
 
