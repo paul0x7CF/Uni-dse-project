@@ -40,11 +40,11 @@ Use your **real name** (i.e., not a nickname or an abbreviation) and your offici
 
 The `Tips and Recommendations` collection on Moodle gives an overview of different scenarios and recommended ways to contact us and get support. In the following, a short overview will be provided. In addition to the asynchronous methods listed below, synchronous QA slots are available:
 
-- For general inquiries (which you deem relevant for **multiple teams**) please use the **Moodle forums**. In case of individual questions (which you deem relevant for **one person or team**), we recommend using **GitLab issues**. 
+- For **general inquiries** (which you deem relevant for **multiple teams**) please use the **Moodle forums**. In case of **individual questions** (which you deem relevant for **one person or team**), we recommend using **GitLab issues**. 
 
 - Contact our **tutor first**. Especially for questions related to the implementation of the assignment or programming tasks. If our tutors cannot assist, they will forward your inquiry to the relevant supervisor. 
 
-- To contact our tutors, create a GitLab Issue and add one of the following Git handles into your issue description text. The subsequently listed tutor(s) are available: `Kevin Miller (Git handle @millerk97)`
+- To **contact our tutors**, create a GitLab Issue and add one of the following Git handles into your issue description text. The subsequently listed tutor(s) are available: `Kevin Miller (Git handle @millerk97)`
 
 For **exceptional situations**, such as team-building issues, you can also contact your supervisor directly. The latter also applies to **high-level questions** on the assignment or the programming tasks. For example, if you see multiple design options and are unsure which one to use. Here, the experience of your supervisor can be tapped to guide you on your DSE journey. 
 
@@ -54,7 +54,7 @@ Your **supervisor** can be identified based on your team’s id.
 - For teams `2XX`, the supervisor is Georg Simhandl (Git handle @georgs74). 
 - For teams `3XX`, the supervisor is Georg Kaes (Git handle @kaesg9). 
 
-**If nobody responds**: Based on our experience, most Git issues are not related to us and instead focus on internal team communication. Hence, if you want to contact a tutor or supervisor, **always use their Git handles in your issues description text**. Such that the respective person is notified about your inquiry by GitLab. To repeat: Do not assign a Git issue. We are only notified if you add the Git handle directly into the description text. 
+**If nobody responds**: Based on our experience, most Git issues are not related to us and instead focus on internal team communication. Hence, if you want to contact a tutor or supervisor, **always use their Git handles in your issues description text**. Such that the respective person is notified about your inquiry by GitLab. To repeat: Do not assign a Git issue. We are only notified if you add the Git handle directly into the description text. **Do not use** @all as this would notify all supervisors, including those that are not relevant for you.
 
 As a last resort, you can contact the course [email](mailto:dse@swa.univie.ac.at) or tutor [email](mailto:dse.tutor@swa.univie.ac.at). 
 
