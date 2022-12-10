@@ -56,6 +56,10 @@ Your **supervisor** can be identified based on your team’s id. This semester t
 
 As a last resort, you can contact the course [email](mailto:dse@swa.univie.ac.at) or tutor [email](mailto:dse.tutor@swa.univie.ac.at). 
 
+# Where will feedback and grades/points be published?
+
+We will support you by publishing feedback (here, in this repository) and grades/points (on Moodle) during the semester. The latter will use the DSE Moodle course grade book. The former uses GitLab's Milestone features. Use the left menu bar on the GitLab repository website to access your feedback. Choose: **Issues > Milestones**
+
 # Which functions should not be used?
 
 GitLab is a powerful software that allows you to customize numerous settings and choose from various features. We would advise you to treat these settings and features with **respect and care**. For example, by simply clicking on each button, ignoring warnings etc. one could delete this repositorie’s master branch for good (no we can’t restore it eather). So: Think before you click!
