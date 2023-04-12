@@ -1,4 +1,4 @@
-package LocalStorage;
+package localStorage;
 
 public class MSData {
 }

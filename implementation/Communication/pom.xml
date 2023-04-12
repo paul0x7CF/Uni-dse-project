@@ -25,4 +25,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+    <build>
+        <finalName>tf_u_doing</finalName>
+    </build>
 </project>
