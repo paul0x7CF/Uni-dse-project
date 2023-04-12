@@ -1,3 +1,5 @@
+package MainPackage;
+
 import Network.Network;
 
 public class Main {

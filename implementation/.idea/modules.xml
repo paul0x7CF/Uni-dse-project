@@ -6,7 +6,6 @@
       <module fileurl="file://$PROJECT_DIR$/MSExchange/MSExchange.iml" filepath="$PROJECT_DIR$/MSExchange/MSExchange.iml" />
       <module fileurl="file://$PROJECT_DIR$/MSForecast/MSForecast.iml" filepath="$PROJECT_DIR$/MSForecast/MSForecast.iml" />
       <module fileurl="file://$PROJECT_DIR$/MSProsumer/MSProsumer.iml" filepath="$PROJECT_DIR$/MSProsumer/MSProsumer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/implementation.iml" filepath="$PROJECT_DIR$/implementation.iml" />
     </modules>
   </component>
 </project>

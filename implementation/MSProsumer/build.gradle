@@ -1,0 +1,14 @@
+plugins {
+    id 'java'
+}
+
+mainClassName = 'MainPackage.Main'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    // Add your dependencies here
+    implementation project(':Communication')
+}
