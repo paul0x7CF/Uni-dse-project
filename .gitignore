@@ -8,5 +8,4 @@
 target/
 
 # IntelliJ
-.idea/
 *.iml
