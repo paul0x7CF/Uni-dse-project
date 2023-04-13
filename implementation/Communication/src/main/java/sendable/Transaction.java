@@ -1,4 +1,4 @@
-package Sendable;
+package sendable;
 
 public class Transaction implements ISendable {
 }

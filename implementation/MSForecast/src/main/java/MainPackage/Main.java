@@ -1,9 +1,9 @@
 package MainPackage;
 
-import Network.Network;
+import network.NetworkHandler;
 
 public class Main {
     public static void main(String[] args) {
-        Network network = new Network();
+        NetworkHandler network = new NetworkHandler();
     }
 }

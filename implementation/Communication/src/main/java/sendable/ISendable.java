@@ -1,4 +1,4 @@
-package Sendable;
+package sendable;
 
 public interface ISendable {
 }

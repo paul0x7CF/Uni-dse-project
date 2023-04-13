@@ -1,18 +1,22 @@
 package message;
 
 
+import sendable.EMSType;
+
+import java.util.UUID;
+
 public class Message {
     private String category;
-    private String senderID;
+    private EMSType type;
+    private UUID senderID;
+    private String senderAddress;
+    private String senderPort;
+    private String receiverAddress;
 
 
-    public Message(String category, String senderID) {
-        this.category = category;
-        this.senderID = senderID;
-    }
 
-    protected Message() {
-    }
+
+
 
 
     @Override
