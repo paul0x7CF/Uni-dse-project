@@ -9,5 +9,4 @@ target/
 
 # IntelliJ
 .idea/
-workspace.xml
 *.iml
