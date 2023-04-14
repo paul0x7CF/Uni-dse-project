@@ -1,8 +1,10 @@
 package sendable;
 
-public enum EMSType {
-    PROSUMER,
-    STORAGE,
-    EXCHANGE,
-    FORECAST
+public enum EMSType implements ISendable {
+    Prosumer,
+    Storage,
+    Exchange,
+    Forecast;
 }
+
+

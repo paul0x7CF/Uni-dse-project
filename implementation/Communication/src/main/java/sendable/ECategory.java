@@ -2,11 +2,11 @@ package sendable;
 
 /**
  * Category for messages
- * The Enums are converted to Strings
  */
-public enum ECategory {
-    INFO,
-    AUCTION,
-    TRANSACTION,
-    FORECAST
+public enum ECategory implements ISendable{
+    Info,
+    Auction,
+    Transaction,
+    Forecast;
+
 }
