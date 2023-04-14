@@ -13,11 +13,11 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="Communication" target="20" />
-      <module name="implementation" target="20" />
-      <module name="MSExchange" target="20" />
-      <module name="MSForecast" target="20" />
-      <module name="MSProsumer" target="20" />
+      <module name="Communication" target="18" />
+      <module name="implementation" target="18" />
+      <module name="MSExchange" target="18" />
+      <module name="MSForecast" target="18" />
+      <module name="MSProsumer" target="18" />
     </bytecodeTargetLevel>
   </component>
 </project>
