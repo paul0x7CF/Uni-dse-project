@@ -1,21 +1,20 @@
 package network;
 
 import message.Message;
-import sendable.EMSType;
+import sendable.EServiceType;
 import sendable.MSData;
 
 import java.util.Map;
-import java.util.UUID;
 
 public class NetworkHandler {
-    private Map<EMSType, MSData> availableMS;
+    private Map<EServiceType, MSData> availableMS;
     private MSData currentMS;
-    private ReceiveSocket input;
-    private SendSocket output;
+    private InputSocket input;
+    private OutputSocket output;
 
     public NetworkHandler() {
-        input = new ReceiveSocket();
-        output = new SendSocket();
+        input = new InputSocket();
+        output = new OutputSocket();
     }
 
     public void send(Message message) {

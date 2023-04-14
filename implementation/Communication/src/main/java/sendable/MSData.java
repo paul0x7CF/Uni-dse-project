@@ -1,8 +1,5 @@
 package sendable;
 
-import sendable.EMSType;
-import sendable.ISendable;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -11,13 +8,13 @@ import java.util.UUID;
  */
 public class MSData implements ISendable {
     private UUID id;
-    EMSType type;
+    EServiceType type;
     private String address;
     private int port;
     private LocalDateTime lastSeen;
     private LocalDateTime lastUpdated;
 
-    public MSData(UUID id, EMSType type, String address, int port, LocalDateTime lastSeen, LocalDateTime lastUpdated) {
+    public MSData(UUID id, EServiceType type, String address, int port, LocalDateTime lastSeen, LocalDateTime lastUpdated) {
         this.id = id;
         this.type = type;
         this.address = address;
@@ -30,7 +27,7 @@ public class MSData implements ISendable {
         return id;
     }
 
-    public EMSType getType() {
+    public EServiceType getType() {
         return type;
     }
 

@@ -1,6 +1,6 @@
 package message;
 
-import sendable.EMSType;
+import sendable.EServiceType;
 
 import java.util.UUID;
 
@@ -9,19 +9,19 @@ import java.util.UUID;
  */
 public class MessageBuilder {
     private String category;
-    private EMSType type;
+    private EServiceType type;
     private UUID senderID;
     private String senderAddress;
     private String senderPort;
     private String receiverAddress;
-    private String xml;
+    private String payload;
 
     public MessageBuilder setCategory(String category) {
         this.category = category;
         return this;
     }
 
-    public MessageBuilder setType(EMSType type) {
+    public MessageBuilder setType(EServiceType type) {
         this.type = type;
         return this;
     }
@@ -46,8 +46,8 @@ public class MessageBuilder {
         return this;
     }
 
-    public MessageBuilder setXml(String xml) {
-        this.xml = xml;
+    public MessageBuilder setPayload(String payload) {
+        this.payload = payload;
         return this;
     }
 
@@ -63,6 +63,6 @@ public class MessageBuilder {
     }
 
     public Message build() {
-        return new Message(category, type, senderID, senderAddress, senderPort, receiverAddress, xml);
+        return new Message(category, type, senderID, senderAddress, senderPort, receiverAddress, payload);
     }
 }

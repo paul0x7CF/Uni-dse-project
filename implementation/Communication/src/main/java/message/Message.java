@@ -1,29 +1,28 @@
 package message;
 
 
-import sendable.EMSType;
-import sendable.ISendable;
+import sendable.EServiceType;
 
 import java.util.UUID;
 
 public class Message {
     private final UUID id = UUID.randomUUID();
     private String category;
-    private EMSType type;
+    private EServiceType type;
     private UUID senderID;
     private String senderAddress;
     private String senderPort;
     private String receiverAddress;
-    private String xml;
+    private String payload;
 
-    public Message(String category, EMSType type, UUID senderID, String senderAddress, String senderPort, String receiverAddress, String xml) {
+    public Message(String category, EServiceType type, UUID senderID, String senderAddress, String senderPort, String receiverAddress, String payload) {
         this.category = category;
         this.type = type;
         this.senderID = senderID;
         this.senderAddress = senderAddress;
         this.senderPort = senderPort;
         this.receiverAddress = receiverAddress;
-        this.xml = xml;
+        this.payload = payload;
     }
 
     public UUID getID() {
@@ -34,7 +33,7 @@ public class Message {
         return category;
     }
 
-    public EMSType getType() {
+    public EServiceType getType() {
         return type;
     }
 
@@ -54,11 +53,12 @@ public class Message {
         return receiverAddress;
     }
 
-    public String getXml() {
-        return xml;
+    public String getPayload() {
+        return payload;
     }
 
     public <T> T getXmlClass() {
+        // TODO: implement
         return null;
     }
 
