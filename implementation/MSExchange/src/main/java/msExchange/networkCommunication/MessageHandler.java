@@ -4,27 +4,38 @@ import message.Message;
 import network.NetworkHandler;
 import network.ReceiveSocket;
 import network.SendSocket;
+import sendable.Bid;
+import sendable.Sell;
 import sendable.Timeslot;
+import sendable.Transaction;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
 
 public class MessageHandler {
     private int port;
     private ReceiveSocket receiveSocket;
     private SendSocket sendSocket;
     private NetworkHandler network;
-
+    private BlockingQueue<Message> incomingQueue;
+    private BlockingQueue<Message> outgoingQueue;
+    private final int MAX_AUCTIONS= 200;
     public MessageHandler(int port) {
     }
     //incoming messages
     public void handleMessage(Message message){}
 
+    private void updateTimeSlots(List<Timeslot> timeslots){}
+    private void reiceivedBid(Bid bid){}
+    private void receivedSell(Sell sell){}
+
     //outgoing messages
     private Message register(){return null;}//von Konstruktor aufgerufen
-
-    private void updateTimeSlots(List<Timeslot> timeslots){}
-
-
+    public Message sendTransactions(List<Transaction> transactions){return null;}
+    public Message sendAuctionInformation(Map<UUID, Double> auctionInformation){return null;}
+    public Message capacityReached(){return null;}
 
 }

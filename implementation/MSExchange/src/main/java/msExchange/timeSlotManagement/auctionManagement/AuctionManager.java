@@ -23,7 +23,7 @@ public class AuctionManager implements Runnable {
         return null;
     }
 
-    public Date getLastTransaction() {
+    public Date getLastAuctionTime() {
         return null;
     }
 
