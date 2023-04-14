@@ -17,14 +17,13 @@ public class MessageHandler {
 
     public MessageHandler(int port) {
     }
-
+    //incoming messages
     public void handleMessage(Message message){}
 
-    private void register(){}//von Konstruktor aufgerufen
+    //outgoing messages
+    private Message register(){return null;}//von Konstruktor aufgerufen
 
-    public Message updateTimeSlots(){
-        return null;
-    }
+    private void updateTimeSlots(List<Timeslot> timeslots){}
 
 
 
