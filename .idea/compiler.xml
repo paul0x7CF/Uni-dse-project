@@ -6,10 +6,6 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="MSProsumer" />
-        <module name="MSForecast" />
-        <module name="MSExchange" />
-        <module name="Communication" />
       </profile>
     </annotationProcessing>
   </component>

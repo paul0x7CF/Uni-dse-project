@@ -6,10 +6,12 @@ import java.util.List;
 
 public class LoadManager {
     private List<ExchangeServiceInformation> exchangeServicesInformation;
-    private MessageHandler messageHandler;
+
+    private MessageHandler messageHandler = new MessageHandler();
 
     public LoadManager() {
         //create Exchange instance
-        messageHandler= new MessageHandler();
     }
+
+
 }

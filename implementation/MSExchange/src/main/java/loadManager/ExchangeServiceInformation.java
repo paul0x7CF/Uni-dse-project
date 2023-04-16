@@ -30,4 +30,8 @@ public class ExchangeServiceInformation {
     public boolean isAtCapacity(){
         return atCapacity;
     }
+
+    public void setAtCapacity(boolean isAtCapacity){
+        atCapacity=isAtCapacity;
+    }
 }

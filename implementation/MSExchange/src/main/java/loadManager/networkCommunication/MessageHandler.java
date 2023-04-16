@@ -15,25 +15,26 @@ import java.util.concurrent.BlockingQueue;
 public class MessageHandler {
     private int port;
     private NetworkHandler network;
-    private ReceiveSocket receiveSocket;
-    private SendSocket sendSocket;
+    private InputSocket inputSocket;
+    private OutputSocket outputSocket;
     private BlockingQueue<Message> incomingQueue;
     private BlockingQueue<Message> outgoingQueue;
-
     public MessageHandler() {
         network= new NetworkHandler();
     }
 
     //incoming messages
     public void handleMessage(Message message){}
-    private void reiceivedBid(Bid bid){}
+    private void receivedBid(Bid bid){}
     private void receivedSell(Sell sell){}
-
+    private void recordNewExchangeService(Message message){}
+    private void receivedInformationExchangeAtCapacity(Message message){}
+    private void duplicateMicroservice(){}
 
     //outgoing messages
     private void tellNewTimeslots(List<Timeslot> timeslots){}
-    private void askExchangesForCapacity(){}
-    private boolean isExchangeAtCapacity(ExchangeServiceInformation exchange){return false;}
+    private void deleteExchange(ExchangeServiceInformation exchangeServiceInformation){}
+
 
 
 }

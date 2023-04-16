@@ -18,7 +18,7 @@ public class MessageHandler {
     //incoming messages
     public void handleMessage(Message message){}
 
-    private void updateTimeSlots(List<Timeslot> timeslots){}
+    private void updateTimeSlots(List<TimeSlot> timeslots){}
     private void reiceivedBid(Bid bid){}
     private void receivedSell(Sell sell){}
 
@@ -26,6 +26,6 @@ public class MessageHandler {
     private void register(){}//von Konstruktor aufgerufen
     public void sendTransactions(List<Transaction> transactions){}
     public void sendAuctionInformation(Map<UUID, Double> auctionInformation){}
-    public void capacityReached(){}
+    private void tellCapacityReached(){}
 
 }
