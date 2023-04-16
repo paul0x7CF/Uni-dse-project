@@ -2,12 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/implementation/Communication/Communication.iml" filepath="$PROJECT_DIR$/implementation/Communication/Communication.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/DSE_Team_202.iml" filepath="$PROJECT_DIR$/.idea/DSE_Team_202.iml" />
-      <module fileurl="file://$PROJECT_DIR$/implementation/MSExchange/MSExchange.iml" filepath="$PROJECT_DIR$/implementation/MSExchange/MSExchange.iml" />
-      <module fileurl="file://$PROJECT_DIR$/implementation/MSForecast/MSForecast.iml" filepath="$PROJECT_DIR$/implementation/MSForecast/MSForecast.iml" />
-      <module fileurl="file://$PROJECT_DIR$/implementation/MSProsumer/MSProsumer.iml" filepath="$PROJECT_DIR$/implementation/MSProsumer/MSProsumer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/implementation/implementation.iml" filepath="$PROJECT_DIR$/implementation/implementation.iml" />
     </modules>
   </component>
 </project>

@@ -1,24 +1,14 @@
 package msExchange.networkCommunication;
 
 import message.Message;
+import network.InputSocket;
 import network.NetworkHandler;
-import network.ReceiveSocket;
-import network.SendSocket;
-import sendable.Bid;
-import sendable.Sell;
-import sendable.Timeslot;
-import sendable.Transaction;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.BlockingQueue;
+import network.OutputSocket;
 
 public class MessageHandler {
     private int port;
-    private ReceiveSocket receiveSocket;
-    private SendSocket sendSocket;
+    private InputSocket inputSocket;
+    private OutputSocket outputSocket;
     private NetworkHandler network;
     private BlockingQueue<Message> incomingQueue;
     private BlockingQueue<Message> outgoingQueue;
