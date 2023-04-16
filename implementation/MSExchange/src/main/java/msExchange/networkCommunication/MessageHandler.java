@@ -33,9 +33,9 @@ public class MessageHandler {
     private void receivedSell(Sell sell){}
 
     //outgoing messages
-    private Message register(){return null;}//von Konstruktor aufgerufen
-    public Message sendTransactions(List<Transaction> transactions){return null;}
-    public Message sendAuctionInformation(Map<UUID, Double> auctionInformation){return null;}
-    public Message capacityReached(){return null;}
+    private void register(){}//von Konstruktor aufgerufen
+    public void sendTransactions(List<Transaction> transactions){}
+    public void sendAuctionInformation(Map<UUID, Double> auctionInformation){}
+    public void capacityReached(){}
 
 }

@@ -8,10 +8,16 @@ import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
 public class MSExchange  {
+    private UUID exchangeID;
+    private boolean duplicated;
     private TimeSlotManager timeSlotManager;
     private MessageHandler messageHandler;
-    private UUID exchangeID;
+
     private BlockingQueue<Message> messageQueue;
+
+    public MSExchange(boolean duplicated) {
+    }
+
     public void start() {
     }
 
