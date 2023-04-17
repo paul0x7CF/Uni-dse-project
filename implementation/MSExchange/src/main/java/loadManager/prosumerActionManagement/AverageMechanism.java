@@ -1,4 +1,4 @@
-package loadManager;
+package loadManager.prosumerActionManagement;
 
 import java.util.ArrayList;
 import java.util.List;

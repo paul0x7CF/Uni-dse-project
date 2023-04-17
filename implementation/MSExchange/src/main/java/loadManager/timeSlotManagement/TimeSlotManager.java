@@ -1,4 +1,4 @@
-package loadManager.timeSlotManager;
+package loadManager.timeSlotManagement;
 
 import java.util.Date;
 import java.util.Map;

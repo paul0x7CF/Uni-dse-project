@@ -1,13 +1,14 @@
 package mainPackage;
 
-import loadManager.LoadManager;
+import loadManager.Controller;
+import loadManager.networkManagment.NetworkManager;
 import msExchange.MSExchange;
 
 public class Main {
 
     public static <String> void main(String[] args) {
         int port=1;
-
+        String host= (String) "hostname";
         boolean duplicated=false;
         if ("-s".equals(args[0])) {
             duplicated = true;
@@ -15,7 +16,7 @@ public class Main {
         MSExchange msExchange = new MSExchange(duplicated);
 
         if(!duplicated){
-            LoadManager loadManager = new LoadManager(port);
+            Controller controller= new Controller();
         }
     }
 }

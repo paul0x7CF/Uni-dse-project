@@ -1,4 +1,4 @@
-package loadManager;
+package loadManager.auctionManagement;
 
 import java.util.List;
 import java.util.Map;
