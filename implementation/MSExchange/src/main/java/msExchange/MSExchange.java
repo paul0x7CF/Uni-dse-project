@@ -1,8 +1,8 @@
 package msExchange;
 
-import message.Message;
 import msExchange.networkCommunication.MessageHandler;
-import msExchange.timeSlotManagement.TimeSlotManager;
+import msExchange.timeSlotManagement.*;
+import org.apache.logging.log4j.message.Message;
 
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
