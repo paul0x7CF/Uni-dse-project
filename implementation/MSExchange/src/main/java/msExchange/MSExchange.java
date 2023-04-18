@@ -1,23 +1,26 @@
 package msExchange;
 
 import msExchange.networkCommunication.MessageHandler;
-import sendable.Sell;
-import sendable.Timeslot;
+import msExchange.timeSlotManagement.*;
+import org.apache.logging.log4j.message.Message;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
 
-public class MSExchange {
+public class MSExchange  {
     private UUID exchangeID;
-    private List<Timeslot> timeSlots = new ArrayList<>();
-    public MessageHandler messageHandler;
+    private boolean duplicated;
+    private TimeSlotManager timeSlotManager;
+    private MessageHandler messageHandler;
 
-    public void start(){}
-    public void setTimeSlots(List<Timeslot> timeSlots){}
-    public void addAuctionToSlot(UUID timeSlotId, Sell sellPosition){}
+    private BlockingQueue<Message> messageQueue;
 
+    public MSExchange(boolean duplicated) {
+    }
 
+    public void start() {
+    }
 
+    public TimeSlotManager getTimeSlotManager(){return timeSlotManager;}
 
 }
