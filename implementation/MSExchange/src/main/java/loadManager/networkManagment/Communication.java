@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
-public class NetworkManager {
+public class Communication {
     private int port;
     private String host;
     private Controller controller;
@@ -28,7 +28,7 @@ public class NetworkManager {
     private BlockingQueue<Message> incomingQueue;
     private BlockingQueue<Message> outgoingQueue;
 
-    public NetworkManager(int port, String host, Controller controller) throws IOException {
+    public Communication(int port, String host, Controller controller) throws IOException {
         this.port = port;
         this.host = host;
 

@@ -1,7 +1,6 @@
 package mainPackage;
 
 import loadManager.Controller;
-import loadManager.networkManagment.NetworkManager;
 import msExchange.MSExchange;
 
 public class Main {

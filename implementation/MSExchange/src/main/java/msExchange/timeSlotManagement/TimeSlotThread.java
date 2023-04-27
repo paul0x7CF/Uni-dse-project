@@ -23,8 +23,4 @@ public class TimeSlotThread extends Thread {
     public UUID getTimeSlotId() {
         return timeSlotId;
     }
-
-    public AuctionManager getAuctionManager() {
-        return auctionManager;
-    }
 }

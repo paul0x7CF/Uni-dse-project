@@ -34,9 +34,4 @@ public class AuctionManager {
         return auctions.get(slotId);
     }
 
-    private void findProsumersNotSatisfied() {
-    }
-
-    private void sendProsumerToStorage(UUID prosumer, double kwh) {
-    }
 }

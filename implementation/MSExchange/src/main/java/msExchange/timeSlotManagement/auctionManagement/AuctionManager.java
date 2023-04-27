@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class AuctionManager implements Runnable {
+public class AuctionManager {
     private List<AuctionThread> auctions;
     private Date lastAuctionAdded;
 
@@ -25,10 +25,5 @@ public class AuctionManager implements Runnable {
 
     public Date getLastAuctionTime() {
         return null;
-    }
-
-    @Override
-    public void run() {
-
     }
 }

@@ -1,13 +1,13 @@
 package msExchange;
 
 import msExchange.networkCommunication.MessageHandler;
-import msExchange.timeSlotManagement.*;
+import msExchange.timeSlotManagement.TimeSlotManager;
 import org.apache.logging.log4j.message.Message;
 
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
-public class MSExchange  {
+public class MSExchange {
     private UUID exchangeID;
     private boolean duplicated;
     private TimeSlotManager timeSlotManager;
@@ -20,7 +20,5 @@ public class MSExchange  {
 
     public void start() {
     }
-
-    public TimeSlotManager getTimeSlotManager(){return timeSlotManager;}
 
 }

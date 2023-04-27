@@ -29,7 +29,7 @@ public class MessageHandler {
     public void handleMessage(Message message){}
 
     private void updateTimeSlots(List<TimeSlot> timeslots){}
-    private void reiceivedBid(Bid bid){}
+    private void receivedBid(Bid bid){}
     private void receivedSell(Sell sell){}
 
     //outgoing messages
