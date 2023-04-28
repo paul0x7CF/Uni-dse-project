@@ -2,6 +2,8 @@ package broker;
 
 import protocol.Message;
 
+import java.io.IOException;
+
 public interface IBroker {
-    void resendMessage(Message message);
+    void sendMessage(Message message) throws IOException;
 }

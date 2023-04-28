@@ -1,0 +1,57 @@
+package communication;
+
+import protocol.Message;
+import sendable.EServiceType;
+import sendable.MSData;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+
+public class NetworkHandler {
+    private BlockingQueue<byte[]> inputQueue;
+    private BlockingQueue<LocalMessage> outputQueue;
+    private InputSocket inputSocket;
+    private OutputSocket outputSocket;
+    private EServiceType serviceType;
+    private int listeningPort;
+    private ExecutorService executor;
+
+    public NetworkHandler(EServiceType serviceType, int listeningPort) {
+        this.serviceType = serviceType;
+        this.listeningPort = listeningPort;
+
+        inputQueue = new LinkedBlockingQueue<>();
+        outputQueue = new LinkedBlockingQueue<>();
+
+        inputSocket = new InputSocket(inputQueue, listeningPort);
+        outputSocket = new OutputSocket(outputQueue, listeningPort + 1); // TODO: how to not do +1
+
+        executor = Executors.newFixedThreadPool(2);
+    }
+
+    public void start() {
+        executor.execute(outputSocket);
+        executor.execute(inputSocket);
+    }
+
+    public void stop() {
+        executor.shutdown();
+    }
+
+    public void sendMessage(LocalMessage localMessage) {
+        outputQueue.add(localMessage);
+    }
+
+    public byte[] receiveMessage() throws InterruptedException {
+        return inputQueue.take();
+    }
+
+    public MSData getMSData() throws UnknownHostException {
+        return new MSData(UUID.randomUUID(), serviceType, InetAddress.getLocalHost().getHostAddress(), listeningPort);
+    }
+}

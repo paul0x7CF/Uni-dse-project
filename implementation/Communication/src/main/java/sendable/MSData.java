@@ -12,16 +12,14 @@ public class MSData implements ISendable {
     EServiceType type;
     private String address;
     private int port;
-    private LocalDateTime lastSeen;
-    private LocalDateTime lastUpdated;
+    private LocalDateTime lastSeen = LocalDateTime.now();
+    private LocalDateTime lastUpdated = LocalDateTime.now();
 
-    public MSData(UUID id, EServiceType type, String address, int port, LocalDateTime lastSeen, LocalDateTime lastUpdated) {
+    public MSData(UUID id, EServiceType type, String address, int port) {
         this.id = id;
         this.type = type;
         this.address = address;
         this.port = port;
-        this.lastSeen = lastSeen;
-        this.lastUpdated = lastUpdated;
     }
 
     public UUID getId() {

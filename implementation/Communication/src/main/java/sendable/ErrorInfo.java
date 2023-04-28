@@ -1,10 +1,10 @@
 package sendable;
 
-public class Error implements ISendable {
+public class ErrorInfo implements ISendable {
     private String name;
     private String message;
 
-    public Error(String name, String message) {
+    public ErrorInfo(String name, String message) {
         this.name = name;
         this.message = message;
     }

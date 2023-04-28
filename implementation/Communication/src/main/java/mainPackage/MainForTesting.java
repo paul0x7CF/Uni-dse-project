@@ -19,7 +19,7 @@ public class MainForTesting {
 
         Message message = messageBuilder.build();
 
-        Broker broker = new Broker();
+
 
         // broker.send(message);
     }

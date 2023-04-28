@@ -4,6 +4,7 @@ import sendable.EServiceType;
 import sendable.MSData;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ServiceRegistry {
     MSData currentService;
@@ -11,18 +12,6 @@ public class ServiceRegistry {
 
     public ServiceRegistry(MSData currentService) {
         this.currentService = currentService;
-    }
-
-    public MSData getCurrentService() {
-        return currentService;
-    }
-
-    public Map<EServiceType, List<MSData>> getAvailableServices() {
-        return availableServices;
-    }
-
-    public List<MSData> getServicesByType(EServiceType serviceType) {
-        return availableServices.getOrDefault(serviceType, Collections.emptyList());
     }
 
     public void registerService(MSData msData) {
@@ -50,5 +39,27 @@ public class ServiceRegistry {
                 availableServices.remove(serviceType);
             }
         }
+    }
+
+    public MSData getCurrentService() {
+        return currentService;
+    }
+
+    public MSData findService(UUID serviceId) {
+        return availableServices.values().stream()
+                .flatMap(Collection::stream)
+                .filter(msData -> msData.getId().equals(serviceId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    public List<MSData> getAvailableServices() {
+        return availableServices.values().stream()
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+    }
+
+    public List<MSData> getServicesByType(EServiceType serviceType) {
+        return availableServices.getOrDefault(serviceType, Collections.emptyList());
     }
 }

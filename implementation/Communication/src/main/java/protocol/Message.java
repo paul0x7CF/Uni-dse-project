@@ -11,12 +11,12 @@ public class Message {
     private final UUID senderID;
     private String senderAddress;
     private final int senderPort;
-    private final String receiverID;
+    private final UUID receiverID;
     private String receiverAddress;
     private final int receiverPort;
     private final String payload;
 
-    public Message(String category, UUID senderID, String senderAddress, int senderPort, String receiverID, String receiverAddress, int receiverPort, String payload) {
+    public Message(String category, UUID senderID, String senderAddress, int senderPort, UUID receiverID, String receiverAddress, int receiverPort, String payload) {
         this.category = category;
         this.senderID = senderID;
         this.senderAddress = senderAddress;
@@ -47,7 +47,7 @@ public class Message {
         return senderPort;
     }
 
-    public String getReceiverID() {
+    public UUID getReceiverID() {
         return receiverID;
     }
 
