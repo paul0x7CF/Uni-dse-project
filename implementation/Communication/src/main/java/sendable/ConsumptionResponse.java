@@ -13,4 +13,8 @@ public class ConsumptionResponse implements ISendable {
     public Map<UUID, Double> getConsumption() {
         return consumption;
     }
+
+    public void addConsumption(UUID id, Double consumption) {
+        this.consumption.put(id, consumption);
+    }
 }

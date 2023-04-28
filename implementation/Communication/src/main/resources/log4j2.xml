@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="INFO">
-    <!-- An appender is the component that effectively writes the log message to its destination -->
+    <!-- An appender is the component that effectively writes the log protocol to its destination -->
     <Appenders>
         <!-- For highlighting on stdout I can recommend the Grep Console Plugin Open Plugins with strg+alt+s -->
         <!-- This appender defines stdout as its target -->

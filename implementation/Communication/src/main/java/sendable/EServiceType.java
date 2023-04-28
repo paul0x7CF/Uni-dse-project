@@ -1,6 +1,6 @@
 package sendable;
 
-public enum EServiceType implements ISendable {
+public enum EServiceType {
     Prosumer,
     Storage,
     Exchange,

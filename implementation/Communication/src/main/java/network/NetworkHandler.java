@@ -1,10 +1,11 @@
 package network;
 
-import message.Message;
+import protocol.Message;
 import sendable.EServiceType;
 import sendable.MSData;
 
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 
 public class NetworkHandler {
     private Map<EServiceType, MSData> availableMS;
@@ -13,15 +14,15 @@ public class NetworkHandler {
     private OutputSocket output;
 
     public NetworkHandler() {
-        input = new InputSocket();
-        output = new OutputSocket();
+        // input = new InputSocket();
+        // output = new OutputSocket();
     }
 
     public void send(Message message) {
         // output.send(message);
     }
 
-    public void receive() {
-        // input.receive();
+    public byte[] receive() {
+        return null;
     }
 }

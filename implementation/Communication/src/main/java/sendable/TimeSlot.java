@@ -3,8 +3,8 @@ package sendable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public class TimeSlot implements ISendable, IRemoteObject {
-    private final UUID id = UUID.randomUUID();
+public class TimeSlot implements ISendable {
+    private final UUID timeSlotID = UUID.randomUUID();
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
@@ -13,8 +13,8 @@ public class TimeSlot implements ISendable, IRemoteObject {
         this.endTime = endTime;
     }
 
-    public UUID getID() {
-        return id;
+    public UUID getTimeSlotID() {
+        return timeSlotID;
     }
 
     public LocalDateTime getStartTime() {

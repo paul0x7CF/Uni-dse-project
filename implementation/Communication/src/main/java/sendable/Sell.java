@@ -1,26 +1,36 @@
 package sendable;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public class Sell implements ISendable {
-    private final UUID id = UUID.randomUUID();
+    private final UUID sellerID = UUID.randomUUID();
     private final double volume;
-    private final double price;
+    private final double askPrice;
+    private UUID auctionID;
 
     public Sell(double volume, double askPrice) {
         this.volume = volume;
-        this.price = askPrice;
+        this.askPrice = askPrice;
     }
 
-    public UUID getID() {
-        return id;
+    public UUID getSellerID() {
+        return sellerID;
     }
 
     public double getVolume() {
         return volume;
     }
 
-    public double getPrice() {
-        return price;
+    public double getAskPrice() {
+        return askPrice;
+    }
+
+    public Optional<UUID> getAuctionID() {
+        return Optional.ofNullable(auctionID);
+    }
+
+    public void setAuctionID(UUID auctionID) {
+        this.auctionID = auctionID;
     }
 }

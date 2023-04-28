@@ -3,7 +3,7 @@ package sendable;
 import java.util.UUID;
 
 public class Transaction implements ISendable {
-    private final UUID id = UUID.randomUUID();
+    private final UUID transactionID = UUID.randomUUID();
     private final UUID sellerID;
     private final UUID buyerID;
     private final double amount;
@@ -16,8 +16,8 @@ public class Transaction implements ISendable {
         this.price = price;
     }
 
-    public UUID getID() {
-        return id;
+    public UUID getTransactionID() {
+        return transactionID;
     }
 
     public UUID getSellerID() {

@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger;
 
 public class Main {
 
-    private static final Logger logger = LogManager.getLogger(Main.class);
+    private static final Logger logger = LogManager.getLogger(MainForTesting.class);
     public static void main(String[] args) {
         NetworkHandler network = new NetworkHandler();
 

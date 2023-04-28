@@ -1,19 +1,27 @@
 package sendable;
 
 public class Error implements ISendable {
-    private ECategory category;
+    private String name;
     private String message;
 
-    public Error(ECategory category, String message) {
-        this.category = category;
+    public Error(String name, String message) {
+        this.name = name;
         this.message = message;
     }
 
-    public ECategory getCategory() {
-        return category;
+    public String getName() {
+        return name;
     }
 
     public String getMessage() {
         return message;
+    }
+
+    @Override
+    public String toString() {
+        return "Error{" +
+                "name='" + name + '\'' +
+                ", message='" + message + '\'' +
+                '}';
     }
 }

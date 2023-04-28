@@ -2,6 +2,7 @@ package sendable;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import com.google.gson.Gson;
 
 /**
  * This class holds the information about other microservices in the network.

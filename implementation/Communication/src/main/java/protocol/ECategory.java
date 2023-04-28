@@ -1,9 +1,9 @@
-package sendable;
+package protocol;
 
 /**
  * Category for messages
  */
-public enum ECategory implements ISendable{
+public enum ECategory {
     Info,
     Auction,
     Transaction,

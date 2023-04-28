@@ -14,4 +14,7 @@ public class SolarResponse implements ISendable {
         return solarProduction;
     }
 
+    public void addSolarProduction(UUID id, double production) {
+        solarProduction.put(id, production);
+    }
 }
