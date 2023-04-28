@@ -7,19 +7,23 @@ import java.util.UUID;
 
 public class Message {
     private final UUID messageID = UUID.randomUUID();
-    private String category;
-    private UUID senderID;
+    private final String category;
+    private final UUID senderID;
     private String senderAddress;
-    private int senderPort;
+    private final int senderPort;
+    private final String receiverID;
     private String receiverAddress;
-    private String payload;
+    private final int receiverPort;
+    private final String payload;
 
-    public Message(String category, UUID senderID, String senderAddress, int senderPort, String receiverAddress, int receiverPort, String payload) {
+    public Message(String category, UUID senderID, String senderAddress, int senderPort, String receiverID, String receiverAddress, int receiverPort, String payload) {
         this.category = category;
         this.senderID = senderID;
         this.senderAddress = senderAddress;
         this.senderPort = senderPort;
+        this.receiverID = receiverID;
         this.receiverAddress = receiverAddress;
+        this.receiverPort = receiverPort;
         this.payload = payload;
     }
 
@@ -43,8 +47,16 @@ public class Message {
         return senderPort;
     }
 
+    public String getReceiverID() {
+        return receiverID;
+    }
+
     public String getReceiverAddress() {
         return receiverAddress;
+    }
+
+    public int getReceiverPort() {
+        return receiverPort;
     }
 
     public String getPayload() {

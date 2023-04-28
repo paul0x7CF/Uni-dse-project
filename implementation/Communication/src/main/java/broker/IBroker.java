@@ -2,6 +2,6 @@ package broker;
 
 import protocol.Message;
 
-public interface IAckCallback {
+public interface IBroker {
     void resendMessage(Message message);
 }

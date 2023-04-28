@@ -25,8 +25,8 @@ public class InfoMessageHandler implements IMessageHandler {
             case "Ack":
                 // Ack has AckInfo as payload
                 break;
-            // Error has Error as Payload
             case "Error":
+                // Error has Error as Payload
                 break;
             default:
                 throw new MessageProcessingException("Unknown message subCategory: " + message.getSubCategory());

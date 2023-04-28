@@ -6,7 +6,7 @@ package protocol;
 public enum ECategory {
     Info,
     Auction,
-    Transaction,
-    Forecast;
+    Exchange,
+    Forecast
 
 }

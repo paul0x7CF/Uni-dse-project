@@ -13,6 +13,7 @@ public class MessageBuilder {
     private UUID senderID;
     private String senderAddress;
     private int senderPort;
+    private String receiverID;
     private String receiverAddress;
     private int receiverPort;
     private ISendable payload;
@@ -53,6 +54,11 @@ public class MessageBuilder {
         return this;
     }
 
+    public MessageBuilder setReceiverID(String receiverID) {
+        this.receiverID = receiverID;
+        return this;
+    }
+
     public MessageBuilder setReceiverAddress(String receiverAddress) {
         this.receiverAddress = receiverAddress;
         return this;
@@ -70,7 +76,7 @@ public class MessageBuilder {
 
     public Message build() {
         Message message = new Message(category, senderID, senderAddress, senderPort,
-                receiverAddress, receiverPort, PayloadConverter.toJSON(payload));
+                receiverID, receiverAddress, receiverPort, PayloadConverter.toJSON(payload));
         if (validateMessage(message)) {
             return message;
         } else {
