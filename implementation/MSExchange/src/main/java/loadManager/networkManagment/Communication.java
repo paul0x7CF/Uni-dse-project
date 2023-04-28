@@ -3,8 +3,8 @@ package loadManager.networkManagment;
 import loadManager.Controller;
 import loadManager.exchangeManagement.ExchangeServiceInformation;
 import message.Message;
-import network.InputSocket;
-import network.OutputSocket;
+import communication.InputSocket;
+import communication.OutputSocket;
 import sendable.Bid;
 import sendable.Sell;
 import sendable.TimeSlot;
@@ -20,7 +20,7 @@ public class Communication {
     private String host;
     private Controller controller;
 
-    private network.NetworkHandler network;
+    private communication.NetworkHandler network;
     private Broker broker;
     private InputSocket inputSocket;
     private OutputSocket outputSocket;
@@ -34,7 +34,7 @@ public class Communication {
 
         this.inputSocket= new InputSocket(port, host);
         this.outputSocket = new OutputSocket(port, host);
-        this.network = new network.NetworkHandler(inputSocket);
+        this.network = new communication.NetworkHandler(inputSocket);
         this.controller = controller;
     }
 
