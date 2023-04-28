@@ -1,8 +1,8 @@
 package msExchange.networkCommunication;
 
-import network.InputSocket;
-import network.NetworkHandler;
-import network.OutputSocket;
+import communication.InputSocket;
+import communication.NetworkHandler;
+import communication.OutputSocket;
 import org.apache.logging.log4j.message.Message;
 import sendable.Bid;
 import sendable.Sell;
