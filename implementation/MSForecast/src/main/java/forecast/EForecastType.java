@@ -1,5 +1,8 @@
 package forecast;
 
+/**
+ * Category for forecasts
+ */
 public enum EForecastType {
     GROUNDSTATION,
     APOLIS,
