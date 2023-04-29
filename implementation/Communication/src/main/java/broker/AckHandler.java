@@ -1,6 +1,8 @@
 package broker;
 
 import exceptions.AckTimeoutException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import protocol.Message;
 import sendable.AckInfo;
 
@@ -8,6 +10,8 @@ import java.util.UUID;
 import java.util.concurrent.*;
 
 public class AckHandler {
+    private static final Logger logger = LogManager.getLogger(AckHandler.class);
+
     private static final int TIMEOUT = 5; // seconds to wait for ack before resending TODO: make configurable
     private final ConcurrentMap<UUID, Message> pendingAcks;
     private final ScheduledExecutorService executorService;
@@ -26,6 +30,7 @@ public class AckHandler {
      */
     public void trackMessage(Message message) {
         UUID messageId = message.getMessageID();
+        logger.trace("Tracking message with id {}", messageId);
         pendingAcks.put(messageId, message);
 
         executorService.schedule(() -> {
@@ -41,6 +46,7 @@ public class AckHandler {
     }
 
     public void ackReceived(AckInfo ack) {
+        logger.trace("Received ack for message with id {}", ack.getMessageID());
         pendingAcks.remove(ack.getMessageID());
     }
 }

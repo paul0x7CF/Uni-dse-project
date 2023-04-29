@@ -14,8 +14,8 @@ import org.apache.logging.log4j.Logger;
 
 public class InfoMessageHandler implements IMessageHandler {
     private static final Logger logger = LogManager.getLogger(InfoMessageHandler.class);
-    IServiceBroker broker;
-    MSData currentService;
+    private final IServiceBroker broker;
+    private final MSData currentService;
 
     public InfoMessageHandler(IServiceBroker broker) {
         this.broker = broker;
@@ -28,73 +28,94 @@ public class InfoMessageHandler implements IMessageHandler {
         if (subcategory.contains(";")) {
             throw new MessageProcessingException("Subcategory has another subcategory: " + subcategory);
         }
-        // possible: Ping, Register, Unregister, Ack, Error
         switch(subcategory) {
             case "Ping":
-                // Ping is response to Register response
-                ISendable ping = message.getSendable(MSData.class);
-                if (ping == null) {
-                    throw new MessageProcessingException("Payload is null");
-                }
-                if (ping instanceof MSData) {
-                    broker.registerService((MSData) ping);
-                } else {
-                    throw new MessageProcessingException("Payload is not of type MSData");
-                }
+                handlePing(message);
                 break;
             case "Register":
-                // Register is first message with MSData as Payload
-                ISendable register = message.getSendable(MSData.class);
-                if (register == null) {
-                    throw new MessageProcessingException("Payload is null");
-                }
-                if (register instanceof MSData from) {
-                    // TODO: maybe "ping" is not needed because if the service is already present in the registry, no response is sent besides an Ack.
-                    broker.registerService(from);
-                    // TODO: is currentService correct for other services?
-                    broker.sendMessage(InfoMessageCreator.createPingMessage(currentService, from));
-                    System.out.println("Register received");
-                } else {
-                    throw new MessageProcessingException("Payload is not of type MSData");
-                }
+                handleRegister(message);
                 break;
             case "Unregister":
-                ISendable unregister = message.getSendable(MSData.class);
-                if (unregister == null) {
-                    throw new MessageProcessingException("Payload is null");
-                }
-                if (unregister instanceof MSData) {
-                    broker.unregisterService((MSData) unregister);
-                } else {
-                    throw new MessageProcessingException("Payload is not of type MSData");
-                }
+                handleUnregister(message);
                 break;
             case "Ack":
-                ISendable ack = message.getSendable(AckInfo.class);
-                if (ack == null) {
-                    throw new MessageProcessingException("Payload is null");
-                }
-                if (ack instanceof AckInfo) {
-                    broker.ackReceived((AckInfo) ack);
-                } else {
-                    throw new MessageProcessingException("Payload is not of type AckInfo");
-                }
+                handleAck(message);
                 break;
             case "Error":
-                // Error has Error as Payload
-                ISendable error = message.getSendable(ErrorInfo.class);
-                if (error == null) {
-                    throw new MessageProcessingException("Payload is null");
-                }
-                if (error instanceof ErrorInfo from) {
-                    logger.error("Received RemoteError");
-                    //TODO: How to handle this in each service?
-                    throw new RemoteException(from.getName());
-                } else {
-                    throw new MessageProcessingException("Payload is not of type ErrorInfo");
-                }
+                handleError(message);
             default:
                 throw new MessageProcessingException("Unknown message subCategory: " + message.getSubCategory());
+        }
+
+        logger.trace("{} Message processed" + message.getCategory());
+    }
+
+    private void handlePing(Message message) throws MessageProcessingException {
+        // Ping is response to Register request
+        ISendable ping = message.getSendable(MSData.class);
+        if (ping == null) {
+            throw new MessageProcessingException("Payload is null");
+        }
+        if (ping instanceof MSData) {
+            broker.registerService((MSData) ping);
+        } else {
+            throw new MessageProcessingException("Payload is not of type MSData");
+        }
+    }
+
+    private void handleRegister(Message message) throws MessageProcessingException {
+        // Register is first message with MSData as Payload when broker is started
+        ISendable register = message.getSendable(MSData.class);
+        if (register == null) {
+            throw new MessageProcessingException("Payload is null");
+        }
+        if (register instanceof MSData from) {
+            broker.registerService(from);
+            // TODO: is currentService correct for other services?
+            broker.sendMessage(InfoMessageCreator.createPingMessage(currentService, from));
+            logger.info("Registered service: {}", from.getPort());
+        } else {
+            throw new MessageProcessingException("Payload is not of type MSData");
+        }
+    }
+
+    private void handleUnregister(Message message) throws MessageProcessingException {
+        // Unregister is sent when broker is stopped
+        ISendable unregister = message.getSendable(MSData.class);
+        if (unregister == null) {
+            throw new MessageProcessingException("Payload is null");
+        }
+        if (unregister instanceof MSData) {
+            broker.unregisterService((MSData) unregister);
+        } else {
+            throw new MessageProcessingException("Payload is not of type MSData");
+        }
+    }
+
+    private void handleAck(Message message) throws MessageProcessingException {
+        ISendable ack = message.getSendable(AckInfo.class);
+        if (ack == null) {
+            throw new MessageProcessingException("Payload is null");
+        }
+        if (ack instanceof AckInfo) {
+            broker.ackReceived((AckInfo) ack);
+        } else {
+            throw new MessageProcessingException("Payload is not of type AckInfo");
+        }
+    }
+
+    private void handleError(Message message) throws MessageProcessingException, RemoteException {
+        // Error has Error as Payload
+        ISendable error = message.getSendable(ErrorInfo.class);
+        if (error == null) {
+            throw new MessageProcessingException("Payload is null");
+        }
+        if (error instanceof ErrorInfo from) {
+            logger.error("Received RemoteError");
+            //TODO: How to handle this in each service?
+            throw new RemoteException(from.getName());
+        } else {
+            throw new MessageProcessingException("Payload is not of type ErrorInfo");
         }
     }
 }

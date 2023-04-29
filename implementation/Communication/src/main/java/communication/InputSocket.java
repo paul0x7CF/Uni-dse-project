@@ -1,11 +1,16 @@
 package communication;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.concurrent.BlockingQueue;
 
 public class InputSocket implements Runnable {
+    private static final Logger logger = LogManager.getLogger(InputSocket.class);
+
     private final BlockingQueue<byte[]> input;
     private final int port;
 
@@ -28,6 +33,7 @@ public class InputSocket implements Runnable {
             try {
                 socket.receive(response);
                 input.put(response.getData());
+                logger.trace("Received message from {}:{}", response.getAddress(), response.getPort());
             } catch (InterruptedException | IOException e) {
                 throw new RuntimeException(e);
             }

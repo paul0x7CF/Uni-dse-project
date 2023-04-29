@@ -1,26 +1,23 @@
 package mainPackage;
 
-import broker.Broker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import protocol.ECategory;
-import protocol.Message;
-import protocol.MessageBuilder;
+import sendable.EServiceType;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainForTesting {
     private static final Logger logger = LogManager.getLogger(MainForTesting.class);
 
     public static void main(String[] args) {
-        logger.info("Starting MainForTesting");
+        Runnable prosumer = new BrokerTestRunner(EServiceType.Prosumer, 5000);
 
-        MessageBuilder messageBuilder = new MessageBuilder();
-        messageBuilder.setCategory(ECategory.Info, "Register");
-        messageBuilder.setReceiverPort(8080);
+        Runnable exchange = new BrokerTestRunner(EServiceType.Exchange, 6000);
 
-        Message message = messageBuilder.build();
+        ExecutorService executor = Executors.newFixedThreadPool(2);
 
-
-
-        // broker.send(message);
+        executor.execute(prosumer);
+        executor.execute(exchange);
     }
 }

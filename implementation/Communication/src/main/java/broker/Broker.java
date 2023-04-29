@@ -3,7 +3,6 @@ package broker;
 import communication.LocalMessage;
 import communication.NetworkHandler;
 import exceptions.MessageProcessingException;
-import mainPackage.MainForTesting;
 import messageHandling.InfoMessageHandler;
 import messageHandling.MessageHandler;
 import org.apache.logging.log4j.LogManager;
@@ -22,36 +21,41 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Broker implements IServiceBroker {
-    private static final Logger logger = LogManager.getLogger(MainForTesting.class);
+    private static final Logger logger = LogManager.getLogger(Broker.class);
 
     private final AckHandler ackHandler;
     // not IMessageHandler because addMessageHandler is not part of the interface.
     private final MessageHandler messageHandler;
     private final NetworkHandler networkHandler;
-    private final MSData broadcastService;
+    private MSData broadcastService;
     private ServiceRegistry serviceRegistry;
 
     public Broker(EServiceType serviceType, int listeningPort) {
-        ackHandler = new AckHandler(this);
-
-        // MessageHandlers are based on the category so that other components can have their own MessageHandler
-        // implementations
-        messageHandler = new MessageHandler();
-        messageHandler.addMessageHandler(ECategory.Info, new InfoMessageHandler(this));
-
+        // listeningPort is the currentMSData port so others can send messages to this broker.
         networkHandler = new NetworkHandler(serviceType, listeningPort);
+
+        // give currentMS to registry
+        try {
+            serviceRegistry = new ServiceRegistry(networkHandler.getMSData());
+        } catch (UnknownHostException e) {
+            logger.error("Could not get current service", e);
+        }
 
         // Create broadcastService for sending to all services
         String broadcastAddress = networkHandler.getBroadcastAddress();
-        broadcastService = new MSData(serviceRegistry.getCurrentService().getId(),
-                serviceType, broadcastAddress, listeningPort);
+        MSData currentService = serviceRegistry.getCurrentService();
+        this.broadcastService = new MSData(currentService.getId(), currentService.getType(), broadcastAddress, currentService.getPort());
+
+        // AckHandler uses IBroker to send messages.
+        ackHandler = new AckHandler(this);
+
+        // MessageHandlers are based on the category so that other components can have their own implementations
+        messageHandler = new MessageHandler();
+        messageHandler.addMessageHandler(ECategory.Info, new InfoMessageHandler(this));
     }
 
     public void start() throws UnknownHostException {
         networkHandler.start();
-        // give currentMS to registry
-        // TODO: getMSData() should store the listeningPort so messages can be sent to. Again the +1 is a workaround.
-        serviceRegistry = new ServiceRegistry(networkHandler.getMSData());
 
         // register Microservice
         // TODO: Fixed IP addresses? Its always 10.102.102.x (Prosumer(17), Exchange(13), Forecast(9)) but whats the port?
@@ -74,38 +78,39 @@ public class Broker implements IServiceBroker {
     @Override
     public void sendMessage(Message message) {
         try {
+            logger.info("{} broker sending message: {}", getCurrentService().getType(), message.getCategory());
             networkHandler.sendMessage(new LocalMessage(Marshaller.marshal(message),
                     message.getReceiverAddress(),
                     message.getReceiverPort()));
 
+            // here because if sending fails, the message should not be tracked
+            if (!Objects.equals(message.getSubCategory(), "Ack")) {
+                // don't track ack messages
+                ackHandler.trackMessage(message);
+            }
         } catch (IOException e) {
-            logger.error("Error while sending message: " + e.getMessage());
-        }
-        // don't track ack messages TODO: maybe use != instead of equals
-        if (!Objects.equals(message.getSubCategory(), "Ack")) {
-            ackHandler.trackMessage(message);
+            logger.error("Broker: Error while sending message: {}", e.toString());
         }
     }
 
     /**
      * while true loop to receive messages and handle them
      *
-     * @throws InterruptedException         if the thread is interrupted
-     * @throws IOException                  if an I/O error occurs
-     * @throws ClassNotFoundException       if the class of a serialized object could not be found
-     * @throws MessageProcessingException   if the message could not be processed
+     * @throws InterruptedException       if the thread is interrupted
+     * @throws IOException                if an I/O error occurs
+     * @throws ClassNotFoundException     if the class of a serialized object could not be found
+     * @throws MessageProcessingException if the message could not be processed
      */
     private void receiveMessage() throws InterruptedException, IOException, ClassNotFoundException, MessageProcessingException {
         // TODO: maybe catch exceptions and try again
+        // TODO: does this lock the thread?
         while (true) {
             Message message = Marshaller.unmarshal(networkHandler.receiveMessage());
-            messageHandler.handleMessage(message);
             if (!Objects.equals(message.getSubCategory(), "Ack")) {
-                //TODO: payload needs to be AckInfo, right now it's the same as before. Instantiate MSData and use InfoMessageCreator.
-                Message ackMessage = MessageBuilder.reverse(message);
-                ackMessage.setCategory(ECategory.Info, "Ack");
-                sendMessage(ackMessage);
+                logger.info("{} broker received message: {}", getCurrentService().getType(), message.getCategory());
+                sendMessage(InfoMessageCreator.createAckMessage(message));
             }
+            messageHandler.handleMessage(message);
         }
     }
 
