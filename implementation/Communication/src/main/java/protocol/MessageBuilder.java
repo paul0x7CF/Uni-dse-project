@@ -8,7 +8,7 @@ import java.util.UUID;
  * This class will create a message object. It will also validate the message. The setter classes all return the
  * MessageBuilder object, so that the builder can be used in a fluent way.
  */
-public class MessageBuilder {
+public class MessageBuilder { // TODO: rename to MessageFactory?
     private String category;
     private UUID senderID;
     private String senderAddress;
@@ -22,16 +22,9 @@ public class MessageBuilder {
     }
 
     public static Message reverse(Message message) {
-        UUID tempID = message.getSenderID();
-        String tempAddress = message.getSenderAddress();
-        int tempPort = message.getSenderPort();
-        message.setSenderID(message.getReceiverID());
-        message.setSenderAddress(message.getReceiverAddress());
-        message.setSenderPort(message.getReceiverPort());
-        message.setReceiverID(tempID);
-        message.setReceiverAddress(tempAddress);
-        message.setReceiverPort(tempPort);
-        return message;
+        return new Message(message.getCategory(), message.getReceiverID(), message.getReceiverAddress(),
+                message.getReceiverPort(), message.getSenderID(), message.getSenderAddress(),
+                message.getSenderPort(), message.getPayload());
     }
 
     public static boolean validateMessage(Message message) {

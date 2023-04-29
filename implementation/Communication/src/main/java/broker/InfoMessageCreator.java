@@ -12,7 +12,7 @@ import sendable.MSData;
 
 import java.util.UUID;
 
-public class InfoMessageCreator {
+public class InfoMessageCreator { // TODO: rename to InfoMessageTemplate
     private static final Logger logger = LogManager.getLogger(InfoMessageCreator.class);
 
     private InfoMessageCreator() {
@@ -20,30 +20,29 @@ public class InfoMessageCreator {
 
     public static Message createPingMessage(MSData sender, MSData receiver) {
         MessageBuilder messageBuilder = senderAndReceiverTemplate(sender, receiver);
-        messageBuilder.setCategory(ECategory.Info, "Ping").
-                setPayload(sender);
+        messageBuilder.setCategory(ECategory.Info, "Ping").setPayload(sender);
+        logger.trace("Ping message created");
         return messageBuilder.build();
     }
 
    public static Message createRegisterMessage(MSData sender, MSData receiver) {
        MessageBuilder messageBuilder = senderAndReceiverTemplate(sender, receiver);
-        messageBuilder.setCategory(ECategory.Info, "Register").
-            setPayload(sender);
+        messageBuilder.setCategory(ECategory.Info, "Register").setPayload(sender);
         logger.trace("Register message created");
         return messageBuilder.build();
     }
 
     public static Message createUnregisterMessage(MSData sender, MSData receiver) {
         MessageBuilder messageBuilder = senderAndReceiverTemplate(sender, receiver);
-        messageBuilder.setCategory(ECategory.Info, "Unregister").
-            setPayload(sender);
+        messageBuilder.setCategory(ECategory.Info, "Unregister").setPayload(sender);
+        logger.trace("Unregister message created");
         return messageBuilder.build();
     }
 
     public static Message createErrorMessage(MSData sender, MSData receiver, String errorName, String errorMessage) {
         MessageBuilder messageBuilder = senderAndReceiverTemplate(sender, receiver);
-        messageBuilder.setCategory(ECategory.Info, "Error").
-                setPayload(new ErrorInfo(errorName, errorMessage));
+        messageBuilder.setCategory(ECategory.Info, "Error").setPayload(new ErrorInfo(errorName, errorMessage));
+        logger.trace("Error message created");
         return messageBuilder.build();
     }
 
@@ -52,6 +51,7 @@ public class InfoMessageCreator {
         ackMessage.setCategory(ECategory.Info, "Ack");
         AckInfo ack = new AckInfo(message.getMessageID());
         ackMessage.setPayload(ack);
+        logger.trace("Ack message created");
 
         return ackMessage;
     }

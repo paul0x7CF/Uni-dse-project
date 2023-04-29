@@ -29,11 +29,11 @@ public class InputSocket implements Runnable {
         }
         while (true) {
             byte[] buffer = new byte[1000];
-            DatagramPacket response = new DatagramPacket(buffer, buffer.length);
+            DatagramPacket request = new DatagramPacket(buffer, buffer.length);
             try {
-                socket.receive(response);
-                input.put(response.getData());
-                logger.trace("Received message from {}:{}", response.getAddress(), response.getPort());
+                socket.receive(request);
+                input.put(request.getData());
+                logger.trace("Received message from {}:{}", request.getAddress(), request.getPort());
             } catch (InterruptedException | IOException e) {
                 throw new RuntimeException(e);
             }

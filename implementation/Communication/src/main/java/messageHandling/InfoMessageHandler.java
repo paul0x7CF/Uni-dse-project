@@ -73,7 +73,6 @@ public class InfoMessageHandler implements IMessageHandler {
             broker.registerService(from);
             // TODO: is currentService correct for other services?
             broker.sendMessage(InfoMessageCreator.createPingMessage(currentService, from));
-            logger.info("Registered service: {}", from.getPort());
         } else {
             throw new MessageProcessingException("Payload is not of type MSData");
         }

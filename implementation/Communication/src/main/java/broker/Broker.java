@@ -9,7 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protocol.ECategory;
 import protocol.Message;
-import protocol.MessageBuilder;
 import sendable.AckInfo;
 import sendable.EServiceType;
 import sendable.MSData;
@@ -44,7 +43,9 @@ public class Broker implements IServiceBroker {
         // Create broadcastService for sending to all services
         String broadcastAddress = networkHandler.getBroadcastAddress();
         MSData currentService = serviceRegistry.getCurrentService();
-        this.broadcastService = new MSData(currentService.getId(), currentService.getType(), broadcastAddress, currentService.getPort());
+        // TODO: port is not correct
+        // TODO: should we add a Info;GetAllServices message which returns a list of MSData?
+        broadcastService = new MSData(currentService.getId(), currentService.getType(), broadcastAddress, currentService.getPort());
 
         // AckHandler uses IBroker to send messages.
         ackHandler = new AckHandler(this);
@@ -78,7 +79,7 @@ public class Broker implements IServiceBroker {
     @Override
     public void sendMessage(Message message) {
         try {
-            logger.info("{} broker sending message: {}", getCurrentService().getType(), message.getCategory());
+            logger.trace("{} broker sending message: {}", getCurrentService().getType(), message.getCategory());
             networkHandler.sendMessage(new LocalMessage(Marshaller.marshal(message),
                     message.getReceiverAddress(),
                     message.getReceiverPort()));
@@ -107,7 +108,7 @@ public class Broker implements IServiceBroker {
         while (true) {
             Message message = Marshaller.unmarshal(networkHandler.receiveMessage());
             if (!Objects.equals(message.getSubCategory(), "Ack")) {
-                logger.info("{} broker received message: {}", getCurrentService().getType(), message.getCategory());
+                logger.trace("{} broker received message: {}", getCurrentService().getType(), message.getCategory());
                 sendMessage(InfoMessageCreator.createAckMessage(message));
             }
             messageHandler.handleMessage(message);
@@ -121,6 +122,7 @@ public class Broker implements IServiceBroker {
 
     @Override
     public void registerService(MSData msData) {
+        logger.info("Registered service: {} on {}", msData.getPort(), getCurrentService().getPort());
         serviceRegistry.registerService(msData);
     }
 
