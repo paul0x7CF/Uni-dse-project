@@ -122,7 +122,7 @@ public class Broker implements IServiceBroker {
 
     @Override
     public void registerService(MSData msData) {
-        logger.info("Registered service: {} on {}", msData.getPort(), getCurrentService().getPort());
+        logger.info("{} saved {}", msData.getPort(), getCurrentService().getPort());
         serviceRegistry.registerService(msData);
     }
 
