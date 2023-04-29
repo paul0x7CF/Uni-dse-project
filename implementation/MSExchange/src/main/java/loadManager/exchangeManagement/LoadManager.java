@@ -17,7 +17,13 @@ public class LoadManager {
     }
 
 
-    public void exchangeAtCapacity(UUID exchangeID) {
+    public void setExchangeAtCapacity(UUID exchangeID) {
     }
 
+    public ExchangeServiceInformation getFreeExchange() {
+        return null;
+    }
+
+    public void duplicateExchange() {
+    }
 }

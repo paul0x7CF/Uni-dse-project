@@ -1,21 +1,12 @@
 package loadManager.timeSlotManagement;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
+import sendable.TimeSlot;
+
+import java.util.List;
 
 public class TimeSlotManager {
-    private Map<UUID, Date> timeSlots;
-    private long durationInSecs = 1000;
-
-    public TimeSlotManager() {
-        timeSlots.put(generateRandomUUID(), new Date());
-        process();
-    }
-
-    private void process() {
-
-    }
+    private final long DURATION_IN_SECS = 1000;
+    private List<TimeSlot> timeSlots;
 
     private void addNewTimeSlots() {
     }
@@ -23,11 +14,7 @@ public class TimeSlotManager {
     private void deleteOldTimeSlots() {
     }
 
-    private UUID generateRandomUUID() {
-        return null;
-    }
-
-    public Map<UUID, Date> getTimeSlots() {
+    public List<TimeSlot> getTimeSlots() {
         return timeSlots;
     }
 }
