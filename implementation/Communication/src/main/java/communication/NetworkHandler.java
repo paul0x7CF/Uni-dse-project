@@ -11,6 +11,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
+/**
+ * This class handles the network communication for a microservice and provides methods to send and receive messages.
+ * It uses two threads to send and receive messages.
+ * The input and output queues are blocking queues so that the threads are blocked when there is no message to send or
+ * receive.
+ */
 public class NetworkHandler {
     private final BlockingQueue<byte[]> inputQueue;
     private final BlockingQueue<LocalMessage> outputQueue;

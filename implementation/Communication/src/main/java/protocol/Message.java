@@ -16,7 +16,7 @@ public class Message {
     private int receiverPort;
     private final String payload;
 
-    public Message(String category, UUID senderID, String senderAddress, int senderPort, UUID receiverID, String receiverAddress, int receiverPort, String payload) {
+    protected Message(String category, UUID senderID, String senderAddress, int senderPort, UUID receiverID, String receiverAddress, int receiverPort, String payload) {
         this.category = category;
         this.senderID = senderID;
         this.senderAddress = senderAddress;

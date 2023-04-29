@@ -34,42 +34,41 @@ public class MessageHandler implements IMessageHandler {
     }
 
     public void addMessageHandler(ECategory category, IMessageHandler handler) {
+        if (category == ECategory.Info && handlers.containsKey(category)) {
+            throw new IllegalArgumentException("Cannot override InfoMessageHandler");
+        }
         handlers.put(category, handler);
     }
 
-    private void handleInfo(Message message) {
+    private void handleInfo(Message message) throws MessageProcessingException {
         try {
             handlers.get(ECategory.Info).handleMessage(message);
         } catch (MessageProcessingException | RemoteException e) {
-            // TODO
-            throw new RuntimeException(e);
+            throw new MessageProcessingException("No handler found for message: " + message);
         }
     }
 
-    private void handleAuction(Message message) {
+    private void handleAuction(Message message) throws MessageProcessingException {
         try {
             handlers.get(ECategory.Auction).handleMessage(message);
         } catch (MessageProcessingException | RemoteException e) {
-            // TODO
-            throw new RuntimeException(e);
+            throw new MessageProcessingException("No handler found for message: " + message);
         }
     }
 
-    private void handleExchange(Message message) {
+    private void handleExchange(Message message) throws MessageProcessingException {
         try {
             handlers.get(ECategory.Exchange).handleMessage(message);
         } catch (MessageProcessingException | RemoteException e) {
-            // TODO
-            throw new RuntimeException(e);
+            throw new MessageProcessingException("No handler found for message: " + message);
         }
     }
 
-    private void handleForecast(Message message) {
+    private void handleForecast(Message message) throws MessageProcessingException {
         try {
             handlers.get(ECategory.Forecast).handleMessage(message);
         } catch (MessageProcessingException | RemoteException e) {
-            // TODO
-            throw new RuntimeException(e);
+            throw new MessageProcessingException("No handler found for message: " + message);
         }
     }
 }

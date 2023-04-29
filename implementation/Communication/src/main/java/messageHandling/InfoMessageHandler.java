@@ -49,6 +49,7 @@ public class InfoMessageHandler implements IMessageHandler {
                     throw new MessageProcessingException("Payload is null");
                 }
                 if (register instanceof MSData from) {
+                    // TODO: maybe "ping" is not needed because if the service is already present in the registry, no response is sent besides an Ack.
                     broker.registerService(from);
                     // TODO: is currentService correct for other services?
                     broker.sendMessage(InfoMessageCreator.createPingMessage(currentService, from));
@@ -87,6 +88,7 @@ public class InfoMessageHandler implements IMessageHandler {
                 }
                 if (error instanceof ErrorInfo from) {
                     logger.error("Received RemoteError");
+                    //TODO: How to handle this in each service?
                     throw new RemoteException(from.getName());
                 } else {
                     throw new MessageProcessingException("Payload is not of type ErrorInfo");

@@ -50,10 +50,12 @@ public class Broker implements IServiceBroker {
     public void start() throws UnknownHostException {
         networkHandler.start();
         // give currentMS to registry
+        // TODO: getMSData() should store the listeningPort so messages can be sent to. Again the +1 is a workaround.
         serviceRegistry = new ServiceRegistry(networkHandler.getMSData());
 
         // register Microservice
-        sendMessage(InfoMessageCreator.createRegisterMessage(networkHandler.getMSData(), networkHandler.getMSData()));
+        // TODO: Fixed IP addresses? Its always 10.102.102.x (Prosumer(17), Exchange(13), Forecast(9)) but whats the port?
+        sendMessage(InfoMessageCreator.createRegisterMessage(networkHandler.getMSData(), broadcastService));
 
         // start receiving messages in new thread
         try {
@@ -85,12 +87,19 @@ public class Broker implements IServiceBroker {
         }
     }
 
+    /**
+     * while true loop to receive messages and handle them
+     *
+     * @throws InterruptedException         if the thread is interrupted
+     * @throws IOException                  if an I/O error occurs
+     * @throws ClassNotFoundException       if the class of a serialized object could not be found
+     * @throws MessageProcessingException   if the message could not be processed
+     */
     private void receiveMessage() throws InterruptedException, IOException, ClassNotFoundException, MessageProcessingException {
         // TODO: maybe catch exceptions and try again
         while (true) {
             Message message = Marshaller.unmarshal(networkHandler.receiveMessage());
             messageHandler.handleMessage(message);
-            // TODO: send ack message
             if (!Objects.equals(message.getSubCategory(), "Ack")) {
                 //TODO: payload needs to be AckInfo, right now it's the same as before. Instantiate MSData and use InfoMessageCreator.
                 Message ackMessage = MessageBuilder.reverse(message);
