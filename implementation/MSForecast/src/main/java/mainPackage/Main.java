@@ -1,11 +1,11 @@
 package mainPackage;
 
-import communication.NetworkHandler;
-import sendable.EServiceType;
+import forecast.ForecastController;
 
 public class Main {
     public static void main(String[] args) {
-        NetworkHandler network = new NetworkHandler(EServiceType.Solar, 8080);
+        ForecastController forecastController = new ForecastController();
+        forecastController.startForecast();
     }
 
 
