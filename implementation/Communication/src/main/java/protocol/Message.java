@@ -7,13 +7,13 @@ import java.util.UUID;
 
 public class Message {
     private final UUID messageID = UUID.randomUUID();
-    private final String category;
-    private final UUID senderID;
+    private String category;
+    private UUID senderID;
     private String senderAddress;
-    private final int senderPort;
-    private final UUID receiverID;
+    private int senderPort;
+    private UUID receiverID;
     private String receiverAddress;
-    private final int receiverPort;
+    private int receiverPort;
     private final String payload;
 
     public Message(String category, UUID senderID, String senderAddress, int senderPort, UUID receiverID, String receiverAddress, int receiverPort, String payload) {
@@ -63,12 +63,31 @@ public class Message {
         return payload;
     }
 
+    public void setCategory(ECategory mainCat, String subCat) {
+        this.category = mainCat.toString() + ";" + subCat;
+    }
+
+    public void setSenderID(UUID senderID) {
+        this.senderID = senderID;
+    }
+
     public void setSenderAddress(String receiverAddress) {
         this.receiverAddress = receiverAddress;
     }
 
+    public void setSenderPort(int senderPort) {
+        this.senderPort = senderPort;
+    }
+
+    public void setReceiverID(UUID receiverID) {
+        this.receiverID = receiverID;
+    }
     public void setReceiverAddress(String temp) {
         this.receiverAddress = temp;
+    }
+
+    public void setReceiverPort(int receiverPort) {
+        this.receiverPort = receiverPort;
     }
 
     // converts the payload using the PayloadConverter class and forwards the class which should be instantiated
@@ -77,10 +96,12 @@ public class Message {
     }
 
     public ECategory getMainCategory() {
+        //TODO: check if category is valid
         return ECategory.valueOf(category.split(";")[0]);
     }
 
     public String getSubCategory() {
+        //TODO: check if category is valid
         return category.split(";")[1];
     }
 }

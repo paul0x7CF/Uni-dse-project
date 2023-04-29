@@ -16,10 +16,6 @@ public class OutputSocket implements Runnable {
         this.port = port;
     }
 
-    public int getPort() {
-        return port;
-    }
-
     @Override
     public void run() {
         DatagramSocket socket = null;

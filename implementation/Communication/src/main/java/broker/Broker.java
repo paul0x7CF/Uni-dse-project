@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protocol.ECategory;
 import protocol.Message;
+import protocol.MessageBuilder;
 import sendable.AckInfo;
 import sendable.EServiceType;
 import sendable.MSData;
@@ -20,19 +21,21 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-public class Broker implements INetworkingBroker {
+public class Broker implements IServiceBroker {
     private static final Logger logger = LogManager.getLogger(MainForTesting.class);
 
     private final AckHandler ackHandler;
     // not IMessageHandler because addMessageHandler is not part of the interface.
     private final MessageHandler messageHandler;
     private final NetworkHandler networkHandler;
-    private ServiceRegistry serviceRegistry;
     private final MSData broadcastService;
+    private ServiceRegistry serviceRegistry;
 
     public Broker(EServiceType serviceType, int listeningPort) {
         ackHandler = new AckHandler(this);
 
+        // MessageHandlers are based on the category so that other components can have their own MessageHandler
+        // implementations
         messageHandler = new MessageHandler();
         messageHandler.addMessageHandler(ECategory.Info, new InfoMessageHandler(this));
 
@@ -46,12 +49,13 @@ public class Broker implements INetworkingBroker {
 
     public void start() throws UnknownHostException {
         networkHandler.start();
+        // give currentMS to registry
         serviceRegistry = new ServiceRegistry(networkHandler.getMSData());
 
         // register Microservice
         sendMessage(InfoMessageCreator.createRegisterMessage(networkHandler.getMSData(), networkHandler.getMSData()));
-        //
 
+        // start receiving messages in new thread
         try {
             receiveMessage();
         } catch (InterruptedException | IOException | ClassNotFoundException | MessageProcessingException e) {
@@ -87,6 +91,12 @@ public class Broker implements INetworkingBroker {
             Message message = Marshaller.unmarshal(networkHandler.receiveMessage());
             messageHandler.handleMessage(message);
             // TODO: send ack message
+            if (!Objects.equals(message.getSubCategory(), "Ack")) {
+                //TODO: payload needs to be AckInfo, right now it's the same as before. Instantiate MSData and use InfoMessageCreator.
+                Message ackMessage = MessageBuilder.reverse(message);
+                ackMessage.setCategory(ECategory.Info, "Ack");
+                sendMessage(ackMessage);
+            }
         }
     }
 
@@ -113,7 +123,7 @@ public class Broker implements INetworkingBroker {
         return serviceRegistry.findService(serviceId);
     }
 
-    public List<MSData> getAvailableService() {
+    public List<MSData> getServices() {
         return serviceRegistry.getAvailableServices();
     }
 

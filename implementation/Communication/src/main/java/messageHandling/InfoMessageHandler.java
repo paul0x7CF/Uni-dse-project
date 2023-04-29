@@ -1,6 +1,6 @@
 package messageHandling;
 
-import broker.INetworkingBroker;
+import broker.IServiceBroker;
 import broker.InfoMessageCreator;
 import exceptions.MessageProcessingException;
 import exceptions.RemoteException;
@@ -14,10 +14,10 @@ import org.apache.logging.log4j.Logger;
 
 public class InfoMessageHandler implements IMessageHandler {
     private static final Logger logger = LogManager.getLogger(InfoMessageHandler.class);
-    INetworkingBroker broker;
+    IServiceBroker broker;
     MSData currentService;
 
-    public InfoMessageHandler(INetworkingBroker broker) {
+    public InfoMessageHandler(IServiceBroker broker) {
         this.broker = broker;
         this.currentService = broker.getCurrentService();
     }

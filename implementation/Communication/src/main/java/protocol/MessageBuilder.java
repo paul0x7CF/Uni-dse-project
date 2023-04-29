@@ -21,10 +21,16 @@ public class MessageBuilder {
     public MessageBuilder() {
     }
 
-    public Message reverse(Message message) {
-        String temp = message.getSenderAddress();
+    public static Message reverse(Message message) {
+        UUID tempID = message.getSenderID();
+        String tempAddress = message.getSenderAddress();
+        int tempPort = message.getSenderPort();
+        message.setSenderID(message.getReceiverID());
         message.setSenderAddress(message.getReceiverAddress());
-        message.setReceiverAddress(temp);
+        message.setSenderPort(message.getReceiverPort());
+        message.setReceiverID(tempID);
+        message.setReceiverAddress(tempAddress);
+        message.setReceiverPort(tempPort);
         return message;
     }
 
