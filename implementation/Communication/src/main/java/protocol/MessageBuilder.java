@@ -13,7 +13,7 @@ public class MessageBuilder {
     private UUID senderID;
     private String senderAddress;
     private int senderPort;
-    private String receiverID;
+    private UUID receiverID;
     private String receiverAddress;
     private int receiverPort;
     private ISendable payload;
@@ -54,7 +54,7 @@ public class MessageBuilder {
         return this;
     }
 
-    public MessageBuilder setReceiverID(String receiverID) {
+    public MessageBuilder setReceiverID(UUID receiverID) {
         this.receiverID = receiverID;
         return this;
     }

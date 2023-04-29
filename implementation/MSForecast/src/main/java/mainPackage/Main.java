@@ -1,6 +1,6 @@
 package mainPackage;
 
-import network.NetworkHandler;
+import communication.NetworkHandler;
 
 public class Main {
     public static void main(String[] args) {

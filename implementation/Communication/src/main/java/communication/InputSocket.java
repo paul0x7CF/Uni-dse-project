@@ -1,4 +1,4 @@
-package network;
+package communication;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -6,16 +6,12 @@ import java.net.DatagramSocket;
 import java.util.concurrent.BlockingQueue;
 
 public class InputSocket implements Runnable {
-    private final int port;
     private final BlockingQueue<byte[]> input;
+    private final int port;
 
-    public InputSocket(int port, BlockingQueue<byte[]> input) {
-        this.port = port;
+    public InputSocket(BlockingQueue<byte[]> input, int port) {
         this.input = input;
-    }
-
-    public int getPort() {
-        return port;
+        this.port = port;
     }
 
     @Override
