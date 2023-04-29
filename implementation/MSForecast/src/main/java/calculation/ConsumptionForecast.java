@@ -1,4 +1,4 @@
-package forecast;
+package calculation;
 
 import protocol.Message;
 import sendable.TimeSlot;

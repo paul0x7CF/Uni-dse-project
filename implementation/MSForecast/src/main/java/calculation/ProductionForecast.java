@@ -1,4 +1,4 @@
-package forecast;
+package calculation;
 
 import historicData.HistoricData;
 import protocol.Message;
