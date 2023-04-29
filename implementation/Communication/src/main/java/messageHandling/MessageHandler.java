@@ -15,7 +15,7 @@ public class MessageHandler implements IMessageHandler {
     }
 
     /**
-     * Handles the message by calling the appropriate handler. Could be done within this method but I wanted to keep the
+     * Handles the message by calling the appropriate handler. Could be done within this method, but I wanted to keep the
      * error handling separate to give an overview of the different message categories.
      *
      * @param message   The message to handle

@@ -12,8 +12,8 @@ public class MSData implements ISendable {
     EServiceType type;
     private String address;
     private int port;
-    private LocalDateTime lastSeen = LocalDateTime.now();
-    private LocalDateTime lastUpdated = LocalDateTime.now();
+    // private LocalDateTime lastSeen = LocalDateTime.now(); TODO: gson can't handle LocalDateTime
+    // private LocalDateTime lastUpdated = LocalDateTime.now(); TODO: gson can't handle LocalDateTime
 
     public MSData(UUID id, EServiceType type, String address, int port) {
         this.id = id;
@@ -38,6 +38,7 @@ public class MSData implements ISendable {
         return port;
     }
 
+    /*
     public LocalDateTime getLastSeen() {
         return lastSeen;
     }
@@ -53,4 +54,5 @@ public class MSData implements ISendable {
     public void setLastUpdated(LocalDateTime lastUpdated) {
         this.lastUpdated = lastUpdated;
     }
+     */
 }

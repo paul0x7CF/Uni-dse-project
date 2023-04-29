@@ -62,6 +62,6 @@ public class NetworkHandler {
 
     public String getBroadcastAddress() {
         // TODO: this is not the correct way to do this
-        return serviceType.toString() + ":" + listeningPort;
+        return "localhost";
     }
 }

@@ -3,9 +3,10 @@ package protocol;
 
 import sendable.ISendable;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class Message {
+public class Message implements Serializable {
     private final UUID messageID = UUID.randomUUID();
     private String category;
     private UUID senderID;
@@ -14,7 +15,7 @@ public class Message {
     private UUID receiverID;
     private String receiverAddress;
     private int receiverPort;
-    private final String payload;
+    private String payload;
 
     protected Message(String category, UUID senderID, String senderAddress, int senderPort, UUID receiverID, String receiverAddress, int receiverPort, String payload) {
         this.category = category;
@@ -88,6 +89,10 @@ public class Message {
 
     public void setReceiverPort(int receiverPort) {
         this.receiverPort = receiverPort;
+    }
+
+    public void setPayload(ISendable payload) {
+        this.payload = PayloadConverter.toJSON(payload);
     }
 
     // converts the payload using the PayloadConverter class and forwards the class which should be instantiated

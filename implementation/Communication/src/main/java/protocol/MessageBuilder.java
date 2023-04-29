@@ -37,7 +37,7 @@ public class MessageBuilder {
     public static boolean validateMessage(Message message) {
         // TODO: if payload is e.g. Ack, category should be Info;Ack
         // TODO: category can only have 0 or 1 semicolons
-        return false;
+        return true;
     }
 
     public MessageBuilder setCategory(ECategory mainCat, String subCat) {
