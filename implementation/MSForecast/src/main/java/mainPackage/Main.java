@@ -1,11 +1,10 @@
 package mainPackage;
 
-import communication.NetworkHandler;
+import forecast.ForecastController;
 
 public class Main {
     public static void main(String[] args) {
-        NetworkHandler network = new NetworkHandler();
+        ForecastController forecastController = new ForecastController();
+        forecastController.startForecast();
     }
-
-
 }
