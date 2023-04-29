@@ -9,11 +9,6 @@ public class AverageMechanism {
     private List<Double> bidPrices = new ArrayList<Double>();
     private List<Double> askPrices = new ArrayList<Double>();
 
-    private void updateList() {
-    }
-
-    private void calculateAveragePrice() {
-    }
 
     public boolean isBidPriceHighEnough(double price) {
         return false;
@@ -22,4 +17,16 @@ public class AverageMechanism {
     public boolean isAskPriceLowEnough(double price) {
         return false;
     }
+
+    public double getAveragePrice() {
+        return 0;
+    }
+
+    private void calculateAveragePrice() {
+    }
+
+    private void updateList() {
+    }
+
+
 }

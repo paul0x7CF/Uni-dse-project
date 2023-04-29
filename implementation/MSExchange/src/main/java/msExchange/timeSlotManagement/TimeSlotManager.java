@@ -1,24 +1,50 @@
 package msExchange.timeSlotManagement;
 
-import msExchange.timeSlotManagement.auctionManagement.AuctionThread;
+import sendable.Bid;
 import sendable.Sell;
-import sendable.TimeSlot;
 import sendable.Transaction;
 
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
 
-public class TimeSlotManager {
-    private final Map<UUID, TimeSlotThread> timeSlots = new HashMap<>();
-    public Optional<Transaction> updateTimeSlots(List<TimeSlot> timeSlots) {return null;
+public class TimeSlotManager implements Runnable {
+    private final Map<UUID, TimeSlot> timeSlots = new HashMap<>();
+    private BlockingQueue<Sell> sellQueue;
+    private BlockingQueue<Bid> bidQueue;
+    private Map<UUID, BlockingQueue<Bid>> timeSlotBidQueue;
+    private Map<UUID, BlockingQueue<Sell>> timeSlotSellQueue;
+    private BlockingQueue<Transaction> transactionQueue;
+    private ExecutorService executorService;
+
+    public TimeSlotManager(final BlockingQueue<Sell> sellQueue, final BlockingQueue<Bid> bidQueue, final BlockingQueue<Transaction> transactionQueue) {
+        this.sellQueue = sellQueue;
+        this.bidQueue = bidQueue;
+        this.transactionQueue = transactionQueue;
     }
-    public void addAuctionToSlot(UUID timeSlotId, Sell sellPosition) {
+
+    @Override
+    public void run() {
+
     }
-    public Map<UUID, Double> getAuctionsForTimeSlot(UUID slotId) {
+
+    public Optional<Transaction> updateTimeSlots(List<sendable.TimeSlot> timeSlots) {
         return null;
     }
 
-    private void addTimeSlot(TimeSlotThread timeSlot) {
+    private synchronized void createTimeSlot(sendable.TimeSlot timeSlot) {
     }
-    private Transaction closeTimeSlot(TimeSlotThread timeSlot) {return null;
+
+    private synchronized Transaction closeTimeSlot(UUID slotId) {
+        return null;
     }
+
+    private void addTimeSlot(TimeSlot timeSlot) {
+    }
+
+    private Transaction closeTimeSlot(TimeSlot timeSlot) {
+        return null;
+    }
+
+
 }

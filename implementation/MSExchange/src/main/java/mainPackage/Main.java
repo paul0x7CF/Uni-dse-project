@@ -6,16 +6,20 @@ import msExchange.MSExchange;
 public class Main {
 
     public static <String> void main(String[] args) {
-        int port=1;
-        String host= (String) "hostname";
-        boolean duplicated=false;
+        int port = 1;
+        String host = (String) "hostname";
+        boolean duplicated = false;
         if ("-s".equals(args[0])) {
             duplicated = true;
         }
         MSExchange msExchange = new MSExchange(duplicated);
+        Thread exchangeThread = new Thread(msExchange);
+        exchangeThread.start();
 
-        if(!duplicated){
-            Controller controller= new Controller();
+        if (!duplicated) {
+            Controller controller = new Controller();
+            Thread controllerThread = new Thread(controller);
+            controllerThread.start();
         }
     }
 }

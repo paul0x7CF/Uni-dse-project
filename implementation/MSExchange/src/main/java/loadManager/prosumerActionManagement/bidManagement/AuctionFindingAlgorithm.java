@@ -1,24 +1,40 @@
 package loadManager.prosumerActionManagement.bidManagement;
 
+import loadManager.auctionManagement.Auction;
+import loadManager.auctionManagement.AuctionManager;
+import loadManager.prosumerActionManagement.AuctionProsumerTracker;
+import protocol.Message;
+import sendable.Bid;
+
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
 
-public class AuctionFindingAlgorithm extends Thread {
+public class AuctionFindingAlgorithm implements Runnable {
     private List<UUID> auctionParticipation;
-    private double bidPrice;
-    private double neededKwH;
-    private UUID prosumerId;
+    private Bid bid;
+    private AuctionManager auctionManager;
+    private BlockingQueue<Message> outgoingQueue;
+    private AuctionProsumerTracker auctionProsumerTracker;
 
-    public AuctionFindingAlgorithm(double bidPrice, double neededKwH, UUID prosumerId) {
-        bidPrice = bidPrice;
-        neededKwH = neededKwH;
-        prosumerId = prosumerId;
+    public AuctionFindingAlgorithm(final List<UUID> auctionParticipation, final Bid bid, final AuctionManager auctionManager, final BlockingQueue<Message> outgoingQueue, final AuctionProsumerTracker auctionProsumerTracker) {
+        this.auctionParticipation = auctionParticipation;
+        this.bid = bid;
+        this.auctionManager = auctionManager;
+        this.outgoingQueue = outgoingQueue;
+        this.auctionProsumerTracker = auctionProsumerTracker;
     }
 
-    public void allocateAuctions() {//while -> not all neededKwh covered -> search auction}
+    @Override
+    public void run() {
+
     }
 
-    private void addProsumerToAuction(UUID auction, UUID prosumer) {
+    public List<Auction> getBiddersAuctions() {
+        return null;
+    }
+
+    private synchronized void addProsumerToAuction(UUID auctionID, UUID prosumerID) {
     }
 
 

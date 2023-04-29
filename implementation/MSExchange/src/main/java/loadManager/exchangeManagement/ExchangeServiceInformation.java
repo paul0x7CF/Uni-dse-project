@@ -7,7 +7,7 @@ public class ExchangeServiceInformation {
     private int ipAddress;
     private int port;
 
-    private boolean atCapacity=false;
+    private boolean atCapacity = false;
 
     public ExchangeServiceInformation(UUID exchangeId, int ipAddress, int port) {
         this.exchangeId = exchangeId;
@@ -27,11 +27,11 @@ public class ExchangeServiceInformation {
         return port;
     }
 
-    public boolean isAtCapacity(){
+    public boolean isAtCapacity() {
         return atCapacity;
     }
 
-    public void setAtCapacity(boolean isAtCapacity){
-        atCapacity=isAtCapacity;
+    public void setAtCapacity(boolean isAtCapacity) {
+        atCapacity = isAtCapacity;
     }
 }

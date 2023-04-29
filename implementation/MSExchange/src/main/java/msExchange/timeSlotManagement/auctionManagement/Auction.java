@@ -6,14 +6,14 @@ import sendable.Transaction;
 
 import java.util.UUID;
 
-public class AuctionThread extends Thread {
+public class Auction extends Thread {
     private UUID auctionId;
     private Bid bidPosition;
     private Sell sellPosition;
     private double pricePerKWh;
     private double volume;
 
-    public AuctionThread(Sell sellPosition, double askPrice, double volume) {
+    public Auction(Sell sellPosition, double askPrice, double volume) {
     }
 
     public void setBid(Bid bidPosition) {
