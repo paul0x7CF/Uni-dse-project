@@ -13,5 +13,8 @@
         <module name="Communication" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="DSE_Team_202" target="1.5" />
+    </bytecodeTargetLevel>
   </component>
 </project>
