@@ -1,14 +1,12 @@
 package loadManager.networkManagment;
 
+import broker.Broker;
 import loadManager.Controller;
 import loadManager.exchangeManagement.ExchangeServiceInformation;
-import message.Message;
 import communication.InputSocket;
 import communication.OutputSocket;
-import sendable.Bid;
-import sendable.Sell;
-import sendable.TimeSlot;
-import sendable.Transaction;
+import protocol.Message;
+import sendable.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,22 +17,21 @@ public class Communication {
     private int port;
     private String host;
     private Controller controller;
-
     private communication.NetworkHandler network;
-    private Broker broker;
-    private InputSocket inputSocket;
-    private OutputSocket outputSocket;
+    private Broker broker; //TODO: Just call broker.sendMessage(Message) instead of having the sockets.
+    private InputSocket inputSocket; //TODO: Why is this here? Broker has one already
+    private OutputSocket outputSocket; //TODO: Why is this here? Broker has one already
 
     private BlockingQueue<Message> incomingQueue;
     private BlockingQueue<Message> outgoingQueue;
 
-    public Communication(int port, String host, Controller controller) throws IOException {
+    public Communication(int port, String host, Controller controller) {
         this.port = port;
         this.host = host;
 
-        this.inputSocket= new InputSocket(port, host);
-        this.outputSocket = new OutputSocket(port, host);
-        this.network = new communication.NetworkHandler(inputSocket);
+        // TODO this.inputSocket= new InputSocket(port, host);
+        // TODO this.outputSocket = new OutputSocket(port, host);
+        this.network = new communication.NetworkHandler(EServiceType.Exchange, port);
         this.controller = controller;
     }
 

@@ -16,9 +16,9 @@ public class Controller {
     private TimeSlotManager timeSlotManager = new TimeSlotManager();
     private AuctionProsumerTracker auctionProsumerTracker = new AuctionProsumerTracker();
 
-    public Controller(){
+    public Controller(int port){
         prosumerManager= new ProsumerManager(auctionManager);
-        this.networkManager = new Communication(this);
+        this.networkManager = new Communication(port, "IP-Address", this); // TODO: IP-Address
     }
 
     public synchronized void handleProsumerAction(UUID prosumerID, EProsumerTyp prosumerTyp, double price, double kwh) {

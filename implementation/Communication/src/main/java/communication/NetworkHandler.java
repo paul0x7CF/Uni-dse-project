@@ -1,6 +1,5 @@
 package communication;
 
-import protocol.Message;
 import sendable.EServiceType;
 import sendable.MSData;
 
@@ -13,13 +12,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class NetworkHandler {
-    private BlockingQueue<byte[]> inputQueue;
-    private BlockingQueue<LocalMessage> outputQueue;
-    private InputSocket inputSocket;
-    private OutputSocket outputSocket;
-    private EServiceType serviceType;
-    private int listeningPort;
-    private ExecutorService executor;
+    private final BlockingQueue<byte[]> inputQueue;
+    private final BlockingQueue<LocalMessage> outputQueue;
+    private final InputSocket inputSocket;
+    private final OutputSocket outputSocket;
+    private final EServiceType serviceType;
+    private final int listeningPort;
+    private final ExecutorService executor;
 
     public NetworkHandler(EServiceType serviceType, int listeningPort) {
         this.serviceType = serviceType;
@@ -53,5 +52,10 @@ public class NetworkHandler {
 
     public MSData getMSData() throws UnknownHostException {
         return new MSData(UUID.randomUUID(), serviceType, InetAddress.getLocalHost().getHostAddress(), listeningPort);
+    }
+
+    public String getBroadcastAddress() {
+        // TODO: this is not the correct way to do this
+        return serviceType.toString() + ":" + listeningPort;
     }
 }

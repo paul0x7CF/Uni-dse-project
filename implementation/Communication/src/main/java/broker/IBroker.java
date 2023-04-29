@@ -1,9 +1,9 @@
 package broker;
 
 import protocol.Message;
-
-import java.io.IOException;
+import sendable.MSData;
 
 public interface IBroker {
-    void sendMessage(Message message) throws IOException;
+    void sendMessage(Message message);
+    MSData getCurrentService();
 }

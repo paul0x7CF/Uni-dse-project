@@ -1,6 +1,7 @@
 package messageHandling;
 
 import exceptions.MessageProcessingException;
+import exceptions.RemoteException;
 import protocol.ECategory;
 import protocol.Message;
 
@@ -11,7 +12,6 @@ public class MessageHandler implements IMessageHandler {
     private final Map<ECategory, IMessageHandler> handlers = new HashMap<>();
 
     public MessageHandler() {
-        handlers.put(ECategory.Info, new InfoMessageHandler());
     }
 
     /**
@@ -40,7 +40,7 @@ public class MessageHandler implements IMessageHandler {
     private void handleInfo(Message message) {
         try {
             handlers.get(ECategory.Info).handleMessage(message);
-        } catch (MessageProcessingException e) {
+        } catch (MessageProcessingException | RemoteException e) {
             // TODO
             throw new RuntimeException(e);
         }
@@ -49,7 +49,7 @@ public class MessageHandler implements IMessageHandler {
     private void handleAuction(Message message) {
         try {
             handlers.get(ECategory.Auction).handleMessage(message);
-        } catch (MessageProcessingException e) {
+        } catch (MessageProcessingException | RemoteException e) {
             // TODO
             throw new RuntimeException(e);
         }
@@ -58,7 +58,7 @@ public class MessageHandler implements IMessageHandler {
     private void handleExchange(Message message) {
         try {
             handlers.get(ECategory.Exchange).handleMessage(message);
-        } catch (MessageProcessingException e) {
+        } catch (MessageProcessingException | RemoteException e) {
             // TODO
             throw new RuntimeException(e);
         }
@@ -67,7 +67,7 @@ public class MessageHandler implements IMessageHandler {
     private void handleForecast(Message message) {
         try {
             handlers.get(ECategory.Forecast).handleMessage(message);
-        } catch (MessageProcessingException e) {
+        } catch (MessageProcessingException | RemoteException e) {
             // TODO
             throw new RuntimeException(e);
         }

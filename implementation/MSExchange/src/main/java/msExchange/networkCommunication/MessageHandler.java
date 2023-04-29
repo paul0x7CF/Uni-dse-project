@@ -4,10 +4,7 @@ import communication.InputSocket;
 import communication.NetworkHandler;
 import communication.OutputSocket;
 import org.apache.logging.log4j.message.Message;
-import sendable.Bid;
-import sendable.Sell;
-import sendable.TimeSlot;
-import sendable.Transaction;
+import sendable.*;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +16,7 @@ public class MessageHandler {
     private int port;
     private InputSocket inputSocket;
     private OutputSocket outputSocket;
-    private NetworkHandler network = new NetworkHandler();
+    private NetworkHandler network = new NetworkHandler(EServiceType.Exchange, port);
     private BlockingQueue<Message> incomingQueue;
     private BlockingQueue<Message> outgoingQueue;
     private final int MAX_AUCTIONS= 200;

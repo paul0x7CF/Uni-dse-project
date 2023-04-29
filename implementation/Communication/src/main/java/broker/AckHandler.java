@@ -2,13 +2,13 @@ package broker;
 
 import exceptions.AckTimeoutException;
 import protocol.Message;
+import sendable.AckInfo;
 
-import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.*;
 
 public class AckHandler {
-    private static final int TIMEOUT = 5; // seconds to wait for ack before resending
+    private static final int TIMEOUT = 5; // seconds to wait for ack before resending TODO: make configurable
     private final ConcurrentMap<UUID, Message> pendingAcks;
     private final ScheduledExecutorService executorService;
     private final IBroker broker;
@@ -22,8 +22,7 @@ public class AckHandler {
     /**
      * Tracks a message and schedules a task to resend it if no ack is received within the timeout.
      *
-     * @param message   The message to track.
-     *
+     * @param message The message to track.
      */
     public void trackMessage(Message message) {
         UUID messageId = message.getMessageID();
@@ -34,26 +33,14 @@ public class AckHandler {
                 try {
                     broker.sendMessage(message);
                     throw new AckTimeoutException("Message could not be acknowledged within the given timeout");
-                } catch (AckTimeoutException | IOException e) {
+                } catch (AckTimeoutException e) {
                     throw new RuntimeException(e);
                 }
             }
         }, TIMEOUT, TimeUnit.SECONDS);
-        /* TODO: When calling the method, do this:
-
-        try {
-            trackMessage(message);
-        } catch (RuntimeException e) {
-            if (e.getCause() instanceof AckTimeoutException) {
-            AckTimeoutException ackTimeoutException = (AckTimeoutException) e.getCause();
-    }
-}
-
-
-         */
     }
 
-    public void ackReceived(UUID messageId) {
-        pendingAcks.remove(messageId);
+    public void ackReceived(AckInfo ack) {
+        pendingAcks.remove(ack.getMessageID());
     }
 }
