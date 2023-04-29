@@ -31,7 +31,7 @@ public class InfoMessageHandler implements IMessageHandler {
         // possible: Ping, Register, Unregister, Ack, Error
         switch(subcategory) {
             case "Ping":
-                // Ping is response to Register
+                // Ping is response to Register response
                 ISendable ping = message.getSendable(MSData.class);
                 if (ping == null) {
                     throw new MessageProcessingException("Payload is null");
