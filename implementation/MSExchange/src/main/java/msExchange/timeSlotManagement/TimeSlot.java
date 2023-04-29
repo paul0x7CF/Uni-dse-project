@@ -1,16 +1,24 @@
 package msExchange.timeSlotManagement;
 
+import loadManager.auctionManagement.Auction;
 import msExchange.timeSlotManagement.auctionManagement.AuctionManager;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 
-public class TimeSlotThread extends Thread {
+public class TimeSlot implements Runnable {
     private UUID timeSlotId;
     private Date startTime;
     private Date endTime;
     private Date creationTime;
     private AuctionManager auctionManager;
+    private boolean isOpen;
+
+    @Override
+    public void run() {
+
+    }
 
     public Date isEmptySince() {
         return null;
@@ -23,4 +31,13 @@ public class TimeSlotThread extends Thread {
     public UUID getTimeSlotId() {
         return timeSlotId;
     }
+
+    public Map<UUID, Auction> getAuctions() {
+        return null;
+    }
+
+    public boolean isOpen() {
+        return isOpen;
+    }
+
 }

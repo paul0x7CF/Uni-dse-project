@@ -13,6 +13,8 @@ public class Main {
             duplicated = true;
         }
         MSExchange msExchange = new MSExchange(duplicated);
+        Thread exchangeThread = new Thread(msExchange);
+        exchangeThread.start();
 
         if (!duplicated) {
             Controller controller = new Controller();

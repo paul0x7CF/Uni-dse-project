@@ -6,11 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class AuctionManager {
-    private Map<UUID, List<Auction>> auctions;
-
-    public AuctionManager() {
-        auctions = new HashMap<>();
-    }
+    private Map<UUID, List<Auction>> auctionsPerSlot = new HashMap<>();
 
     public void addAuction(UUID slotId, Auction auction) {
         // Adds an auction with the specified UUID
@@ -21,17 +17,17 @@ public class AuctionManager {
     }
 
     public void removeAllAuctionsFromSlot(UUID slotId) {
-        auctions.remove(slotId);
+        auctionsPerSlot.remove(slotId);
     }
 
-    public Auction getAuction(UUID auctionId) {
+    public Auction getAuctionByID(UUID auctionId) {
         // Returns the auction with the specified UUID
         return null;
     }
 
     public List<Auction> getAllAuctionsForSlot(UUID slotId) {
         // Returns a copy of the entire auction list
-        return auctions.get(slotId);
+        return auctionsPerSlot.get(slotId);
     }
 
 }

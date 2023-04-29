@@ -1,24 +1,51 @@
 package msExchange;
 
-import msExchange.networkCommunication.MessageHandler;
+import broker.Broker;
 import msExchange.timeSlotManagement.TimeSlotManager;
 import org.apache.logging.log4j.message.Message;
+import sendable.Bid;
+import sendable.Sell;
+import sendable.Transaction;
 
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
 
-public class MSExchange {
+public class MSExchange implements IExchange, Runnable {
+    Broker broker;
+    BlockingQueue<Message> incomingQueue;
+    BlockingQueue<Bid> bidQueue;
+    BlockingQueue<Sell> sellQueue;
+    BlockingQueue<Transaction> transactionQueue;
+    ExecutorService executorService;
     private UUID exchangeID;
     private boolean duplicated;
     private TimeSlotManager timeSlotManager;
-    private MessageHandler messageHandler;
-
-    private BlockingQueue<Message> messageQueue;
 
     public MSExchange(boolean duplicated) {
+        this.duplicated = duplicated;
+        this.incomingQueue = incomingQueue;
     }
 
-    public void start() {
+    @Override
+    public void run() {
+
     }
+
+    @Override
+    public void processBidQueue() {
+
+    }
+
+    @Override
+    public void receivedBid(Bid bid) {
+
+    }
+
+    @Override
+    public void receivedSell(Sell sell) {
+
+    }
+
 
 }
