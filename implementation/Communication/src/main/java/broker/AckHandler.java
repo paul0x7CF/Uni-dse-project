@@ -10,14 +10,15 @@ import java.util.UUID;
 import java.util.concurrent.*;
 
 public class AckHandler {
-    private static final Logger logger = LogManager.getLogger(AckHandler.class);
+    private static final Logger log = LogManager.getLogger(AckHandler.class);
 
-    private static final int TIMEOUT = 5; // seconds to wait for ack before resending TODO: make configurable
+    private final int timeout; // seconds to wait for ack before resending
     private final ConcurrentMap<UUID, Message> pendingAcks;
     private final ScheduledExecutorService executorService;
     private final IBroker broker;
 
-    public AckHandler(IBroker broker) {
+    public AckHandler(IBroker broker, int timeout) {
+        this.timeout = timeout;
         this.broker = broker;
         this.pendingAcks = new ConcurrentHashMap<>();
         this.executorService = Executors.newScheduledThreadPool(1);
@@ -30,7 +31,7 @@ public class AckHandler {
      */
     public void trackMessage(Message message) {
         UUID messageId = message.getMessageID();
-        logger.trace("Tracking message with id {}", messageId);
+        log.trace("Tracking message with id {}", messageId);
         pendingAcks.put(messageId, message);
 
         executorService.schedule(() -> {
@@ -43,11 +44,11 @@ public class AckHandler {
                     throw new RuntimeException(e);
                 }
             }
-        }, TIMEOUT, TimeUnit.SECONDS);
+        }, timeout, TimeUnit.SECONDS);
     }
 
     public void ackReceived(AckInfo ack) {
-        logger.trace("Received ack for message with id {}", ack.getMessageID());
+        log.trace("Received ack for message with id {}", ack.getMessageID());
         pendingAcks.remove(ack.getMessageID());
     }
 }

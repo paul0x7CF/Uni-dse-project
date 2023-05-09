@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class BrokerRunner implements Runnable {
-    private static final Logger logger = LogManager.getLogger(BrokerRunner.class);
+    private static final Logger log = LogManager.getLogger(BrokerRunner.class);
     private final Broker broker;
 
     public BrokerRunner(EServiceType serviceType, int listeningPort) {
@@ -23,8 +23,8 @@ public class BrokerRunner implements Runnable {
     @Override
     public void run() {
         try {
-            logger.info("Starting broker {}", broker.getCurrentService().getPort());
-            broker.start();
+            log.info("Starting broker {}", broker.getCurrentService().getPort());
+            broker.startBroker();
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }
