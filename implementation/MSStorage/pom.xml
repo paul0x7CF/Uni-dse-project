@@ -53,7 +53,7 @@
 
     </dependencies>
     <build>
-        <finalName>MSProsumer</finalName>
+        <finalName>MSStorage</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
