@@ -5,5 +5,4 @@ import sendable.MSData;
 
 public interface IBroker {
     void sendMessage(Message message);
-    MSData getCurrentService();
 }
