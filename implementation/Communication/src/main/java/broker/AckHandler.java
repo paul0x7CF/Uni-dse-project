@@ -39,6 +39,7 @@ public class AckHandler {
                     broker.sendMessage(message);
                     throw new AckTimeoutException("Message could not be acknowledged within the given timeout");
                 } catch (AckTimeoutException e) {
+                    // TODO: try sending again?
                     throw new RuntimeException(e);
                 }
             }

@@ -29,7 +29,7 @@ public class Broker implements IServiceBroker {
     private MSData broadcastService;
     private ServiceRegistry serviceRegistry;
 
-    public Broker(EServiceType serviceType, int listeningPort) {
+    protected Broker(EServiceType serviceType, int listeningPort) {
         // listeningPort is the currentMSData port so others can send messages to this broker.
         networkHandler = new NetworkHandler(serviceType, listeningPort);
 
@@ -55,12 +55,12 @@ public class Broker implements IServiceBroker {
         messageHandler.addMessageHandler(ECategory.Info, new InfoMessageHandler(this));
     }
 
-    public void start() throws UnknownHostException {
+    protected void start() throws UnknownHostException {
         networkHandler.start();
 
         // register Microservice
         // TODO: Fixed IP addresses? Its always 10.102.102.x (Prosumer(17), Exchange(13), Forecast(9)) but whats the port?
-        sendMessage(InfoMessageCreator.createRegisterMessage(networkHandler.getMSData(), broadcastService));
+        sendMessage(InfoMessageCreator.createRegisterMessage(serviceRegistry.getCurrentService(), broadcastService));
 
         // start receiving messages in new thread
         try {
@@ -70,7 +70,7 @@ public class Broker implements IServiceBroker {
         }
     }
 
-    public void stop() {
+    protected void stop() {
         // unregister Microservice
         sendMessage(InfoMessageCreator.createUnregisterMessage(serviceRegistry.getCurrentService(), broadcastService));
         networkHandler.stop();
@@ -135,15 +135,19 @@ public class Broker implements IServiceBroker {
         return serviceRegistry.getCurrentService();
     }
 
-    public MSData findService(UUID serviceId) {
+    protected MessageHandler getMessageHandler() {
+        return messageHandler;
+    }
+
+    protected MSData findService(UUID serviceId) {
         return serviceRegistry.findService(serviceId);
     }
 
-    public List<MSData> getServices() {
+    protected List<MSData> getServices() {
         return serviceRegistry.getAvailableServices();
     }
 
-    public List<MSData> getServicesByType(EServiceType serviceType) {
+    protected List<MSData> getServicesByType(EServiceType serviceType) {
         return serviceRegistry.getServicesByType(serviceType);
     }
 }
