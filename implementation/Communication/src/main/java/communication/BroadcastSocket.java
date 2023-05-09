@@ -4,18 +4,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
+import java.net.*;
 import java.util.concurrent.BlockingQueue;
 
-public class OutputSocket implements Runnable {
-    private static final Logger log = LogManager.getLogger(OutputSocket.class);
+public class BroadcastSocket implements Runnable {
+    private static final Logger log = LogManager.getLogger(BroadcastSocket.class);
     private final BlockingQueue<LocalMessage> output;
     private final int port;
 
-    public OutputSocket(BlockingQueue<LocalMessage> output, int port) {
+    public BroadcastSocket(BlockingQueue<LocalMessage> output, int port) {
         this.output = output;
         this.port = port;
     }
@@ -23,15 +20,21 @@ public class OutputSocket implements Runnable {
     @Override
     public void run() {
         DatagramSocket socket = null;
+        try {
+            socket = new DatagramSocket(port);
+            // Enable broadcast
+            socket.setBroadcast(true);
+        } catch (SocketException e) {
+            throw new RuntimeException(e);
+        }
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                socket = new DatagramSocket(port);
                 LocalMessage localMessage = output.take();
                 byte[] data = localMessage.getMessage();
-                InetAddress address = InetAddress.getByName(localMessage.getReceiverAddress());
+                InetAddress address = InetAddress.getByName(""); // TODO: Broadcast address?
                 DatagramPacket packet = new DatagramPacket(data, data.length, address, localMessage.getReceiverPort());
                 socket.send(packet);
-                log.trace("Sending message to {}:{}", localMessage.getReceiverAddress(), localMessage.getReceiverPort());
+                log.trace("Broadcasting message to {}:{}", address, localMessage.getReceiverPort());
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             } finally {

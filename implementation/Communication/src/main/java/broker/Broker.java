@@ -3,6 +3,7 @@ package broker;
 import communication.LocalMessage;
 import communication.NetworkHandler;
 import exceptions.MessageProcessingException;
+import mainPackage.ConfigReader;
 import messageHandling.InfoMessageHandler;
 import messageHandling.MessageHandler;
 import org.apache.logging.log4j.LogManager;
@@ -14,10 +15,14 @@ import sendable.EServiceType;
 import sendable.MSData;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+
+import static broker.InfoMessageBuilder.createRegisterMessage;
 
 public class Broker implements IServiceBroker {
     private static final Logger log = LogManager.getLogger(Broker.class);
@@ -25,24 +30,22 @@ public class Broker implements IServiceBroker {
     // not IMessageHandler because addMessageHandler is not part of the interface.
     private final MessageHandler messageHandler;
     private final NetworkHandler networkHandler;
-    private ServiceRegistry serviceRegistry;
+    private final ServiceRegistry serviceRegistry;
+    private final ConfigReader configReader;
 
     protected Broker(EServiceType serviceType, int listeningPort) {
+        // read config
+        configReader = new ConfigReader();
+        int ackTimeout = Integer.parseInt(configReader.getProperty("ackTimeout"));
+
         // listeningPort is the currentMSData port so others can send messages to this broker.
         networkHandler = new NetworkHandler(serviceType, listeningPort);
 
         // give currentMS to registry
-        try {
-            serviceRegistry = new ServiceRegistry(networkHandler.getMSData());
-        } catch (UnknownHostException e) {
-            log.error("Could not get current service", e);
-        }
-
-        // Create broadcastService for sending to all services
-        // TODO: should we add a Info;GetAllServices message which returns a list of MSData?
+        serviceRegistry = new ServiceRegistry(networkHandler.getMSData());
 
         // AckHandler uses IBroker to send messages.
-        ackHandler = new AckHandler(this);
+        ackHandler = new AckHandler(this, ackTimeout);
 
         // MessageHandlers are based on the category so that other components can have their own implementations
         messageHandler = new MessageHandler();
@@ -50,11 +53,12 @@ public class Broker implements IServiceBroker {
     }
 
     protected void startBroker() throws UnknownHostException {
-        networkHandler.start();
+        networkHandler.startSockets();
 
         // register Microservice
+        // TODO: should we add a Info;GetAllServices message which returns a list of MSData?
         // TODO: Fixed IP addresses? Its always 10.102.102.x (Prosumer(17), Exchange(13), Forecast(9)) but whats the port?
-        // sendMessage(InfoMessageBuilder.createRegisterMessage(serviceRegistry.getCurrentService(), broadcastService));
+        scheduleRegisterMessage();
 
         // start receiving messages in new thread
         try {
@@ -107,6 +111,40 @@ public class Broker implements IServiceBroker {
             }
             messageHandler.handleMessage(message);
         }
+    }
+
+    public void scheduleRegisterMessage() {
+        // TODO: whats with the other addresses in config?
+        String broadcastAddress = configReader.getProperty("broadcastAddress");
+        int delay = Integer.parseInt(configReader.getProperty("registerMessageFrequency"));
+        int prosumerPort = Integer.parseInt(configReader.getProperty("prosumerPort"));
+        int storagePort = Integer.parseInt(configReader.getProperty("storagePort"));
+        int exchangePort = Integer.parseInt(configReader.getProperty("exchangePort"));
+        int forecastPort = Integer.parseInt(configReader.getProperty("forecastPort"));
+
+        List<Integer> receiverPorts = List.of(prosumerPort, storagePort, exchangePort, forecastPort);
+
+        MSData sender = serviceRegistry.getCurrentService();
+
+        for (int i = 0; i < receiverPorts.size(); i++) {
+            int receiverPort = receiverPorts.get(i);
+            // TODO: for x times, make receiverPort += 10 so that all services are registered
+            if (broadcastAddress != null) {
+                Message message = createRegisterMessage(sender, broadcastAddress, prosumerPort);
+                try {
+                    LocalMessage localMessage = new LocalMessage(Marshaller.marshal(message), broadcastAddress, receiverPort);
+                    networkHandler.scheduleMessage(localMessage, delay);
+                } catch (IOException e) {
+                    log.error("Error while marshalling message: {}", e.toString());
+                    throw new RuntimeException(e);
+                }
+            } else {
+                log.error("Error while getting broadcast address, value is null");
+            }
+
+        }
+
+
     }
 
     @Override

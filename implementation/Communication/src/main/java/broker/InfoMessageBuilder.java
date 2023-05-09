@@ -22,9 +22,12 @@ public class InfoMessageBuilder { // TODO: rename to InfoMessageTemplate
         return messageFactory.build();
     }
 
-   public static Message createRegisterMessage(MSData sender, MSData receiver) {
-       MessageFactory messageFactory = senderAndReceiverTemplate(sender, receiver);
-        messageFactory.setCategory(ECategory.Info, "Register").setPayload(sender);
+   public static Message createRegisterMessage(MSData sender, String receiverAddress, int receiverPort) {
+        MessageFactory messageFactory = new MessageFactory();
+        messageFactory.setCategory(ECategory.Info, "Register")
+                .setReceiverAddress(receiverAddress)
+                .setReceiverPort(receiverPort)
+                .setPayload(sender);
         log.trace("Register message created");
         return messageFactory.build();
     }
