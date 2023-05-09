@@ -6,9 +6,9 @@ import java.util.UUID;
 
 /**
  * This class will create a message object. It will also validate the message. The setter classes all return the
- * MessageBuilder object, so that the builder can be used in a fluent way.
+ * MessageFactory object, so that the builder can be used in a fluent way.
  */
-public class MessageBuilder { // TODO: rename to MessageFactory?
+public class MessageFactory { // TODO: rename to MessageFactory?
     private String category;
     private UUID senderID;
     private String senderAddress;
@@ -18,7 +18,7 @@ public class MessageBuilder { // TODO: rename to MessageFactory?
     private int receiverPort;
     private ISendable payload;
 
-    public MessageBuilder() {
+    public MessageFactory() {
     }
 
     public static Message reverse(Message message) {
@@ -33,42 +33,42 @@ public class MessageBuilder { // TODO: rename to MessageFactory?
         return true;
     }
 
-    public MessageBuilder setCategory(ECategory mainCat, String subCat) {
+    public MessageFactory setCategory(ECategory mainCat, String subCat) {
         this.category = mainCat.toString() + ";" + subCat;
         return this;
     }
 
-    public MessageBuilder setSenderID(UUID senderID) {
+    public MessageFactory setSenderID(UUID senderID) {
         this.senderID = senderID;
         return this;
     }
 
-    public MessageBuilder setSenderAddress(String senderAddress) {
+    public MessageFactory setSenderAddress(String senderAddress) {
         this.senderAddress = senderAddress;
         return this;
     }
 
-    public MessageBuilder setSenderPort(int senderPort) {
+    public MessageFactory setSenderPort(int senderPort) {
         this.senderPort = senderPort;
         return this;
     }
 
-    public MessageBuilder setReceiverID(UUID receiverID) {
+    public MessageFactory setReceiverID(UUID receiverID) {
         this.receiverID = receiverID;
         return this;
     }
 
-    public MessageBuilder setReceiverAddress(String receiverAddress) {
+    public MessageFactory setReceiverAddress(String receiverAddress) {
         this.receiverAddress = receiverAddress;
         return this;
     }
 
-    public MessageBuilder setReceiverPort(int receiverPort) {
+    public MessageFactory setReceiverPort(int receiverPort) {
         this.receiverPort = receiverPort;
         return this;
     }
 
-    public MessageBuilder setPayload(ISendable payload) {
+    public MessageFactory setPayload(ISendable payload) {
         this.payload = payload;
         return this;
     }

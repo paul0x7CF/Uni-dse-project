@@ -7,14 +7,17 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ServiceRegistry {
-    MSData currentService;
-    Map<EServiceType, List<MSData>> availableServices = new HashMap<>();
+    private MSData currentService;
+    private Map<EServiceType, List<MSData>> availableServices = new HashMap<>();
 
     public ServiceRegistry(MSData currentService) {
         this.currentService = currentService;
     }
 
     public void registerService(MSData msData) {
+        if (findService(msData) != null) {
+            return;
+        }
         EServiceType serviceType = msData.getType();
         List<MSData> services = availableServices.get(serviceType);
 
@@ -46,11 +49,25 @@ public class ServiceRegistry {
     }
 
     public MSData findService(UUID serviceId) {
-        return availableServices.values().stream()
-                .flatMap(Collection::stream)
-                .filter(msData -> msData.getId().equals(serviceId))
-                .findFirst()
-                .orElse(null);
+        for (List<MSData> services : availableServices.values()) {
+            for (MSData msData : services) {
+                if (msData.getId().equals(serviceId)) {
+                    return msData;
+                }
+            }
+        }
+        return null;
+    }
+
+    public MSData findService(MSData msData) {
+        EServiceType serviceType = msData.getType();
+        List<MSData> services = availableServices.get(serviceType);
+
+        if (services != null && services.contains(msData)) {
+            return msData;
+        }
+
+        return null;
     }
 
     public List<MSData> getAvailableServices() {

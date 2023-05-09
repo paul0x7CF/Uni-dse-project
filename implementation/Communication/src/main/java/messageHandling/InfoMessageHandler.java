@@ -1,7 +1,7 @@
 package messageHandling;
 
 import broker.IServiceBroker;
-import broker.InfoMessageCreator;
+import broker.InfoMessageBuilder;
 import exceptions.MessageProcessingException;
 import exceptions.RemoteException;
 import protocol.Message;
@@ -72,7 +72,7 @@ public class InfoMessageHandler implements IMessageHandler {
         if (register instanceof MSData from) {
             broker.registerService(from);
             // TODO: is currentService correct for other services?
-            broker.sendMessage(InfoMessageCreator.createPingMessage(currentService, from));
+            broker.sendMessage(InfoMessageBuilder.createPingMessage(currentService, from));
         } else {
             throw new MessageProcessingException("Payload is not of type MSData");
         }
