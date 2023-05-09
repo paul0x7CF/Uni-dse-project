@@ -14,6 +14,7 @@
         <module>MSExchange</module>
         <module>MSForecast</module>
         <module>MSProsumer</module>
+        <module>MSStorage</module>
     </modules>
 
     <properties>
