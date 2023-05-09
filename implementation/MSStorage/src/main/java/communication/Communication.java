@@ -1,7 +1,7 @@
 package communication;
 
-import MSStorage.main.MSStorageManager;
 import broker.Broker;
+import main.MSStorageManager;
 import protocol.Message;
 import sendable.MSData;
 import sendable.Transaction;
