@@ -1,4 +1,4 @@
-package MSStorage.main;
+package main;
 
 import MSStorage.communication.Communication;
 import sendable.Transaction;

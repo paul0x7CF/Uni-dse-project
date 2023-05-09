@@ -1,4 +1,4 @@
-package MSStorage.exceptions;
+package exceptions;
 
 public class StorageIDNotFoundExeption extends Exception{
     public StorageIDNotFoundExeption(String message) {

@@ -1,4 +1,4 @@
-package MSStorage.exceptions;
+package exceptions;
 
 public class StorageCellFullException extends Exception{
     public StorageCellFullException(String message) {

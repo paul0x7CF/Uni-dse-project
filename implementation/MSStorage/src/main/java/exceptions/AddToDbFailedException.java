@@ -1,4 +1,4 @@
-package MSStorage.exceptions;
+package exceptions;
 
 public class AddToDbFailedException extends Exception{
     public AddToDbFailedException(String message) {

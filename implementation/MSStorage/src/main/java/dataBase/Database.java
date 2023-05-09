@@ -1,4 +1,4 @@
-package MSStorage.dataBase;
+package dataBase;
 
 public class Database {
     private SessionFactory sessionFactory;
