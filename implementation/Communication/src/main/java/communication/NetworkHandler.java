@@ -34,7 +34,7 @@ public class NetworkHandler {
         outputQueue = new LinkedBlockingQueue<>();
 
         inputSocket = new InputSocket(inputQueue, listeningPort);
-        outputSocket = new OutputSocket(outputQueue, listeningPort + 1); // TODO: how to not do +1
+        outputSocket = new OutputSocket(outputQueue, listeningPort + 1); // TODO: This +1 will stay I think
 
         executor = Executors.newFixedThreadPool(2);
     }

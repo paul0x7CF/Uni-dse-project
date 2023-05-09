@@ -20,13 +20,11 @@ import java.util.Objects;
 import java.util.UUID;
 
 public class Broker implements IServiceBroker {
-    private static final Logger logger = LogManager.getLogger(Broker.class);
-
+    private static final Logger log = LogManager.getLogger(Broker.class);
     private final AckHandler ackHandler;
     // not IMessageHandler because addMessageHandler is not part of the interface.
     private final MessageHandler messageHandler;
     private final NetworkHandler networkHandler;
-    private MSData broadcastService;
     private ServiceRegistry serviceRegistry;
 
     protected Broker(EServiceType serviceType, int listeningPort) {
@@ -37,15 +35,11 @@ public class Broker implements IServiceBroker {
         try {
             serviceRegistry = new ServiceRegistry(networkHandler.getMSData());
         } catch (UnknownHostException e) {
-            logger.error("Could not get current service", e);
+            log.error("Could not get current service", e);
         }
 
         // Create broadcastService for sending to all services
-        String broadcastAddress = networkHandler.getBroadcastAddress();
-        MSData currentService = serviceRegistry.getCurrentService();
-        // TODO: port is not correct
         // TODO: should we add a Info;GetAllServices message which returns a list of MSData?
-        broadcastService = new MSData(currentService.getId(), currentService.getType(), broadcastAddress, currentService.getPort());
 
         // AckHandler uses IBroker to send messages.
         ackHandler = new AckHandler(this);
@@ -55,12 +49,12 @@ public class Broker implements IServiceBroker {
         messageHandler.addMessageHandler(ECategory.Info, new InfoMessageHandler(this));
     }
 
-    protected void start() throws UnknownHostException {
+    protected void startBroker() throws UnknownHostException {
         networkHandler.start();
 
         // register Microservice
         // TODO: Fixed IP addresses? Its always 10.102.102.x (Prosumer(17), Exchange(13), Forecast(9)) but whats the port?
-        sendMessage(InfoMessageCreator.createRegisterMessage(serviceRegistry.getCurrentService(), broadcastService));
+        // sendMessage(InfoMessageBuilder.createRegisterMessage(serviceRegistry.getCurrentService(), broadcastService));
 
         // start receiving messages in new thread
         try {
@@ -71,15 +65,16 @@ public class Broker implements IServiceBroker {
     }
 
     protected void stop() {
-        // unregister Microservice
-        sendMessage(InfoMessageCreator.createUnregisterMessage(serviceRegistry.getCurrentService(), broadcastService));
+        for (MSData service : getServices()) {
+            sendMessage(InfoMessageBuilder.createUnregisterMessage(serviceRegistry.getCurrentService(), service));
+        }
         networkHandler.stop();
     }
 
     @Override
     public void sendMessage(Message message) {
         try {
-            logger.trace("{} broker sending message: {}", getCurrentService().getType(), message.getCategory());
+            log.trace("{} broker sending message: {}", getCurrentService().getType(), message.getCategory());
             networkHandler.sendMessage(new LocalMessage(Marshaller.marshal(message),
                     message.getReceiverAddress(),
                     message.getReceiverPort()));
@@ -90,7 +85,7 @@ public class Broker implements IServiceBroker {
                 ackHandler.trackMessage(message);
             }
         } catch (IOException e) {
-            logger.error("Broker: Error while sending message: {}", e.toString());
+            log.error("Broker: Error while sending message: {}", e.toString());
         }
     }
 
@@ -104,12 +99,11 @@ public class Broker implements IServiceBroker {
      */
     private void receiveMessage() throws InterruptedException, IOException, ClassNotFoundException, MessageProcessingException {
         // TODO: maybe catch exceptions and try again
-        // TODO: does this lock the thread?
         while (true) {
             Message message = Marshaller.unmarshal(networkHandler.receiveMessage());
             if (!Objects.equals(message.getSubCategory(), "Ack")) {
-                logger.trace("{} broker received message: {}", getCurrentService().getType(), message.getCategory());
-                sendMessage(InfoMessageCreator.createAckMessage(message));
+                log.trace("{} broker received message: {}", getCurrentService().getType(), message.getCategory());
+                sendMessage(InfoMessageBuilder.createAckMessage(message));
             }
             messageHandler.handleMessage(message);
         }
@@ -122,7 +116,7 @@ public class Broker implements IServiceBroker {
 
     @Override
     public void registerService(MSData msData) {
-        logger.info("{} saved {}", msData.getPort(), getCurrentService().getPort());
+        log.info("{} saved {}", msData.getPort(), getCurrentService().getPort());
         serviceRegistry.registerService(msData);
     }
 

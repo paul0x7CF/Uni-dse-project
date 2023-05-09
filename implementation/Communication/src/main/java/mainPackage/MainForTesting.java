@@ -12,16 +12,16 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static broker.InfoMessageCreator.createRegisterMessage;
+import static broker.InfoMessageBuilder.createRegisterMessage;
 
 public class MainForTesting {
-    private static final Logger logger = LogManager.getLogger(MainForTesting.class);
+    private static final Logger log = LogManager.getLogger(MainForTesting.class);
 
     public static void main(String[] args) {
         ExecutorService executor = Executors.newFixedThreadPool(10);
         List<Integer> ports = new ArrayList<>();
 
-        logger.info("##### Round 1 #####");
+        log.info("##### Round 1 #####");
 
         BrokerRunner prosumer = new BrokerRunner(EServiceType.Prosumer, 5000);
         ports.add(5000);
@@ -35,9 +35,9 @@ public class MainForTesting {
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
-            logger.error("Thread interrupted", e);
+            log.error("Thread interrupted", e);
         }
-        logger.info("##### Round 2 #####");
+        log.info("##### Round 2 #####");
 
         ports.add(5010);
         BrokerRunner prosumer2 = new BrokerRunner(EServiceType.Prosumer, 5010);
@@ -47,10 +47,10 @@ public class MainForTesting {
         try {
             Thread.sleep(3000);
         } catch (InterruptedException e) {
-            logger.error("Thread interrupted", e);
+            log.error("Thread interrupted", e);
         }
 
-        logger.info("##### Round 3 #####");
+        log.info("##### Round 3 #####");
 
         ports.add(7000);
         BrokerRunner solar1 = new BrokerRunner(EServiceType.Solar, 7000);
@@ -65,10 +65,10 @@ public class MainForTesting {
         try {
             Thread.sleep(5000);
         } catch (InterruptedException e) {
-            logger.error("Thread interrupted", e);
+            log.error("Thread interrupted", e);
         }
 
-        logger.info("##### Round 4 #####");
+        log.info("##### Round 4 #####");
 
         ports.add(9000);
         BrokerRunner storage1 = new BrokerRunner(EServiceType.Storage, 9000);

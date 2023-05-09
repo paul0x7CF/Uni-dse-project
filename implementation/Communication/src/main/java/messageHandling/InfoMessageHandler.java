@@ -13,7 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class InfoMessageHandler implements IMessageHandler {
-    private static final Logger logger = LogManager.getLogger(InfoMessageHandler.class);
+    private static final Logger log = LogManager.getLogger(InfoMessageHandler.class);
     private final IServiceBroker broker;
     private final MSData currentService;
 
@@ -47,7 +47,7 @@ public class InfoMessageHandler implements IMessageHandler {
                 throw new MessageProcessingException("Unknown message subCategory: " + message.getSubCategory());
         }
 
-        logger.trace("{} Message processed" + message.getCategory());
+        log.trace("{} Message processed" + message.getCategory());
     }
 
     private void handlePing(Message message) throws MessageProcessingException {
@@ -110,7 +110,7 @@ public class InfoMessageHandler implements IMessageHandler {
             throw new MessageProcessingException("Payload is null");
         }
         if (error instanceof ErrorInfo from) {
-            logger.error("Received RemoteError");
+            log.error("Received RemoteError");
             //TODO: How to handle this in each service?
             throw new RemoteException(from.getName());
         } else {

@@ -12,7 +12,7 @@ import java.util.concurrent.BlockingQueue;
 
 public class OutputSocket implements Runnable {
     // logger
-    private static final Logger logger = LogManager.getLogger(OutputSocket.class);
+    private static final Logger log = LogManager.getLogger(OutputSocket.class);
     private final BlockingQueue<LocalMessage> output;
     private final int port;
 
@@ -36,10 +36,11 @@ public class OutputSocket implements Runnable {
                 InetAddress address = InetAddress.getByName(localMessage.getReceiverAddress());
                 DatagramPacket packet = new DatagramPacket(data, data.length, address, localMessage.getReceiverPort());
                 socket.send(packet);
-                logger.trace("Sending message to {}:{}", localMessage.getReceiverAddress(), localMessage.getReceiverPort());
+                log.trace("Sending message to {}:{}", localMessage.getReceiverAddress(), localMessage.getReceiverPort());
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }
+            // TODO: socket.close() ?
         }
     }
 }

@@ -9,7 +9,7 @@ import java.net.DatagramSocket;
 import java.util.concurrent.BlockingQueue;
 
 public class InputSocket implements Runnable {
-    private static final Logger logger = LogManager.getLogger(InputSocket.class);
+    private static final Logger log = LogManager.getLogger(InputSocket.class);
 
     private final BlockingQueue<byte[]> input;
     private final int port;
@@ -33,10 +33,11 @@ public class InputSocket implements Runnable {
             try {
                 socket.receive(request);
                 input.put(request.getData());
-                logger.trace("Received message from {}:{}", request.getAddress(), request.getPort());
+                log.trace("Received message from {}:{}", request.getAddress(), request.getPort());
             } catch (InterruptedException | IOException e) {
                 throw new RuntimeException(e);
             }
+            // TODO: socket.close() ?
         }
     }
 }
