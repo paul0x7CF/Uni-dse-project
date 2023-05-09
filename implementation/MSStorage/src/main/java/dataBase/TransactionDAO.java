@@ -1,4 +1,4 @@
-package MSStorage.dataBase;
+package dataBase;
 
 import sendable.Transaction;
 

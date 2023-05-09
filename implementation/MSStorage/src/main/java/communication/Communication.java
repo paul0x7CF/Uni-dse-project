@@ -1,4 +1,4 @@
-package MSStorage.communication;
+package communication;
 
 import MSStorage.main.MSStorageManager;
 import broker.Broker;

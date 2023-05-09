@@ -1,4 +1,4 @@
-package MSStorage.main;
+package main;
 
 import java.util.Date;
 import java.util.concurrent.BlockingQueue;

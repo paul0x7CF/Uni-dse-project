@@ -1,4 +1,4 @@
-package MSStorage.communication;
+package communication;
 
 import exceptions.MessageProcessingException;
 import exceptions.RemoteException;
