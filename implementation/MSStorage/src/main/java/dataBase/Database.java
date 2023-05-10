@@ -1,13 +1,13 @@
 package dataBase;
 
 public class Database {
-    private SessionFactory sessionFactory;
+    //private SessionFactory sessionFactory;
 
     private void buildSessionFactory() {
 
     }
 
-    public SessionFactory getSessionFactory() {
-        return this.sessionFactory;
-    }
+    //public SessionFactory getSessionFactory() {
+       // return this.sessionFactory;
+   // }
 }

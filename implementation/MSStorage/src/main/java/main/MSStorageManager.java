@@ -1,6 +1,5 @@
 package main;
 
-import MSStorage.communication.Communication;
 import sendable.Transaction;
 
 import java.util.List;
@@ -13,7 +12,7 @@ public class MSStorageManager {
     private BlockingQueue<Transaction> incomingTransactionQueue;
     private BlockingQueue<Double> incomingEnergyRequestQueue;
     private Wallet wallet;
-    private Communication communication;
+    //private Communication communication;
 
     public MSStorageManager() {
 
