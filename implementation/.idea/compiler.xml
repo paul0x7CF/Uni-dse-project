@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="MSProsumer" />
         <module name="MSForecast" />
+        <module name="MSStorage" />
         <module name="MSExchange" />
         <module name="Communication" />
       </profile>

@@ -83,13 +83,12 @@ public class Broker implements IServiceBroker {
                     message.getReceiverAddress(),
                     message.getReceiverPort()));
 
-            // here because if sending fails, the message should not be tracked
+            // in try block because if sending fails, the message should not be tracked
             if (!Objects.equals(message.getSubCategory(), "Ack")) {
-                // don't track ack messages
                 ackHandler.trackMessage(message);
             }
         } catch (IOException e) {
-            log.error("Broker: Error while sending message: {}", e.toString());
+            log.error("Broker: Error marshalling while sending message: {}", e.toString());
         }
     }
 
@@ -141,10 +140,7 @@ public class Broker implements IServiceBroker {
             } else {
                 log.error("Error while getting broadcast address, value is null");
             }
-
         }
-
-
     }
 
     @Override

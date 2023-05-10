@@ -26,7 +26,7 @@ public class MainForTesting {
         int forecastPort = Integer.parseInt(configReader.getProperty("forecastPort"));
 
         final int prosumerCount = 7;
-        final int storageCount = 2;
+        final int storageCount  = 2;
         final int exchangeCount = 1;
         final int forecastCount = 5;
 
@@ -36,7 +36,7 @@ public class MainForTesting {
         for (int i = 0; i < prosumerCount*10; i += 10) {
             executor.execute(new BrokerRunner(EServiceType.Prosumer, prosumerPort + i));
         }
-        /*
+
         // create storage
         for (int i = 0; i < storageCount*10; i += 10) {
             executor.execute(new BrokerRunner(EServiceType.Storage, storagePort + i));
@@ -52,10 +52,9 @@ public class MainForTesting {
             executor.execute(new BrokerRunner(EServiceType.Solar, forecastPort + i));
         }
         // create consumption forecast
-        for (int i = 0; i < forecastCount*10; i += 15) {
+        for (int i = 5; i < forecastCount*10; i += 10) {
             executor.execute(new BrokerRunner(EServiceType.Consumption, forecastPort + i + 1));
         }
-        */
     }
 
     private static void sleep(int duration) {
