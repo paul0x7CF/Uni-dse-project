@@ -1,10 +1,13 @@
 package loadManager;
 
 import broker.Broker;
+import broker.BrokerRunner;
 import loadManager.exchangeManagement.ExchangeServiceInformation;
 import loadManager.exchangeManagement.LoadManager;
 import loadManager.prosumerActionManagement.ProsumerManager;
 import loadManager.timeSlotManagement.TimeSlotManager;
+import messageHandling.IMessageHandler;
+import protocol.ECategory;
 import protocol.Message;
 import sendable.*;
 
@@ -17,16 +20,17 @@ public class Controller implements Runnable {
     private final String ADDRESS = "10.102.102.13";
     private final EServiceType SERVICE_TYPE = EServiceType.Exchange;
     private ProsumerManager prosumerManager;
-    private Broker broker;
+    private BrokerRunner broker;
     private TimeSlotManager timeSlotManager = new TimeSlotManager();
     private BlockingQueue<Message> incomingQueue;
     private BlockingQueue<Message> outgoingQueue;
     private LoadManager loadManager = new LoadManager();
     private ExecutorService executorService;
-
+    private IMessageHandler messageHandler;
     public Controller() {
-        broker = new Broker(SERVICE_TYPE, PORT);
-        broker.registerService(new MSData(UUID.randomUUID(), SERVICE_TYPE, ADDRESS, PORT));
+        broker = new BrokerRunner(SERVICE_TYPE, PORT);
+        broker.run();
+        broker.addMessageHandler(ECategory.Exchange, messageHandler);
     }
 
 
