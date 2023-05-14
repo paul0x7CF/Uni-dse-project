@@ -1,5 +1,6 @@
 package msExchange.timeSlotManagement;
 
+import msExchange.timeSlotManagement.auctionManagement.Auction;
 import msExchange.timeSlotManagement.auctionManagement.AuctionManager;
 
 import java.util.Date;
@@ -42,7 +43,7 @@ public class TimeSlot implements Runnable {
         return timeSlotId;
     }
 
-    public Map<UUID, Double> getAuctions() {
+    public Map<UUID, Auction> getAuctions() {
         return auctionManager.getAuctions();
     }
 
