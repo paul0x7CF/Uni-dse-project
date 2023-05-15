@@ -3,17 +3,24 @@ package msExchange.timeSlotManagement;
 import msExchange.timeSlotManagement.auctionManagement.Auction;
 import msExchange.timeSlotManagement.auctionManagement.AuctionManager;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 
 public class TimeSlot implements Runnable {
     private UUID timeSlotId;
-    private Date startTime;
-    private Date endTime;
-    private Date creationTime;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+    private LocalDateTime creationTime;
     private AuctionManager auctionManager;
     private boolean isOpen = false;
+
+    public TimeSlot(UUID timeSlotID, LocalDateTime startTime, LocalDateTime endTime) {
+        this.timeSlotId = timeSlotID;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
 
     @Override
     public void run() {
@@ -27,9 +34,9 @@ public class TimeSlot implements Runnable {
     }
 
     private void setIsOpen() {
-        if (startTime.after(new Date())) {
+       /* if (startTime.after(new Date())) {
             isOpen = true;
-        }
+        }*/
     }
 
     public synchronized long isEmptySinceInMillisecs() {
