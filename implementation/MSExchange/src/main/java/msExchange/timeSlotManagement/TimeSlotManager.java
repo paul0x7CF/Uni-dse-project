@@ -12,9 +12,10 @@ public class TimeSlotManager implements Runnable {
     private final Map<UUID, TimeSlot> timeSlots = new HashMap<>();
     private BlockingQueue<Sell> sellQueue;
     private BlockingQueue<Bid> bidQueue;
+    private BlockingQueue<Transaction> transactionQueue;
     private Map<UUID, BlockingQueue<Bid>> timeSlotBidQueue;
     private Map<UUID, BlockingQueue<Sell>> timeSlotSellQueue;
-    private BlockingQueue<Transaction> transactionQueue;
+
     private ExecutorService executorService;
 
     public TimeSlotManager(final BlockingQueue<Sell> sellQueue, final BlockingQueue<Bid> bidQueue, final BlockingQueue<Transaction> transactionQueue) {
