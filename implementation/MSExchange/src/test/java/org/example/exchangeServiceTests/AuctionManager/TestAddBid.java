@@ -23,11 +23,12 @@ public class TestAddBid {
         BlockingQueue<Sell> sellQueue = new LinkedBlockingQueue<>();
         BlockingQueue<Transaction> transactionQueue = new LinkedBlockingQueue<>();
         BlockingQueue<Bid> bidQueue = new LinkedBlockingQueue<>();
-        Sell sell = new Sell(12, 12);
+        UUID timeSlotID =  UUID.randomUUID();
+        Sell sell = new Sell(12, 12, timeSlotID);
         UUID auctionUUID = UUID.randomUUID();
         sell.setAuctionID(auctionUUID);
 
-        Bid bid = new Bid(12, 13);
+        Bid bid = new Bid(12, 13, timeSlotID);
         UUID bidderUUID = bid.getBidderID();
 
         bid.setAuctionID(auctionUUID);
@@ -76,18 +77,18 @@ public class TestAddBid {
         BlockingQueue<Sell> sellQueue = new LinkedBlockingQueue<>();
         BlockingQueue<Transaction> transactionQueue = new LinkedBlockingQueue<>();
         BlockingQueue<Bid> bidQueue = new LinkedBlockingQueue<>();
-
-        Sell sell = new Sell(12, 9);
+        UUID timeSlotID =  UUID.randomUUID();
+        Sell sell = new Sell(12, 9, timeSlotID);
         UUID auctionUUID = UUID.randomUUID();
         sell.setAuctionID(auctionUUID);
 
-        Bid bid1 = new Bid(12, 13);
+        Bid bid1 = new Bid(12, 13, timeSlotID);
         UUID bidderUUID1 = bid1.getBidderID();
 
-        Bid bid2 = new Bid(12, 15);
+        Bid bid2 = new Bid(12, 15, timeSlotID);
         UUID bidderUUID2 = bid2.getBidderID();
 
-        Bid bid3 = new Bid(12, 10);
+        Bid bid3 = new Bid(12, 10, timeSlotID);
         UUID bidderUUID3 = bid3.getBidderID();
 
         bid1.setAuctionID(auctionUUID);
@@ -140,12 +141,12 @@ public class TestAddBid {
         BlockingQueue<Sell> sellQueue = new LinkedBlockingQueue<>();
         BlockingQueue<Transaction> transactionQueue = new LinkedBlockingQueue<>();
         BlockingQueue<Bid> bidQueue = new LinkedBlockingQueue<>();
-
-        Sell sell = new Sell(12, 9);
+        UUID timeSlotID =  UUID.randomUUID();
+        Sell sell = new Sell(12, 9, timeSlotID);
         UUID auctionUUID = UUID.randomUUID();
         sell.setAuctionID(auctionUUID);
 
-        Bid bid1 = new Bid(12, 13);
+        Bid bid1 = new Bid(12, 13, timeSlotID);
         UUID bidderUUID1 = bid1.getBidderID();
 
         try {

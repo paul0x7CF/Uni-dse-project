@@ -22,7 +22,8 @@ public class TestAddAuction {
         BlockingQueue<Sell> sellQueue = new LinkedBlockingQueue<>();
         BlockingQueue<Transaction> transactionQueue = new LinkedBlockingQueue<>();
         BlockingQueue<Bid> bidQueue = new LinkedBlockingQueue<>();
-        Sell sell = new Sell(12, 12);
+        UUID timeSlotID =  UUID.randomUUID();
+        Sell sell = new Sell(12, 12, UUID.randomUUID());
         sell.setAuctionID(UUID.randomUUID());
         try {
             sellQueue.put(sell);
