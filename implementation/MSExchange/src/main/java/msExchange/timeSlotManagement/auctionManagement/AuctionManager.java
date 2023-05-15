@@ -40,7 +40,14 @@ public class AuctionManager implements Runnable {
         }
     }
 
-    private void processQueues() throws AuctionNotFoundException {
+    private void processQueues() throws AuctionNotFoundException, InterruptedException {
+        //Process sellQueue
+        Sell sell = sellQueue.poll(); // Non-blocking call, retrieves the next sell or null if empty
+        if (sell != null) {
+            logger.info("Creating new Auction...");
+            addNewAuction(sell);
+        }
+
         //Process bidQueue
         Bid bid = bidQueue.poll(); // Non-blocking call, retrieves the next bid or null if empty
         if (bid != null) {
@@ -48,15 +55,15 @@ public class AuctionManager implements Runnable {
             if (auctionID.isEmpty()) {
                 throw new AuctionNotFoundException("The Auction ID is missing");
             }
-            addBidToAuction(auctionID.get(), bid);
+            if (!auctionExists(auctionID.get())) {
+                logger.finest("Auction doesn't exist yet.");
+                bidQueue.put(bid);
+            } else {
+                logger.finest("Add Bid to Auction");
+                addBidToAuction(auctionID.get(), bid);
+            }
         }
 
-        //Process sellQueue
-        Sell sell = sellQueue.poll(); // Non-blocking call, retrieves the next sell or null if empty
-        if (sell != null) {
-            logger.info("Creating new Auction...");
-            addNewAuction(sell);
-        }
 
         //Check for ended auctions
         Date currentTime = new Date();
@@ -69,8 +76,18 @@ public class AuctionManager implements Runnable {
 
     }
 
-    private void addNewAuction(Sell sell) {
-        UUID uuid = UUID.randomUUID();
+    private boolean auctionExists(UUID auctionID) {
+        if (auctions.get(auctionID) == null) {
+            return false;
+        }
+        return true;
+    }
+
+    private void addNewAuction(Sell sell) throws AuctionNotFoundException {
+        if (sell.getAuctionID().isEmpty()) {
+            throw new AuctionNotFoundException("Auction ID is missing");
+        }
+        UUID uuid = sell.getAuctionID().get();
         Auction auction = new Auction(uuid, sell, sell.getAskPrice(), sell.getVolume(), transactionQueue);
         auctions.put(uuid, auction);
         logger.info("Auction has been added: " + auctions.get(uuid));
@@ -79,6 +96,7 @@ public class AuctionManager implements Runnable {
     private void addBidToAuction(UUID auctionID, Bid bid) {
         Auction auction = auctions.get(auctionID);
         auction.setBid(bid);
+        logger.info("Bid has been set");
     }
 
     public void endAllAuctions() {
