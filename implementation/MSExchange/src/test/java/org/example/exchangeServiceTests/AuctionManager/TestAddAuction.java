@@ -10,6 +10,7 @@ import sendable.Transaction;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -22,6 +23,7 @@ public class TestAddAuction {
         BlockingQueue<Transaction> transactionQueue = new LinkedBlockingQueue<>();
         BlockingQueue<Bid> bidQueue = new LinkedBlockingQueue<>();
         Sell sell = new Sell(12, 12);
+        sell.setAuctionID(UUID.randomUUID());
         try {
             sellQueue.put(sell);
         } catch (InterruptedException e) {
