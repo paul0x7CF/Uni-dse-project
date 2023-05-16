@@ -3,7 +3,7 @@ package dataBase;
 import sendable.Transaction;
 
 public class TransactionRepository {
-    private SessionFactory sessionFactory;
+    //private SessionFactory sessionFactory;
 
     public void insertTransaction(Transaction transaction) {
 

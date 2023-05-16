@@ -36,4 +36,7 @@ public class Auction {
     public UUID getSellerID() {
         return this.sellerID;
     }
+
+    public void endAuction() {
+    }
 }

@@ -1,38 +1,45 @@
 package dataBase;
 
+import main.Main;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
-import sendable.Transaction;
 
 import java.util.UUID;
 
 public class TransactionDAO {
 
-    private final SessionFactory sessionFactory;
+    private static final Logger log = LogManager.getLogger(TransactionDAO.class);
+
+    private SessionFactory sessionFactory = null;
 
     public TransactionDAO() {
-        Configuration configuration = new Configuration().configure("hibernate.cfg.xml");
-        configuration.addAnnotatedClass(Transaction.class);
-        this.sessionFactory = configuration.buildSessionFactory();
+        Configuration config = new Configuration().configure("hibernate.cfg.xml");
+        config.addAnnotatedClass(DbTransaction.class);
+        this.sessionFactory = config.buildSessionFactory();
+
+
     }
 
-    public void create(Transaction transaction) {
-        Session session = sessionFactory.getCurrentSession();
+    public void create(DbTransaction transaction) {
+        final Session session = sessionFactory.getCurrentSession();
         session.beginTransaction();
         session.save(transaction);
         session.getTransaction().commit();
     }
 
-    public Transaction read(UUID id) {
+    public DbTransaction read(UUID id) {
         Session session = sessionFactory.getCurrentSession();
         session.beginTransaction();
-        Transaction transaction = session.get(Transaction.class, id);
+        log.info("Reading transaction with id: " + id);
+        DbTransaction transaction = session.get(DbTransaction.class, id);
         session.getTransaction().commit();
         return transaction;
     }
 
-    public void update(Transaction transaction) {
+    public void update(DbTransaction transaction) {
         Session session = sessionFactory.getCurrentSession();
         session.beginTransaction();
         session.update(transaction);
@@ -42,7 +49,7 @@ public class TransactionDAO {
     public void delete(UUID id) {
         Session session = sessionFactory.getCurrentSession();
         session.beginTransaction();
-        Transaction transaction = session.get(Transaction.class, id);
+        DbTransaction transaction = session.get(DbTransaction.class, id);
         session.delete(transaction);
         session.getTransaction().commit();
     }

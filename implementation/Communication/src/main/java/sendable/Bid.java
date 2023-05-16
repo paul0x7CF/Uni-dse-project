@@ -8,14 +8,20 @@ public class Bid implements ISendable {
     private double volume;
     private double price;
     private UUID auctionID;
+    private UUID timeSlot;
 
-    public Bid(double volume, double price) {
+    public Bid(double volume, double price, UUID timeSlot) {
         this.volume = volume;
         this.price = price;
+        this.timeSlot = timeSlot;
     }
 
     public UUID getBidderID() {
         return bidderID;
+    }
+
+    public UUID getTimeSlot() {
+        return timeSlot;
     }
 
     public double getVolume() {
