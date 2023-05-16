@@ -15,12 +15,10 @@ import sendable.EServiceType;
 import sendable.MSData;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import static broker.InfoMessageBuilder.createRegisterMessage;
 
@@ -78,7 +76,7 @@ public class Broker implements IServiceBroker {
     @Override
     public void sendMessage(Message message) {
         try {
-            log.trace("{} broker sending message: {}", getCurrentService().getType(), message.getCategory());
+            log.trace("{} sending message: {}", getCurrentService().getType(), message.getCategory());
             networkHandler.sendMessage(new LocalMessage(Marshaller.marshal(message),
                     message.getReceiverAddress(),
                     message.getReceiverPort()));
@@ -100,12 +98,16 @@ public class Broker implements IServiceBroker {
      * @throws ClassNotFoundException     if the class of a serialized object could not be found
      * @throws MessageProcessingException if the message could not be processed
      */
-    private void receiveMessage() throws InterruptedException, IOException, ClassNotFoundException, MessageProcessingException {
+    private void receiveMessage() throws InterruptedException, IOException, ClassNotFoundException,
+            MessageProcessingException {
         // TODO: maybe catch exceptions and try again
         while (true) {
             Message message = Marshaller.unmarshal(networkHandler.receiveMessage());
-            if (!Objects.equals(message.getSubCategory(), "Ack")) {
-                log.trace("{} broker received message: {}", getCurrentService().getType(), message.getCategory());
+            // Ack and Register messages should not be acknowledged as this would cause an infinite loop and register
+            // has an answer in the form of "Ping" anyway.
+            if (!Objects.equals(message.getSubCategory(), "Ack")
+                    && !Objects.equals(message.getSubCategory(), "Register")) {
+                log.trace("{} received message: {}", getCurrentService().getType(), message.getCategory());
                 sendMessage(InfoMessageBuilder.createAckMessage(message));
             }
             messageHandler.handleMessage(message);
@@ -122,16 +124,19 @@ public class Broker implements IServiceBroker {
         int forecastPort = Integer.parseInt(configReader.getProperty("forecastPort"));
 
         List<Integer> receiverPorts = List.of(prosumerPort, storagePort, exchangePort, forecastPort);
-
         MSData sender = serviceRegistry.getCurrentService();
 
-        for (int i = 0; i < receiverPorts.size(); i++) {
-            int receiverPort = receiverPorts.get(i);
+        // TODO: remove this when done testing locally
+        broadcastAddress = "127.0.0.1";
+
+        for (int receiverPort : receiverPorts) {
+            log.trace("Registering service {} on port {}", sender.getPort(), receiverPort);
             // TODO: for x times, make receiverPort += 10 so that all services are registered
             if (broadcastAddress != null) {
-                Message message = createRegisterMessage(sender, broadcastAddress, prosumerPort);
+                Message message = createRegisterMessage(sender, broadcastAddress, receiverPort);
                 try {
                     LocalMessage localMessage = new LocalMessage(Marshaller.marshal(message), broadcastAddress, receiverPort);
+                    log.trace("Scheduling message to {} on port {}", localMessage.getReceiverAddress(), localMessage.getReceiverPort());
                     networkHandler.scheduleMessage(localMessage, delay);
                 } catch (IOException e) {
                     log.error("Error while marshalling message: {}", e.toString());
@@ -150,7 +155,6 @@ public class Broker implements IServiceBroker {
 
     @Override
     public void registerService(MSData msData) {
-        log.info("{} saved {}", msData.getPort(), getCurrentService().getPort());
         serviceRegistry.registerService(msData);
     }
 

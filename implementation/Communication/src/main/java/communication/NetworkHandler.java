@@ -44,13 +44,14 @@ public class NetworkHandler {
         outputSocket = new OutputSocket(outputQueue, listeningPort + 1); // TODO: This +1 will stay I think
         broadcastSocket = new BroadcastSocket(broadcastQueue, listeningPort + 2); // TODO: This +2 will stay I think
 
-        executor = Executors.newFixedThreadPool(2);
-        scheduler = Executors.newScheduledThreadPool(1);
+        executor = Executors.newFixedThreadPool(3);
+        scheduler = Executors.newScheduledThreadPool(10);
     }
 
     public void startSockets() {
-        executor.execute(outputSocket);
         executor.execute(inputSocket);
+        executor.execute(outputSocket);
+        executor.execute(broadcastSocket);
     }
 
     public void stop() {
@@ -66,7 +67,9 @@ public class NetworkHandler {
     }
 
     public void scheduleMessage(LocalMessage localMessage, int delay) {
-        scheduler.schedule(() -> broadcastQueue.add(localMessage), delay, TimeUnit.SECONDS);
+        // 1 is just the initial delay, it is not 0 because not everything may be initialized.
+        log.debug("Scheduled message to: {}", localMessage.getReceiverPort());
+        scheduler.scheduleAtFixedRate(() -> broadcastQueue.add(localMessage), 1, delay, TimeUnit.SECONDS);
     }
 
     public MSData getMSData() {

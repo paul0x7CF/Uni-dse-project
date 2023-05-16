@@ -25,10 +25,10 @@ public class MainForTesting {
         int exchangePort = Integer.parseInt(configReader.getProperty("exchangePort"));
         int forecastPort = Integer.parseInt(configReader.getProperty("forecastPort"));
 
-        final int prosumerCount = 7;
-        final int storageCount  = 2;
-        final int exchangeCount = 1;
-        final int forecastCount = 5;
+        final int prosumerCount = 1;
+        final int storageCount  = 1;
+        final int exchangeCount = 0;
+        final int forecastCount = 0;
 
         ExecutorService executor = Executors.newFixedThreadPool(100);
 
@@ -53,7 +53,7 @@ public class MainForTesting {
         }
         // create consumption forecast
         for (int i = 5; i < forecastCount*10; i += 10) {
-            executor.execute(new BrokerRunner(EServiceType.Consumption, forecastPort + i + 1));
+            executor.execute(new BrokerRunner(EServiceType.Consumption, forecastPort + i));
         }
     }
 

@@ -8,10 +8,10 @@ import com.google.gson.Gson;
  * This class holds the information about other microservices in the network.
  */
 public class MSData implements ISendable {
-    private UUID id;
-    EServiceType type;
-    private String address;
-    private int port;
+    private final UUID id;
+    private final EServiceType type;
+    private final String address;
+    private final int port;
     // private LocalDateTime lastSeen = LocalDateTime.now(); TODO: gson can't handle LocalDateTime
     // private LocalDateTime lastUpdated = LocalDateTime.now(); TODO: gson can't handle LocalDateTime
 
@@ -36,6 +36,14 @@ public class MSData implements ISendable {
 
     public int getPort() {
         return port;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof MSData otherMSData) {
+            return this.id.equals(otherMSData.id);
+        }
+        return false;
     }
 
     /*

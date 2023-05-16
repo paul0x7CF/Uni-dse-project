@@ -1,5 +1,8 @@
 package broker;
 
+import communication.BroadcastSocket;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import sendable.EServiceType;
 import sendable.MSData;
 
@@ -7,17 +10,25 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ServiceRegistry {
-    private MSData currentService;
-    private Map<EServiceType, List<MSData>> availableServices = new HashMap<>();
+    private static final Logger log = LogManager.getLogger(ServiceRegistry.class);
+    private final MSData currentService;
+    private final Map<EServiceType, List<MSData>> availableServices = new HashMap<>();
 
     public ServiceRegistry(MSData currentService) {
+        log.info("New {} initialized with ID: {}",currentService.getType(), currentService.getId());
         this.currentService = currentService;
     }
 
     public void registerService(MSData msData) {
-        if (findService(msData) != null) {
+        if (msData.equals(currentService) || findService(msData) != null) {
+            log.debug("{}, Service already registered: {}, equals: {}", currentService.getType(), msData.getId(), msData.equals(currentService));
             return;
         }
+        log.debug("Registering service: {}", msData.getPort());
+
+        //TODO: remove when done with testing
+        log.info("{} saved {}, {}", currentService.getType(), msData.getPort(), msData.getId());
+
         EServiceType serviceType = msData.getType();
         List<MSData> services = availableServices.get(serviceType);
 
