@@ -30,7 +30,7 @@ public class InputSocket implements Runnable {
                 input.put(request.getData());
                 log.trace("Received message from {}:{}", request.getAddress(), request.getPort());
             } catch (InterruptedException | IOException e) {
-                throw new RuntimeException(e);
+                log.error("Error while sending message: {}", e.getMessage());
             } finally {
                 if (socket != null) {
                     socket.close();

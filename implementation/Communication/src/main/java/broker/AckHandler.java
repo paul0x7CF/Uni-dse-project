@@ -21,7 +21,7 @@ public class AckHandler {
         this.timeout = timeout;
         this.broker = broker;
         this.pendingAcks = new ConcurrentHashMap<>();
-        this.executorService = Executors.newScheduledThreadPool(1);
+        this.executorService = Executors.newScheduledThreadPool(10);
     }
 
     /**
@@ -38,6 +38,7 @@ public class AckHandler {
             if (pendingAcks.remove(messageId) != null) {
                 try {
                     broker.sendMessage(message);
+                    log.info("Resent message with id {}", messageId);
                     throw new AckTimeoutException("Message could not be acknowledged within the given timeout");
                 } catch (AckTimeoutException e) {
                     // TODO: try sending again?

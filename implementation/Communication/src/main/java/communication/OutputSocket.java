@@ -33,7 +33,7 @@ public class OutputSocket implements Runnable {
                 socket.send(packet);
                 log.trace("Sending message to {}:{}", localMessage.getReceiverAddress(), localMessage.getReceiverPort());
             } catch (InterruptedException | IOException e) {
-                e.printStackTrace();
+                log.error("Error while sending message: {}", e.getMessage());
             } finally {
                 if (socket != null) {
                     socket.close();

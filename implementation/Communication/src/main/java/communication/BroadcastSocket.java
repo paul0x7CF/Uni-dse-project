@@ -20,23 +20,20 @@ public class BroadcastSocket implements Runnable {
     @Override
     public void run() {
         DatagramSocket socket = null;
-        try {
-            socket = new DatagramSocket(port);
-            // Enable broadcast
-            socket.setBroadcast(true);
-        } catch (SocketException e) {
-            throw new RuntimeException(e);
-        }
         while (!Thread.currentThread().isInterrupted()) {
             try {
+                socket = new DatagramSocket(port);
+                // Enable broadcast
+                socket.setBroadcast(true);
+
                 LocalMessage localMessage = output.take();
                 byte[] data = localMessage.getMessage();
-                InetAddress address = InetAddress.getByName(""); // TODO: Broadcast address?
+                InetAddress address = InetAddress.getByName(localMessage.getReceiverAddress());
                 DatagramPacket packet = new DatagramPacket(data, data.length, address, localMessage.getReceiverPort());
                 socket.send(packet);
                 log.trace("Broadcasting message to {}:{}", address, localMessage.getReceiverPort());
             } catch (InterruptedException | IOException e) {
-                e.printStackTrace();
+                log.error("Error while sending message: {}", e.getMessage());
             } finally {
                 if (socket != null) {
                     socket.close();
