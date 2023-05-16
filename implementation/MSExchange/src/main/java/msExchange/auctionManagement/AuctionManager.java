@@ -1,6 +1,7 @@
 package msExchange.auctionManagement;
 
 import msExchange.Exceptions.AuctionNotFoundException;
+import msExchange.Exceptions.InvalidTimeSlotException;
 import sendable.Bid;
 import sendable.Sell;
 import sendable.Transaction;
@@ -46,8 +47,9 @@ public class AuctionManager implements Runnable {
             } catch (InterruptedException e) {
                 logger.severe(e.getMessage());
                 Thread.currentThread().interrupt();
-            } catch (AuctionNotFoundException e) {
+            } catch (AuctionNotFoundException | InvalidTimeSlotException e) {
                 logger.severe(e.getMessage());
+                //build Message to tell exchange - that it was invalid!
             }
         }
     }
@@ -70,7 +72,7 @@ public class AuctionManager implements Runnable {
 
     }
 
-    private void processQueues() throws AuctionNotFoundException, InterruptedException {
+    private void processQueues() throws AuctionNotFoundException, InterruptedException, InvalidTimeSlotException {
         //Process sellQueue
         processSellQueue();
 
@@ -100,11 +102,12 @@ public class AuctionManager implements Runnable {
         if (bid != null) {
             Optional<UUID> auctionID = bid.getAuctionID();
             if (auctionID.isEmpty()) {
-                throw new AuctionNotFoundException("The Auction ID is missing");
+                throw new AuctionNotFoundException("The Auction ID is missing", Optional.empty(), Optional.empty(), Optional.of(bid));
             }
             if (!auctionExists(auctionID.get())) {
                 logger.finest("Auction doesn't exist yet.");
                 bidQueue.put(bid);
+                //?? throw new AuctionNotFoundException("The Auction ID is incorrect.", auctionID, Optional.empty(), Optional.of(bid));
             } else {
                 logger.finest("Add Bid to Auction");
                 addBidToAuction(auctionID.get(), bid);
@@ -112,16 +115,20 @@ public class AuctionManager implements Runnable {
         }
     }
 
-    private void processSellQueue() throws AuctionNotFoundException {
+    private void processSellQueue() throws AuctionNotFoundException, InvalidTimeSlotException {
         Sell sell = sellQueue.poll(); // Non-blocking call, retrieves the next sell or null if empty
         if (sell != null) {
-            TimeSlot timeSlot = timeSlots.get(sell.getTimeSlot());
-            if (timeSlot.getEndTime().isBefore(LocalDateTime.now())) {
-                //endTime is in the past
-                //send Message to Storage -> Message Builder!
+            if (timeSlots.containsKey(sell.getTimeSlot())) {
+                TimeSlot timeSlot = timeSlots.get(sell.getTimeSlot());
+                if (timeSlot.getEndTime().isBefore(LocalDateTime.now())) {
+                    //endTime is in the past
+                    //send Message to Storage -> Message Builder!
+                } else {
+                    logger.info("Creating new Auction...");
+                    addNewAuction(sell);
+                }
             } else {
-                logger.info("Creating new Auction...");
-                addNewAuction(sell);
+                throw new InvalidTimeSlotException("TimeSlot doesn't exist, therefore the UUID was invalid.", Optional.of(sell.getTimeSlot()), Optional.of(sell), Optional.empty());
             }
         }
     }
@@ -132,12 +139,12 @@ public class AuctionManager implements Runnable {
 
     private void addNewAuction(Sell sell) throws AuctionNotFoundException {
         if (sell.getAuctionID().isEmpty()) {
-            throw new AuctionNotFoundException("Auction ID is missing");
+            throw new AuctionNotFoundException("Auction ID is missing", Optional.empty(), Optional.of(sell), Optional.empty());
         }
-        UUID uuid = sell.getAuctionID().get();
-        Auction auction = new Auction(uuid, sell, transactionQueue);
-        auctions.put(uuid, auction);
-        logger.info("Auction has been added: " + auctions.get(uuid));
+        UUID AuctionUuid = sell.getAuctionID().get();
+        Auction auction = new Auction(AuctionUuid, sell, transactionQueue);
+        auctions.put(AuctionUuid, auction);
+        logger.info("Auction has been added: " + auctions.get(AuctionUuid));
     }
 
     private void addBidToAuction(UUID auctionID, Bid bid) {
@@ -166,6 +173,7 @@ public class AuctionManager implements Runnable {
         return Collections.unmodifiableMap(auctions);
     }
 
+    //used from MSExchange - when Message with new TimeSlots from Exchange comes in
     public void addTimeSlots(List<sendable.TimeSlot> newTimeSlots) {
         for (sendable.TimeSlot timeSlot : newTimeSlots) {
             if (timeSlots.get(timeSlot.getTimeSlotID()) == null) {
