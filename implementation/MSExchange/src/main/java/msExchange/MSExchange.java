@@ -1,7 +1,7 @@
 package msExchange;
 
 import broker.Broker;
-import msExchange.timeSlotManagement.TimeSlotManager;
+import loadManager.timeSlotManagement.TimeSlotManager;
 import org.apache.logging.log4j.message.Message;
 import sendable.Bid;
 import sendable.Sell;

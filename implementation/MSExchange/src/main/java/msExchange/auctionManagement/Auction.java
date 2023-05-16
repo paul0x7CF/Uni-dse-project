@@ -1,4 +1,4 @@
-package msExchange.timeSlotManagement.auctionManagement;
+package msExchange.auctionManagement;
 
 import sendable.Bid;
 import sendable.Sell;
@@ -9,38 +9,41 @@ import java.util.concurrent.BlockingQueue;
 
 public class Auction extends Thread {
     private UUID auctionID;
-    private Bid bidPosition;
-    private Sell sellPosition;
+    private UUID bidderID;
+    private UUID sellerID;
+    private UUID timeSlotID;
     private double pricePerKWh;
     private double volume;
     private boolean auctionEnded = false;
     private BlockingQueue<Transaction> transactionQueue;
 
-    public Auction(UUID auctionID, Sell sellPosition, double askPrice, double volume, BlockingQueue<Transaction> transactionQueue) {
+    public Auction(UUID auctionID, Sell sellPosition, BlockingQueue<Transaction> transactionQueue) {
         this.auctionID = auctionID;
-        this.sellPosition = sellPosition;
-        this.pricePerKWh = askPrice;
-        this.volume = volume;
+        this.sellerID = sellPosition.getSellerID();
+        this.pricePerKWh = sellPosition.getAskPrice();
+        this.volume = sellPosition.getVolume();
         this.transactionQueue = transactionQueue;
+        this.timeSlotID = sellPosition.getTimeSlot();
     }
 
     public void setBid(Bid bidPosition) {
         if (!auctionEnded) {
-            if (this.bidPosition != null) {
-                if (bidPosition.getPrice() > this.bidPosition.getPrice()) {
-                    this.bidPosition = bidPosition;
+            if (this.bidderID != null) {
+                if (bidPosition.getPrice() > pricePerKWh) {
+                    this.pricePerKWh = bidPosition.getPrice();
+                    this.bidderID = bidPosition.getBidderID();
                 }
             } else {
-                this.bidPosition = bidPosition;
+                this.pricePerKWh = bidPosition.getPrice();
+                this.bidderID = bidPosition.getBidderID();
             }
         }
-
     }
 
     public void endAuction() {
         //Create a transaction and add it to blockingQueue
         auctionEnded = true;
-        Transaction transaction = new Transaction(sellPosition.getSellerID(), bidPosition.getBidderID(), volume, bidPosition.getPrice());
+        Transaction transaction = new Transaction(sellerID, bidderID, volume, pricePerKWh);
 
         try {
             transactionQueue.put(transaction);
@@ -61,8 +64,8 @@ public class Auction extends Thread {
         return auctionID;
     }
 
-    public Bid getBidPosition() {
-        return this.bidPosition;
+    public UUID getBidderID() {
+        return bidderID;
     }
 
     public double getVolume() {
