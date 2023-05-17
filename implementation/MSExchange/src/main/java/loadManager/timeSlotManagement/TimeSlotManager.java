@@ -24,17 +24,17 @@ public class TimeSlotManager {
     private int getMAX_NUM_TIME_SLOTS_SAVED() {
         Properties properties = new Properties();
         try {
-            FileInputStream configFile = new FileInputStream("config.properties");
+            FileInputStream configFile = new FileInputStream("src/main/java/config.properties");
             properties.load(configFile);
             configFile.close();
 
-            return Integer.parseInt(properties.getProperty("maxNumTimeSlotsSaved"));
+            return Integer.parseInt(properties.getProperty("timeslot.maxNumTimeSlotSaved"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void addNewTimeSlots() {
+    public void addNewTimeSlots() {
         if (timeSlots == null) {
             timeSlots = new ArrayList<>();
             LocalDateTime now = LocalDateTime.now();
