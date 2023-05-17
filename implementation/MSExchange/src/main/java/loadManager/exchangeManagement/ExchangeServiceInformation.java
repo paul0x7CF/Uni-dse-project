@@ -34,4 +34,8 @@ public class ExchangeServiceInformation {
     public void setAtCapacity(boolean isAtCapacity) {
         atCapacity = isAtCapacity;
     }
+
+    public Object getExchangeID() {
+        return exchangeId;
+    }
 }
