@@ -1,13 +1,21 @@
 package loadManager.networkManagment;
 
+import exceptions.MessageProcessingException;
+import exceptions.RemoteException;
 import loadManager.exchangeManagement.ExchangeServiceInformation;
+import messageHandling.IMessageHandler;
 import protocol.Message;
 import protocol.MessageFactory;
 import sendable.Bid;
 import sendable.Sell;
 import sendable.TimeSlot;
 
-public class ExtendedMessageBuilder {
+public class ExtendedMessageBuilder implements IMessageHandler {
+    @Override
+    public void handleMessage(Message message) throws MessageProcessingException, RemoteException {
+
+    }
+    
     private Message buildMessagePriceIsToLow(Bid bid, double averagePrice) {
         MessageFactory messageFactory = new MessageFactory();
         return null;
@@ -47,5 +55,6 @@ public class ExtendedMessageBuilder {
         MessageFactory messageFactory = new MessageFactory();
         return null;
     }
+
 
 }
