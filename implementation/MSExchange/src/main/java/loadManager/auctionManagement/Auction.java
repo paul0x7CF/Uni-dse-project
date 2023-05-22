@@ -46,7 +46,7 @@ public class Auction {
         if (!auctionEnded) {
             throw new CommandNotPossibleException("Auction has not ended yet");
         }
-        Transaction transaction = new Transaction(sellerID, bidderID, volume, pricePerKWh);
+        Transaction transaction = new Transaction(sellerID, bidderID, volume, pricePerKWh, auctionID);
 
         return transaction;
 

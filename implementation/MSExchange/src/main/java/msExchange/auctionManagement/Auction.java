@@ -43,7 +43,7 @@ public class Auction {
     public void endAuction() {
         //Create a transaction and add it to blockingQueue
         auctionEnded = true;
-        Transaction transaction = new Transaction(sellerID, bidderID, volume, pricePerKWh);
+        Transaction transaction = new Transaction(sellerID, bidderID, volume, pricePerKWh, auctionID);
 
         try {
             transactionQueue.put(transaction);
