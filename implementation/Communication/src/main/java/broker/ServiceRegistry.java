@@ -1,6 +1,5 @@
 package broker;
 
-import communication.BroadcastSocket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sendable.EServiceType;
@@ -15,7 +14,7 @@ public class ServiceRegistry {
     private final Map<EServiceType, List<MSData>> availableServices = new HashMap<>();
 
     public ServiceRegistry(MSData currentService) {
-        log.info("New {} initialized with ID: {}",currentService.getType(), currentService.getId());
+        log.debug("New {} initialized with ID: {}",currentService.getType(), currentService.getId());
         this.currentService = currentService;
     }
 

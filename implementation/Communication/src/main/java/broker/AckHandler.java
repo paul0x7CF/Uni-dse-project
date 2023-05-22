@@ -49,7 +49,7 @@ public class AckHandler {
     }
 
     public void ackReceived(AckInfo ack) {
-        log.trace("Received ack for message with id {}", ack.getMessageID());
+        log.info("Received ack for message with id {}", ack.getMessageID());
         pendingAcks.remove(ack.getMessageID());
     }
 }
