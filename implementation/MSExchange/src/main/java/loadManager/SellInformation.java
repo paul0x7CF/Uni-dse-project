@@ -1,17 +1,15 @@
 package loadManager;
 
+import sendable.Sell;
+
 import java.util.UUID;
 
 public class SellInformation {
-    private UUID prosumerID;
-    private double price;
-    private double kwh;
+    private Sell sell;
     private UUID exchangeID;
 
-    public SellInformation(UUID prosumerID, double price, double kwh, UUID exchangeID) {
-        this.prosumerID = prosumerID;
-        this.price = price;
-        this.kwh = kwh;
+    public SellInformation(Sell sell, UUID exchangeID) {
+        this.sell = sell;
         this.exchangeID = exchangeID;
     }
 }
