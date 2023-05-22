@@ -8,12 +8,14 @@ public class Transaction implements ISendable {
     private final UUID buyerID;
     private final double amount;
     private final double price;
+    private final UUID auctionID;
 
-    public Transaction(UUID sellerID, UUID buyerID, double amount, double price) {
+    public Transaction(UUID sellerID, UUID buyerID, double amount, double price, UUID auctionID) {
         this.sellerID = sellerID;
         this.buyerID = buyerID;
         this.amount = amount;
         this.price = price;
+        this.auctionID = auctionID;
     }
 
     public UUID getTransactionID() {
@@ -34,5 +36,9 @@ public class Transaction implements ISendable {
 
     public double getPrice() {
         return price;
+    }
+
+    public UUID getAuctionID() {
+        return auctionID;
     }
 }
