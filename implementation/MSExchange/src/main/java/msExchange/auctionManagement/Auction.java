@@ -7,7 +7,7 @@ import sendable.Transaction;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
-public class Auction extends Thread {
+public class Auction {
     private UUID auctionID;
     private UUID bidderID;
     private UUID sellerID;

@@ -1,42 +1,75 @@
 package loadManager.auctionManagement;
 
+import loadManager.Exceptions.CommandNotPossibleException;
+import sendable.Bid;
+import sendable.Sell;
+import sendable.Transaction;
+
 import java.util.UUID;
 
 public class Auction {
-    private UUID auctionId;
-    private double kwh;
-    private UUID timeSlotId;
-    private UUID exchangeID;
+    private UUID auctionID;
+    private UUID bidderID;
     private UUID sellerID;
+    private UUID timeSlotID;
+    private double pricePerKWh;
+    private double volume;
+    private boolean auctionEnded = false;
 
-    public Auction(UUID auctionId, double kwh, UUID timeSlotId, UUID exchangeID, UUID sellerID) {
-        this.auctionId = auctionId;
-        this.kwh = kwh;
-        this.timeSlotId = timeSlotId;
-        this.exchangeID = exchangeID;
-        this.sellerID = sellerID;
+    public Auction(UUID auctionID, Sell sellPosition) {
+        this.auctionID = auctionID;
+        this.sellerID = sellPosition.getSellerID();
+        this.pricePerKWh = sellPosition.getAskPrice();
+        this.volume = sellPosition.getVolume();
+        this.timeSlotID = sellPosition.getTimeSlot();
     }
 
-    public UUID getAuctionId() {
-        return this.auctionId;
-    }
-
-    public double getKwh() {
-        return this.kwh;
-    }
-
-    public UUID getTimeSlotId() {
-        return this.timeSlotId;
-    }
-
-    public UUID getExchangeID() {
-        return this.exchangeID;
-    }
-
-    public UUID getSellerID() {
-        return this.sellerID;
+    public void setBid(Bid bidPosition) {
+        if (!auctionEnded) {
+            if (this.bidderID != null) {
+                if (bidPosition.getPrice() > pricePerKWh) {
+                    this.pricePerKWh = bidPosition.getPrice();
+                    this.bidderID = bidPosition.getBidderID();
+                }
+            } else {
+                this.pricePerKWh = bidPosition.getPrice();
+                this.bidderID = bidPosition.getBidderID();
+            }
+        }
     }
 
     public void endAuction() {
+        auctionEnded = true;
+    }
+
+    public Transaction getTransaction() throws CommandNotPossibleException {
+        if (!auctionEnded) {
+            throw new CommandNotPossibleException("Auction has not ended yet");
+        }
+        Transaction transaction = new Transaction(sellerID, bidderID, volume, pricePerKWh);
+
+        return transaction;
+
+
+    }
+
+    public boolean isAuctionEnded() {
+        return this.auctionEnded;
+    }
+
+    public double getPrice() {
+        return pricePerKWh;
+    }
+
+    public UUID getAuctionId() {
+        return auctionID;
+    }
+
+    public UUID getBidderID() {
+        return bidderID;
+    }
+
+    public double getVolume() {
+        return this.volume;
     }
 }
