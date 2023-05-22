@@ -28,7 +28,7 @@ public class Controller implements Runnable {
     private BrokerRunner broker;
     private TimeSlotManager timeSlotManager;
     private BlockingQueue<Message> incomingQueue;
-    private BlockingQueue<?> outgoingQueue;
+    private BlockingQueue<Message> outgoingQueue;
     private LoadManager loadManager = new LoadManager();
     private ExecutorService executorService;
     private IMessageHandler messageHandler;
@@ -62,8 +62,6 @@ public class Controller implements Runnable {
     public void run() {
         while (true) {
             processIncomingQueue();
-            processOutgoingQueue();
-
         }
     }
 
@@ -75,11 +73,8 @@ public class Controller implements Runnable {
         }
     }
 
-    private void processOutgoingQueue() {
-
-    }
-
     private void handleBid(Bid bid) {
+
     }
 
     private void handleSell(Sell sell, UUID exchangeID) {
