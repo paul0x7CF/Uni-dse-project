@@ -12,8 +12,8 @@ import java.util.concurrent.BlockingQueue;
 
 public class AuctionFindingAlgorithm implements Runnable {
     private Bid bid;
-    private AuctionManager auctionManager;
     private BlockingQueue<Message> outgoingQueue;
+    private AuctionManager auctionManager;
     private AuctionProsumerTracker auctionProsumerTracker;
 
     public AuctionFindingAlgorithm(Bid bid, AuctionManager auctionManager, BlockingQueue<Message> outgoingQueue, AuctionProsumerTracker auctionProsumerTracker) {
@@ -31,10 +31,12 @@ public class AuctionFindingAlgorithm implements Runnable {
     }
 
     public List<Auction> getBiddersAuctions() {
-        return null;
+        return auctionManager.getBiddersAuctions(bid.getBidderID());
     }
 
     private synchronized void addProsumerToAuction(UUID auctionID, UUID prosumerID) {
+
+
     }
 
     //if prosumer sends new bid, replace old bid

@@ -50,7 +50,6 @@ public class Auction {
 
         return transaction;
 
-
     }
 
     public boolean isAuctionEnded() {

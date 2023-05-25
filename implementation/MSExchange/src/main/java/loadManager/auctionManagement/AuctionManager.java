@@ -102,4 +102,17 @@ public class AuctionManager {
         }
         throw new IllegalSlotException("Slot not found with ID: " + slotId);
     }
+    
+    public List<Auction> getBiddersAuctions(UUID bidderID) {
+        List<Auction> biddersAuctions = new ArrayList<>();
+
+        for (List<Auction> auctions : auctionsPerSlot.values()) {
+            for (Auction auction : auctions) {
+                if (auction.getBidderID().equals(bidderID)) {
+                    biddersAuctions.add(auction);
+                }
+            }
+        }
+        return biddersAuctions;
+    }
 }

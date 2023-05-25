@@ -53,7 +53,6 @@ public class Bidder {
 
         prepareAuctionFinder(bid);
 
-
     }
 
     private void prepareAuctionFinder(Bid bid) {
