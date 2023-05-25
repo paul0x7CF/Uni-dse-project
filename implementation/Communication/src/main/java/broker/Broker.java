@@ -55,7 +55,8 @@ public class Broker implements IServiceBroker {
 
         // register Microservice
         // TODO: should we add a Info;GetAllServices message which returns a list of MSData?
-        // TODO: Fixed IP addresses? Its always 10.102.102.x (Prosumer(17), Exchange(13), Forecast(9)) but whats the port?
+        // TODO: Fixed IP addresses?
+        //  Its always 10.102.102.x (Prosumer(17), Exchange(13), Forecast(9)) but whats the port?
         scheduleRegisterMessage();
 
         // start receiving messages in new thread
