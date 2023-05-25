@@ -31,17 +31,19 @@ public class AckHandler {
      */
     public void trackMessage(Message message) {
         UUID messageId = message.getMessageID();
-        log.trace("Tracking message with id {}", messageId);
+        log.trace("Tracking message {}", messageId);
         pendingAcks.put(messageId, message);
 
         executorService.schedule(() -> {
             if (pendingAcks.remove(messageId) != null) {
                 try {
                     broker.sendMessage(message);
-                    log.info("Resent message with id {}", messageId);
+                    log.warn("No Ack received, resending {} from: {} to {}",
+                            message.getSubCategory(), message.getSenderPort(), message.getReceiverPort());
                     throw new AckTimeoutException("Message could not be acknowledged within the given timeout");
                 } catch (AckTimeoutException e) {
-                    // TODO: try sending again?
+                    // TODO: send again?
+                    broker.sendMessage(message);
                     throw new RuntimeException(e);
                 }
             }
@@ -49,7 +51,17 @@ public class AckHandler {
     }
 
     public void ackReceived(AckInfo ack) {
-        log.info("Received ack for message with id {}", ack.getMessageID());
-        pendingAcks.remove(ack.getMessageID());
+        // TODO: Redundant, but I want to make sure that the message is removed from pendingAcks
+        if (!pendingAcks.containsKey(ack.getMessageID())) {
+            log.warn("Received ack for unknown message {}", ack.getMessageID());
+            return;
+        }
+
+        if (pendingAcks.remove(ack.getMessageID()) == null) {
+            log.warn("Unknown message {}", ack.getMessageID());
+            return;
+        }
+
+        log.info("Received ack for message {}", ack.getMessageID());
     }
 }

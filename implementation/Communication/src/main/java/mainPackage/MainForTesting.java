@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import static broker.InfoMessageBuilder.createRegisterMessage;
 
@@ -30,7 +32,7 @@ public class MainForTesting {
         final int exchangeCount = 0;
         final int forecastCount = 0;
 
-        ExecutorService executor = Executors.newFixedThreadPool(100);
+        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(100);
 
         // create prosumer
         for (int i = 0; i < prosumerCount*10; i += 10) {
@@ -55,6 +57,24 @@ public class MainForTesting {
         for (int i = 5; i < forecastCount*10; i += 10) {
             executor.execute(new BrokerRunner(EServiceType.Consumption, forecastPort + i));
         }
+
+        sleep(20 * 1000);
+
+        executor.shutdown();
+        try {
+            if (executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS)) {
+                log.info("All threads finished");
+            }
+        } catch (InterruptedException e) {
+            // TODO: handle exception
+        }
+        List<Runnable> brokers = executor.shutdownNow();
+        for (Runnable broker : brokers) {
+            if (broker instanceof BrokerRunner) {
+                ((BrokerRunner) broker).stop();
+            }
+        }
+
     }
 
     private static void sleep(int duration) {

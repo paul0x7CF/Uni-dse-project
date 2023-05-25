@@ -23,7 +23,7 @@ public class BrokerRunner implements Runnable {
     @Override
     public void run() {
         try {
-            log.info("Starting broker {}", broker.getCurrentService().getPort());
+            log.info("Starting {} {}", broker.getCurrentService().getType(), broker.getCurrentService().getPort());
             broker.startBroker();
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
@@ -48,6 +48,11 @@ public class BrokerRunner implements Runnable {
 
     public void addMessageHandler(ECategory category, IMessageHandler handler) {
         broker.getMessageHandler().addMessageHandler(category, handler);
+    }
+
+    public void stop() {
+        log.info("Stopping {} {}", broker.getCurrentService().getType(), broker.getCurrentService().getPort());
+        broker.stop();
     }
 
     protected List<MSData> getServices() {

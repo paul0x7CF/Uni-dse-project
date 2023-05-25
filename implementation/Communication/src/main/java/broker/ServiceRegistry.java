@@ -26,7 +26,7 @@ public class ServiceRegistry {
         log.debug("Registering service: {}", msData.getPort());
 
         //TODO: remove when done with testing
-        log.info("{} saved {}, {}", currentService.getType(), msData.getPort(), msData.getId());
+        log.info("{} saved {}", currentService.getPort(), msData.getPort());
 
         EServiceType serviceType = msData.getType();
         List<MSData> services = availableServices.get(serviceType);
