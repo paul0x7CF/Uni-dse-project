@@ -5,7 +5,7 @@ import java.util.Properties;
 
 public class ConfigReader {
     private static final String PROPERTIES_FILE = "config.properties";
-    private Properties properties;
+    private final Properties properties;
 
     public ConfigReader() {
         try (InputStream input = getClass().getClassLoader().getResourceAsStream(PROPERTIES_FILE)) {
