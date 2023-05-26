@@ -1,21 +1,49 @@
 package loadManager.prosumerActionManagement;
 
+import loadManager.Exceptions.PriceNotOKException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class AverageMechanism {
     private final int K_VALUES = 100;
-    private double averagePrice;
+    private double averagePrice = 0.0;
     private List<Double> bidPrices = new ArrayList<Double>();
     private List<Double> askPrices = new ArrayList<Double>();
 
-    public boolean isBidPriceHighEnough(double price) {
-        return price >= averagePrice;
+    public boolean isBidPriceHighEnough(double price) throws PriceNotOKException {
+        if (price <= 0.0) {
+            throw new PriceNotOKException("Price can't be zero or lower");
+        }
+
+        if (averagePrice == 0.0) {
+            updateList(price, EAction.Bid);
+            return true;
+        }
+
+        if (price >= averagePrice) {
+            updateList(price, EAction.Bid);
+            return true;
+        }
+        return false;
     }
 
-    public boolean isAskPriceLowEnough(double price) {
-        return price <= averagePrice;
+    public boolean isAskPriceLowEnough(double price) throws PriceNotOKException {
+        if (price <= 0.0) {
+            throw new PriceNotOKException("Price can't be zero or lower");
+        }
+
+        if (averagePrice == 0.0) {
+            updateList(price, EAction.Sell);
+            return true;
+        }
+
+        if (price <= averagePrice) {
+            updateList(price, EAction.Sell);
+            return true;
+        }
+        return false;
     }
 
     public double getAveragePrice() {
@@ -28,11 +56,14 @@ public class AverageMechanism {
             averagePrice = 0.0;
             return;
         }
-        Collections.sort(bidPrices);
-        Collections.sort(askPrices);
 
-        double bidPriceK = bidPrices.get(k - 1);
-        double askPriceK = askPrices.get(k - 1);
+        List<Double> sortedBidPrices = new ArrayList<>(bidPrices);
+        List<Double> sortedAskPrices = new ArrayList<>(askPrices);
+        Collections.sort(sortedBidPrices);
+        Collections.sort(sortedAskPrices);
+
+        double bidPriceK = sortedBidPrices.get(k - 1);
+        double askPriceK = sortedAskPrices.get(k - 1);
         averagePrice = (bidPriceK + askPriceK) / 2.0;
     }
 

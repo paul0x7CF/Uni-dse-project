@@ -1,5 +1,6 @@
 package loadManager.prosumerActionManagement;
 
+import loadManager.Exceptions.PriceNotOKException;
 import loadManager.SellInformation;
 import loadManager.auctionManagement.AuctionManager;
 import loadManager.prosumerActionManagement.bidManagement.Bidder;
@@ -55,29 +56,39 @@ public class ProsumerManager implements Runnable {
     }
 
     private void handleNewBid(Bid bid) {
-        if (averageMechanism.isBidPriceHighEnough(bid.getPrice())) {
-            for (Bidder bidder : bidders) {
-                if (bidder.getBidderID().equals(bid.getBidderID())) {
-                    bidder.handleBid(bid);
-                    return;
-                }
-            }
-            Bidder newBidder = new Bidder(auctionManager, bid.getBidderID(), outgoingQueue, auctionProsumerTracker);
-            bidders.add(newBidder);
-            newBidder.handleBid(bid);
-        } else {
-            //TODO send message to prosumer that his bid was not high enough
 
+        try {
+            if (averageMechanism.isBidPriceHighEnough(bid.getPrice())) {
+                for (Bidder bidder : bidders) {
+                    if (bidder.getBidderID().equals(bid.getBidderID())) {
+                        bidder.handleBid(bid);
+                        return;
+                    }
+                }
+                Bidder newBidder = new Bidder(auctionManager, bid.getBidderID(), outgoingQueue, auctionProsumerTracker);
+                bidders.add(newBidder);
+                newBidder.handleBid(bid);
+            } else {
+                //TODO send message to prosumer that his bid was not high enough
+
+            }
+        } catch (PriceNotOKException e) {
+            //TODO send messagte to prosumer that his bid was negativ or zero
         }
+
 
     }
 
     private void handleNewSell(SellInformation sell) {
-        if (averageMechanism.isAskPriceLowEnough(sell.getSell().getAskPrice())) {
-            //TODO: check if the exchange Service has been assigned before
-            startNewAuction(sell);
-        } else {
-            //TODO: send message to prosumer that his ask price was not low enough
+        try {
+            if (averageMechanism.isAskPriceLowEnough(sell.getSell().getAskPrice())) {
+                //TODO: check if the exchange Service has been assigned before
+                startNewAuction(sell);
+            } else {
+                //TODO: send message to prosumer that his ask price was not low enough
+            }
+        } catch (PriceNotOKException e) {
+            //TODO: send messagt to prosumer that his ask price was negative or zero
         }
     }
 
@@ -100,7 +111,7 @@ public class ProsumerManager implements Runnable {
     public void handleIncomingTransaction(Transaction transaction) {
         //TODO: set Bidders / Sellers as satisfied
         //TODO: end the auctions
-        
+
     }
 
 }
