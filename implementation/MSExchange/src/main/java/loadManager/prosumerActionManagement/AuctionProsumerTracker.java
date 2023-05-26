@@ -25,39 +25,6 @@ public class AuctionProsumerTracker {
         List<UUID> resultList = new ArrayList<>(originalList.subList(0, originalList.size() - 1));
         return resultList;
     }
-
-    public List<UUID> getBiddersNotSatisfiedForTimeslot(UUID timeSlotID) {
-        List<UUID> notSatisfiedBidders = new ArrayList<>();
-        List<UUID> satisfiedBidders = new ArrayList<>();
-
-        if (auctionsPerTimeSlot.containsKey(timeSlotID)) {
-            Map<UUID, List<UUID>> auctions = auctionsPerTimeSlot.get(timeSlotID);
-
-            for (List<UUID> bidders : auctions.values()) {
-                satisfiedBidders.add(bidders.get(bidders.size() - 1));
-                notSatisfiedBidders.addAll(bidders.subList(0, bidders.size() - 1));
-            }
-
-            //remove all satisfied bidders from notSatisfiedBidders
-            Iterator<UUID> iterator = notSatisfiedBidders.iterator();
-            while (iterator.hasNext()) {
-                UUID notSatisfiedBidder = iterator.next();
-                if (satisfiedBidders.contains(notSatisfiedBidder)) {
-                    iterator.remove();
-                }
-            }
-
-            if (notSatisfiedBidders.isEmpty()) {
-                return notSatisfiedBidders;
-            }
-
-            //remove duplicates
-            return new ArrayList<>(new HashSet<>(notSatisfiedBidders));
-        }
-
-        throw new IllegalSlotException("No timeslot with ID " + timeSlotID + " found");
-    }
-
     public synchronized void addBidderToAuction(UUID auctionId, UUID bidderId) {
         boolean auctionFound = false;
         for (Map.Entry<UUID, Map<UUID, List<UUID>>> entry : auctionsPerTimeSlot.entrySet()) {
@@ -76,9 +43,29 @@ public class AuctionProsumerTracker {
         auctionsPerTimeSlot.computeIfAbsent(timeSlotId, k -> new HashMap<>()).put(auctionID, new ArrayList<>());
     }
 
+    public List<UUID> getAuctionsWithoutBidders(UUID timeSlotID) {
+        List<UUID> auctionsWithoutBidders = new ArrayList<>();
+        if (auctionsPerTimeSlot.containsKey(timeSlotID)) {
+            Map<UUID, List<UUID>> auctions = auctionsPerTimeSlot.get(timeSlotID);
+
+            for (Map.Entry<UUID, List<UUID>> entry : auctions.entrySet()) {
+                if (entry.getValue().isEmpty()) {
+                    auctionsWithoutBidders.add(entry.getKey());
+                }
+            }
+        }
+
+        return auctionsWithoutBidders;
+    }
+
+
     //TODO: Maybe add winner variable to Auction - to check who are the real losers
     //adds the winning bidder to the list of bidders
     public void checkWithTransactions(Transaction transaction) {
+        if (transaction == null) {
+            throw new IllegalArgumentException("Transaction cannot be null");
+        }
+
         UUID bidderID = transaction.getBuyerID();
         UUID auctionID = transaction.getAuctionID();
 

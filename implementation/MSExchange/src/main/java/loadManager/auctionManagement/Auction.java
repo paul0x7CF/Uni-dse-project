@@ -71,4 +71,8 @@ public class Auction {
     public double getVolume() {
         return this.volume;
     }
+
+    public UUID getSellerID() {
+        return this.sellerID;
+    }
 }

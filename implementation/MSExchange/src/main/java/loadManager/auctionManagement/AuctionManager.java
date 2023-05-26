@@ -102,7 +102,7 @@ public class AuctionManager {
         }
         throw new IllegalSlotException("Slot not found with ID: " + slotId);
     }
-    
+
     public List<Auction> getBiddersAuctions(UUID bidderID) {
         List<Auction> biddersAuctions = new ArrayList<>();
 
@@ -114,5 +114,18 @@ public class AuctionManager {
             }
         }
         return biddersAuctions;
+    }
+
+    public List<UUID> getUnsatisfiedSellers(List<UUID> auctionsWithoutBidders, UUID timeSlotID) {
+        List<Auction> auctions = auctionsPerSlot.get(timeSlotID);
+        List<UUID> unsatisfiedSellers = new ArrayList<>();
+        if (auctions != null) {
+            for (Auction auction : auctions) {
+                unsatisfiedSellers.add(auction.getSellerID());
+            }
+            return unsatisfiedSellers;
+        }
+
+        throw new IllegalArgumentException("The given Auctions doesn't exist");
     }
 }
