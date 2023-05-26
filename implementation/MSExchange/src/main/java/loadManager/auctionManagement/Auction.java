@@ -75,4 +75,8 @@ public class Auction {
     public UUID getSellerID() {
         return this.sellerID;
     }
+
+    public UUID getTimeSlotID() {
+        return this.timeSlotID;
+    }
 }

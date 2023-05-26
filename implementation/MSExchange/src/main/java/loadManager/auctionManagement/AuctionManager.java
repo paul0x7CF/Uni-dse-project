@@ -3,6 +3,7 @@ package loadManager.auctionManagement;
 import loadManager.Exceptions.CommandNotPossibleException;
 import loadManager.Exceptions.IllegalAuctionException;
 import loadManager.Exceptions.IllegalSlotException;
+import sendable.Bid;
 import sendable.Transaction;
 
 import java.util.*;
@@ -13,11 +14,19 @@ public class AuctionManager {
     Logger logger = Logger.getLogger(getClass().getName());
     private Map<UUID, List<Auction>> auctionsPerSlot = new HashMap<>();
 
-    public void addAuction(UUID slotId, Auction auction) {
+    public void addAuction(Auction auction) {
         // Adds an auction with the specified UUID
-        List<Auction> auctions = auctionsPerSlot.getOrDefault(slotId, new ArrayList<>());
+        List<Auction> auctions = auctionsPerSlot.getOrDefault(auction.getTimeSlotID(), new ArrayList<>());
         auctions.add(auction);
-        auctionsPerSlot.put(slotId, auctions);
+        auctionsPerSlot.put(auction.getTimeSlotID(), auctions);
+    }
+
+    //really needed? -> yes to be able to declare either the given timeSlot is incorrect, or just not used
+    public void addNewTimeSlots(List<UUID> timeSlotIds) {
+        // Adds a new time slot to the auction manager
+        for (UUID timeSlotId : timeSlotIds) {
+            auctionsPerSlot.put(timeSlotId, new ArrayList<>());
+        }
     }
 
     /*
@@ -94,6 +103,12 @@ public class AuctionManager {
         throw new IllegalSlotException("Slot not found with ID: " + slotId);
     }
 
+    //expected to get called, after receiving the transaction from the market
+    public void setBidder(UUID auctionId, Bid bid) {
+        Auction auction = getAuctionByID(auctionId);
+        auction.setBid(bid);
+    }
+
     public void endTimeSlot(UUID slotId) {
         if (auctionsPerSlot.containsKey(slotId)) {
             for (Auction auction : auctionsPerSlot.get(slotId)) {
@@ -103,29 +118,36 @@ public class AuctionManager {
         throw new IllegalSlotException("Slot not found with ID: " + slotId);
     }
 
-    public List<Auction> getBiddersAuctions(UUID bidderID) {
-        List<Auction> biddersAuctions = new ArrayList<>();
 
-        for (List<Auction> auctions : auctionsPerSlot.values()) {
-            for (Auction auction : auctions) {
-                if (auction.getBidderID().equals(bidderID)) {
-                    biddersAuctions.add(auction);
-                }
-            }
+    //Testet and is working
+    public List<UUID> getUnsatisfiedSellers(UUID timeSlotID) {
+        if (!auctionsPerSlot.containsKey(timeSlotID)) {
+            throw new IllegalSlotException("Slot not found with ID: " + timeSlotID);
         }
-        return biddersAuctions;
-    }
 
-    public List<UUID> getUnsatisfiedSellers(List<UUID> auctionsWithoutBidders, UUID timeSlotID) {
         List<Auction> auctions = auctionsPerSlot.get(timeSlotID);
         List<UUID> unsatisfiedSellers = new ArrayList<>();
         if (auctions != null) {
             for (Auction auction : auctions) {
-                unsatisfiedSellers.add(auction.getSellerID());
+                if (auction.getBidderID() == null) {
+                    unsatisfiedSellers.add(auction.getSellerID());
+                }
             }
             return unsatisfiedSellers;
         }
 
-        throw new IllegalArgumentException("The given Auctions doesn't exist");
+        return Collections.emptyList();
+    }
+
+    public List<Auction> getAuctions(List<UUID> auctionIDs) {
+        List<Auction> auctions = new ArrayList<>();
+        for (UUID auctionID : auctionIDs) {
+            try {
+                auctions.add(getAuctionByID(auctionID));
+            } catch (IllegalAuctionException e) {
+                logger.severe(e.getMessage());
+            }
+        }
+        return auctions;
     }
 }

@@ -1,12 +1,12 @@
 package loadManager.prosumerActionManagement;
 
 import loadManager.Exceptions.IllegalAuctionException;
-import loadManager.Exceptions.IllegalSlotException;
 import sendable.Transaction;
 
 import java.util.*;
 
 public class AuctionProsumerTracker {
+    //Map<TimeSlotID, Map<AuctionID, List<BidderID>>>
     private Map<UUID, Map<UUID, List<UUID>>> auctionsPerTimeSlot = new HashMap<>();
 
     public List<UUID> getBiddersNotSatisfied(UUID auctionID) {
@@ -25,6 +25,7 @@ public class AuctionProsumerTracker {
         List<UUID> resultList = new ArrayList<>(originalList.subList(0, originalList.size() - 1));
         return resultList;
     }
+
     public synchronized void addBidderToAuction(UUID auctionId, UUID bidderId) {
         boolean auctionFound = false;
         for (Map.Entry<UUID, Map<UUID, List<UUID>>> entry : auctionsPerTimeSlot.entrySet()) {
@@ -43,6 +44,7 @@ public class AuctionProsumerTracker {
         auctionsPerTimeSlot.computeIfAbsent(timeSlotId, k -> new HashMap<>()).put(auctionID, new ArrayList<>());
     }
 
+    /*
     public List<UUID> getAuctionsWithoutBidders(UUID timeSlotID) {
         List<UUID> auctionsWithoutBidders = new ArrayList<>();
         if (auctionsPerTimeSlot.containsKey(timeSlotID)) {
@@ -57,7 +59,7 @@ public class AuctionProsumerTracker {
 
         return auctionsWithoutBidders;
     }
-
+*/
 
     //TODO: Maybe add winner variable to Auction - to check who are the real losers
     //adds the winning bidder to the list of bidders
@@ -74,5 +76,21 @@ public class AuctionProsumerTracker {
                 entry.getValue().get(auctionID).add(bidderID);
             }
         }
+    }
+
+    public List<UUID> getBiddersAuctions(UUID bidderID) {
+        List<UUID> biddersAuctions = new ArrayList<>();
+
+        for (Map<UUID, List<UUID>> auctionMap : auctionsPerTimeSlot.values()) {
+            for (UUID auctionId : auctionMap.keySet()) {
+                List<UUID> bidderIds = auctionMap.get(auctionId);
+                if (bidderIds.contains(biddersAuctions)) {
+                    biddersAuctions.add(auctionId);
+                }
+            }
+        }
+
+        return biddersAuctions;
+
     }
 }
