@@ -103,8 +103,7 @@ public class ProsumerManager implements Runnable {
         //TODO: handle storage for unsatisfied bidders
 
         //Unsatisfied Sellers
-        List<UUID> auctionsWithoutBidders = auctionProsumerTracker.getAuctionsWithoutBidders(timeSlotID);
-        List<UUID> unsatisfiedSellers = auctionManager.getUnsatisfiedSellers(auctionsWithoutBidders, timeSlotID);
+        List<UUID> unsatisfiedSellers = auctionManager.getUnsatisfiedSellers(timeSlotID);
         //TODO: handle storage for unsatisfied sellers
     }
 

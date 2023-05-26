@@ -31,11 +31,12 @@ public class AuctionFindingAlgorithm implements Runnable {
     }
 
     public List<Auction> getBiddersAuctions() {
-        return auctionManager.getBiddersAuctions(bid.getBidderID());
+        List<UUID> auctionIDs = auctionProsumerTracker.getBiddersAuctions(bid.getBidderID());
+        return auctionManager.getAuctions(auctionIDs);
     }
 
     private synchronized void addProsumerToAuction(UUID auctionID, UUID prosumerID) {
-
+        //TODO: add prosumer to auction
 
     }
 
