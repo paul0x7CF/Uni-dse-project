@@ -4,16 +4,17 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class Bid implements ISendable {
-    private final UUID bidderID = UUID.randomUUID();
+    private final UUID bidderID;
     private double volume;
     private double price;
     private UUID auctionID;
     private UUID timeSlot;
 
-    public Bid(double volume, double price, UUID timeSlot) {
+    public Bid(double volume, double price, UUID timeSlot, UUID bidderID) {
         this.volume = volume;
         this.price = price;
         this.timeSlot = timeSlot;
+        this.bidderID = bidderID;
     }
 
     public UUID getBidderID() {
