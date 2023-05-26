@@ -10,12 +10,15 @@ import sendable.Bid;
 import sendable.Sell;
 import sendable.TimeSlot;
 
-public class ExtendedMessageBuilder implements IMessageHandler {
-    @Override
-    public void handleMessage(Message message) throws MessageProcessingException, RemoteException {
+import java.util.List;
 
+public class ExtendedMessageBuilder {
+
+    public static Message buildTimeSlotMessage(List<TimeSlot> timeSlots) {
+        MessageFactory messageFactory = new MessageFactory();
+        return null;
     }
-    
+
     private Message buildMessagePriceIsToLow(Bid bid, double averagePrice) {
         MessageFactory messageFactory = new MessageFactory();
         return null;

@@ -5,6 +5,7 @@ import exceptions.RemoteException;
 import messageHandling.IMessageHandler;
 import protocol.Message;
 import sendable.Bid;
+import sendable.Sell;
 
 public class ProcessIncomingQueue implements IMessageHandler {
 
@@ -26,5 +27,9 @@ public class ProcessIncomingQueue implements IMessageHandler {
         return null;
     }
 
+    private Sell buildSell(Message message) {
+        //TODO: implement
+        return null;
+    }
 
 }

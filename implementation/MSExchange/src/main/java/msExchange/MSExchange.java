@@ -1,7 +1,7 @@
 package msExchange;
 
 import broker.Broker;
-import loadManager.timeSlotManagement.TimeSlotManager;
+import loadManager.timeSlotManagement.TimeSlotBuilder;
 import org.apache.logging.log4j.message.Message;
 import sendable.Bid;
 import sendable.Sell;
@@ -20,7 +20,7 @@ public class MSExchange implements IExchange, Runnable {
     ExecutorService executorService;
     private UUID exchangeID;
     private boolean duplicated;
-    private TimeSlotManager timeSlotManager;
+    private TimeSlotBuilder timeSlotManager;
 
     public MSExchange(boolean duplicated) {
         this.duplicated = duplicated;
