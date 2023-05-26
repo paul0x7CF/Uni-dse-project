@@ -1,4 +1,4 @@
-package loadBalancingTests.timeManager;
+package loadBalancingTests.prosumerManager;
 
 import org.junit.Test;
 import sendable.Bid;
