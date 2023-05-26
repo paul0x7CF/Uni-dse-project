@@ -118,7 +118,6 @@ public class AuctionManager {
         throw new IllegalSlotException("Slot not found with ID: " + slotId);
     }
 
-
     //Testet and is working
     public List<UUID> getUnsatisfiedSellers(UUID timeSlotID) {
         if (!auctionsPerSlot.containsKey(timeSlotID)) {
