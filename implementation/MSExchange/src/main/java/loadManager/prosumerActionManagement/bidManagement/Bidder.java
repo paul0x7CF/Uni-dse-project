@@ -50,14 +50,12 @@ public class Bidder {
 
     public void handleBid(Bid bid) {
         //only valid bids lend here
-
         prepareAuctionFinder(bid);
 
     }
 
     private void prepareAuctionFinder(Bid bid) {
         //TODO: add logic to reuse thread space
-
 
         //if there is an auction finding algorithm for this slot, replace old bid
         if (auctionFinderPerSlot.containsKey(bid.getTimeSlot())) {
@@ -71,5 +69,9 @@ public class Bidder {
             //Create and execute a new thread for the algorithm
             executorService.execute(auctionFindingAlgorithm);
         }
+    }
+
+    public UUID getBidderID() {
+        return bidderID;
     }
 }
