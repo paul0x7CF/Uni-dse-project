@@ -1,6 +1,6 @@
 package loadBalancingTests.timeManager;
 
-import loadManager.timeSlotManagement.TimeSlotManager;
+import loadManager.timeSlotManagement.TimeSlotBuilder;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import sendable.TimeSlot;
@@ -21,7 +21,7 @@ public class TestCreateTimeSlots {
     public void callMethodxTimes_addNewTimeSlots_expectedMaxNumTimeSlotsSaved() {
         // Arrange
         readProperties();
-        TimeSlotManager timeSlotManager = new TimeSlotManager((int) DURATION_IN_SECS, NUM_NEW_TIME_SLOTS);
+        TimeSlotBuilder timeSlotManager = new TimeSlotBuilder((int) DURATION_IN_SECS, NUM_NEW_TIME_SLOTS);
 
         // Act
         for (int i = 0; i < (MAX_NUM_TIME_SLOTS_SAVED / NUM_NEW_TIME_SLOTS) + 2; i++) {

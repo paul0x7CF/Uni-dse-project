@@ -9,18 +9,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-public class TimeSlotManager {
+public class TimeSlotBuilder {
     private final long DURATION_IN_SECS;
     private final int NUM_NEW_TIME_SLOTS;
     private final int MAX_NUM_TIME_SLOTS_SAVED;
     private List<TimeSlot> timeSlots;
 
-    public TimeSlotManager(int timeSlotDuration, int numNewTimeSlots) {
+
+    public TimeSlotBuilder(int timeSlotDuration, int numNewTimeSlots) {
         this.DURATION_IN_SECS = timeSlotDuration;
         this.NUM_NEW_TIME_SLOTS = numNewTimeSlots;
         this.MAX_NUM_TIME_SLOTS_SAVED = getMAX_NUM_TIME_SLOTS_SAVED();
     }
 
+    /* reads the config.properties file*/
     private int getMAX_NUM_TIME_SLOTS_SAVED() {
         Properties properties = new Properties();
         try {
@@ -34,6 +36,8 @@ public class TimeSlotManager {
         }
     }
 
+    /*needs to be called every duration
+     * adds NUM_NEW_TIME_SLOTS */
     public void addNewTimeSlots() {
         if (timeSlots == null) {
             timeSlots = new ArrayList<>();
@@ -45,8 +49,11 @@ public class TimeSlotManager {
         }
     }
 
-    private void addNewTimeSlots(LocalDateTime now) {
-        LocalDateTime start = now;
+    /*called from addNewTimeSlots
+     * creating NUM_NEW_TIME_SLOTS starting with startTime
+     * calls method for deleting old timeSlots*/
+    private void addNewTimeSlots(LocalDateTime startTime) {
+        LocalDateTime start = startTime;
         for (int i = 0; i < NUM_NEW_TIME_SLOTS; i++) {
             LocalDateTime end = start.plusSeconds(DURATION_IN_SECS);
             TimeSlot timeSlot = new TimeSlot(start, end);
@@ -56,6 +63,7 @@ public class TimeSlotManager {
         deleteOldTimeSlots();
     }
 
+    /*deletes old timeSlots if there are more than MAX_NUM_TIME_SLOTS_SAVED*/
     private void deleteOldTimeSlots() {
         while (timeSlots.size() > MAX_NUM_TIME_SLOTS_SAVED) {
             timeSlots.remove(0);
