@@ -38,8 +38,9 @@ public class TestAddBid {
         UUID auctionUUID = UUID.randomUUID();
         sell.setAuctionID(auctionUUID);
 
-        Bid bid = new Bid(12, 13, slotID);
-        UUID bidderUUID = bid.getBidderID();
+        UUID bidderUUID = UUID.randomUUID();
+        Bid bid = new Bid(12, 13, slotID, bidderUUID);
+
 
         bid.setAuctionID(auctionUUID);
 
@@ -95,14 +96,15 @@ public class TestAddBid {
         UUID auctionUUID = UUID.randomUUID();
         sell.setAuctionID(auctionUUID);
 
-        Bid bid1 = new Bid(12, 13, slotID);
-        UUID bidderUUID1 = bid1.getBidderID();
+        UUID bidderUUID1 = UUID.randomUUID();
+        Bid bid1 = new Bid(12, 13, slotID, bidderUUID1);
 
-        Bid bid2 = new Bid(12, 15, slotID);
-        UUID bidderUUID2 = bid2.getBidderID();
+        UUID bidderUUID2 = UUID.randomUUID();
+        Bid bid2 = new Bid(12, 15, slotID, bidderUUID2);
 
-        Bid bid3 = new Bid(12, 10, slotID);
-        UUID bidderUUID3 = bid3.getBidderID();
+        UUID bidderUUID3 = UUID.randomUUID();
+        Bid bid3 = new Bid(12, 10, slotID, bidderUUID3);
+
 
         bid1.setAuctionID(auctionUUID);
         bid2.setAuctionID(auctionUUID);
@@ -162,7 +164,7 @@ public class TestAddBid {
         UUID auctionUUID = UUID.randomUUID();
         sell.setAuctionID(auctionUUID);
 
-        Bid bid1 = new Bid(12, 13, slotID);
+        Bid bid1 = new Bid(12, 13, slotID, UUID.randomUUID());
         UUID bidderUUID1 = bid1.getBidderID();
 
         try {

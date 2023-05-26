@@ -1,4 +1,4 @@
-package loadBalancingTests.timeManager;
+package loadBalancingTests.averageAlgorithm;
 
 import loadManager.Exceptions.PriceNotOKException;
 import loadManager.prosumerActionManagement.AverageMechanism;
@@ -28,7 +28,7 @@ public class TestAveragePriceOK {
             throw new RuntimeException(e);
         }
 
-        Bid bid = new Bid(volume, price, timeSlotID);
+        Bid bid = new Bid(volume, price, timeSlotID, UUID.randomUUID());
 
         //act - assert
         Assertions.assertDoesNotThrow(() -> averageMechanism.isBidPriceHighEnough(bid.getPrice()));
@@ -56,7 +56,7 @@ public class TestAveragePriceOK {
                 throw new RuntimeException(e);
             }
 
-            Bid bid = new Bid(volume, price, timeSlotID);
+            Bid bid = new Bid(volume, price, timeSlotID, UUID.randomUUID());
             try {
                 averageMechanism.isBidPriceHighEnough(bid.getPrice());
             } catch (PriceNotOKException e) {
@@ -65,7 +65,7 @@ public class TestAveragePriceOK {
         }
 
 
-        Bid bid = new Bid(volume, price, timeSlotID);
+        Bid bid = new Bid(volume, price, timeSlotID, UUID.randomUUID());
 
         //act - assert
         try {
@@ -85,7 +85,7 @@ public class TestAveragePriceOK {
         for (int i = 0; i < 200; i++) {
             try {
                 Sell sell = new Sell(volume, price, timeSlotID);
-                Bid bid = new Bid(volume, price, timeSlotID);
+                Bid bid = new Bid(volume, price, timeSlotID, UUID.randomUUID());
 
                 averageMechanism.isAskPriceLowEnough(sell.getAskPrice());
                 averageMechanism.isBidPriceHighEnough(bid.getPrice());
@@ -94,7 +94,7 @@ public class TestAveragePriceOK {
             }
         }
 
-        Bid bid = new Bid(volume, price - 1, timeSlotID);
+        Bid bid = new Bid(volume, price - 1, timeSlotID, UUID.randomUUID());
 
         //act - assert
         try {
@@ -110,7 +110,7 @@ public class TestAveragePriceOK {
         //arrange
         AverageMechanism averageMechanism = new AverageMechanism();
 
-        Bid bid = new Bid(volume, -1, timeSlotID);
+        Bid bid = new Bid(volume, -1, timeSlotID, UUID.randomUUID());
 
         //act - assert
         Assertions.assertThrows(PriceNotOKException.class, () -> averageMechanism.isBidPriceHighEnough(bid.getPrice()));
@@ -151,9 +151,9 @@ public class TestAveragePriceOK {
 
             Bid bid;
             if (i == 130) {
-                bid = new Bid(volume, highestBidPrice, timeSlotID);
+                bid = new Bid(volume, highestBidPrice, timeSlotID, UUID.randomUUID());
             } else {
-                bid = new Bid(volume, price, timeSlotID);
+                bid = new Bid(volume, price, timeSlotID, UUID.randomUUID());
             }
 
             try {

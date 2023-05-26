@@ -13,7 +13,7 @@ public class TestNewBidProsumerManager {
     @Test
     public void givenAuctions_handleNewBid_expectedAuctionManagerWithBidAndProsumerTracker() {
         //arrange
-        Bid bid = new Bid(volume, price, timeSlotID);
+        Bid bid = new Bid(volume, price, timeSlotID, UUID.randomUUID());
 
 
         //act
