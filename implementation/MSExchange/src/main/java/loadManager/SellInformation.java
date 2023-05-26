@@ -12,4 +12,12 @@ public class SellInformation {
         this.sell = sell;
         this.exchangeID = exchangeID;
     }
+
+    public Sell getSell() {
+        return sell;
+    }
+
+    public UUID getExchangeID() {
+        return exchangeID;
+    }
 }
