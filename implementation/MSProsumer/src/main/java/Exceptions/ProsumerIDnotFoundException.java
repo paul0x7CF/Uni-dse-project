@@ -1,4 +1,4 @@
-package MSProsumer.Exceptions;
+package Exceptions;
 
 public class ProsumerIDnotFoundException extends Exception{
     public ProsumerIDnotFoundException(String message) {

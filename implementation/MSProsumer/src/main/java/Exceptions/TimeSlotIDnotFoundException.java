@@ -1,4 +1,4 @@
-package MSProsumer.Exceptions;
+package Exceptions;
 
 public class TimeSlotIDnotFoundException extends Exception{
     public TimeSlotIDnotFoundException(String message) {

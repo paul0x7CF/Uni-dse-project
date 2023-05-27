@@ -1,7 +1,7 @@
 package MSProsumer.Main;
 
-import MSProsumer.Communication.Communication;
-import MSProsumer.Logic.Prosumer;
+import Communication.Communication;
+import Logic.Prosumer;
 import protocol.Message;
 import sendable.Bid;
 import sendable.Sell;

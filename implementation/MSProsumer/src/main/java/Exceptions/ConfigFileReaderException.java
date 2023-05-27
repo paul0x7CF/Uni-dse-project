@@ -1,4 +1,4 @@
-package MSProsumer.Exceptions;
+package Exceptions;
 
 public class ConfigFileReaderException extends Exception{
     public ConfigFileReaderException(String message) {

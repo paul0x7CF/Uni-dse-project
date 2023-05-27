@@ -1,4 +1,4 @@
-package MSProsumer.Communication;
+package Communication;
 
 import messageHandling.MessageHandler;
 import org.apache.logging.log4j.message.Message;

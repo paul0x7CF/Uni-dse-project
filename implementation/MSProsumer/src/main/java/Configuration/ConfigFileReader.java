@@ -1,4 +1,4 @@
-package MSProsumer.Configuration;
+package Configuration;
 
 public class ConfigFileReader {
 }

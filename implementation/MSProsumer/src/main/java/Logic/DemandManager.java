@@ -1,4 +1,4 @@
-package MSProsumer.Logic;
+package Logic;
 
 import protocol.Message;
 
