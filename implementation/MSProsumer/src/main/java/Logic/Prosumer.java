@@ -1,9 +1,13 @@
 package Logic;
 
+import Communication.Communication;
 import Data.Consumer;
 import Data.EProsumerType;
 import Data.SolarPanel;
 import Data.Wallet;
+import mainPackage.MainForTesting;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import protocol.Message;
 import sendable.Bid;
 import sendable.Sell;
@@ -13,8 +17,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Prosumer implements Runnable{
+
+    private static final Logger logger = LogManager.getLogger(Prosumer.class);
+
 
     private UUID prosumerID;
     private EProsumerType prosumerType;
@@ -23,14 +31,25 @@ public class Prosumer implements Runnable{
     private List<SolarPanel> producer;
     private List<Consumer> consumer;
     private Wallet wallet;
+    private Communication communicator;
     private HashMap<UUID, BlockingQueue<Message>> slotsDemand;
-    private BlockingQueue<TimeSlot> availableTimeSlots;
+    private BlockingQueue<Message> incomingMessages;
     private BlockingQueue<Message> outgoingMessages;
 
     public Prosumer(EProsumerType prosumerType, BlockingQueue<TimeSlot> availableTimeSlots, BlockingQueue<Message> outgoingMessages) {
         this.prosumerType = prosumerType;
-        this.availableTimeSlots = availableTimeSlots;
+        //this.availableTimeSlots = availableTimeSlots;
         this.outgoingMessages = outgoingMessages;
+    }
+
+    public Prosumer(EProsumerType prosumerType, double cashBalance) {
+        this.prosumerType = prosumerType;
+        this.wallet = new Wallet(cashBalance);
+        this.incomingMessages = new LinkedBlockingQueue<>();
+        this.outgoingMessages = new LinkedBlockingQueue<>();
+        this.communicator = new Communication(this.incomingMessages, this.outgoingMessages);
+
+        logger.info("Prosumer created from type {} with cash balance {}", prosumerType, cashBalance);
     }
 
     private void createProducer() {
