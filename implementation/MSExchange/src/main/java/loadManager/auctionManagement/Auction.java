@@ -1,8 +1,8 @@
 package loadManager.auctionManagement;
 
 import loadManager.Exceptions.CommandNotPossibleException;
+import loadManager.SellInformation;
 import sendable.Bid;
-import sendable.Sell;
 import sendable.Transaction;
 
 import java.util.UUID;
@@ -15,13 +15,15 @@ public class Auction {
     private double pricePerKWh;
     private double volume;
     private boolean auctionEnded = false;
+    private UUID exchangeID;
 
-    public Auction(UUID auctionID, Sell sellPosition) {
+    public Auction(UUID auctionID, SellInformation sellPosition) {
         this.auctionID = auctionID;
-        this.sellerID = sellPosition.getSellerID();
-        this.pricePerKWh = sellPosition.getAskPrice();
-        this.volume = sellPosition.getVolume();
-        this.timeSlotID = sellPosition.getTimeSlot();
+        this.sellerID = sellPosition.getSell().getSellerID();
+        this.pricePerKWh = sellPosition.getSell().getAskPrice();
+        this.volume = sellPosition.getSell().getVolume();
+        this.timeSlotID = sellPosition.getSell().getTimeSlot();
+        this.exchangeID = sellPosition.getExchangeID();
     }
 
     public void setBid(Bid bidPosition) {

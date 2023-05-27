@@ -34,7 +34,7 @@ public class TestAddBid {
         UUID slotID = timeSlot.getTimeSlotID();
 
 
-        Sell sell = new Sell(12, 12, slotID);
+        Sell sell = new Sell(12, 12, slotID, UUID.randomUUID());
         UUID auctionUUID = UUID.randomUUID();
         sell.setAuctionID(auctionUUID);
 
@@ -92,7 +92,7 @@ public class TestAddBid {
         timeSlotList.add(timeSlot);
         UUID slotID = timeSlot.getTimeSlotID();
 
-        Sell sell = new Sell(12, 9, slotID);
+        Sell sell = new Sell(12, 9, slotID, UUID.randomUUID());
         UUID auctionUUID = UUID.randomUUID();
         sell.setAuctionID(auctionUUID);
 
@@ -160,7 +160,7 @@ public class TestAddBid {
         timeSlotList.add(timeSlot);
         UUID slotID = timeSlot.getTimeSlotID();
 
-        Sell sell = new Sell(12, 9, slotID);
+        Sell sell = new Sell(12, 9, slotID, UUID.randomUUID());
         UUID auctionUUID = UUID.randomUUID();
         sell.setAuctionID(auctionUUID);
 
