@@ -21,7 +21,7 @@ public class TestGetBiddersAuctions {
         // Arrange
         AuctionManager auctionManager = new AuctionManager();
         for (int i = 0; i < 10; i++) {
-            Sell sell = new Sell(volume, price, timeSlotID);
+            Sell sell = new Sell(volume, price, timeSlotID, UUID.randomUUID());
             Auction auction = new Auction(UUID.randomUUID(), sell);
             auctionManager.addAuction(auction);
 
