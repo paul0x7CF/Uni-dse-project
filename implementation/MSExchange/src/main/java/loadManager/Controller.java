@@ -3,8 +3,8 @@ package loadManager;
 import broker.BrokerRunner;
 import loadManager.exchangeManagement.ExchangeServiceInformation;
 import loadManager.exchangeManagement.LoadManager;
-import loadManager.networkManagment.ExtendedMessageBuilder;
 import loadManager.prosumerActionManagement.ProsumerManager;
+import loadManager.timeSlotManagement.MessageBuilderTimeSlot;
 import loadManager.timeSlotManagement.TimeSlotBuilder;
 import messageHandling.IMessageHandler;
 import protocol.ECategory;
@@ -16,6 +16,7 @@ import sendable.Transaction;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
@@ -77,9 +78,15 @@ public class Controller implements Runnable {
     private void addNewTimeSlotsPeriodically() {
         while (true) {
             timeSlotBuilder.addNewTimeSlots();
-            //TODO: message-builder: Build message to send timeSlots
-            Message message = ExtendedMessageBuilder.buildTimeSlotMessage(timeSlotBuilder.getTimeSlots());
 
+            //TODO: message-builder: Build message to send timeSlots
+            MessageBuilderTimeSlot messageBuilderTimeSlot = new MessageBuilderTimeSlot();
+            List<Message> messages = messageBuilderTimeSlot.buildTimeSlotMessages(timeSlotBuilder.getTimeSlots());
+
+            for (Message message : messages) {
+                outgoingQueue.add(message);
+            }
+            
             try {
                 //Wait for the specified duration in secs
                 Thread.sleep(TIME_SLOT_DURATION * NUM_NEW_TIME_SLOTS * 1000); //*1000 to convert to ms

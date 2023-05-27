@@ -9,6 +9,7 @@ import sendable.*;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -169,6 +170,6 @@ public interface IMessageBuilder {
         return null;
     }
 
-    public Message buildTimeSlotMessage();
-    
+    public List<Message> buildTimeSlotMessages(List<TimeSlot> timeSlots);
+
 }
