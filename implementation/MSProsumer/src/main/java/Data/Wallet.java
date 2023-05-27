@@ -6,10 +6,8 @@ public class Wallet {
     private double minAskPrice;
     private double maxBuyPrice;
 
-    public Wallet(final double cashBalance, final double minAskPrice, final double maxBuyPrice) {
+    public Wallet(double cashBalance) {
         this.cashBalance = cashBalance;
-        this.minAskPrice = minAskPrice;
-        this.maxBuyPrice = maxBuyPrice;
     }
 
     public double getCashBalance() {
