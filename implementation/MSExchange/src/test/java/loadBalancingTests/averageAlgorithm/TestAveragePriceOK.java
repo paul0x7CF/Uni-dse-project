@@ -21,7 +21,7 @@ public class TestAveragePriceOK {
         //arrange
         AverageMechanism averageMechanism = new AverageMechanism();
 
-        Sell sell = new Sell(volume, price, timeSlotID);
+        Sell sell = new Sell(volume, price, timeSlotID, UUID.randomUUID());
         try {
             averageMechanism.isAskPriceLowEnough(sell.getAskPrice());
         } catch (PriceNotOKException e) {
@@ -49,7 +49,7 @@ public class TestAveragePriceOK {
         AverageMechanism averageMechanism = new AverageMechanism();
 
         for (int i = 0; i < 200; i++) {
-            Sell sell = new Sell(volume, price, timeSlotID);
+            Sell sell = new Sell(volume, price, timeSlotID, UUID.randomUUID());
             try {
                 averageMechanism.isAskPriceLowEnough(sell.getAskPrice());
             } catch (PriceNotOKException e) {
@@ -84,7 +84,7 @@ public class TestAveragePriceOK {
 
         for (int i = 0; i < 200; i++) {
             try {
-                Sell sell = new Sell(volume, price, timeSlotID);
+                Sell sell = new Sell(volume, price, timeSlotID, UUID.randomUUID());
                 Bid bid = new Bid(volume, price, timeSlotID, UUID.randomUUID());
 
                 averageMechanism.isAskPriceLowEnough(sell.getAskPrice());
@@ -121,7 +121,7 @@ public class TestAveragePriceOK {
         //arrange
         AverageMechanism averageMechanism = new AverageMechanism();
 
-        Sell sell = new Sell(volume, -1, timeSlotID);
+        Sell sell = new Sell(volume, -1, timeSlotID, UUID.randomUUID());
 
         //act - assert
         Assertions.assertThrows(PriceNotOKException.class, () -> averageMechanism.isAskPriceLowEnough(sell.getAskPrice()));
@@ -138,9 +138,9 @@ public class TestAveragePriceOK {
         for (int i = 0; i < 200; i++) {
             Sell sell;
             if (i == 140) {
-                sell = new Sell(volume, highestSellPrice, timeSlotID);
+                sell = new Sell(volume, highestSellPrice, timeSlotID, UUID.randomUUID());
             } else {
-                sell = new Sell(volume, price, timeSlotID);
+                sell = new Sell(volume, price, timeSlotID, UUID.randomUUID());
             }
 
             try {

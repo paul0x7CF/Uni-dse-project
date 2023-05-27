@@ -32,7 +32,7 @@ public class TestAddAuction {
         timeSlotList.add(timeSlot);
         UUID slotID = timeSlot.getTimeSlotID();
 
-        Sell sell = new Sell(12, 12, slotID);
+        Sell sell = new Sell(12, 12, slotID, UUID.randomUUID());
         sell.setAuctionID(UUID.randomUUID());
         try {
             sellQueue.put(sell);

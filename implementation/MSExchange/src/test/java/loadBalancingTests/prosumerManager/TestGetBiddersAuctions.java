@@ -1,5 +1,6 @@
 package loadBalancingTests.prosumerManager;
 
+import loadManager.SellInformation;
 import loadManager.auctionManagement.Auction;
 import loadManager.auctionManagement.AuctionManager;
 import org.junit.jupiter.api.Test;
@@ -21,8 +22,10 @@ public class TestGetBiddersAuctions {
         // Arrange
         AuctionManager auctionManager = new AuctionManager();
         for (int i = 0; i < 10; i++) {
-            Sell sell = new Sell(volume, price, timeSlotID);
-            Auction auction = new Auction(UUID.randomUUID(), sell);
+            Sell sell = new Sell(volume, price, timeSlotID, UUID.randomUUID());
+            SellInformation sellInformation = new SellInformation(sell, UUID.randomUUID());
+
+            Auction auction = new Auction(UUID.randomUUID(), sellInformation);
             auctionManager.addAuction(auction);
 
             if (i % 2 == 0) {
