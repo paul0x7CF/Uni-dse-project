@@ -1,6 +1,6 @@
-package MSProsumer.Logic;
+package Logic;
 
-import MSProsumer.Data.Consumer;
+import Data.Consumer;
 
 import java.util.List;
 

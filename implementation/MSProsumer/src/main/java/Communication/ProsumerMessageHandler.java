@@ -1,4 +1,4 @@
-package MSProsumer.Communication;
+package Communication;
 
 import exceptions.MessageProcessingException;
 import exceptions.RemoteException;

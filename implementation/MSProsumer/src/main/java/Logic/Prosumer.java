@@ -1,9 +1,9 @@
-package MSProsumer.Logic;
+package Logic;
 
-import MSProsumer.Data.Consumer;
-import MSProsumer.Data.EProsumerType;
-import MSProsumer.Data.SolarPanel;
-import MSProsumer.Data.Wallet;
+import Data.Consumer;
+import Data.EProsumerType;
+import Data.SolarPanel;
+import Data.Wallet;
 import protocol.Message;
 import sendable.Bid;
 import sendable.Sell;
@@ -33,7 +33,7 @@ public class Prosumer implements Runnable{
         this.outgoingMessages = outgoingMessages;
     }
 
-    private void createProsumer() {
+    private void createProducer() {
 
     }
     private void createConsumer() {

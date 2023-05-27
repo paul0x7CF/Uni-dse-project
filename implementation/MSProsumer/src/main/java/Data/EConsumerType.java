@@ -1,4 +1,4 @@
-package MSProsumer.Data;
+package Data;
 
 public enum EConsumerType {
     EVEHICLE,

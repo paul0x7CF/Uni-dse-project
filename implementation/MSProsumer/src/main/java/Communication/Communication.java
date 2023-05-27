@@ -1,4 +1,4 @@
-package MSProsumer.Communication;
+package Communication;
 
 import MSProsumer.Main.ProsumerManager;
 import broker.Broker;
