@@ -47,9 +47,9 @@ public class InfoMessageBuilder { // TODO: rename to InfoMessageTemplate
     }
 
     public static Message createAckMessage(Message message) {
+        AckInfo ack = new AckInfo(message.getMessageID(), message.getCategory());
         Message ackMessage = MessageFactory.reverse(message);
         ackMessage.setCategory(ECategory.Info, "Ack");
-        AckInfo ack = new AckInfo(message.getMessageID(), message.getCategory());
         ackMessage.setPayload(ack);
         log.trace("Ack created for {}", ack.getMessageID());
         return ackMessage;

@@ -1,9 +1,13 @@
 # Verwendung der Library
-
 Um die Broker-Bibliothek in den anderen Komponenten zu nutzen, befolgen Sie die folgenden Schritte:
 
+1. Instantiierung des Brokers
+2. MessageHandler-Klassen
+3. Klasse zum Erstellen von Nachrichten
+4. Starten Sie den Broker
+
 ## Instantiierung des Brokers
-- Siehe **MainForTesting.java**
+- Siehe **MainForTesting.java** und **DiscoveryService.java**
 
 Erstellen Sie zuerst eine Instanz des Brokers. Die Instanziierung ist unkompliziert und kann direkt erstellt werden:
 
@@ -51,6 +55,7 @@ Es ist außerdem wichtig zu verstehen, dass in diesen Klassen die Nachrichten ve
 Nachricht erhalten, die Sie verarbeiten möchten, müssen Sie dies in der handle()-Methode tun. Wenn Sie eine neue
 Nachricht senden möchten, können Sie dies mit der send()-Methode tun, die in der IBroker-Schnittstelle definiert ist.
 
+Die Methoden des Brokers (zB sendMessage) sollen nur in den MessageHandler-Klassen aufgerufen werden.
 
 ## Klasse zum Erstellen von Nachrichten
 - siehe **InfoMessageBuilder.java**

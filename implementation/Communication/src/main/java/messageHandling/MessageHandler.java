@@ -43,8 +43,8 @@ public class MessageHandler implements IMessageHandler {
     private void handleInfo(Message message) throws MessageProcessingException {
         try {
             handlers.get(ECategory.Info).handleMessage(message);
-        } catch (MessageProcessingException | RemoteException e) {
-            throw new MessageProcessingException("No handler found for message: " + message);
+        } catch (RemoteException e) {
+            throw new MessageProcessingException("RemoteException: " + e.getMessage());
         }
     }
 

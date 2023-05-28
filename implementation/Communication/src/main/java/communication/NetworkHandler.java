@@ -60,13 +60,19 @@ public class NetworkHandler {
         outputQueue.add(localMessage);
     }
 
-    public byte[] receiveMessage() throws InterruptedException {
-        return inputQueue.take();
+    public byte[] receiveMessage() {
+        try {
+            return inputQueue.take();
+        } catch (InterruptedException e) {
+            log.error("Could not receive message", e);
+            throw new RuntimeException(e);
+        }
     }
 
     public void scheduleMessage(LocalMessage localMessage, int delay) {
         // 1 is just the initial delay, it is not 0 because not everything may be initialized.
         log.debug("Scheduled message to: {}", localMessage.getReceiverPort());
+        // TODO: Dont send register messages to already registered services
         scheduler.scheduleAtFixedRate(() -> broadcastQueue.add(localMessage), 1, delay, TimeUnit.SECONDS);
     }
 

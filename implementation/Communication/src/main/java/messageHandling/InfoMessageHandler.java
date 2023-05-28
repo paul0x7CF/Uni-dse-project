@@ -12,6 +12,8 @@ import sendable.MSData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Objects;
+
 public class InfoMessageHandler implements IMessageHandler {
     private static final Logger log = LogManager.getLogger(InfoMessageHandler.class);
     private final IServiceBroker broker;
@@ -43,11 +45,12 @@ public class InfoMessageHandler implements IMessageHandler {
                 break;
             case "Error":
                 handleError(message);
+                break;
             default:
                 throw new MessageProcessingException("Unknown message subCategory: " + message.getSubCategory());
         }
 
-        log.trace("{} Message processed" + message.getCategory());
+        log.trace("{} Message processed", message.getCategory());
     }
 
     private void handlePing(Message message) throws MessageProcessingException {
@@ -69,9 +72,9 @@ public class InfoMessageHandler implements IMessageHandler {
         if (register == null) {
             throw new MessageProcessingException("Payload is null");
         }
-        if (register instanceof MSData from) {
-            broker.registerService(from);
-            broker.sendMessage(InfoMessageBuilder.createPingMessage(currentService, from));
+        if (register instanceof MSData msData) {
+            broker.registerService(msData);
+            broker.sendMessage(InfoMessageBuilder.createPingMessage(currentService, msData));
         } else {
             throw new MessageProcessingException("Payload is not of type MSData");
         }
@@ -108,10 +111,14 @@ public class InfoMessageHandler implements IMessageHandler {
         if (error == null) {
             throw new MessageProcessingException("Payload is null");
         }
-        if (error instanceof ErrorInfo from) {
-            log.error("Received RemoteError");
-            //TODO: How to handle this in each service?
-            throw new RemoteException(from.getName());
+        if (error instanceof ErrorInfo errorInfo) {
+            // TODO: How to handle this in each service?
+            if (!Objects.equals(errorInfo.getName(), "test")) {
+                log.error("Received remote error");
+                throw new RemoteException(errorInfo.getName());
+            } else {
+                log.error("Received test error");
+            }
         } else {
             throw new MessageProcessingException("Payload is not of type ErrorInfo");
         }

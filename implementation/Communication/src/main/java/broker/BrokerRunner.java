@@ -23,7 +23,7 @@ public class BrokerRunner implements Runnable {
     @Override
     public void run() {
         try {
-            log.info("Starting {} {}", broker.getCurrentService().getType(), broker.getCurrentService().getPort());
+            log.info("Starting {} instance on port {}", broker.getCurrentService().getType(), broker.getCurrentService().getPort());
             broker.startBroker();
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
