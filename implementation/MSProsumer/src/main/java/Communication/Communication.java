@@ -1,11 +1,13 @@
 package Communication;
 
+import Logic.AuctionMessageHandler;
 import Logic.Prosumer;
 import MSProsumer.Main.ProsumerManager;
 import broker.BrokerRunner;
 import messageHandling.MessageHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import protocol.ECategory;
 import protocol.Message;
 import sendable.EServiceType;
 import sendable.MSData;
@@ -40,21 +42,27 @@ public class Communication {
         this.prosumerManager = prosumerManager;
     }
 
-    public Communication(BlockingQueue<Message> incomingMessages, BlockingQueue<Message> outgoingMessages) {
+    public Communication(BlockingQueue<Message> incomingMessages, BlockingQueue<Message> outgoingMessages, final int port) {
         this.incomingMessages = outgoingMessages;
         this.outgoingMessages = outgoingMessages;
-        this.communicationBroker = new BrokerRunner(EServiceType.Prosumer,8888);
-        this.myMSData = this.communicationBroker.getCurrentService();
+        createBroker(port);
+
         logger.info("MS registered with Id: {} Ip: {} Port: {}", this.myMSData.getId(), this.myMSData.getAddress(), this.myMSData.getPort());
     }
 
-    private void createBroker() {
-
+    private void createBroker(final int port) {
+        this.communicationBroker = new BrokerRunner(EServiceType.Prosumer, port);
+        this.myMSData = this.communicationBroker.getCurrentService();
+        new Thread(communicationBroker).start();
     }
 
     private void sendMessage(Message message) {
 
+        //communicationBroker.addMessageHandler(ECategory.Auction, new AuctionMessageHandler(communicationBroker, prosumer));
+
+
     }
+
 
 
 }
