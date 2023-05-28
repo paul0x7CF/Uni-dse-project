@@ -6,7 +6,6 @@ import sendable.EServiceType;
 import sendable.MSData;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ServiceRegistry {
     private static final Logger log = LogManager.getLogger(ServiceRegistry.class);
@@ -81,9 +80,12 @@ public class ServiceRegistry {
     }
 
     public List<MSData> getAvailableServices() {
-        return availableServices.values().stream()
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
+        List<MSData> list = new ArrayList<>();
+        for (List<MSData> services : availableServices.values()) {
+            list.addAll(services);
+        }
+
+        return list;
     }
 
     public List<MSData> getServicesByType(EServiceType serviceType) {

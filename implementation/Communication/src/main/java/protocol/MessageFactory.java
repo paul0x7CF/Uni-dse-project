@@ -8,7 +8,7 @@ import java.util.UUID;
  * This class will create a message object. It will also validate the message. The setter classes all return the
  * MessageFactory object, so that the builder can be used in a fluent way.
  */
-public class MessageFactory { // TODO: rename to MessageFactory?
+public class MessageFactory {
     private String category;
     private UUID senderID;
     private String senderAddress;

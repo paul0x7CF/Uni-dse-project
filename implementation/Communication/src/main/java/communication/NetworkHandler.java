@@ -2,7 +2,6 @@ package communication;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import protocol.Message;
 import sendable.EServiceType;
 import sendable.MSData;
 
@@ -10,8 +9,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.UUID;
 import java.util.concurrent.*;
-
-import static broker.InfoMessageBuilder.createRegisterMessage;
 
 /**
  * This class handles the network communication for a microservice and provides methods to send and receive messages.
@@ -51,11 +48,12 @@ public class NetworkHandler {
     public void startSockets() {
         executor.execute(inputSocket);
         executor.execute(outputSocket);
-        executor.execute(broadcastSocket);
+        scheduler.execute(broadcastSocket);
     }
 
     public void stop() {
         executor.shutdown();
+        scheduler.shutdown();
     }
 
     public void sendMessage(LocalMessage localMessage) {

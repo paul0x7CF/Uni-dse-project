@@ -55,15 +55,15 @@ public class BrokerRunner implements Runnable {
         broker.stop();
     }
 
-    protected List<MSData> getServices() {
+    public List<MSData> getServices() {
         return broker.getServices();
     }
 
-    protected MSData findService(UUID serviceId) {
+    public MSData findService(UUID serviceId) {
         return broker.findService(serviceId);
     }
 
-    protected List<MSData> getServicesByType(EServiceType serviceType) {
+    public List<MSData> getServicesByType(EServiceType serviceType) {
         return broker.getServicesByType(serviceType);
     }
 }
