@@ -1,13 +1,10 @@
 package Communication;
 
-import Logic.AuctionMessageHandler;
-import Logic.Prosumer;
 import MSProsumer.Main.ProsumerManager;
 import broker.BrokerRunner;
 import messageHandling.MessageHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import protocol.ECategory;
 import protocol.Message;
 import sendable.EServiceType;
 import sendable.MSData;
