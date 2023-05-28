@@ -5,6 +5,7 @@ import Data.Consumer;
 import Data.EProsumerType;
 import Data.SolarPanel;
 import Data.Wallet;
+import Exceptions.UnknownMessageException;
 import mainPackage.MainForTesting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,12 +43,12 @@ public class Prosumer implements Runnable{
         this.outgoingMessages = outgoingMessages;
     }
 
-    public Prosumer(EProsumerType prosumerType, double cashBalance) {
+    public Prosumer(EProsumerType prosumerType, double cashBalance, final int port) {
         this.prosumerType = prosumerType;
         this.wallet = new Wallet(cashBalance);
         this.incomingMessages = new LinkedBlockingQueue<>();
         this.outgoingMessages = new LinkedBlockingQueue<>();
-        this.communicator = new Communication(this.incomingMessages, this.outgoingMessages);
+        this.communicator = new Communication(this.incomingMessages, this.outgoingMessages, port);
 
         logger.info("Prosumer created from type {} with cash balance {}", prosumerType, cashBalance);
     }
@@ -77,6 +78,32 @@ public class Prosumer implements Runnable{
 
     @Override
     public void run() {
+        logger.debug("Test");
+        /*
+        while (true) {
+            try {
+                Message newMessage = this.incomingMessages.take();
+                logger.debug("Message received from type : {}", newMessage.getCategory());
+                switch (newMessage.getCategory()) {
+                    case SellLowerQuestion:
+                        actSellLowerQuestion(message);
+                        break;
+                    case BidHigherQuestion:
+                        actBidHigherQuestion(message);
+                        break;
+                    default:
+                        throw new UnknownMessageException();
+                }
+            } catch (InterruptedException e) {
+                logger.error("Error while receiving message: {}", e.getMessage());
+            } catch (UnknownMessageException e) {
+                logger.warn(e.getMessage());
+            }
+
+
+        }
+        */
+
 
     }
 }
