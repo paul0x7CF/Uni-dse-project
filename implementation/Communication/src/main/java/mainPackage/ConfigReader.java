@@ -4,11 +4,12 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class ConfigReader {
-    private static final String PROPERTIES_FILE = "config.properties";
+    private static final String PROPERTIES_FILE = "LibraryConfig.properties";
     private final Properties properties;
 
     public ConfigReader() {
-        try (InputStream input = getClass().getClassLoader().getResourceAsStream(PROPERTIES_FILE)) {
+        try {
+            InputStream input = getClass().getClassLoader().getResourceAsStream(PROPERTIES_FILE);
             properties = new Properties();
             properties.load(input);
         } catch (Exception e) {

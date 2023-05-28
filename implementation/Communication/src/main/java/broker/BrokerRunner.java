@@ -30,10 +30,6 @@ public class BrokerRunner implements Runnable {
         }
     }
 
-    protected Broker getBroker() {
-        return broker;
-    }
-
     public void sendMessage(Message message) {
         broker.sendMessage(message);
     }

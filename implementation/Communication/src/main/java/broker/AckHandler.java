@@ -51,17 +51,18 @@ public class AckHandler {
     }
 
     public void ackReceived(AckInfo ack) {
-        // TODO: Redundant, but I want to make sure that the message is removed from pendingAcks
         if (!pendingAcks.containsKey(ack.getMessageID())) {
-            log.warn("Received ack for unknown message {}", ack.getMessageID());
+            log.warn("Received ack for unknown message {}, {}", ack.getCategory(), ack.getMessageID());
             return;
         }
+
+        // log.error("Remove ack from pendingAcks: {}", pendingAcks.remove(ack.getMessageID()) == null);
 
         if (pendingAcks.remove(ack.getMessageID()) == null) {
             log.warn("Unknown message {}", ack.getMessageID());
             return;
         }
 
-        log.info("Received ack for message {}", ack.getMessageID());
+        log.trace("Received ack for message {}", ack.getMessageID());
     }
 }

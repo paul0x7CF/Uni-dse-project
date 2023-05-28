@@ -24,7 +24,7 @@ public class MainForTesting {
         final int prosumerCount = 1;
         final int storageCount = 1;
         final int exchangeCount = 1;
-        final int forecastCount = 1;
+        final int forecastCount = 0;
 
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(100);
 
@@ -39,6 +39,7 @@ public class MainForTesting {
         }
 
         // create exchange
+        sleep(5);
         for (int i = 0; i < exchangeCount * 10; i += 10) {
             executor.execute(new BrokerRunner(EServiceType.Exchange, exchangePort + i));
         }
@@ -52,7 +53,7 @@ public class MainForTesting {
             executor.execute(new BrokerRunner(EServiceType.Consumption, forecastPort + i));
         }
 
-        sleep(20 * 1000);
+        sleep(20);
 
         executor.shutdown();
         try {
@@ -71,9 +72,9 @@ public class MainForTesting {
 
     }
 
-    private static void sleep(int duration) {
+    private static void sleep(long duration) {
         try {
-            Thread.sleep(duration);
+            Thread.sleep(duration * 1000);
         } catch (InterruptedException e) {
             log.error("Thread interrupted", e);
         }
