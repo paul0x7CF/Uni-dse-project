@@ -79,6 +79,7 @@ public class Prosumer implements Runnable{
     @Override
     public void run() {
         logger.debug("Test");
+        this.communicator.startBrokerRunner();
         /*
         while (true) {
             try {

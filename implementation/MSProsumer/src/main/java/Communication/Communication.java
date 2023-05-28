@@ -53,7 +53,10 @@ public class Communication {
     private void createBroker(final int port) {
         this.communicationBroker = new BrokerRunner(EServiceType.Prosumer, port);
         this.myMSData = this.communicationBroker.getCurrentService();
-        new Thread(communicationBroker).start();
+    }
+
+    public void startBrokerRunner() {
+        new Thread(this.communicationBroker).start();
     }
 
     private void sendMessage(Message message) {
