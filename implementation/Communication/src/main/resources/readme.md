@@ -3,14 +3,16 @@
 Um die Broker-Bibliothek in den anderen Komponenten zu nutzen, befolgen Sie die folgenden Schritte:
 
 ## Instantiierung des Brokers
+- Siehe **MainForTesting.java**
 
 Erstellen Sie zuerst eine Instanz des Brokers. Die Instanziierung ist unkompliziert und kann direkt erstellt werden:
 
 ``` java
-Broker broker = new Broker(EServiceType, listeningPort);
+BrokerRunner broker = new BrokerRunner(EServiceType, listeningPort);
 ```
 
-## MessageHandler-Klassen:
+## MessageHandler-Klassen
+- siehe Konstruktor von **Broker.java** und **InfoMessageHandler.java**
 
 Erstellen Sie Ihre eigenen MessageHandler-Klassen für Auction, Exchange und Forecast. Diese Klassen sollten eine Instanz
 von IBroker enthalten, um Nachrichten zu senden. Hier ist ein einfaches Beispiel für eine solche Klasse:
@@ -51,6 +53,7 @@ Nachricht senden möchten, können Sie dies mit der send()-Methode tun, die in d
 
 
 ## Klasse zum Erstellen von Nachrichten
+- siehe **InfoMessageBuilder.java**
 
 Um die Klarheit des Codes zu bewahren, sollten Sie eine spezielle Klasse zum Erstellen von Nachrichten erstellen. Diese
 Klasse könnte eine Reihe von Methoden enthalten, die verschiedene Arten von Nachrichten erstellen, abhängig von den
@@ -69,6 +72,7 @@ private static MessageFactory senderAndReceiverTemplate(MSData sender, MSData re
 ```
 
 ## Starten Sie den Broker
+- siehe **MainForTesting.java**
 
 Schließlich müssen Sie den Broker starten. Da Broker das Runnable-Interface implementiert, kann dies einfach durch
 Aufruf der start()-Methode erreicht werden:
