@@ -26,10 +26,11 @@ public class Main {
 
 
         for (int i = 0; i < PROSUMER_AMOUNT; i++) {
+            final int port = 1050 + i * 50;
             Random random = new Random();
             int randomValue = random.nextInt(EProsumerType.values().length);
             EProsumerType prosumerType = EProsumerType.values()[randomValue];
-            new Thread(new Prosumer(prosumerType, CASH_BALANCE)).start();
+            new Thread(new Prosumer(prosumerType, CASH_BALANCE, port)).start();
         }
 
     }
