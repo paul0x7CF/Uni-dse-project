@@ -15,16 +15,17 @@ public class ConfigFileReader {
     private static final Logger logger = LogManager.getLogger(ConfigFileReader.class);
 
     private static final String CONFIG_FILE_PATH = "implementation/MSProsumer/src/main/resources/config.properties";
+
     public static String getProperty(final String KEY) {
         Optional<String> result;
-        try {
+        try (FileInputStream configFile = new FileInputStream(CONFIG_FILE_PATH)) {
+
             Properties properties = new Properties();
-            FileInputStream configFile = new FileInputStream(CONFIG_FILE_PATH);
             properties.load(configFile);
 
             result = Optional.ofNullable((properties.getProperty(KEY)));
 
-            if(result.isPresent()) {
+            if (result.isPresent()) {
                 return result.get();
             } else {
                 throw new ConfigFileReaderRuntimeException();
