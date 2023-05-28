@@ -1,15 +1,11 @@
-package Logic;
+package Logic.MessageHandling;
 
-import broker.IBroker;
 import exceptions.MessageProcessingException;
 import exceptions.RemoteException;
 import messageHandling.IMessageHandler;
 import protocol.Message;
 
-public class AuctionMessageHandler implements IMessageHandler {
-
-    private IBroker broker;;
-    private Prosumer prosumer;
+public class ForecastMessageHandler implements IMessageHandler {
     @Override
     public void handleMessage(Message message) throws MessageProcessingException, RemoteException {
 
