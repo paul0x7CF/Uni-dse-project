@@ -2,17 +2,12 @@ package MSProsumer.Main;
 
 import Configuration.ConfigFileReader;
 import Data.EProsumerType;
-import Logic.Prosumer;
-import mainPackage.ConfigReader;
-import mainPackage.MainForTesting;
+import Logic.Prosumer.ConsumptionBuilding;
+import Logic.Prosumer.NettoZeroBuilding;
+import Logic.Prosumer.Prosumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Optional;
-import java.util.Properties;
 import java.util.Random;
 
 public class Main {
@@ -32,7 +27,14 @@ public class Main {
             Random random = new Random();
             int randomValue = random.nextInt(EProsumerType.values().length);
             EProsumerType prosumerType = EProsumerType.values()[randomValue];
-            new Thread(new Prosumer(prosumerType, CASH_BALANCE, PORT)).start();
+            switch (prosumerType) {
+                case NETTO_ZERO_BUILDING ->{
+                    new Thread(new NettoZeroBuilding(prosumerType, CASH_BALANCE, PORT),"Prosumer-"+i+"").start();
+                }
+                case CONSUMPTION_BUILDING, PUBLIC_BUILDING -> {
+                    new Thread(new ConsumptionBuilding(prosumerType, CASH_BALANCE, PORT),"Prosumer-"+i+"").start();
+                }
+            }
         }
 
     }

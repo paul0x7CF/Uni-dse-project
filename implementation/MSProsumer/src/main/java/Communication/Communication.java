@@ -49,7 +49,7 @@ public class Communication {
         this.outgoingMessages = outgoingMessages;
         createBroker(port);
 
-        logger.info("MS registered with Id: {} Ip: {} Port: {}", this.myMSData.getId(), this.myMSData.getAddress(), this.myMSData.getPort());
+        logger.info("BrokerRunner initialized with Id: {} Ip: {} Port: {}", this.myMSData.getId(), this.myMSData.getAddress(), this.myMSData.getPort());
     }
 
     private void createBroker(final int port) {
