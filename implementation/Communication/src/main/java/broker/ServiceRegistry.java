@@ -19,7 +19,7 @@ public class ServiceRegistry {
 
     public void registerService(MSData msData) {
         if (msData.equals(currentService) || findService(msData) != null) {
-            log.debug("{}, Service already registered: {}, equals: {}", currentService.getType(), msData.getId(), msData.equals(currentService));
+            log.trace("{}, Service already registered: {}, equals: {}", currentService.getType(), msData.getId(), msData.equals(currentService));
             return;
         }
         log.debug("Registering service: {}", msData.getPort());

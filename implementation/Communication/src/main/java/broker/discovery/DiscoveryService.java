@@ -83,6 +83,7 @@ public class DiscoveryService {
             LocalMessage localMessage = new LocalMessage(Marshaller.marshal(message), broadcastAddress, port);
             log.trace("Scheduling message to {} on port {}", localMessage.getReceiverAddress(), localMessage.getReceiverPort());
             // TODO: check if already registered and only send if not?
+            //  could use thread
             broker.scheduleMessage(localMessage, messageFrequency);
         }
     }
