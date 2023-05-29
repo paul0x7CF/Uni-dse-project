@@ -5,7 +5,6 @@ import broker.discovery.IScheduleBroker;
 import communication.LocalMessage;
 import communication.NetworkHandler;
 import exceptions.MessageProcessingException;
-import mainPackage.ConfigReader;
 import messageHandling.InfoMessageHandler;
 import messageHandling.MessageHandler;
 import org.apache.logging.log4j.LogManager;
@@ -63,10 +62,11 @@ public class Broker implements IServiceBroker, IScheduleBroker {
         }
     }
 
-    protected void stop() {
+    protected void stop() throws InterruptedException {
         for (MSData service : getServices()) {
             sendMessage(InfoMessageBuilder.createUnregisterMessage(serviceRegistry.getCurrentService(), service));
         }
+        Thread.sleep(1000);
         networkHandler.stop();
     }
 
@@ -77,6 +77,16 @@ public class Broker implements IServiceBroker, IScheduleBroker {
                 message.getReceiverAddress(),
                 message.getReceiverPort()));
 
+        // TODO: remove this
+        if (message.getSenderPort() == 11000) {
+            // cast payload to ackInfo
+            if (Objects.equals(message.getSubCategory(), "Ack")) {
+                AckInfo ackInfo = (AckInfo) message.getSendable(AckInfo.class);
+                log.info("11000: {} sent for {}", message.getSubCategory(), ackInfo.getMessageID().toString().substring(0, 4));
+            } else {
+                log.info("11000: {} message sent to {} | {}", message.getSubCategory(), message.getReceiverPort(), message.getMessageID().toString().substring(0, 4));
+            }
+        }
         // Ack and Register messages should not be acknowledged as this would cause an infinite loop and register
         // has an answer in the form of "Ping" anyway.
         if (!Objects.equals(message.getSubCategory(), "Ack")
@@ -95,7 +105,11 @@ public class Broker implements IServiceBroker, IScheduleBroker {
     private void receiveMessage() throws MessageProcessingException {
         // TODO: maybe catch exceptions and try again
         while (true) {
-            Message message = Marshaller.unmarshal(networkHandler.receiveMessage());
+            byte[] receivedMessage = networkHandler.receiveMessage();
+            if (receivedMessage == null) {
+                return;
+            }
+            Message message = Marshaller.unmarshal(receivedMessage);
             // Ack and Register messages should not be acknowledged as this would cause an infinite loop and register
             // has an answer in the form of "Ping" anyway.
             if (!Objects.equals(message.getSubCategory(), "Ack")
@@ -103,13 +117,28 @@ public class Broker implements IServiceBroker, IScheduleBroker {
                 sendMessage(InfoMessageBuilder.createAckMessage(message));
             }
             log.trace("{} received message: {}", getCurrentService().getType(), message.getCategory());
+
+            // TODO: remove this
+            if (message.getReceiverPort() == 11000) {
+                if (Objects.equals(message.getSubCategory(), "Ack")) {
+                    AckInfo ackInfo = (AckInfo) message.getSendable(AckInfo.class);
+                    log.info("11000: {} received for {}", message.getSubCategory(), ackInfo.getMessageID().toString().substring(0, 4));
+                } else {
+                    log.info("11000: {} message received from {} | {}", message.getCategory(), message.getSenderPort(), message.getMessageID().toString().substring(0, 4));
+                }
+            }
             messageHandler.handleMessage(message);
         }
     }
 
     @Override
-    public void scheduleMessage(LocalMessage localMessage, int delay) {
-        networkHandler.scheduleMessage(localMessage, delay);
+    public void scheduleRegisterMessage(LocalMessage localMessage, int delay) {
+        if (serviceRegistry.isPresentByIPAndPort(localMessage.getReceiverAddress(), localMessage.getReceiverPort())) {
+            log.debug("{} has {} already registered", getCurrentService().getPort(), localMessage.getReceiverPort());
+            networkHandler.scheduleMessage(localMessage, delay, true);
+        } else {
+            networkHandler.scheduleMessage(localMessage, delay, true);
+        }
     }
 
     @Override

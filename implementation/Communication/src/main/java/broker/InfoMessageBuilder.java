@@ -25,6 +25,9 @@ public class InfoMessageBuilder { // TODO: rename to InfoMessageTemplate
    public static Message createRegisterMessage(MSData sender, String receiverAddress, int receiverPort) {
         MessageFactory messageFactory = new MessageFactory();
         messageFactory.setCategory(ECategory.Info, "Register")
+                .setSenderID(sender.getId())
+                .setSenderAddress(sender.getAddress())
+                .setSenderPort(sender.getPort())
                 .setReceiverAddress(receiverAddress)
                 .setReceiverPort(receiverPort)
                 .setPayload(sender);
@@ -47,7 +50,7 @@ public class InfoMessageBuilder { // TODO: rename to InfoMessageTemplate
     }
 
     public static Message createAckMessage(Message message) {
-        AckInfo ack = new AckInfo(message.getMessageID(), message.getCategory());
+        AckInfo ack = new AckInfo(message.getMessageID(), message.getCategory(), message.getSenderPort(), message.getReceiverPort());
         Message ackMessage = MessageFactory.reverse(message);
         ackMessage.setCategory(ECategory.Info, "Ack");
         ackMessage.setPayload(ack);

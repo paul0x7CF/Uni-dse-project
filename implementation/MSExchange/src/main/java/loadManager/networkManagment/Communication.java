@@ -1,85 +1,78 @@
-/*package loadManager.networkManagment;
+package loadManager.networkManagment;
 
-import broker.Broker;
-import loadManager.Controller;
-import loadManager.exchangeManagement.ExchangeServiceInformation;
-import communication.InputSocket;
-import communication.OutputSocket;
+import broker.BrokerRunner;
+import broker.IServiceBroker;
+import protocol.ECategory;
 import protocol.Message;
-import sendable.*;
+import sendable.EServiceType;
+import sendable.MSData;
 
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
+import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
+import java.util.logging.Logger;
 
 public class Communication {
-    private int port;
-    private String host;
-    private Controller controller;
-    private communication.NetworkHandler network;
-    private Broker broker; //TODO: Just call broker.sendMessage(Message) instead of having the sockets.
-    private InputSocket inputSocket; //TODO: Why is this here? Broker has one already
-    private OutputSocket outputSocket; //TODO: Why is this here? Broker has one already
+    private static final Logger logger = Logger.getLogger(Communication.class.getName());
+    private final int PORT;
+    private final String ADDRESS;
+    private final EServiceType SERVICE_TYPE;
+    private MSData myMSData;
+    private BrokerRunner communicationBroker;
+    private BlockingQueue<Message> incomingMessages;
+    private BlockingQueue<Message> outgoingMessages;
 
-    private BlockingQueue<Message> incomingQueue;
-    private BlockingQueue<Message> outgoingQueue;
+    public Communication(BlockingQueue<Message> incomingMessages, BlockingQueue<Message> outgoingMessages) {
+        //read Properties
+        Properties properties = new Properties();
+        try {
+            FileInputStream configFile = new FileInputStream("src/main/java/config.properties");
+            properties.load(configFile);
+            configFile.close();
 
-    public Communication(int port, String host, Controller controller) {
-        this.port = port;
-        this.host = host;
+            PORT = Integer.parseInt(properties.getProperty("loadManager.port"));
+            ADDRESS = properties.getProperty("loadManager.ip");
+            SERVICE_TYPE = EServiceType.valueOf(properties.getProperty("loadManager.serviceType"));
 
-        // TODO this.inputSocket= new InputSocket(port, host);
-        // TODO this.outputSocket = new OutputSocket(port, host);
-        this.network = new communication.NetworkHandler(EServiceType.Exchange, port);
-        this.controller = controller;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+        this.incomingMessages = incomingMessages;
+        this.outgoingMessages = outgoingMessages;
+        createBroker(PORT);
+
+        logger.info("MS registered with Id:" + this.myMSData.getId() + ", Address: " + this.myMSData.getAddress() + ", Port: " + this.myMSData.getPort());
     }
 
-    //incoming messages
-    public void handleIncomingMessage(Message message) {
+
+    private void createBroker(int port) {
+        this.communicationBroker = new BrokerRunner(EServiceType.Exchange, port);
+        this.myMSData = this.communicationBroker.getCurrentService();
     }
 
-    private void handleIncomingBid(Bid bid) {
+    public void startBrokerRunner() {
+        this.communicationBroker.run();
     }
 
-    private void handleIncomingSell(Sell sell) {
+    private void sendMessage(Message message) {
+        communicationBroker.sendMessage(message);
     }
 
-    private void handleNewExchangeService(Message message) {
-    }
-
-    private void handleExchangeServiceAtCapacity(Message message) {
-    }
-
-    private void handleDuplicateMicroservice() {
-    }
-
-    private void handleIncomingAuctions(Message message) {
-    }
-
-    private void handleIncomingTransaction(Transaction transaction) {
-    }
-
-    //outgoing messages
-    public void connectToExchange(UUID exchangeUUID) {
-    }
-
-    public void tellNewTimeslots(List<TimeSlot> timeslots) {
-    }
-
-    public void deleteExchange(ExchangeServiceInformation exchangeServiceInformation) {
-    }
-
-    public void tellProsumerPriceNotOK(UUID prosumerId, double averagePrice) {
-    }
-
-    public void askAboutAuctions() {
-    }
-
-    public void sendProsumerToStorage(UUID prosumerId, double kwh) {
-    }
-
-    private void askStoragesAboutCapacity() {
+    public void addMessageHandler(ECategory category) {
+        try {
+            switch (category) {
+                case Auction -> {
+                    this.communicationBroker.addMessageHandler(ECategory.Auction, new AuctionMessageHandler(this.incomingMessages, this.outgoingMessages, (IServiceBroker) this.communicationBroker));
+                }
+                case Exchange -> {
+                    this.communicationBroker.addMessageHandler(ECategory.Exchange, new ExchangeMessageHandler(this.incomingMessages, this.outgoingMessages, (IServiceBroker) this.communicationBroker));
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
-*/

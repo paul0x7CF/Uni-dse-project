@@ -18,6 +18,9 @@ public class MainForTesting {
 
     public static void main(String[] args) {
         ConfigReader configReader = new ConfigReader();
+        int testErrorIterations = Integer.parseInt(configReader.getProperty("testErrorIterations"));
+        int testErrorAmount = Integer.parseInt(configReader.getProperty("testErrorAmount"));
+        int testErrorTimeout = Integer.parseInt(configReader.getProperty("testErrorTimeout"));
         int portJumpSize = Integer.parseInt(configReader.getProperty("portJumpSize"));
         int prosumerPort = Integer.parseInt(configReader.getProperty("prosumerPort"));
         int prosumerAmount = Integer.parseInt(configReader.getProperty("prosumerAmount"));
@@ -61,21 +64,36 @@ public class MainForTesting {
             executor.execute(consumption);
         }
 
-        sleep(3);
+        sleep(2);
         log.info("All brokers started");
 
-        if (solar != null && consumption != null) {
-            for (int i = 0; i < 1; ++i) {
-                Message message = InfoMessageBuilder.createErrorMessage(solar.getCurrentService(), consumption.getCurrentService(), "test", "test");
-                log.info("Sending message {}", message.getMessageID());
-                solar.sendMessage(message);
+        for (int i = 0; i < testErrorIterations; ++i) {
+            sleep(testErrorTimeout);
+            if (i == 1) testErrorTimeout /= 2;
+            if (solar != null && consumption != null) {
+                for (int j = 0; j < testErrorAmount; ++j) {
+                    Message message = InfoMessageBuilder.createErrorMessage(solar.getCurrentService(), consumption.getCurrentService(), "test", "test");
+                    log.info("Sending message {}", message.getMessageID());
+                    solar.sendMessage(message);
+                }
+            } else {
+                log.error("solar or consumption is null");
             }
-        } else {
-            log.error("solar or consumption is null");
         }
 
-        sleep(300);
+        log.info("#".repeat(25));
+        log.info("solar services: {}", solar.getServices().size());
+        log.info("#".repeat(25));
 
+        sleep(5);
+
+        List<Runnable> brokers = executor.shutdownNow();
+        for (Runnable broker : brokers) {
+            if (broker instanceof BrokerRunner b) {
+                // TODO: reimplement
+                // b.stop();
+            }
+        }
         executor.shutdown();
         try {
             if (executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS)) {
@@ -84,13 +102,8 @@ public class MainForTesting {
         } catch (InterruptedException e) {
             // TODO: handle exception
         }
-        List<Runnable> brokers = executor.shutdownNow();
-        for (Runnable broker : brokers) {
-            if (broker instanceof BrokerRunner b) {
-                b.stop();
-            }
-        }
-
+        log.fatal("All brokers stopped");
+        sleep(3);
     }
 
     private static void sleep(long duration) {

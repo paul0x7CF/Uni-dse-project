@@ -65,15 +65,19 @@ public class NetworkHandler {
             return inputQueue.take();
         } catch (InterruptedException e) {
             log.error("Could not receive message", e);
-            throw new RuntimeException(e);
+            return null;
         }
     }
 
-    public void scheduleMessage(LocalMessage localMessage, int delay) {
+    public void scheduleMessage(LocalMessage localMessage, int delay, boolean repeating) {
         // 1 is just the initial delay, it is not 0 because not everything may be initialized.
         log.debug("Scheduled message to: {}", localMessage.getReceiverPort());
         // TODO: Dont send register messages to already registered services
-        scheduler.scheduleAtFixedRate(() -> broadcastQueue.add(localMessage), 1, delay, TimeUnit.SECONDS);
+        if (repeating) {
+            scheduler.schedule(() -> outputQueue.add(localMessage), delay, TimeUnit.SECONDS);
+        } else {
+            scheduler.scheduleAtFixedRate(() -> outputQueue.add(localMessage), 1, delay, TimeUnit.SECONDS);
+        }
     }
 
     public MSData getMSData() {

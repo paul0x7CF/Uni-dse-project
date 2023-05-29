@@ -16,12 +16,12 @@ BrokerRunner broker = new BrokerRunner(EServiceType, listeningPort);
 ```
 
 ## MessageHandler-Klassen
-- siehe Konstruktor von **Broker.java** und **InfoMessageHandler.java**
+- siehe Konstruktor von **Broker.java**
 
 Erstellen Sie Ihre eigenen MessageHandler-Klassen für Auction, Exchange und Forecast. Diese Klassen sollten eine Instanz
 von IBroker enthalten, um Nachrichten zu senden. Hier ist ein einfaches Beispiel für eine solche Klasse:
 
-Zu beachten ist hierbei, dass lokale Klassen wir z.B. Prosumer auch als Feld in der MessageHandler-Klasse gespeichert
+Zu beachten ist hierbei, dass lokale Klassen wie z.B. Prosumer auch als Feld in der MessageHandler-Klasse gespeichert
 werden können.
 
 ``` java
@@ -51,6 +51,8 @@ broker.addMessageHandler(new ForecastMessageHandler(broker));
 Bitte beachten Sie, dass der Broker nicht startet, bevor alle MessageHandler hinzugefügt wurden.
 
 ### Die Businesslogik der Komponente sollte in den MessageHandler-Klassen implementiert werden
+- siehe **InfoMessageHandler.java**
+
 Es ist außerdem wichtig zu verstehen, dass in diesen Klassen die Nachrichten verarbeitet werden. Wenn Sie also eine
 Nachricht erhalten, die Sie verarbeiten möchten, müssen Sie dies in der handle()-Methode tun. Wenn Sie eine neue
 Nachricht senden möchten, können Sie dies mit der send()-Methode tun, die in der IBroker-Schnittstelle definiert ist.

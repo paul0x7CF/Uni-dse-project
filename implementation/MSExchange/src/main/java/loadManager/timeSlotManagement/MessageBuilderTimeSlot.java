@@ -2,7 +2,6 @@ package loadManager.timeSlotManagement;
 
 import loadManager.networkManagment.IMessageBuilder;
 import protocol.ECategory;
-import protocol.ESubCategory;
 import protocol.Message;
 import protocol.MessageFactory;
 import sendable.MSData;

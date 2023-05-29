@@ -1,4 +1,4 @@
-package org.example;
+package exchangeTests;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

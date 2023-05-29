@@ -1,16 +1,14 @@
 package loadManager;
 
-import broker.BrokerRunner;
 import loadManager.exchangeManagement.ExchangeServiceInformation;
 import loadManager.exchangeManagement.LoadManager;
+import loadManager.networkManagment.Communication;
 import loadManager.prosumerActionManagement.ProsumerManager;
 import loadManager.timeSlotManagement.MessageBuilderTimeSlot;
 import loadManager.timeSlotManagement.TimeSlotBuilder;
 import messageHandling.IMessageHandler;
-import protocol.ECategory;
 import protocol.Message;
 import sendable.Bid;
-import sendable.EServiceType;
 import sendable.Sell;
 import sendable.Transaction;
 
@@ -21,46 +19,47 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.logging.Logger;
 
 public class Controller implements Runnable {
-    private final int PORT;
-    private final String ADDRESS;
-    private final EServiceType SERVICE_TYPE;
+    private final int TIME_SLOT_DURATION;
+    private final int NUM_NEW_TIME_SLOTS;
+    private Logger logger = Logger.getLogger(Controller.class.getName());
     private ProsumerManager prosumerManager;
-    private BrokerRunner broker;
+    private Communication communication;
     private TimeSlotBuilder timeSlotBuilder;
-    private BlockingQueue<Message> incomingQueue;
-    private BlockingQueue<Message> outgoingQueue;
+    private BlockingQueue<Message> incomingQueue = new LinkedBlockingQueue<>();
+    private BlockingQueue<Message> outgoingQueue = new LinkedBlockingQueue<>();
     private LoadManager loadManager = new LoadManager();
     private ExecutorService executorService;
-    private int TIME_SLOT_DURATION;
-    private int NUM_NEW_TIME_SLOTS;
     private IMessageHandler messageHandler; //TODO: does it make sense to have a interface here? -> concrete implementation?
 
     public Controller() {
         //read Properties
         Properties properties = new Properties();
         try {
-            FileInputStream configFile = new FileInputStream("../config.properties");
+            FileInputStream configFile = new FileInputStream("src/main/java/config.properties");
             properties.load(configFile);
             configFile.close();
 
             TIME_SLOT_DURATION = Integer.parseInt(properties.getProperty("timeslot.duration"));
             NUM_NEW_TIME_SLOTS = Integer.parseInt(properties.getProperty("timeslot.numNewTimeSlots"));
-            PORT = Integer.parseInt(properties.getProperty("loadmanager.port"));
-            ADDRESS = properties.getProperty("loadmanager.address");
-            SERVICE_TYPE = EServiceType.valueOf(properties.getProperty("loadmanager.serviceType"));
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        broker = new BrokerRunner(SERVICE_TYPE, PORT);
-        broker.run();
-        broker.addMessageHandler(ECategory.Exchange, messageHandler);
 
+        startCommunication();
         timeSlotBuilder = new TimeSlotBuilder(TIME_SLOT_DURATION, NUM_NEW_TIME_SLOTS);
     }
+
+    private void startCommunication() {
+        communication = new Communication(incomingQueue, outgoingQueue);
+        communication.startBrokerRunner();
+    }
+
 
     @Override
     public void run() {
@@ -86,7 +85,7 @@ public class Controller implements Runnable {
             for (Message message : messages) {
                 outgoingQueue.add(message);
             }
-            
+
             try {
                 //Wait for the specified duration in secs
                 Thread.sleep(TIME_SLOT_DURATION * NUM_NEW_TIME_SLOTS * 1000); //*1000 to convert to ms

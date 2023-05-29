@@ -27,6 +27,10 @@ public class MSExchange implements IExchange, Runnable {
         this.incomingQueue = incomingQueue;
     }
 
+    public Object getInstance() {
+        return this;
+    }
+
     @Override
     public void run() {
 
@@ -48,4 +52,7 @@ public class MSExchange implements IExchange, Runnable {
     }
 
 
+    public boolean isDuplicated() {
+        return duplicated;
+    }
 }
