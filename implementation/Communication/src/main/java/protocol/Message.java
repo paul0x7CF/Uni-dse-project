@@ -21,7 +21,7 @@ public class Message implements Serializable {
      */
     private String category;
     private UUID senderID;
-    private String senderAddress;
+    private final String senderAddress;
     private int senderPort;
     private UUID receiverID;
     private String receiverAddress;

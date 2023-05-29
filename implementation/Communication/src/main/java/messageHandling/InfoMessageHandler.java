@@ -57,11 +57,13 @@ public class InfoMessageHandler implements IMessageHandler {
         // Ping is response to Register request
         ISendable ping = message.getSendable(MSData.class);
         if (ping == null) {
+            log.error("Received Ping with null payload");
             throw new MessageProcessingException("Payload is null");
         }
         if (ping instanceof MSData) {
             broker.registerService((MSData) ping);
         } else {
+            log.error("Received Ping with wrong payload");
             throw new MessageProcessingException("Payload is not of type MSData");
         }
     }
@@ -70,12 +72,14 @@ public class InfoMessageHandler implements IMessageHandler {
         // Register is first message with MSData as Payload when broker is started
         ISendable register = message.getSendable(MSData.class);
         if (register == null) {
+            log.error("Received Register with null payload");
             throw new MessageProcessingException("Payload is null");
         }
         if (register instanceof MSData msData) {
             broker.registerService(msData);
             broker.sendMessage(InfoMessageBuilder.createPingMessage(currentService, msData));
         } else {
+            log.error("Received Register with wrong payload");
             throw new MessageProcessingException("Payload is not of type MSData");
         }
     }
@@ -84,11 +88,13 @@ public class InfoMessageHandler implements IMessageHandler {
         // Unregister is sent when broker is stopped
         ISendable unregister = message.getSendable(MSData.class);
         if (unregister == null) {
+            log.error("Received Unregister with null payload");
             throw new MessageProcessingException("Payload is null");
         }
         if (unregister instanceof MSData) {
             broker.unregisterService((MSData) unregister);
         } else {
+            log.error("Received Unregister with wrong payload");
             throw new MessageProcessingException("Payload is not of type MSData");
         }
     }
@@ -96,11 +102,13 @@ public class InfoMessageHandler implements IMessageHandler {
     private void handleAck(Message message) throws MessageProcessingException {
         ISendable ack = message.getSendable(AckInfo.class);
         if (ack == null) {
+            log.error("Received Ack with null payload");
             throw new MessageProcessingException("Payload is null");
         }
         if (ack instanceof AckInfo) {
             broker.ackReceived((AckInfo) ack);
         } else {
+            log.error("Received Ack with wrong payload");
             throw new MessageProcessingException("Payload is not of type AckInfo");
         }
     }
@@ -109,17 +117,19 @@ public class InfoMessageHandler implements IMessageHandler {
         // Error has Error as Payload
         ISendable error = message.getSendable(ErrorInfo.class);
         if (error == null) {
+            log.error("Received Error with null payload");
             throw new MessageProcessingException("Payload is null");
         }
         if (error instanceof ErrorInfo errorInfo) {
             // TODO: How to handle this in each service?
             if (!Objects.equals(errorInfo.getName(), "test")) {
-                log.error("Received remote error");
+                log.error("Received remote error: {}", errorInfo.getMessage());
                 throw new RemoteException(errorInfo.getName());
             } else {
-                log.error("Received test error");
+                log.error("Received test error: {}", errorInfo.getMessage());
             }
         } else {
+            log.error("Received Error with wrong payload");
             throw new MessageProcessingException("Payload is not of type ErrorInfo");
         }
     }
