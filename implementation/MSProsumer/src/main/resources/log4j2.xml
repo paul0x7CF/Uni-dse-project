@@ -16,7 +16,7 @@
     </Appenders>
     <Loggers>
         <!-- Here you can define the log level up to which logging is done -->
-        <Root level="trace">
+        <Root level="debug">
             <!-- Each logger can reference one or more appenders -->
             <AppenderRef ref="ConsoleAppender" />
             <AppenderRef ref="FileAppender"/>

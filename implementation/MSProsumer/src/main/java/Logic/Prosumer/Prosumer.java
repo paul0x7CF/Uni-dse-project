@@ -1,12 +1,12 @@
-package Logic;
+package Logic.Prosumer;
 
 import Communication.Communication;
 import Data.Consumer;
 import Data.EProsumerType;
 import Data.SolarPanel;
 import Data.Wallet;
-import Exceptions.UnknownMessageException;
-import mainPackage.MainForTesting;
+import Logic.DemandManager;
+import Logic.Scheduler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protocol.Message;
@@ -28,8 +28,6 @@ public class Prosumer implements Runnable{
     private UUID prosumerID;
     private EProsumerType prosumerType;
     private DemandManager demandManager;
-    private Scheduler scheduler;
-    private List<SolarPanel> producer;
     private List<Consumer> consumer;
     private Wallet wallet;
     private Communication communicator;
@@ -78,7 +76,6 @@ public class Prosumer implements Runnable{
 
     @Override
     public void run() {
-        logger.debug("Test");
         this.communicator.startBrokerRunner();
         /*
         while (true) {

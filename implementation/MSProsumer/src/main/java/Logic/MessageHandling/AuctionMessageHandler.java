@@ -1,6 +1,6 @@
 package Logic.MessageHandling;
 
-import Logic.Prosumer;
+import Logic.Prosumer.Prosumer;
 import broker.IBroker;
 import exceptions.MessageProcessingException;
 import exceptions.RemoteException;
