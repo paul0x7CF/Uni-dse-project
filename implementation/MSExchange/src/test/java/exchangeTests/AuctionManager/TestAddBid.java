@@ -1,4 +1,4 @@
-package org.example.exchangeServiceTests.AuctionManager;
+package exchangeTests.AuctionManager;
 
 import msExchange.Exceptions.AuctionNotFoundException;
 import msExchange.auctionManagement.Auction;
