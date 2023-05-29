@@ -22,7 +22,7 @@ public class AckHandler {
     public AckHandler(IBroker broker) {
         this.broker = broker;
         this.pendingAcks = new ConcurrentHashMap<>();
-        this.scheduler = Executors.newScheduledThreadPool(30);
+        this.scheduler = Executors.newScheduledThreadPool(100);
 
         ConfigReader configReader = new ConfigReader();
         this.timeout = Integer.parseInt(configReader.getProperty("ackTimeout"));
@@ -35,18 +35,24 @@ public class AckHandler {
      */
     public void trackMessage(Message message) {
         UUID messageId = message.getMessageID();
-        log.trace("Tracking message {}", messageId);
+        log.trace("Tracking {} message from: {} to {} mid: {}",
+                message.getSubCategory(), message.getSenderPort(), message.getReceiverPort(), message.getMessageID());
         pendingAcks.put(messageId, message);
 
         scheduler.schedule(() -> {
             if (pendingAcks.remove(messageId) != null) {
                 try {
                     broker.sendMessage(message);
-                    log.warn("No Ack received, resending {} from: {} to {} mid: {}",
-                            message.getSubCategory(), message.getSenderPort(), message.getReceiverPort(), message.getMessageID());
+                    log.warn("{}: No Ack received, resending {} from {} to {} | {}", message.getSenderPort(),
+                            message.getSubCategory(), message.getSenderPort(), message.getReceiverPort(), message.getMessageID().toString().substring(0, 4));
                     throw new AckTimeoutException("Message could not be acknowledged within the given timeout");
                 } catch (AckTimeoutException e) {
                     // TODO: don't send an infinite amount of messages
+                    scheduler.schedule(() -> {
+                        log.debug("Removing message {} from pending acks", messageId);
+                        pendingAcks.remove(messageId);
+                        throw new AckTimeoutException("Too many resends, giving up.");
+                    }, timeout * 2L + 1, TimeUnit.SECONDS); // magic number sorry, but it works. TODO: FYI done for Ping messages
                     broker.sendMessage(message);
                     throw new RuntimeException(e);
                 }
@@ -56,9 +62,12 @@ public class AckHandler {
 
     public void ackReceived(AckInfo ack) {
         if (!pendingAcks.containsKey(ack.getMessageID())) {
-            log.warn("Received ack for unknown message {}, {}", ack.getCategory(), ack.getMessageID());
+            pendingAcks.remove(ack.getMessageID());
+            log.warn("{}: ack from {} for unknown {} message | {}", ack.getReceiverPort(),
+                    ack.getSenderPort(), ack.getCategory(), ack.getMessageID().toString().substring(0, 4));
             return;
         } else {
+            log.trace("Removing message {} from pending acks", ack.getMessageID());
             if (pendingAcks.remove(ack.getMessageID()) == null) {
                 log.warn("Unknown message {}", ack.getMessageID());
                 return;

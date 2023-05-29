@@ -4,6 +4,6 @@ import communication.LocalMessage;
 import sendable.MSData;
 
 public interface IScheduleBroker {
-    void scheduleMessage(LocalMessage localMessage, int delay);
+    void scheduleRegisterMessage(LocalMessage localMessage, int delay);
     MSData getCurrentService();
 }

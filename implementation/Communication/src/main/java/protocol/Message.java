@@ -8,9 +8,20 @@ import java.util.UUID;
 
 public class Message implements Serializable {
     private final UUID messageID = UUID.randomUUID();
+    /**
+     * @category: interprets the main and sub category of the message in form of "MainCategory;SubCategory"
+     * @mainCategory: Info:
+     * @subCategoryInfo: Ping, Register, Unregister, Ack, Error
+     * @mainCategory: Auction:
+     * @subCategoryAuction: Bid, Sell, BidHigher, SellLower
+     * @mainCategory: Exchange:
+     * @subCategoryExchange: Transaction, TimeSlot
+     * @mainCategory: Forecast:
+     * @subCategoryForecast: Production, Consumption
+     */
     private String category;
     private UUID senderID;
-    private String senderAddress;
+    private final String senderAddress;
     private int senderPort;
     private UUID receiverID;
     private String receiverAddress;

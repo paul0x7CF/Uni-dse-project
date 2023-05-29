@@ -41,34 +41,34 @@ public class DiscoveryService {
 
         MSData currentService = broker.getCurrentService();
 
-        // create prosumer
+        // register prosumer
         for (int i = 0; i < prosumerAmount * portJumpSize; i += portJumpSize) {
             if (currentService.getType() != EServiceType.Prosumer || currentService.getPort() != prosumerPort + i)
                 sendRegisterMessage(prosumerPort + i);
         }
 
-        // create storage
+        // register storage
         for (int i = 0; i < storageAmount * portJumpSize; i += portJumpSize) {
             if (currentService.getType() != EServiceType.Storage || currentService.getPort() != storagePort + i) {
                 sendRegisterMessage(storagePort + i);
             }
         }
 
-        // create exchange
+        // register exchange
         for (int i = 0; i < exchangeAmount * portJumpSize; i += portJumpSize) {
             if (currentService.getType() != EServiceType.Exchange || currentService.getPort() != exchangePort + i) {
                 sendRegisterMessage(exchangePort + i);
             }
         }
 
-        // create solar forecast
+        // register solar
         for (int i = 0; i < solarAmount * portJumpSize; i += portJumpSize) {
             if (currentService.getType() != EServiceType.Solar || currentService.getPort() != solarPort + i) {
                 sendRegisterMessage(solarPort + i);
             }
         }
 
-        // create consumption forecast
+        // register consumption
         for (int i = 0; i < consumptionAmount * portJumpSize; i += portJumpSize) {
             if (currentService.getType() != EServiceType.Consumption || currentService.getPort() != consumptionPort + i) {
                 sendRegisterMessage(consumptionPort + i);
@@ -82,9 +82,7 @@ public class DiscoveryService {
             Message message = createRegisterMessage(broker.getCurrentService(), broadcastAddress, port);
             LocalMessage localMessage = new LocalMessage(Marshaller.marshal(message), broadcastAddress, port);
             log.trace("Scheduling message to {} on port {}", localMessage.getReceiverAddress(), localMessage.getReceiverPort());
-            // TODO: check if already registered and only send if not?
-            //  could use thread
-            broker.scheduleMessage(localMessage, messageFrequency);
+            broker.scheduleRegisterMessage(localMessage, messageFrequency);
         }
     }
 }
