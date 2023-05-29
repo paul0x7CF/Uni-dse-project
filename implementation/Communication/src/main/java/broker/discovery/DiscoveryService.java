@@ -1,7 +1,5 @@
 package broker.discovery;
 
-import broker.Marshaller;
-import communication.LocalMessage;
 import mainPackage.ConfigReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,21 +7,33 @@ import protocol.Message;
 import sendable.EServiceType;
 import sendable.MSData;
 
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import static broker.InfoMessageBuilder.createRegisterMessage;
 
 public class DiscoveryService {
     private static final Logger log = LogManager.getLogger(DiscoveryService.class);
     private final ConfigReader configReader;
+    private final IScheduleBroker broker;
+    private final Map<Integer, Message> messagesToSchedule = new ConcurrentHashMap<>();
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     String broadcastAddress;
     int messageFrequency;
-    private IScheduleBroker broker;
+    MSData currentService;
+
 
     public DiscoveryService(IScheduleBroker broker) {
         this.broker = broker;
 
-        configReader = new ConfigReader();
-        broadcastAddress = configReader.getProperty("broadcastAddress");
-        messageFrequency = Integer.parseInt(configReader.getProperty("registerMessageFrequency"));
+        this.configReader = new ConfigReader();
+        this.currentService = broker.getCurrentService();
+        this.broadcastAddress = configReader.getProperty("broadcastAddress");
+        this.messageFrequency = Integer.parseInt(configReader.getProperty("registerMessageFrequency"));
     }
 
     public void scheduleDiscovery() {
@@ -39,50 +49,74 @@ public class DiscoveryService {
         int consumptionPort = Integer.parseInt(configReader.getProperty("consumptionPort"));
         int consumptionAmount = Integer.parseInt(configReader.getProperty("consumptionAmount"));
 
-        MSData currentService = broker.getCurrentService();
 
         // register prosumer
         for (int i = 0; i < prosumerAmount * portJumpSize; i += portJumpSize) {
             if (currentService.getType() != EServiceType.Prosumer || currentService.getPort() != prosumerPort + i)
-                sendRegisterMessage(prosumerPort + i);
+                scheduleRegisterMessage(prosumerPort + i);
         }
 
         // register storage
         for (int i = 0; i < storageAmount * portJumpSize; i += portJumpSize) {
             if (currentService.getType() != EServiceType.Storage || currentService.getPort() != storagePort + i) {
-                sendRegisterMessage(storagePort + i);
+                scheduleRegisterMessage(storagePort + i);
             }
         }
 
         // register exchange
         for (int i = 0; i < exchangeAmount * portJumpSize; i += portJumpSize) {
             if (currentService.getType() != EServiceType.Exchange || currentService.getPort() != exchangePort + i) {
-                sendRegisterMessage(exchangePort + i);
+                scheduleRegisterMessage(exchangePort + i);
             }
         }
 
         // register solar
         for (int i = 0; i < solarAmount * portJumpSize; i += portJumpSize) {
             if (currentService.getType() != EServiceType.Solar || currentService.getPort() != solarPort + i) {
-                sendRegisterMessage(solarPort + i);
+                scheduleRegisterMessage(solarPort + i);
             }
         }
 
         // register consumption
         for (int i = 0; i < consumptionAmount * portJumpSize; i += portJumpSize) {
             if (currentService.getType() != EServiceType.Consumption || currentService.getPort() != consumptionPort + i) {
-                sendRegisterMessage(consumptionPort + i);
+                scheduleRegisterMessage(consumptionPort + i);
+            }
+        }
+
+        // Start a single thread that checks and sends register messages periodically
+        // this::checkAndSendMessages is a lambda expression for the method checkAndSendMessages
+        scheduler.scheduleAtFixedRate(this::checkAndSendMessages, 1, messageFrequency, TimeUnit.SECONDS);
+    }
+
+    private void scheduleRegisterMessage(int port) {
+        if (broadcastAddress != null) {
+            // TODO: address per type from config?
+            Message message = createRegisterMessage(currentService, broadcastAddress, port);
+            log.trace("Scheduling message to {} on port {}", broadcastAddress, port);
+
+            // Dont send schedule immediately, store in the map instead
+            if (currentService.getPort() != port) {
+                messagesToSchedule.put(message.getReceiverPort(), message);
+            } else {
+                // if() can be considered useless as there already is a check on that in the for loops above
+                log.debug("Is this if() useless?");
             }
         }
     }
 
-    private void sendRegisterMessage(int port) {
-        if (broadcastAddress != null) {
-            // TODO: address per type from config?
-            Message message = createRegisterMessage(broker.getCurrentService(), broadcastAddress, port);
-            LocalMessage localMessage = new LocalMessage(Marshaller.marshal(message), broadcastAddress, port);
-            log.trace("Scheduling message to {} on port {}", localMessage.getReceiverAddress(), localMessage.getReceiverPort());
-            broker.scheduleRegisterMessage(localMessage, messageFrequency);
+    private void checkAndSendMessages() {
+        // Go through all the messages in the map
+        for (int port : messagesToSchedule.keySet()) {
+            // If the service is already registered, no need to send the message
+            if (broker.serviceExists(port)) {
+                log.trace("{} already registered at {}", port, currentService.getPort());
+                messagesToSchedule.remove(port);
+            } else {
+                Message message = messagesToSchedule.get(port);
+                log.trace("{} sending to {}", currentService.getId(), message.getSenderID());
+                broker.sendMessage(message);
+            }
         }
     }
 }

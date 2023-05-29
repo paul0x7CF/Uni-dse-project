@@ -7,6 +7,7 @@ import sendable.MSData;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.*;
 
@@ -29,6 +30,7 @@ public class NetworkHandler {
     private final ExecutorService executor;
     private final ScheduledExecutorService scheduler;
 
+
     public NetworkHandler(EServiceType serviceType, int listeningPort) {
         this.serviceType = serviceType;
         this.listeningPort = listeningPort;
@@ -42,7 +44,7 @@ public class NetworkHandler {
         broadcastSocket = new BroadcastSocket(broadcastQueue, listeningPort + 2); // TODO: This +2 will stay I think
 
         executor = Executors.newFixedThreadPool(3);
-        scheduler = Executors.newScheduledThreadPool(10);
+        scheduler = Executors.newScheduledThreadPool(20);
     }
 
     public void startSockets() {
@@ -69,16 +71,19 @@ public class NetworkHandler {
         }
     }
 
-    public void scheduleMessage(LocalMessage localMessage, int delay, boolean repeating) {
-        // 1 is just the initial delay, it is not 0 because not everything may be initialized.
-        log.debug("Scheduled message to: {}", localMessage.getReceiverPort());
-        // TODO: Dont send register messages to already registered services
+    public ScheduledFuture<?> scheduleMessage(LocalMessage localMessage, UUID senderID, int delay, boolean repeating) {
+        log.debug("Scheduled repeating: {} message to {}", repeating, localMessage.getReceiverPort());
+        ScheduledFuture<?> scheduledTask;
         if (repeating) {
-            scheduler.schedule(() -> outputQueue.add(localMessage), delay, TimeUnit.SECONDS);
+            // 1 is just the initial delay, it is not 0 because not everything may be initialized.
+            scheduledTask = scheduler.scheduleAtFixedRate(() -> broadcastQueue.add(localMessage), 1, delay, TimeUnit.SECONDS);
         } else {
-            scheduler.scheduleAtFixedRate(() -> outputQueue.add(localMessage), 1, delay, TimeUnit.SECONDS);
+            scheduledTask = scheduler.schedule(() -> broadcastQueue.add(localMessage), delay, TimeUnit.SECONDS);
         }
+        return scheduledTask;
     }
+
+
 
     public MSData getMSData() {
         try {

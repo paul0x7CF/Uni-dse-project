@@ -13,7 +13,7 @@ public class ServiceRegistry {
     private final Map<EServiceType, List<MSData>> availableServices = new HashMap<>();
 
     public ServiceRegistry(MSData currentService) {
-        log.debug("New {} initialized with ID: {}",currentService.getType(), currentService.getId());
+        log.debug("New {} initialized with ID: {}", currentService.getType(), currentService.getId());
         this.currentService = currentService;
     }
 
@@ -22,7 +22,7 @@ public class ServiceRegistry {
             log.trace("{}, Service already registered: {}, equals: {}", currentService.getType(), msData.getId(), msData.equals(currentService));
             return;
         }
-        log.debug("Registering service: {}", msData.getPort());
+        log.debug("{} registering service: {} | my ID: {}", currentService.getPort(), msData.getPort(), msData.getId());
 
         //TODO: remove when done with testing
         log.info("{} saved {}", currentService.getPort(), msData.getPort());
@@ -61,6 +61,7 @@ public class ServiceRegistry {
         for (List<MSData> services : availableServices.values()) {
             for (MSData msData : services) {
                 if (msData.getId().equals(serviceId)) {
+                    log.trace("Found service: {}", msData.getId());
                     return msData;
                 }
             }
@@ -68,13 +69,12 @@ public class ServiceRegistry {
         return null;
     }
 
-    protected boolean isPresentByIPAndPort(String ip, int port) {
+    /** Used by DiscoveryService to check if a service is already registered, stopping resending of registration
+     */
+    public boolean serviceExists(int port) {
         for (List<MSData> services : availableServices.values()) {
             for (MSData msData : services) {
-                if (msData.getPort() == port){
-                    return true;
-                }
-                if (msData.getAddress().equals(ip) && msData.getPort() == port) {
+                if (msData.getPort() == port) {
                     return true;
                 }
             }

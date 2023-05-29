@@ -86,12 +86,12 @@ public class MainForTesting {
         log.info("#".repeat(25));
 
         sleep(5);
-
+/*
         List<Runnable> brokers = executor.shutdownNow();
         for (Runnable broker : brokers) {
             if (broker instanceof BrokerRunner b) {
                 // TODO: reimplement
-                // b.stop();
+                b.stop();
             }
         }
         executor.shutdown();
@@ -102,7 +102,12 @@ public class MainForTesting {
         } catch (InterruptedException e) {
             // TODO: handle exception
         }
+
+         */
         log.fatal("All brokers stopped");
+        log.info("#".repeat(25));
+        log.info("solar services: {}", solar.getServices().size());
+        log.info("#".repeat(25));
         sleep(3);
     }
 
