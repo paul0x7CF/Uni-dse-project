@@ -1,85 +1,46 @@
-/*package loadManager.networkManagment;
+package loadManager.networkManagment;
 
-import broker.Broker;
-import loadManager.Controller;
-import loadManager.exchangeManagement.ExchangeServiceInformation;
-import communication.InputSocket;
-import communication.OutputSocket;
+import broker.BrokerRunner;
 import protocol.Message;
-import sendable.*;
+import sendable.EServiceType;
+import sendable.MSData;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
+import java.util.logging.Logger;
 
 public class Communication {
+    private static final Logger logger = Logger.getLogger(Communication.class.getName());
     private int port;
-    private String host;
-    private Controller controller;
-    private communication.NetworkHandler network;
-    private Broker broker; //TODO: Just call broker.sendMessage(Message) instead of having the sockets.
-    private InputSocket inputSocket; //TODO: Why is this here? Broker has one already
-    private OutputSocket outputSocket; //TODO: Why is this here? Broker has one already
+    private String ipAdress;
 
-    private BlockingQueue<Message> incomingQueue;
-    private BlockingQueue<Message> outgoingQueue;
+    private MSData myMSData;
 
-    public Communication(int port, String host, Controller controller) {
+    private BrokerRunner communicationBroker;
+
+    private BlockingQueue<Message> incomingMessages;
+    private BlockingQueue<Message> outgoingMessages;
+
+    public Communication(BlockingQueue<Message> incomingMessages, BlockingQueue<Message> outgoingMessages, int port, String ipAdress) {
+        this.incomingMessages = incomingMessages;
+        this.outgoingMessages = outgoingMessages;
         this.port = port;
-        this.host = host;
+        this.ipAdress = ipAdress;
+        createBroker(port);
 
-        // TODO this.inputSocket= new InputSocket(port, host);
-        // TODO this.outputSocket = new OutputSocket(port, host);
-        this.network = new communication.NetworkHandler(EServiceType.Exchange, port);
-        this.controller = controller;
+        logger.info("MS registered with Id:" + this.myMSData.getId() + ", Address: " + this.myMSData.getAddress() + ", Port: " + this.myMSData.getPort());
+
     }
 
-    //incoming messages
-    public void handleIncomingMessage(Message message) {
+    private void createBroker(int port) {
+        this.communicationBroker = new BrokerRunner(EServiceType.Exchange, port);
+        this.myMSData = this.communicationBroker.getCurrentService();
     }
 
-    private void handleIncomingBid(Bid bid) {
+    public void startBrokerRunner() {
+        this.communicationBroker.run();
     }
 
-    private void handleIncomingSell(Sell sell) {
-    }
-
-    private void handleNewExchangeService(Message message) {
-    }
-
-    private void handleExchangeServiceAtCapacity(Message message) {
-    }
-
-    private void handleDuplicateMicroservice() {
-    }
-
-    private void handleIncomingAuctions(Message message) {
-    }
-
-    private void handleIncomingTransaction(Transaction transaction) {
-    }
-
-    //outgoing messages
-    public void connectToExchange(UUID exchangeUUID) {
-    }
-
-    public void tellNewTimeslots(List<TimeSlot> timeslots) {
-    }
-
-    public void deleteExchange(ExchangeServiceInformation exchangeServiceInformation) {
-    }
-
-    public void tellProsumerPriceNotOK(UUID prosumerId, double averagePrice) {
-    }
-
-    public void askAboutAuctions() {
-    }
-
-    public void sendProsumerToStorage(UUID prosumerId, double kwh) {
-    }
-
-    private void askStoragesAboutCapacity() {
+    private void sendMessage(Message message) {
+        communicationBroker.sendMessage(message);
     }
 }
-*/
