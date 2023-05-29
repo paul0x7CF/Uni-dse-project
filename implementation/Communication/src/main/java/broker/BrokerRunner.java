@@ -48,7 +48,11 @@ public class BrokerRunner implements Runnable {
 
     public void stop() {
         log.info("Stopping {} {}", broker.getCurrentService().getType(), broker.getCurrentService().getPort());
-        broker.stop();
+        try {
+            broker.stop();
+        } catch (InterruptedException e) {
+            log.error("Error while stopping broker: ", e);
+        }
     }
 
     public List<MSData> getServices() {

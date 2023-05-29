@@ -68,6 +68,20 @@ public class ServiceRegistry {
         return null;
     }
 
+    protected boolean isPresentByIPAndPort(String ip, int port) {
+        for (List<MSData> services : availableServices.values()) {
+            for (MSData msData : services) {
+                if (msData.getPort() == port){
+                    return true;
+                }
+                if (msData.getAddress().equals(ip) && msData.getPort() == port) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public MSData findService(MSData msData) {
         EServiceType serviceType = msData.getType();
         List<MSData> services = availableServices.get(serviceType);
