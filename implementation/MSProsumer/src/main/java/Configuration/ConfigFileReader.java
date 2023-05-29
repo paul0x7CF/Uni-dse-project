@@ -15,10 +15,11 @@ public class ConfigFileReader {
     private static final Logger logger = LogManager.getLogger(ConfigFileReader.class);
 
     private static final String CONFIG_FILE_PATH = "implementation/MSProsumer/src/main/resources/config.properties";
+    private static final String CONFIG_FILE_PATH_FROM_COMMUNICATION = "implementation/Communication/src/main/resources/LibraryConfig.properties";
 
-    public static String getProperty(final String KEY) {
+    private static String readProperty(final String KEY, final String PATH) {
         Optional<String> result;
-        try (FileInputStream configFile = new FileInputStream(CONFIG_FILE_PATH)) {
+        try (FileInputStream configFile = new FileInputStream(PATH)) {
 
             Properties properties = new Properties();
             properties.load(configFile);
@@ -31,7 +32,6 @@ public class ConfigFileReader {
                 throw new ConfigFileReaderRuntimeException();
             }
 
-
         } catch (FileNotFoundException e) {
             logger.error("Config file not found");
             throw new RuntimeException(e);
@@ -40,5 +40,12 @@ public class ConfigFileReader {
             throw new RuntimeException(e);
         }
 
+    }
+
+    public static String getCommunicationProperty(final String KEY) {
+        return readProperty(KEY, CONFIG_FILE_PATH_FROM_COMMUNICATION);
+    }
+    public static String getProperty(final String KEY) {
+        return readProperty(KEY, CONFIG_FILE_PATH);
     }
 }
