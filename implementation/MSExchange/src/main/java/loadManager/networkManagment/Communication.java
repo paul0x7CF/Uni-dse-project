@@ -1,6 +1,8 @@
 package loadManager.networkManagment;
 
 import broker.BrokerRunner;
+import broker.IServiceBroker;
+import protocol.ECategory;
 import protocol.Message;
 import sendable.EServiceType;
 import sendable.MSData;
@@ -57,5 +59,20 @@ public class Communication {
 
     private void sendMessage(Message message) {
         communicationBroker.sendMessage(message);
+    }
+
+    public void addMessageHandler(ECategory category) {
+        try {
+            switch (category) {
+                case Auction -> {
+                    this.communicationBroker.addMessageHandler(ECategory.Auction, new AuctionMessageHandler(this.incomingMessages, this.outgoingMessages, (IServiceBroker) this.communicationBroker));
+                }
+                case Exchange -> {
+                    this.communicationBroker.addMessageHandler(ECategory.Exchange, new ExchangeMessageHandler(this.incomingMessages, this.outgoingMessages, (IServiceBroker) this.communicationBroker));
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

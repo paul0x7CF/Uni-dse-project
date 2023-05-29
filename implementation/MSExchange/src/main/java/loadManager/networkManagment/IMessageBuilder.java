@@ -2,7 +2,6 @@ package loadManager.networkManagment;
 
 import loadManager.SellInformation;
 import protocol.ECategory;
-import protocol.ESubCategory;
 import protocol.Message;
 import protocol.MessageFactory;
 import sendable.*;
