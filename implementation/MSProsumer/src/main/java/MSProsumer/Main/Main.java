@@ -21,16 +21,18 @@ public class Main {
     public static void main(String[] args) {
 
         //read in the config file
-        final int PROSUMER_AMOUNT = Integer.parseInt(ConfigFileReader.getProperty("prosumer.amount"));
+        //final int PROSUMER_AMOUNT = Integer.parseInt(ConfigFileReader.getProperty("prosumer.amount"));
         final double CASH_BALANCE = Double.parseDouble(ConfigFileReader.getProperty("wallet.cashBalance"));
-
+        final int PROSUMER_START_PORT = Integer.parseInt(ConfigFileReader.getCommunicationProperty("prosumerPort"));
+        final int PROSUMER_AMOUNT = Integer.parseInt(ConfigFileReader.getCommunicationProperty("prosumerAmount"));
+        final int PORT_JUMP = Integer.parseInt(ConfigFileReader.getCommunicationProperty("portJumpSize"));
 
         for (int i = 0; i < PROSUMER_AMOUNT; i++) {
-            final int port = 1050 + i * 50;
+            final int PORT = PROSUMER_START_PORT + (i * PORT_JUMP);
             Random random = new Random();
             int randomValue = random.nextInt(EProsumerType.values().length);
             EProsumerType prosumerType = EProsumerType.values()[randomValue];
-            new Thread(new Prosumer(prosumerType, CASH_BALANCE, port)).start();
+            new Thread(new Prosumer(prosumerType, CASH_BALANCE, PORT)).start();
         }
 
     }

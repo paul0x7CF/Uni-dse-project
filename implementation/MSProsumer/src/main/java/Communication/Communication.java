@@ -1,10 +1,15 @@
 package Communication;
 
+import Exceptions.UnknownMessageException;
+import Logic.MessageHandling.AuctionMessageHandler;
+import Logic.MessageHandling.ExchangeMessageHandler;
+import Logic.MessageHandling.ForecastMessageHandler;
 import MSProsumer.Main.ProsumerManager;
 import broker.BrokerRunner;
 import messageHandling.MessageHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import protocol.ECategory;
 import protocol.Message;
 import sendable.EServiceType;
 import sendable.MSData;
@@ -53,7 +58,28 @@ public class Communication {
     }
 
     public void startBrokerRunner() {
-        new Thread(this.communicationBroker).start();
+        this.communicationBroker.run();
+    }
+
+    public void addMessageHandler(ECategory category) {
+        try {
+            switch (category) {
+                case Auction -> {
+                    this.communicationBroker.addMessageHandler(ECategory.Auction, new AuctionMessageHandler());
+                }
+                case Exchange -> {
+                    this.communicationBroker.addMessageHandler(ECategory.Exchange, new ExchangeMessageHandler());
+                }
+                case Forecast -> {
+                    this.communicationBroker.addMessageHandler(ECategory.Forecast, new ForecastMessageHandler());
+                }
+                default -> {
+                    throw new UnknownMessageException();
+                }
+            }
+        } catch (UnknownMessageException e) {
+            logger.warn(e.getMessage());
+        }
     }
 
     private void sendMessage(Message message) {
@@ -62,7 +88,6 @@ public class Communication {
 
 
     }
-
 
 
 }
