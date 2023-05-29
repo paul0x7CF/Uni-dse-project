@@ -18,8 +18,13 @@ import sendable.MSData;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledFuture;
 
 public class Broker implements IServiceBroker, IScheduleBroker {
     private static final Logger log = LogManager.getLogger(Broker.class);
@@ -28,6 +33,7 @@ public class Broker implements IServiceBroker, IScheduleBroker {
     private final MessageHandler messageHandler;
     private final NetworkHandler networkHandler;
     private final ServiceRegistry serviceRegistry;
+
 
     protected Broker(EServiceType serviceType, int listeningPort) {
         // listeningPort is the currentMSData port so others can send messages to this broker.
@@ -77,16 +83,7 @@ public class Broker implements IServiceBroker, IScheduleBroker {
                 message.getReceiverAddress(),
                 message.getReceiverPort()));
 
-        // TODO: remove this
-        if (message.getSenderPort() == 11000) {
-            // cast payload to ackInfo
-            if (Objects.equals(message.getSubCategory(), "Ack")) {
-                AckInfo ackInfo = (AckInfo) message.getSendable(AckInfo.class);
-                log.info("11000: {} sent for {}", message.getSubCategory(), ackInfo.getMessageID().toString().substring(0, 4));
-            } else {
-                log.info("11000: {} message sent to {} | {}", message.getSubCategory(), message.getReceiverPort(), message.getMessageID().toString().substring(0, 4));
-            }
-        }
+        print(message,true);
         // Ack and Register messages should not be acknowledged as this would cause an infinite loop and register
         // has an answer in the form of "Ping" anyway.
         if (!Objects.equals(message.getSubCategory(), "Ack")
@@ -110,34 +107,39 @@ public class Broker implements IServiceBroker, IScheduleBroker {
                 return;
             }
             Message message = Marshaller.unmarshal(receivedMessage);
+            log.trace("{} received {}", getCurrentService().getType(), message.getSubCategory());
+            print(message,false);
+            messageHandler.handleMessage(message);
+
             // Ack and Register messages should not be acknowledged as this would cause an infinite loop and register
             // has an answer in the form of "Ping" anyway.
             if (!Objects.equals(message.getSubCategory(), "Ack")
                     && !Objects.equals(message.getSubCategory(), "Register")) {
                 sendMessage(InfoMessageBuilder.createAckMessage(message));
             }
-            log.trace("{} received message: {}", getCurrentService().getType(), message.getCategory());
-
-            // TODO: remove this
-            if (message.getReceiverPort() == 11000) {
-                if (Objects.equals(message.getSubCategory(), "Ack")) {
-                    AckInfo ackInfo = (AckInfo) message.getSendable(AckInfo.class);
-                    log.info("11000: {} received for {}", message.getSubCategory(), ackInfo.getMessageID().toString().substring(0, 4));
-                } else {
-                    log.info("11000: {} message received from {} | {}", message.getCategory(), message.getSenderPort(), message.getMessageID().toString().substring(0, 4));
-                }
-            }
-            messageHandler.handleMessage(message);
         }
     }
 
-    @Override
-    public void scheduleRegisterMessage(LocalMessage localMessage, int delay) {
-        if (serviceRegistry.isPresentByIPAndPort(localMessage.getReceiverAddress(), localMessage.getReceiverPort())) {
-            log.debug("{} has {} already registered", getCurrentService().getPort(), localMessage.getReceiverPort());
-            networkHandler.scheduleMessage(localMessage, delay, true);
-        } else {
-            networkHandler.scheduleMessage(localMessage, delay, true);
+    private void print(Message message, boolean isSender) {
+        int port = getCurrentService().getPort();
+        if (port == 11000) { // TODO: change to unused Port
+            String sr = isSender ? "S" : "R ";
+            String ackBind = isSender ? "sent for" : "received for";
+            String messageBind = isSender ? "message sent to" : "message received from";
+            if (isSender) {
+                log.trace("{} sent to {} | {}", port, message.getReceiverPort(), message.getMessageID());
+            } else {
+                log.trace("{} received from {} | {}", port, message.getSenderPort(), message.getMessageID());
+            }
+            if (Objects.equals(message.getSubCategory(), "Ack")) {
+                AckInfo ackInfo = (AckInfo) message.getSendable(AckInfo.class);
+                log.trace(sr+port/1000+" {} {} {}", message.getSubCategory(), ackBind, ackInfo.getMessageID().toString().substring(0, 4));
+            } else {
+                int from = isSender ? message.getReceiverPort() : message.getSenderPort();
+                log.trace(sr+port/1000+" {} {} {} | {}", message.getSubCategory(), messageBind, from, message.getMessageID().toString().substring(0, 4));
+            }
+        } else if (port == 9000) {
+            log.trace("9000");
         }
     }
 
@@ -164,15 +166,19 @@ public class Broker implements IServiceBroker, IScheduleBroker {
         return messageHandler;
     }
 
-    protected MSData findService(UUID serviceId) {
+    public MSData findService(UUID serviceId) {
         return serviceRegistry.findService(serviceId);
     }
 
-    protected List<MSData> getServices() {
+    public boolean serviceExists(int port) {
+        return serviceRegistry.serviceExists(port);
+    }
+
+    public List<MSData> getServices() {
         return serviceRegistry.getAvailableServices();
     }
 
-    protected List<MSData> getServicesByType(EServiceType serviceType) {
+    public List<MSData> getServicesByType(EServiceType serviceType) {
         return serviceRegistry.getServicesByType(serviceType);
     }
 }
