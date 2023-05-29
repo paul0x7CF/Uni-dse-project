@@ -12,6 +12,12 @@ import protocol.Message;
 public class ExchangeMessageHandler implements IMessageHandler {
 
     private static final Logger logger = LogManager.getLogger(ExchangeMessageHandler.class);
+    private Prosumer myProsumer;
+
+    public ExchangeMessageHandler(Prosumer prosumer) {
+        this.myProsumer = prosumer;
+
+    }
 
     @Override
     public void handleMessage(Message message) throws MessageProcessingException, RemoteException {

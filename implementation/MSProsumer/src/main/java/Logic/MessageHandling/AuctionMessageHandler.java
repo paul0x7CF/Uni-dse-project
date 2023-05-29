@@ -14,7 +14,7 @@ public class AuctionMessageHandler implements IMessageHandler {
 
     private static final Logger logger = LogManager.getLogger(AuctionMessageHandler.class);
     private IBroker broker;
-    private Prosumer prosumer;
+    private Prosumer myProsumer;
     @Override
     public void handleMessage(Message message) throws MessageProcessingException, RemoteException {
         try {

@@ -4,6 +4,7 @@ import Exceptions.UnknownMessageException;
 import Logic.MessageHandling.AuctionMessageHandler;
 import Logic.MessageHandling.ExchangeMessageHandler;
 import Logic.MessageHandling.ForecastMessageHandler;
+import Logic.Prosumer.Prosumer;
 import MSProsumer.Main.ProsumerManager;
 import broker.BrokerRunner;
 import messageHandling.MessageHandler;
@@ -20,12 +21,11 @@ import java.util.concurrent.BlockingQueue;
 public class Communication {
 
     private static final Logger logger = LogManager.getLogger(Communication.class);
-    private int port;
-    private String ipAdress;
 
     private MSData myMSData;
 
     private BrokerRunner communicationBroker;
+    private Prosumer myProsumer;
 
     private BlockingQueue<TimeSlot> inputQueueTimeSlot;
 
@@ -44,9 +44,10 @@ public class Communication {
         this.prosumerManager = prosumerManager;
     }
 
-    public Communication(BlockingQueue<Message> incomingMessages, BlockingQueue<Message> outgoingMessages, final int port) {
+    public Communication(BlockingQueue<Message> incomingMessages, BlockingQueue<Message> outgoingMessages, final int port, Prosumer myProsumer) {
         this.incomingMessages = outgoingMessages;
         this.outgoingMessages = outgoingMessages;
+        this.myProsumer = myProsumer;
         createBroker(port);
 
         logger.info("BrokerRunner initialized with Id: {} Ip: {} Port: {}", this.myMSData.getId(), this.myMSData.getAddress(), this.myMSData.getPort());
@@ -68,10 +69,10 @@ public class Communication {
                     this.communicationBroker.addMessageHandler(ECategory.Auction, new AuctionMessageHandler());
                 }
                 case Exchange -> {
-                    this.communicationBroker.addMessageHandler(ECategory.Exchange, new ExchangeMessageHandler());
+                    this.communicationBroker.addMessageHandler(ECategory.Exchange, new ExchangeMessageHandler(myProsumer));
                 }
                 case Forecast -> {
-                    this.communicationBroker.addMessageHandler(ECategory.Forecast, new ForecastMessageHandler());
+                    this.communicationBroker.addMessageHandler(ECategory.Forecast, new ForecastMessageHandler(myProsumer));
                 }
                 default -> {
                     throw new UnknownMessageException();
