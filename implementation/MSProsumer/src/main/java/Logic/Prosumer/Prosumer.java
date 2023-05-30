@@ -9,6 +9,7 @@ import Logic.DemandManager;
 import Logic.Scheduler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import protocol.ECategory;
 import protocol.Message;
 import sendable.Bid;
 import sendable.Sell;
@@ -46,7 +47,7 @@ public class Prosumer implements Runnable{
         this.wallet = new Wallet(cashBalance);
         this.incomingMessages = new LinkedBlockingQueue<>();
         this.outgoingMessages = new LinkedBlockingQueue<>();
-        this.communicator = new Communication(this.incomingMessages, this.outgoingMessages, port);
+        this.communicator = new Communication(this.incomingMessages, this.outgoingMessages, port, this);
 
         logger.info("Prosumer created from type {} with cash balance {}", prosumerType, cashBalance);
     }
@@ -76,7 +77,10 @@ public class Prosumer implements Runnable{
 
     @Override
     public void run() {
-        this.communicator.startBrokerRunner();
+        communicator.startBrokerRunner();
+        /*communicator.addMessageHandler(ECategory.Exchange);
+        communicator.addMessageHandler(ECategory.Auction);
+        communicator.addMessageHandler(ECategory.Forecast);*/
         /*
         while (true) {
             try {

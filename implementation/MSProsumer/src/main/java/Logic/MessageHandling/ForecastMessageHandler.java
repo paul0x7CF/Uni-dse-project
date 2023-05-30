@@ -1,6 +1,7 @@
 package Logic.MessageHandling;
 
 import Exceptions.MessageNotSupportedException;
+import Logic.Prosumer.Prosumer;
 import exceptions.MessageProcessingException;
 import exceptions.RemoteException;
 import messageHandling.IMessageHandler;
@@ -10,6 +11,13 @@ import protocol.Message;
 
 public class ForecastMessageHandler implements IMessageHandler {
     private static final Logger logger = LogManager.getLogger(ForecastMessageHandler.class);
+
+    Prosumer myProsumer;
+
+    public ForecastMessageHandler(Prosumer prosumer) {
+        this.myProsumer = prosumer;
+
+    }
 
     @Override
     public void handleMessage(Message message) throws MessageProcessingException, RemoteException {

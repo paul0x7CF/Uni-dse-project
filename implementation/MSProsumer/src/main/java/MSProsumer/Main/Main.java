@@ -29,10 +29,10 @@ public class Main {
             EProsumerType prosumerType = EProsumerType.values()[randomValue];
             switch (prosumerType) {
                 case NETTO_ZERO_BUILDING ->{
-                    new Thread(new NettoZeroBuilding(prosumerType, CASH_BALANCE, PORT),"Prosumer-"+i+"").start();
+                    new Thread(new NettoZeroBuilding(prosumerType, CASH_BALANCE, PORT),"Prosumer-"+i).start();
                 }
                 case CONSUMPTION_BUILDING, PUBLIC_BUILDING -> {
-                    new Thread(new ConsumptionBuilding(prosumerType, CASH_BALANCE, PORT),"Prosumer-"+i+"").start();
+                    new Thread(new ConsumptionBuilding(prosumerType, CASH_BALANCE, PORT),"Prosumer-"+i).start();
                 }
             }
         }
