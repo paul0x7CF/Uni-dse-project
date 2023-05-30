@@ -22,10 +22,7 @@ public class ServiceRegistry {
             log.trace("{}, Service already registered: {}, equals: {}", currentService.getType(), msData.getId(), msData.equals(currentService));
             return;
         }
-        log.debug("{} registering service: {} | my ID: {}", currentService.getPort(), msData.getPort(), msData.getId());
-
-        //TODO: remove when done with testing
-        log.info("{} saved {}", currentService.getPort(), msData.getPort());
+        log.info("{} registering service {}", currentService.getPort(), msData.getPort());
 
         EServiceType serviceType = msData.getType();
         List<MSData> services = availableServices.get(serviceType);

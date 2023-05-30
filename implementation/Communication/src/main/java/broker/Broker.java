@@ -108,7 +108,10 @@ public class Broker implements IServiceBroker, IScheduleBroker {
             }
             Message message = Marshaller.unmarshal(receivedMessage);
             log.trace("{} received {}", getCurrentService().getType(), message.getSubCategory());
-            print(message,false);
+            if (getCurrentService().getPort() == 11000) {
+                log.debug("######### 11000 received {} from {}", message.getSubCategory(), message.getSenderPort());
+                // print(message,false);
+            }
             messageHandler.handleMessage(message);
 
             // Ack and Register messages should not be acknowledged as this would cause an infinite loop and register
@@ -126,17 +129,19 @@ public class Broker implements IServiceBroker, IScheduleBroker {
             String sr = isSender ? "S" : "R ";
             String ackBind = isSender ? "sent for" : "received for";
             String messageBind = isSender ? "message sent to" : "message received from";
-            if (isSender) {
-                log.trace("{} sent to {} | {}", port, message.getReceiverPort(), message.getMessageID());
+            if (isSender && !message.getSubCategory().equals("Ack")) {
+                log.debug("######### {} {} sent to {} | {}", port, message.getSubCategory(), message.getReceiverPort(),
+                        message.getMessageID().toString().substring(0, 4));
             } else {
-                log.trace("{} received from {} | {}", port, message.getSenderPort(), message.getMessageID());
+                log.trace("######### {} received from {} | {}", port, message.getSenderPort(), message.getMessageID());
             }
-            if (Objects.equals(message.getSubCategory(), "Ack")) {
+            int from = isSender ? message.getSenderPort() : message.getReceiverPort();
+            if (message.getSubCategory().equals("Ack")) {
                 AckInfo ackInfo = (AckInfo) message.getSendable(AckInfo.class);
-                log.trace(sr+port/1000+" {} {} {}", message.getSubCategory(), ackBind, ackInfo.getMessageID().toString().substring(0, 4));
+                log.debug("######### "+sr+port+" {} {} {} "+sr+" {}", message.getSubCategory(), ackBind,
+                        ackInfo.getMessageID().toString().substring(0, 4), from);
             } else {
-                int from = isSender ? message.getReceiverPort() : message.getSenderPort();
-                log.trace(sr+port/1000+" {} {} {} | {}", message.getSubCategory(), messageBind, from, message.getMessageID().toString().substring(0, 4));
+                log.trace("######### "+sr+port+" {} {} {} | {}", message.getSubCategory(), messageBind, from, message.getMessageID().toString().substring(0, 4));
             }
         } else if (port == 9000) {
             log.trace("9000");

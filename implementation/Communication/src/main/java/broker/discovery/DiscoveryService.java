@@ -110,7 +110,7 @@ public class DiscoveryService {
         for (int port : messagesToSchedule.keySet()) {
             // If the service is already registered, no need to send the message
             if (broker.serviceExists(port)) {
-                log.trace("{} already registered at {}", port, currentService.getPort());
+                log.trace("{} already registered at {} not sending register message anymore", port, currentService.getPort());
                 messagesToSchedule.remove(port);
             } else {
                 Message message = messagesToSchedule.get(port);
