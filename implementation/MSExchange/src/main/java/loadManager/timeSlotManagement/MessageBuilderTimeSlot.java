@@ -1,6 +1,7 @@
 package loadManager.timeSlotManagement;
 
 import loadManager.networkManagment.IMessageBuilder;
+import mainPackage.ESubCategory;
 import protocol.ECategory;
 import protocol.Message;
 import protocol.MessageFactory;

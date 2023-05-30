@@ -1,6 +1,7 @@
 package loadManager.networkManagment;
 
 import loadManager.SellInformation;
+import mainPackage.ESubCategory;
 import protocol.ECategory;
 import protocol.Message;
 import protocol.MessageFactory;

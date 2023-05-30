@@ -1,7 +1,9 @@
-package loadManager.networkManagment;
+package msExchange.networkCommunication;
 
 import broker.BrokerRunner;
 import broker.IServiceBroker;
+import loadManager.networkManagment.AuctionMessageHandler;
+import loadManager.networkManagment.ExchangeMessageHandler;
 import protocol.ECategory;
 import protocol.Message;
 import sendable.EServiceType;
@@ -33,11 +35,11 @@ public class Communication {
             properties.load(configFile);
             configFile.close();
 
-            PORT = Integer.parseInt(properties.getProperty("loadManager.port"));
-            ADDRESS = properties.getProperty("loadManager.ip");
-            SERVICE_TYPE = EServiceType.valueOf(properties.getProperty("loadManager.serviceType"));
+            //TODO: Where do I get the port/address?
+            PORT = Integer.parseInt(properties.getProperty("exchange.port"));
+            ADDRESS = properties.getProperty("exchange.ip");
+            SERVICE_TYPE = EServiceType.valueOf(properties.getProperty("exchange.serviceType"));
             ID = UUID.randomUUID();
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -55,8 +57,9 @@ public class Communication {
         this.myMSData = new MSData(ID, SERVICE_TYPE, ADDRESS, PORT);
     }
 
+
     private void createBroker(int port) {
-        this.communicationBroker = new BrokerRunner(EServiceType.Exchange, port);
+        this.communicationBroker = new BrokerRunner(SERVICE_TYPE, port);
         this.myMSData = this.communicationBroker.getCurrentService();
     }
 
@@ -72,14 +75,15 @@ public class Communication {
         try {
             switch (category) {
                 case Auction -> {
-                    this.communicationBroker.addMessageHandler(ECategory.Auction, new AuctionMessageHandler(this.incomingMessages, this.outgoingMessages, (IServiceBroker) this.communicationBroker));
+                    this.communicationBroker.addMessageHandler(ECategory.Auction, new ProsumerMessageHandler(this.incomingMessages, this.outgoingMessages, (IServiceBroker) this.communicationBroker));
                 }
                 case Exchange -> {
-                    this.communicationBroker.addMessageHandler(ECategory.Exchange, new ExchangeMessageHandler(this.incomingMessages, this.outgoingMessages, (IServiceBroker) this.communicationBroker));
+                    this.communicationBroker.addMessageHandler(ECategory.Exchange, new LoadBalancerMessageHandler(this.incomingMessages, this.outgoingMessages, (IServiceBroker) this.communicationBroker));
                 }
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
+
 }
