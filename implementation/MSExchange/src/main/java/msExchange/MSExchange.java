@@ -2,7 +2,7 @@ package msExchange;
 
 import broker.Broker;
 import loadManager.timeSlotManagement.TimeSlotBuilder;
-import msExchange.networkCommunication.Communication;
+import msExchange.networkCommunication.CommunicationExchange;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protocol.Message;
@@ -23,7 +23,8 @@ public class MSExchange implements IExchange, Runnable {
     private BlockingQueue<Bid> bidQueue;
     private BlockingQueue<Sell> sellQueue;
     private BlockingQueue<Transaction> transactionQueue;
-    private Communication communication;
+    //private Communication communication;
+    private CommunicationExchange communication;
     private ExecutorService executorService;
     private UUID exchangeID;
     private boolean duplicated;
@@ -34,13 +35,14 @@ public class MSExchange implements IExchange, Runnable {
     }
 
     private void startCommunication() {
-        communication = new Communication(incomingMessages, outgoingMessages);
+        communication = new CommunicationExchange(incomingMessages, outgoingMessages);
         communication.startBrokerRunner();
     }
 
     @Override
     public void run() {
         Thread communicationThread = new Thread(this::startCommunication);
+        communicationThread.start();
 
     }
 

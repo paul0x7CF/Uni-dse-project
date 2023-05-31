@@ -3,6 +3,7 @@ package loadManager;
 import loadManager.exchangeManagement.ExchangeServiceInformation;
 import loadManager.exchangeManagement.LoadManager;
 import loadManager.networkManagment.Communication;
+import loadManager.networkManagment.CommunicationLoadManager;
 import loadManager.prosumerActionManagement.ProsumerManager;
 import loadManager.timeSlotManagement.MessageBuilderTimeSlot;
 import loadManager.timeSlotManagement.TimeSlotBuilder;
@@ -29,7 +30,8 @@ public class Controller implements Runnable {
     private final int NUM_NEW_TIME_SLOTS;
 
     private ProsumerManager prosumerManager;
-    private Communication communication;
+    //private Communication communication;
+    private CommunicationLoadManager communication;
     private TimeSlotBuilder timeSlotBuilder;
     private BlockingQueue<Message> incomingQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<Message> outgoingQueue = new LinkedBlockingQueue<>();
@@ -56,7 +58,7 @@ public class Controller implements Runnable {
     }
 
     private void startCommunication() {
-        communication = new Communication(incomingQueue, outgoingQueue);
+        communication = new CommunicationLoadManager(incomingQueue, outgoingQueue);
         communication.startBrokerRunner();
     }
 
@@ -64,6 +66,7 @@ public class Controller implements Runnable {
     @Override
     public void run() {
         Thread communicationThread = new Thread(this::startCommunication);
+        communicationThread.start();
 
         Thread timeSlotThread = new Thread(this::addNewTimeSlotsPeriodically);
         timeSlotThread.start();
