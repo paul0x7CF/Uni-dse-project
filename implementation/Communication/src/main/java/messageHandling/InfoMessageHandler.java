@@ -30,24 +30,13 @@ public class InfoMessageHandler implements IMessageHandler {
         if (subcategory.contains(";")) {
             throw new MessageProcessingException("Subcategory has another subcategory: " + subcategory);
         }
-        switch(subcategory) {
-            case "Ping":
-                handlePing(message);
-                break;
-            case "Register":
-                handleRegister(message);
-                break;
-            case "Unregister":
-                handleUnregister(message);
-                break;
-            case "Ack":
-                handleAck(message);
-                break;
-            case "Error":
-                handleError(message);
-                break;
-            default:
-                throw new MessageProcessingException("Unknown message subCategory: " + message.getSubCategory());
+        switch (subcategory) {
+            case "Ping" -> handlePing(message);
+            case "Register" -> handleRegister(message);
+            case "Unregister" -> handleUnregister(message);
+            case "Ack" -> handleAck(message);
+            case "Error" -> handleError(message);
+            default -> throw new MessageProcessingException("Unknown message subCategory: " + message.getSubCategory());
         }
 
         log.trace("{} Message processed", message.getCategory());

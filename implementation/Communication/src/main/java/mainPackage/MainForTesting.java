@@ -6,12 +6,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protocol.Message;
 import sendable.EServiceType;
-import sendable.MSData;
 
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 public class MainForTesting {
     private static final Logger log = LogManager.getLogger(MainForTesting.class);
@@ -82,7 +79,7 @@ public class MainForTesting {
         }
 
         log.info("#".repeat(25));
-        log.info("solar services: {}", solar.getServices().size());
+        printServiceSize(solar);
         log.info("#".repeat(25));
 
         sleep(5);
@@ -106,7 +103,7 @@ public class MainForTesting {
          */
         log.fatal("All brokers stopped");
         log.info("#".repeat(25));
-        log.info("solar services: {}", solar.getServices().size());
+        printServiceSize(solar);
         log.info("#".repeat(25));
         sleep(3);
     }
@@ -117,5 +114,13 @@ public class MainForTesting {
         } catch (InterruptedException e) {
             log.error("Thread interrupted", e);
         }
+    }
+
+    private static void printServiceSize(BrokerRunner broker) {
+        log.info("#".repeat(25));
+        if (broker.getCurrentService() != null) {
+            log.info("{} services: {}", broker.getCurrentService().getPort(), broker.getServices().size());
+        }
+        log.info("#".repeat(25));
     }
 }
