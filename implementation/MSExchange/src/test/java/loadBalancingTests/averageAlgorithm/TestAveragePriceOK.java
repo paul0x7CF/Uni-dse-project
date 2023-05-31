@@ -1,6 +1,6 @@
 package loadBalancingTests.averageAlgorithm;
 
-import loadManager.Exceptions.PriceNotOKException;
+import Exceptions.PriceNotOKException;
 import loadManager.prosumerActionManagement.AverageMechanism;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;

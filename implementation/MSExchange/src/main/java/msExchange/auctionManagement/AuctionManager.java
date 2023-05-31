@@ -1,7 +1,7 @@
 package msExchange.auctionManagement;
 
-import msExchange.Exceptions.AuctionNotFoundException;
-import msExchange.Exceptions.InvalidTimeSlotException;
+import Exceptions.AuctionNotFoundException;
+import Exceptions.InvalidTimeSlotException;
 import sendable.Bid;
 import sendable.Sell;
 import sendable.Transaction;

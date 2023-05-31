@@ -1,6 +1,6 @@
 package loadBalancingTests.auctionManager;
 
-import loadManager.Exceptions.IllegalSlotException;
+import Exceptions.IllegalSlotException;
 import loadManager.SellInformation;
 import loadManager.auctionManagement.Auction;
 import loadManager.auctionManagement.AuctionManager;

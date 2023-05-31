@@ -1,4 +1,4 @@
-package msExchange.Exceptions;
+package Exceptions;
 
 import sendable.Bid;
 import sendable.Sell;

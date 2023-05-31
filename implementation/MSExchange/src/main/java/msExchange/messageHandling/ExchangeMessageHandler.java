@@ -1,14 +1,16 @@
 package msExchange.messageHandling;
 
+import Exceptions.InvalidBidException;
+import Exceptions.InvalidSellException;
 import exceptions.MessageProcessingException;
 import mainPackage.ESubCategory;
 import messageHandling.IMessageHandler;
-import msExchange.Exceptions.InvalidBidException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protocol.Message;
 import sendable.Bid;
 import sendable.Sell;
+import sendable.TimeSlot;
 import sendable.Transaction;
 
 import java.util.concurrent.BlockingQueue;
@@ -44,7 +46,7 @@ public class ExchangeMessageHandler implements IMessageHandler {
                 default ->
                         throw new MessageProcessingException("Unknown message subCategory: " + message.getSubCategory());
             }
-        } catch (InvalidBidException e) {
+        } catch (InvalidBidException | InvalidSellException e) {
             throw new MessageProcessingException(e.getMessage());
         }
 
@@ -52,11 +54,17 @@ public class ExchangeMessageHandler implements IMessageHandler {
     }
 
     private void handleTimeSlot(Message message) {
+        TimeSlot timeSlot = (TimeSlot) message.getSendable(TimeSlot.class);
 
     }
 
-    private void handleSell(Message message) {
+    private void handleSell(Message message) throws InvalidSellException {
+        Sell sell = (Sell) message.getSendable(Sell.class);
+        SellValidator sellValidator = new SellValidator();
+        sellValidator.validateSell(sell);
 
+        //add sell to queue
+        sellQueue.add(sell);
     }
 
     private void handleBid(Message message) throws InvalidBidException {

@@ -1,6 +1,6 @@
 package loadManager.prosumerActionManagement;
 
-import loadManager.Exceptions.PriceNotOKException;
+import Exceptions.PriceNotOKException;
 import loadManager.SellInformation;
 import loadManager.auctionManagement.AuctionManager;
 import loadManager.prosumerActionManagement.bidManagement.Bidder;

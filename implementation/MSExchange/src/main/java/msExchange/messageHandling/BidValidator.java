@@ -1,6 +1,6 @@
 package msExchange.messageHandling;
 
-import msExchange.Exceptions.InvalidBidException;
+import Exceptions.InvalidBidException;
 import sendable.Bid;
 
 import java.util.Optional;

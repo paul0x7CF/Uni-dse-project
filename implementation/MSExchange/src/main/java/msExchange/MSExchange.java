@@ -1,6 +1,7 @@
 package msExchange;
 
 import exceptions.MessageProcessingException;
+import msExchange.auctionManagement.AuctionManager;
 import msExchange.messageHandling.ExchangeMessageHandler;
 import msExchange.networkCommunication.CommunicationExchange;
 import org.apache.logging.log4j.LogManager;
@@ -13,13 +14,15 @@ import sendable.Transaction;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class MSExchange implements IExchange, Runnable {
+public class MSExchange implements Runnable {
     private static final Logger logger = LogManager.getLogger(MSExchange.class);
     private BlockingQueue<Message> incomingMessages = new LinkedBlockingQueue<>();
     private BlockingQueue<Message> outgoingMessages = new LinkedBlockingQueue<>();
     private BlockingQueue<Bid> bidQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<Sell> sellQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<Transaction> transactionQueue = new LinkedBlockingQueue<>();
+
+    private AuctionManager auctionManager;
 
     private CommunicationExchange communication;
     private ExchangeMessageHandler messageHandler;
@@ -28,6 +31,7 @@ public class MSExchange implements IExchange, Runnable {
 
     public MSExchange(boolean duplicated) {
         this.duplicated = duplicated;
+
     }
 
     private void startCommunication() {
@@ -55,22 +59,6 @@ public class MSExchange implements IExchange, Runnable {
         }
 
     }
-
-    @Override
-    public void processBidQueue() {
-
-    }
-
-    @Override
-    public void receivedBid(Bid bid) {
-
-    }
-
-    @Override
-    public void receivedSell(Sell sell) {
-
-    }
-
 
     public boolean isDuplicated() {
         return duplicated;

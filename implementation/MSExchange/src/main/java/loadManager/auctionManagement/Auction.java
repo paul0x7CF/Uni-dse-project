@@ -1,6 +1,6 @@
 package loadManager.auctionManagement;
 
-import loadManager.Exceptions.CommandNotPossibleException;
+import Exceptions.CommandNotPossibleException;
 import loadManager.SellInformation;
 import sendable.Bid;
 import sendable.Transaction;

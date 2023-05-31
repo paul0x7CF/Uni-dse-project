@@ -1,6 +1,6 @@
 package loadManager.prosumerActionManagement;
 
-import loadManager.Exceptions.PriceNotOKException;
+import Exceptions.PriceNotOKException;
 
 import java.util.ArrayList;
 import java.util.Collections;

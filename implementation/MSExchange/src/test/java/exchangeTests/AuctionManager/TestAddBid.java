@@ -1,6 +1,6 @@
 package exchangeTests.AuctionManager;
 
-import msExchange.Exceptions.AuctionNotFoundException;
+import Exceptions.AuctionNotFoundException;
 import msExchange.auctionManagement.Auction;
 import msExchange.auctionManagement.AuctionManager;
 import org.junit.Test;
