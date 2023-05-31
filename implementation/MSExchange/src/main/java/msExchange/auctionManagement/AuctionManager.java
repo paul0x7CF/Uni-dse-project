@@ -2,20 +2,24 @@ package msExchange.auctionManagement;
 
 import Exceptions.AuctionNotFoundException;
 import Exceptions.InvalidTimeSlotException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import sendable.Bid;
 import sendable.Sell;
 import sendable.Transaction;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 
 public class AuctionManager implements Runnable {
-    private final int CHECK_DURATION = 2000; //in millisecs
-    private final int MINUTES_TO_LIVE_AFTER_EXPIRING = 500000; //in millisecs
-    Logger logger = Logger.getLogger(getClass().getName());
+    private static final Logger logger = LogManager.getLogger(AuctionManager.class);
+    private final int CHECK_DURATION; //in millisecs
+    private final int MINUTES_TO_LIVE_AFTER_EXPIRING; //in millisecs
+
     private Map<UUID, Auction> auctions;
     private Map<UUID, TimeSlot> timeSlots;
     private BlockingQueue<Transaction> transactionQueue;
@@ -28,6 +32,20 @@ public class AuctionManager implements Runnable {
         this.transactionQueue = transactionQueue;
         this.bidQueue = bidQueue;
         this.sellQueue = sellQueue;
+
+        //read Properties
+        //read Properties
+        Properties properties = new Properties();
+        try {
+            FileInputStream configFile = new FileInputStream("C:\\Universität\\DSE\\Gruppenprojekt\\DSE_Team_202\\implementation\\MSExchange\\src\\main\\java\\config.properties");
+            properties.load(configFile);
+            configFile.close();
+
+            CHECK_DURATION = Integer.parseInt(properties.getProperty("exchange.checkDuration"));
+            MINUTES_TO_LIVE_AFTER_EXPIRING = Integer.parseInt(properties.getProperty("exchange.minutesToLiveAfterExpiring"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -45,10 +63,10 @@ public class AuctionManager implements Runnable {
                     lastCheckTime = currentTime;
                 }
             } catch (InterruptedException e) {
-                logger.severe(e.getMessage());
+                logger.error(e.getMessage());
                 Thread.currentThread().interrupt();
             } catch (AuctionNotFoundException | InvalidTimeSlotException e) {
-                logger.severe(e.getMessage());
+                logger.error(e.getMessage());
                 //build Message to tell exchange - that it was invalid!
             }
         }
@@ -105,11 +123,11 @@ public class AuctionManager implements Runnable {
                 throw new AuctionNotFoundException("The Auction ID is missing", Optional.empty(), Optional.empty(), Optional.of(bid));
             }
             if (!auctionExists(auctionID.get())) {
-                logger.finest("Auction doesn't exist yet.");
+                logger.debug("Auction doesn't exist yet.");
                 bidQueue.put(bid);
                 //?? throw new AuctionNotFoundException("The Auction ID is incorrect.", auctionID, Optional.empty(), Optional.of(bid));
             } else {
-                logger.finest("Add Bid to Auction");
+                logger.debug("Add Bid to Auction");
                 addBidToAuction(auctionID.get(), bid);
             }
         }
@@ -155,7 +173,7 @@ public class AuctionManager implements Runnable {
             logger.info("Bid was for a previous slot. Sending the Bid to the Storage...");
             //send Message to Storage -> Message Builder!
 
-            logger.severe("Not implemented yet!");
+            logger.error("Not implemented yet!");
         } else {
             Auction auction = auctions.get(auctionID);
             auction.setBid(bid);
