@@ -3,7 +3,7 @@ package loadManager.networkManagment;
 import broker.IServiceBroker;
 import mainPackage.BaseCommunication;
 import mainPackage.EExchangeType;
-import msExchange.networkCommunication.ProsumerMessageHandler;
+import msExchange.networkCommunication.IncomingMessageHandler;
 import protocol.ECategory;
 import protocol.Message;
 
@@ -20,7 +20,7 @@ public class CommunicationLoadManager extends BaseCommunication {
     public void addMessageHandler(ECategory category) {
         switch (category) {
             case Auction -> {
-                super.addMessageHandler(category, new ProsumerMessageHandler(this.incomingMessages, this.outgoingMessages, (IServiceBroker) this.communicationBroker));
+                super.addMessageHandler(category, new IncomingMessageHandler(this.incomingMessages, this.outgoingMessages, (IServiceBroker) this.communicationBroker));
             }
             case Exchange -> {
                 super.addMessageHandler(category, new ExchangeMessageHandler(this.incomingMessages, this.outgoingMessages, (IServiceBroker) this.communicationBroker));
