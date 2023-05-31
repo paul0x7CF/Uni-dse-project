@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public final class BidValidator {
-
     public static void validateBid(Bid bid) throws InvalidBidException {
         validateBidNotNull(bid);
         validateBidderIDNotNull(bid.getBidderID());
