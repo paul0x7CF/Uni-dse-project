@@ -4,16 +4,23 @@ import loadManager.Controller;
 import msExchange.MSExchange;
 
 import java.util.Optional;
+import java.util.logging.Logger;
 
 public class Main {
+    private static final Logger logger = Logger.getLogger(Main.class.getName());
     private static MSExchange msExchange;
     private static Controller controller;
 
-    public static <String> void main(String[] args) {
+    public static void main(String[] args) {
         boolean duplicated = false;
-        if ("-s".equals(args[0])) {
-            duplicated = true;
+        if (args.length == 0) {
+            logger.info("No arguments passed, running as non-duplicated");
+        } else {
+            if ("-s".equals(args[0])) {
+                duplicated = true;
+            }
         }
+
 
         msExchange = new MSExchange(duplicated);
         Thread exchangeThread = new Thread(msExchange);

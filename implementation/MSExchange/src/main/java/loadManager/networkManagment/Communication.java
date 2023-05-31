@@ -10,16 +10,11 @@ import sendable.MSData;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Logger;
 
 public class Communication {
     private static final Logger logger = Logger.getLogger(Communication.class.getName());
-    private final int PORT;
-    private final String ADDRESS;
-    private final EServiceType SERVICE_TYPE;
-    private final UUID ID;
     private MSData myMSData;
     private BrokerRunner communicationBroker;
     private BlockingQueue<Message> incomingMessages;
@@ -28,15 +23,16 @@ public class Communication {
     public Communication(BlockingQueue<Message> incomingMessages, BlockingQueue<Message> outgoingMessages) {
         //read Properties
         Properties properties = new Properties();
+        int port;
+        EServiceType serviceType;
+
         try {
-            FileInputStream configFile = new FileInputStream("src/main/java/config.properties");
+            FileInputStream configFile = new FileInputStream("C:\\Universität\\DSE\\Gruppenprojekt\\DSE_Team_202\\implementation\\MSExchange\\src\\main\\java\\config.properties");
             properties.load(configFile);
             configFile.close();
 
-            PORT = Integer.parseInt(properties.getProperty("loadManager.port"));
-            ADDRESS = properties.getProperty("loadManager.ip");
-            SERVICE_TYPE = EServiceType.valueOf(properties.getProperty("loadManager.serviceType"));
-            ID = UUID.randomUUID();
+            port = Integer.parseInt(properties.getProperty("loadManager.port"));
+            serviceType = EServiceType.valueOf(properties.getProperty("loadManager.serviceType"));
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -45,18 +41,13 @@ public class Communication {
 
         this.incomingMessages = incomingMessages;
         this.outgoingMessages = outgoingMessages;
-        createBroker(PORT);
-        createMYMSData();
+        createBroker(port, serviceType);
 
         logger.info("MS registered with Id:" + this.myMSData.getId() + ", Address: " + this.myMSData.getAddress() + ", Port: " + this.myMSData.getPort());
     }
 
-    private void createMYMSData() {
-        this.myMSData = new MSData(ID, SERVICE_TYPE, ADDRESS, PORT);
-    }
-
-    private void createBroker(int port) {
-        this.communicationBroker = new BrokerRunner(EServiceType.Exchange, port);
+    private void createBroker(int port, EServiceType serviceType) {
+        this.communicationBroker = new BrokerRunner(serviceType, port);
         this.myMSData = this.communicationBroker.getCurrentService();
     }
 

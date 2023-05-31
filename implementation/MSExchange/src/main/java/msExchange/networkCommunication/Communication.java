@@ -2,8 +2,6 @@ package msExchange.networkCommunication;
 
 import broker.BrokerRunner;
 import broker.IServiceBroker;
-import loadManager.networkManagment.AuctionMessageHandler;
-import loadManager.networkManagment.ExchangeMessageHandler;
 import protocol.ECategory;
 import protocol.Message;
 import sendable.EServiceType;
@@ -18,10 +16,6 @@ import java.util.logging.Logger;
 
 public class Communication {
     private static final Logger logger = Logger.getLogger(Communication.class.getName());
-    private final int PORT;
-    private final String ADDRESS;
-    private final EServiceType SERVICE_TYPE;
-    private final UUID ID;
     private MSData myMSData;
     private BrokerRunner communicationBroker;
     private BlockingQueue<Message> incomingMessages;
@@ -30,16 +24,16 @@ public class Communication {
     public Communication(BlockingQueue<Message> incomingMessages, BlockingQueue<Message> outgoingMessages) {
         //read Properties
         Properties properties = new Properties();
+        int port;
+        EServiceType serviceType;
         try {
-            FileInputStream configFile = new FileInputStream("src/main/java/config.properties");
+            FileInputStream configFile = new FileInputStream("C:\\Universität\\DSE\\Gruppenprojekt\\DSE_Team_202\\implementation\\MSExchange\\src\\main\\java\\config.properties");
             properties.load(configFile);
             configFile.close();
 
             //TODO: Where do I get the port/address?
-            PORT = Integer.parseInt(properties.getProperty("exchange.port"));
-            ADDRESS = properties.getProperty("exchange.ip");
-            SERVICE_TYPE = EServiceType.valueOf(properties.getProperty("exchange.serviceType"));
-            ID = UUID.randomUUID();
+            port = Integer.parseInt(properties.getProperty("exchange.port"));
+            serviceType = EServiceType.valueOf(properties.getProperty("exchange.serviceType"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -47,19 +41,13 @@ public class Communication {
 
         this.incomingMessages = incomingMessages;
         this.outgoingMessages = outgoingMessages;
-        createBroker(PORT);
-        createMYMSData();
+        createBroker(port, serviceType);
 
         logger.info("MS registered with Id:" + this.myMSData.getId() + ", Address: " + this.myMSData.getAddress() + ", Port: " + this.myMSData.getPort());
     }
 
-    private void createMYMSData() {
-        this.myMSData = new MSData(ID, SERVICE_TYPE, ADDRESS, PORT);
-    }
-
-
-    private void createBroker(int port) {
-        this.communicationBroker = new BrokerRunner(SERVICE_TYPE, port);
+    private void createBroker(int port, EServiceType serviceType) {
+        this.communicationBroker = new BrokerRunner(serviceType, port);
         this.myMSData = this.communicationBroker.getCurrentService();
     }
 
@@ -86,4 +74,11 @@ public class Communication {
         }
     }
 
+    public BrokerRunner getBroker() {
+        return communicationBroker;
+    }
+
+    public MSData getMyMSData() {
+        return myMSData;
+    }
 }
