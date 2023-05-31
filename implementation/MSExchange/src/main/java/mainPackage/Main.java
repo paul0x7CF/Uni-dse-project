@@ -2,12 +2,13 @@ package mainPackage;
 
 import loadManager.Controller;
 import msExchange.MSExchange;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
-import java.util.logging.Logger;
 
 public class Main {
-    private static final Logger logger = Logger.getLogger(Main.class.getName());
+    private static final Logger logger = LogManager.getLogger(Main.class);
     private static MSExchange msExchange;
     private static Controller controller;
 

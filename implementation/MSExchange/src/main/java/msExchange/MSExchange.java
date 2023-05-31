@@ -3,6 +3,8 @@ package msExchange;
 import broker.Broker;
 import loadManager.timeSlotManagement.TimeSlotBuilder;
 import msExchange.networkCommunication.Communication;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import protocol.Message;
 import sendable.Bid;
 import sendable.Sell;
@@ -14,6 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class MSExchange implements IExchange, Runnable {
+    private static final Logger logger = LogManager.getLogger(MSExchange.class);
     private Broker broker;
     private BlockingQueue<Message> incomingMessages = new LinkedBlockingQueue<>();
     private BlockingQueue<Message> outgoingMessages = new LinkedBlockingQueue<>();
@@ -37,8 +40,8 @@ public class MSExchange implements IExchange, Runnable {
 
     @Override
     public void run() {
-        startCommunication();
-        System.out.println("MSExchange started");
+        Thread communicationThread = new Thread(this::startCommunication);
+
     }
 
     @Override

@@ -7,6 +7,8 @@ import loadManager.prosumerActionManagement.ProsumerManager;
 import loadManager.timeSlotManagement.MessageBuilderTimeSlot;
 import loadManager.timeSlotManagement.TimeSlotBuilder;
 import messageHandling.IMessageHandler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import protocol.Message;
 import sendable.Bid;
 import sendable.Sell;
@@ -20,12 +22,12 @@ import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.logging.Logger;
 
 public class Controller implements Runnable {
+    private static final Logger logger = LogManager.getLogger(Controller.class);
     private final int TIME_SLOT_DURATION;
     private final int NUM_NEW_TIME_SLOTS;
-    private Logger logger = Logger.getLogger(Controller.class.getName());
+
     private ProsumerManager prosumerManager;
     private Communication communication;
     private TimeSlotBuilder timeSlotBuilder;
@@ -50,8 +52,6 @@ public class Controller implements Runnable {
             throw new RuntimeException(e);
         }
 
-
-        startCommunication();
         timeSlotBuilder = new TimeSlotBuilder(TIME_SLOT_DURATION, NUM_NEW_TIME_SLOTS);
     }
 
@@ -63,7 +63,7 @@ public class Controller implements Runnable {
 
     @Override
     public void run() {
-        logger.info("LoadManager started");
+        Thread communicationThread = new Thread(this::startCommunication);
 
         Thread timeSlotThread = new Thread(this::addNewTimeSlotsPeriodically);
         timeSlotThread.start();

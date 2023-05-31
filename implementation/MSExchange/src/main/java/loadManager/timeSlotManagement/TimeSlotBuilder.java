@@ -1,5 +1,8 @@
 package loadManager.timeSlotManagement;
 
+import mainPackage.MainForTesting;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import sendable.TimeSlot;
 
 import java.io.FileInputStream;
@@ -10,6 +13,7 @@ import java.util.List;
 import java.util.Properties;
 
 public class TimeSlotBuilder {
+    private static final Logger log = LogManager.getLogger(TimeSlotBuilder.class);
     private final long DURATION_IN_SECS;
     private final int NUM_NEW_TIME_SLOTS;
     private final int MAX_NUM_TIME_SLOTS_SAVED;
@@ -26,7 +30,7 @@ public class TimeSlotBuilder {
     private int getMAX_NUM_TIME_SLOTS_SAVED() {
         Properties properties = new Properties();
         try {
-            FileInputStream configFile = new FileInputStream("src/main/java/config.properties");
+            FileInputStream configFile = new FileInputStream("C:\\Universität\\DSE\\Gruppenprojekt\\DSE_Team_202\\implementation\\MSExchange\\src\\main\\java\\config.properties");
             properties.load(configFile);
             configFile.close();
 

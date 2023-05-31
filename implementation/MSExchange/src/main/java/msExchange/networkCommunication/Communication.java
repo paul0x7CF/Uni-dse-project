@@ -2,6 +2,8 @@ package msExchange.networkCommunication;
 
 import broker.BrokerRunner;
 import broker.IServiceBroker;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import protocol.ECategory;
 import protocol.Message;
 import sendable.EServiceType;
@@ -12,10 +14,10 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
-import java.util.logging.Logger;
 
-public class Communication {
-    private static final Logger logger = Logger.getLogger(Communication.class.getName());
+
+public class Communication{
+    private static final Logger logger = LogManager.getLogger(Communication.class.getName());
     private MSData myMSData;
     private BrokerRunner communicationBroker;
     private BlockingQueue<Message> incomingMessages;
