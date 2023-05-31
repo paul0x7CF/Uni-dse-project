@@ -78,10 +78,6 @@ public class MainForTesting {
             }
         }
 
-        log.info("#".repeat(25));
-        printServiceSize(solar);
-        log.info("#".repeat(25));
-
         sleep(5);
 /*
         List<Runnable> brokers = executor.shutdownNow();
@@ -105,6 +101,7 @@ public class MainForTesting {
         log.info("#".repeat(25));
         printServiceSize(solar);
         log.info("#".repeat(25));
+        solar.stop();
         sleep(3);
     }
 
