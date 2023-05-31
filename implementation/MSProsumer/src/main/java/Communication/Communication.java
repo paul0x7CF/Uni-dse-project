@@ -1,9 +1,9 @@
 package Communication;
 
 import Exceptions.UnknownMessageException;
-import Logic.MessageHandling.AuctionMessageHandler;
-import Logic.MessageHandling.ExchangeMessageHandler;
-import Logic.MessageHandling.ForecastMessageHandler;
+import Communication.MessageHandling.AuctionMessageHandler;
+import Communication.MessageHandling.ExchangeMessageHandler;
+import Communication.MessageHandling.ForecastMessageHandler;
 import Logic.Prosumer.Prosumer;
 import MSProsumer.Main.ProsumerManager;
 import broker.BrokerRunner;
@@ -44,8 +44,8 @@ public class Communication {
         this.prosumerManager = prosumerManager;
     }
 
-    public Communication(BlockingQueue<Message> incomingMessages, BlockingQueue<Message> outgoingMessages, final int port, Prosumer myProsumer) {
-        this.incomingMessages = outgoingMessages;
+    public Communication(BlockingQueue<TimeSlot> availableTimeSlot, BlockingQueue<Message> outgoingMessages, final int port, Prosumer myProsumer) {
+        this.inputQueueTimeSlot = availableTimeSlot;
         this.outgoingMessages = outgoingMessages;
         this.myProsumer = myProsumer;
         createBroker(port);
@@ -69,7 +69,7 @@ public class Communication {
                     this.communicationBroker.addMessageHandler(ECategory.Auction, new AuctionMessageHandler());
                 }
                 case Exchange -> {
-                    this.communicationBroker.addMessageHandler(ECategory.Exchange, new ExchangeMessageHandler(myProsumer));
+                    this.communicationBroker.addMessageHandler(ECategory.Exchange, new ExchangeMessageHandler(myProsumer, inputQueueTimeSlot));
                 }
                 case Forecast -> {
                     this.communicationBroker.addMessageHandler(ECategory.Forecast, new ForecastMessageHandler(myProsumer));
