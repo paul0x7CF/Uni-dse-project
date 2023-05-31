@@ -2,7 +2,6 @@ package loadManager;
 
 import loadManager.exchangeManagement.ExchangeServiceInformation;
 import loadManager.exchangeManagement.LoadManager;
-import loadManager.networkManagment.Communication;
 import loadManager.networkManagment.CommunicationLoadManager;
 import loadManager.prosumerActionManagement.ProsumerManager;
 import loadManager.timeSlotManagement.MessageBuilderTimeSlot;

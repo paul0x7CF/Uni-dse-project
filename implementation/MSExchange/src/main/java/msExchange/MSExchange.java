@@ -44,7 +44,12 @@ public class MSExchange implements IExchange, Runnable {
         Thread communicationThread = new Thread(this::startCommunication);
         communicationThread.start();
 
-
+        while (true) {
+            Message message = incomingMessages.poll();
+            if (message != null) {
+                logger.debug("Received message: " + message);
+            }
+        }
 
     }
 

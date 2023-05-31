@@ -1,6 +1,7 @@
 package mainPackage;
 
 import broker.BrokerRunner;
+import communication.NetworkHandler;
 import messageHandling.IMessageHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,6 +19,7 @@ public abstract class BaseCommunication {
     private static final Logger logger = LogManager.getLogger(BaseCommunication.class.getName());
     private MSData myMSData;
     protected BrokerRunner communicationBroker;
+    protected NetworkHandler networkHandler;
     protected BlockingQueue<Message> incomingMessages;
     protected BlockingQueue<Message> outgoingMessages;
 
