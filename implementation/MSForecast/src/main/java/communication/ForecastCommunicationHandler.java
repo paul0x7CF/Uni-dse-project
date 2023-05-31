@@ -6,7 +6,7 @@ import broker.Broker;
 import java.util.concurrent.BlockingQueue;
 
 public class ForecastCommunicationHandler {
-    private Broker broker;
+    private Broker broker; // TODO Günther: Don't instantiate broker here, use BrokerRunner
     private BlockingQueue<Message> inputQueue;
     private BlockingQueue<Message> outputQueue;
     private ForecastMessageHandler forecastMessageHandler;

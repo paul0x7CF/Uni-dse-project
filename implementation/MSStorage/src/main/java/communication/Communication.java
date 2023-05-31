@@ -11,7 +11,7 @@ import java.util.concurrent.BlockingQueue;
 public class Communication {
     private String ipAddress;
     private int port;
-    private Broker communicationBroker;
+    private Broker communicationBroker; // TODO Günther: Don't instantiate broker here, use BrokerRunner
     private BlockingQueue<Transaction> incomingTransactionQueue;
     private MSData msData;
     private MSStorageManager msStorageManager;
