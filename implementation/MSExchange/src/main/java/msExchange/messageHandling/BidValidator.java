@@ -4,6 +4,16 @@ import msExchange.Exceptions.InvalidBidException;
 import sendable.Bid;
 
 public class BidValidator {
+
+    public void blabla(){
+        try {
+            checkBid(null);
+        } catch (InvalidBidException e) {
+            e.getBidderID();
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void checkBid(Bid bid) throws InvalidBidException {
         if (bid == null) {
             throw new InvalidBidException("Bid is null", null);

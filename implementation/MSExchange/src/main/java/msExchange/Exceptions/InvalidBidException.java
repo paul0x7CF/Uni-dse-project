@@ -9,4 +9,8 @@ public class InvalidBidException extends Exception {
         super(message);
         this.bidderID = bidderID;
     }
+
+    public UUID getBidderID() {
+        return bidderID;
+    }
 }
