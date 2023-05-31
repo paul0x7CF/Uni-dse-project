@@ -26,14 +26,13 @@ public class Prosumer implements Runnable{
     private static final Logger logger = LogManager.getLogger(Prosumer.class);
 
 
-    private UUID prosumerID;
     private EProsumerType prosumerType;
     private DemandManager demandManager;
     private List<Consumer> consumer;
     private Wallet wallet;
     private Communication communicator;
     private HashMap<UUID, BlockingQueue<Message>> slotsDemand;
-    private BlockingQueue<Message> incomingMessages;
+    private BlockingQueue<TimeSlot> incomingMessages;
     private BlockingQueue<Message> outgoingMessages;
 
     public Prosumer(EProsumerType prosumerType, BlockingQueue<TimeSlot> availableTimeSlots, BlockingQueue<Message> outgoingMessages) {
@@ -78,9 +77,15 @@ public class Prosumer implements Runnable{
     @Override
     public void run() {
         communicator.startBrokerRunner();
-        /*communicator.addMessageHandler(ECategory.Exchange);
+        communicator.addMessageHandler(ECategory.Exchange);
         communicator.addMessageHandler(ECategory.Auction);
-        communicator.addMessageHandler(ECategory.Forecast);*/
+        communicator.addMessageHandler(ECategory.Forecast);
+
+        try {
+            TimeSlot newTimeSlot = incomingMessages.take();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         /*
         while (true) {
             try {

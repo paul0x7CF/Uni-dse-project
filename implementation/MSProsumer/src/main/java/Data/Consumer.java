@@ -1,6 +1,6 @@
 package Data;
 
-public class Consumer {
+public class Consumer implements IProsumerDevice{
 
     private double baseLoad;
     private EConsumerType consumerType;

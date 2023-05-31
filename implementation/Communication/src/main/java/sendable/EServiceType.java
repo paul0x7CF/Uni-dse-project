@@ -7,5 +7,3 @@ public enum EServiceType {
     Solar,
     Consumption
 }
-
-

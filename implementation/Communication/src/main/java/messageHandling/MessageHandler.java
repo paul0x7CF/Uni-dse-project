@@ -23,6 +23,9 @@ public class MessageHandler implements IMessageHandler {
      * @throws MessageProcessingException  If the message category is unknown
      */
     public void handleMessage(Message message) throws MessageProcessingException {
+        if (!handlers.containsKey(message.getMainCategory())) {
+            throw new MessageProcessingException("No handler found for message: " + message);
+        }
         switch (message.getMainCategory()) {
             case Info -> handleInfo(message);
             case Auction -> handleAuction(message);

@@ -1,7 +1,7 @@
 package org.example;
 
 import Exceptions.MessageNotSupportedException;
-import Logic.MessageHandling.ExchangeMessageHandler;
+import Communication.MessageHandling.ExchangeMessageHandler;
 import exceptions.MessageProcessingException;
 import exceptions.RemoteException;
 import org.junit.Test;
