@@ -34,7 +34,8 @@ private IBroker broker;
 
     @Override
     public void handle(Message message) {
-        // Hier Nachricht bearbeiten und ggf. neue Nachrichten senden
+        // Hier Nachricht bearbeiten und ggf. neue Nachrichten senden, z.B.:
+        broker.send(response);
     }
 }
 ```
@@ -47,8 +48,6 @@ broker.addMessageHandler(new AuctionMessageHandler(broker));
 broker.addMessageHandler(new ExchangeMessageHandler(broker));
 broker.addMessageHandler(new ForecastMessageHandler(broker));
 ```
-
-Bitte beachten Sie, dass der Broker nicht startet, bevor alle MessageHandler hinzugefügt wurden.
 
 ### Die Businesslogik der Komponente sollte in den MessageHandler-Klassen implementiert werden
 - siehe **InfoMessageHandler.java**
