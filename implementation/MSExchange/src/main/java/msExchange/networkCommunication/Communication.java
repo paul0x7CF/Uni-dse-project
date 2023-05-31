@@ -1,4 +1,4 @@
-package msExchange.networkCommunication;
+/*package msExchange.networkCommunication;
 
 import broker.BrokerRunner;
 import broker.IServiceBroker;
@@ -84,3 +84,6 @@ public class Communication{
         return myMSData;
     }
 }
+*/
+
+//Can be deleted

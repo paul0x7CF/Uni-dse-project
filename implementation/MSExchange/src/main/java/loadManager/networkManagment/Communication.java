@@ -1,4 +1,4 @@
-package loadManager.networkManagment;
+/*package loadManager.networkManagment;
 
 import broker.BrokerRunner;
 import broker.IServiceBroker;
@@ -74,4 +74,6 @@ public class Communication {
             throw new RuntimeException(e);
         }
     }
-}
+}*/
+
+//can be deleted

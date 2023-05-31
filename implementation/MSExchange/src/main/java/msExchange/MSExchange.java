@@ -44,6 +44,8 @@ public class MSExchange implements IExchange, Runnable {
         Thread communicationThread = new Thread(this::startCommunication);
         communicationThread.start();
 
+
+
     }
 
     @Override
