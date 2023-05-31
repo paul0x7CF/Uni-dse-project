@@ -74,6 +74,7 @@ public class ExchangeMessageHandler implements IMessageHandler {
 
         //add timeSlot to auctionManager
         auctionManager.addTimeSlots(timeSlot);
+        logger.trace("Added TimeSlot: " + timeSlot);
     }
 
     /**
@@ -89,6 +90,7 @@ public class ExchangeMessageHandler implements IMessageHandler {
 
         //add sell to queue
         sellQueue.add(sell);
+        logger.trace("Added Sell: " + sell);
     }
 
     /**
@@ -104,6 +106,7 @@ public class ExchangeMessageHandler implements IMessageHandler {
 
         //add bid to queue
         bidQueue.add(bid);
+        logger.trace("Added Bid: " + bid);
     }
 
     //TODO: check if Günther changed this in infoMessageHandler -> I just copied this method from there.
