@@ -23,7 +23,7 @@ public class Communication {
     private static final Logger logger = LogManager.getLogger(Communication.class);
 
     private MSData myMSData;
-
+    private EServiceType serviceType;
     private BrokerRunner communicationBroker;
     private Prosumer myProsumer;
 
@@ -44,17 +44,21 @@ public class Communication {
         this.prosumerManager = prosumerManager;
     }
 
-    public Communication(BlockingQueue<TimeSlot> availableTimeSlot, BlockingQueue<Message> outgoingMessages, final int port, Prosumer myProsumer) {
+    public Communication(BlockingQueue<TimeSlot> availableTimeSlot, BlockingQueue<Message> outgoingMessages, final int port, Prosumer myProsumer, EServiceType serviceType) {
         this.inputQueueTimeSlot = availableTimeSlot;
         this.outgoingMessages = outgoingMessages;
         this.myProsumer = myProsumer;
+        this.serviceType = serviceType;
         createBroker(port);
 
         logger.info("BrokerRunner initialized with Id: {} Ip: {} Port: {}", this.myMSData.getId(), this.myMSData.getAddress(), this.myMSData.getPort());
     }
 
+    public Communication(EServiceType eServiceType) {
+    }
+
     private void createBroker(final int port) {
-        this.communicationBroker = new BrokerRunner(EServiceType.Prosumer, port);
+        this.communicationBroker = new BrokerRunner(serviceType, port);
         this.myMSData = this.communicationBroker.getCurrentService();
     }
 

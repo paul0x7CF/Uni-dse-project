@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import protocol.ECategory;
 import protocol.Message;
 import sendable.Bid;
+import sendable.EServiceType;
 import sendable.Sell;
 import sendable.TimeSlot;
 
@@ -46,7 +47,7 @@ public class Prosumer implements Runnable{
         this.wallet = new Wallet(cashBalance);
         this.incomingMessages = new LinkedBlockingQueue<>();
         this.outgoingMessages = new LinkedBlockingQueue<>();
-        this.communicator = new Communication(this.incomingMessages, this.outgoingMessages, port, this);
+        this.communicator = new Communication(this.incomingMessages, this.outgoingMessages, port, this, EServiceType.Prosumer);
 
         logger.info("Prosumer created from type {} with cash balance {}", prosumerType, cashBalance);
     }
