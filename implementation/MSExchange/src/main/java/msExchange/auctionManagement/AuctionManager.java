@@ -173,12 +173,14 @@ public class AuctionManager implements Runnable {
         return Collections.unmodifiableMap(auctions);
     }
 
+    public Map<UUID, TimeSlot> getTimeSlots() {
+        return Collections.unmodifiableMap(timeSlots);
+    }
+
     //used from MSExchange - when Message with new TimeSlots from Exchange comes in
-    public void addTimeSlots(List<sendable.TimeSlot> newTimeSlots) {
-        for (sendable.TimeSlot timeSlot : newTimeSlots) {
-            if (timeSlots.get(timeSlot.getTimeSlotID()) == null) {
-                timeSlots.put(timeSlot.getTimeSlotID(), new TimeSlot(timeSlot.getTimeSlotID(), timeSlot.getStartTime(), timeSlot.getEndTime()));
-            }
+    public void addTimeSlots(sendable.TimeSlot newTimeSlot) {
+        if (timeSlots.get(newTimeSlot.getTimeSlotID()) == null) {
+            timeSlots.put(newTimeSlot.getTimeSlotID(), new TimeSlot(newTimeSlot.getTimeSlotID(), newTimeSlot.getStartTime(), newTimeSlot.getEndTime()));
         }
     }
 }

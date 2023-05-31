@@ -18,9 +18,6 @@ public class MSExchange implements Runnable {
     private static final Logger logger = LogManager.getLogger(MSExchange.class);
     private BlockingQueue<Message> incomingMessages = new LinkedBlockingQueue<>();
     private BlockingQueue<Message> outgoingMessages = new LinkedBlockingQueue<>();
-    private BlockingQueue<Bid> bidQueue = new LinkedBlockingQueue<>();
-    private BlockingQueue<Sell> sellQueue = new LinkedBlockingQueue<>();
-    private BlockingQueue<Transaction> transactionQueue = new LinkedBlockingQueue<>();
 
     private AuctionManager auctionManager;
 
@@ -37,7 +34,7 @@ public class MSExchange implements Runnable {
     private void startCommunication() {
         communication = new CommunicationExchange(incomingMessages, outgoingMessages);
         communication.startBrokerRunner();
-        messageHandler = new ExchangeMessageHandler(bidQueue, sellQueue, transactionQueue);
+        messageHandler = new ExchangeMessageHandler();
     }
 
     @Override

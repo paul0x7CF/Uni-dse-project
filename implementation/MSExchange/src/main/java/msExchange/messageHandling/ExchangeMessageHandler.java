@@ -2,9 +2,11 @@ package msExchange.messageHandling;
 
 import Exceptions.InvalidBidException;
 import Exceptions.InvalidSellException;
+import Exceptions.InvalidTimeSlotException;
 import exceptions.MessageProcessingException;
 import mainPackage.ESubCategory;
 import messageHandling.IMessageHandler;
+import msExchange.auctionManagement.AuctionManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protocol.Message;
@@ -21,11 +23,10 @@ public class ExchangeMessageHandler implements IMessageHandler {
     private BlockingQueue<Bid> bidQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<Sell> sellQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<Transaction> transactionQueue = new LinkedBlockingQueue<>();
+    private AuctionManager auctionManager;
 
-    public ExchangeMessageHandler(BlockingQueue<Bid> bidQueue, BlockingQueue<Sell> sellQueue, BlockingQueue<Transaction> transactionQueue) {
-        this.bidQueue = bidQueue;
-        this.sellQueue = sellQueue;
-        this.transactionQueue = transactionQueue;
+    public ExchangeMessageHandler() {
+        auctionManager = new AuctionManager(transactionQueue, bidQueue, sellQueue);
     }
 
     public void handleMessage(Message message) throws MessageProcessingException {
@@ -46,16 +47,20 @@ public class ExchangeMessageHandler implements IMessageHandler {
                 default ->
                         throw new MessageProcessingException("Unknown message subCategory: " + message.getSubCategory());
             }
-        } catch (InvalidBidException | InvalidSellException e) {
+        } catch (InvalidBidException | InvalidSellException | InvalidTimeSlotException e) {
             throw new MessageProcessingException(e.getMessage());
         }
 
         logger.trace("{} Message processed", message.getCategory());
     }
 
-    private void handleTimeSlot(Message message) {
+    private void handleTimeSlot(Message message) throws InvalidTimeSlotException {
         TimeSlot timeSlot = (TimeSlot) message.getSendable(TimeSlot.class);
+        TimeSlotValidator timeSlotValidator = new TimeSlotValidator();
+        timeSlotValidator.validateTimeSlot(timeSlot, auctionManager.getTimeSlots());
 
+        //add timeSlot to auctionManager
+        auctionManager.addTimeSlots(timeSlot);
     }
 
     private void handleSell(Message message) throws InvalidSellException {
