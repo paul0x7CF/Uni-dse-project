@@ -47,6 +47,9 @@ public class ExchangeMessageHandler implements IMessageHandler {
             throw new MessageProcessingException("Payload is null");
         }
 
+
+
+
     }
 
     private void handleError(Message message) {
