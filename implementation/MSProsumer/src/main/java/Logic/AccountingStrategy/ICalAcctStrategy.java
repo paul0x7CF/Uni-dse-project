@@ -7,4 +7,5 @@ import java.util.List;
 public interface ICalAcctStrategy {
 
     public double calculateAccounting(List<IProsumerDevice> devices);
+
 }

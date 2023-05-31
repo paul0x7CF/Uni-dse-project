@@ -13,5 +13,6 @@ public class ContextCalcAcct {
 
     public double calculateAccounting(List<IProsumerDevice> devices) {
         return this.strategy.calculateAccounting(devices);
+
     }
 }

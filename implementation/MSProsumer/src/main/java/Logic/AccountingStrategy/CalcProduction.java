@@ -9,5 +9,6 @@ public class CalcProduction implements ICalAcctStrategy{
     public double calculateAccounting(List<IProsumerDevice> devices) {
 
         return 0;
+
     }
 }

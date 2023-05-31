@@ -9,5 +9,6 @@ public class CalcConsumption implements ICalAcctStrategy {
     public double calculateAccounting(List<IProsumerDevice> devices) {
 
         return 0;
+
     }
 }
