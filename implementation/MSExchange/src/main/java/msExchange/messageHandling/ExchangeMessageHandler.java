@@ -26,8 +26,16 @@ public class ExchangeMessageHandler implements IMessageHandler {
 
     public ExchangeMessageHandler() {
         auctionManager = new AuctionManager(transactionQueue, bidQueue, sellQueue);
+        Thread auctionManagerThread = new Thread(auctionManager);
+        auctionManagerThread.start();
     }
 
+    /**
+     * Handles the incoming message and performs the appropriate actions based on the message's subcategory.
+     *
+     * @param message The incoming message to handle
+     * @throws MessageProcessingException if there is an error processing the message
+     */
     public void handleMessage(Message message) throws MessageProcessingException {
         String subcategory = message.getSubCategory();
         if (subcategory.contains(";")) {
@@ -46,13 +54,19 @@ public class ExchangeMessageHandler implements IMessageHandler {
                 default ->
                         throw new MessageProcessingException("Unknown message subCategory: " + message.getSubCategory());
             }
-        } catch (InvalidBidException | InvalidSellException | InvalidTimeSlotException e) {
+        } catch (InvalidBidException | InvalidSellException | InvalidTimeSlotException | RemoteException e) {
             throw new MessageProcessingException(e.getMessage());
         }
 
         logger.trace("{} Message processed", message.getCategory());
     }
 
+    /**
+     * Handles the TimeSlot message by validating the TimeSlot and adding it to the AuctionManager.
+     *
+     * @param message The TimeSlot message to handle
+     * @throws InvalidTimeSlotException if the TimeSlot is invalid
+     */
     private void handleTimeSlot(Message message) throws InvalidTimeSlotException {
         TimeSlot timeSlot = (TimeSlot) message.getSendable(TimeSlot.class);
         TimeSlotValidator timeSlotValidator = new TimeSlotValidator();
@@ -62,6 +76,12 @@ public class ExchangeMessageHandler implements IMessageHandler {
         auctionManager.addTimeSlots(timeSlot);
     }
 
+    /**
+     * Handles the Sell message by validating the Sell and adding it to the sellQueue.
+     *
+     * @param message The Sell message to handle
+     * @throws InvalidSellException if the Sell is invalid
+     */
     private void handleSell(Message message) throws InvalidSellException {
         Sell sell = (Sell) message.getSendable(Sell.class);
         SellValidator sellValidator = new SellValidator();
@@ -71,6 +91,12 @@ public class ExchangeMessageHandler implements IMessageHandler {
         sellQueue.add(sell);
     }
 
+    /**
+     * Handles the Bid message by validating the Bid and adding it to the bidQueue.
+     *
+     * @param message The Bid message to handle
+     * @throws InvalidBidException if the Bid is invalid
+     */
     private void handleBid(Message message) throws InvalidBidException {
         Bid bid = (Bid) message.getSendable(Bid.class);
         BidValidator bidValidator = new BidValidator();
@@ -80,8 +106,16 @@ public class ExchangeMessageHandler implements IMessageHandler {
         bidQueue.add(bid);
     }
 
-    //TODO: check if Günther changet this in inforMessageHandler -> was copied.
-    //TODO: maybe declear this as static in IMessageHandler so every implementation can use this
+    //TODO: check if Günther changed this in infoMessageHandler -> I just copied this method from there.
+    //TODO: maybe declare this as static in IMessageHandler so every implementation can use this
+
+    /**
+     * Handles the Error message by checking the payload and throwing appropriate exceptions if necessary.
+     *
+     * @param message The Error message to handle
+     * @throws MessageProcessingException if there is an error processing the Error message
+     * @throws RemoteException            if the Error message indicates a remote error
+     */
     private void handleError(Message message) throws MessageProcessingException, RemoteException {
         // Error has Error as Payload
         ISendable error = message.getSendable(ErrorInfo.class);
