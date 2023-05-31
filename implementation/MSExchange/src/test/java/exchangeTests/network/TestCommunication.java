@@ -1,7 +1,7 @@
 package exchangeTests.network;
 
 import broker.BrokerRunner;
-import msExchange.networkCommunication.Communication;
+import msExchange.networkCommunication.CommunicationExchange;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import sendable.EServiceType;
@@ -18,12 +18,12 @@ public class TestCommunication {
         BlockingQueue outgoingMessages = new LinkedBlockingQueue();
 
 
-        Communication communication = new Communication(incomingMessages, outgoingMessages);
+        CommunicationExchange communication = new CommunicationExchange(incomingMessages, outgoingMessages);
         MSData msData = communication.getMyMSData();
         BrokerRunner brokerRunner = communication.getBroker();
 
         //This test will fail, ones the port is dynamic
-        Assertions.assertEquals(1609, msData.getPort());
+        //Assertions.assertEquals(1609, msData.getPort());
         Assertions.assertEquals(EServiceType.Exchange, msData.getType());
 
         Assertions.assertEquals(msData.getPort(), brokerRunner.getCurrentService().getPort());

@@ -51,7 +51,7 @@ public class TestAddBid {
             throw new RuntimeException(e);
         }
         AuctionManager auctionManager = new AuctionManager(transactionQueue, bidQueue, sellQueue);
-        auctionManager.addTimeSlots(timeSlotList);
+        auctionManager.addTimeSlots(timeSlot);
 
         //act
         // Use reflection to access the private processQueues() method
@@ -119,7 +119,7 @@ public class TestAddBid {
             throw new RuntimeException(e);
         }
         AuctionManager auctionManager = new AuctionManager(transactionQueue, bidQueue, sellQueue);
-        auctionManager.addTimeSlots(timeSlotList);
+        auctionManager.addTimeSlots(timeSlot);
 
         //act
         // Use reflection to access the private processQueues() method
@@ -174,7 +174,7 @@ public class TestAddBid {
             throw new RuntimeException(e);
         }
         AuctionManager auctionManager = new AuctionManager(transactionQueue, bidQueue, sellQueue);
-        auctionManager.addTimeSlots(timeSlotList);
+        auctionManager.addTimeSlots(timeSlot);
 
         //act
         // Use reflection to access the private processQueues() method
