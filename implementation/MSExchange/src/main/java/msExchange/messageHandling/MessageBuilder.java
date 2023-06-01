@@ -3,6 +3,7 @@ package msExchange.messageHandling;
 import broker.BrokerRunner;
 import exceptions.MessageProcessingException;
 import protocol.Message;
+import sendable.Transaction;
 
 public class MessageBuilder {
     private BrokerRunner broker;
@@ -17,5 +18,10 @@ public class MessageBuilder {
 
     public void sendCapacityMessage() {
         //TODO: implement
+    }
+
+    public Message buildMessage(Transaction transaction) {
+        //TODO: implement
+        return null;
     }
 }

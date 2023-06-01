@@ -19,10 +19,9 @@ public abstract class BaseCommunication {
     protected BrokerRunner communicationBroker;
     protected NetworkHandler networkHandler;
     protected BlockingQueue<Message> incomingMessages;
-    protected BlockingQueue<Message> outgoingMessages;
 
 
-    public BaseCommunication(BlockingQueue<Message> incomingMessages, BlockingQueue<Message> outgoingMessages,
+    public BaseCommunication(BlockingQueue<Message> incomingMessages,
                              String propertiesFilePath, EServiceType exchangeType) {
         //read Properties
         Properties properties = new Properties();
@@ -53,7 +52,6 @@ public abstract class BaseCommunication {
 
 
         this.incomingMessages = incomingMessages;
-        this.outgoingMessages = outgoingMessages;
         createBroker(port, serviceType);
 
         logger.info("MS registered with Id:" + this.communicationBroker.getCurrentService().getId() + ", Address: " + this.communicationBroker.getCurrentService().getAddress() + ", Port: " + this.communicationBroker.getCurrentService().getPort());

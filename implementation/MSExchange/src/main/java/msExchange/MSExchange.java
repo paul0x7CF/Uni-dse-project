@@ -9,6 +9,7 @@ import msExchange.networkCommunication.CommunicationExchange;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protocol.Message;
+import sendable.Transaction;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -16,7 +17,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class MSExchange implements Runnable {
     private static final Logger logger = LogManager.getLogger(MSExchange.class);
     private BlockingQueue<Message> incomingMessages = new LinkedBlockingQueue<>();
-    private BlockingQueue<Message> outgoingMessages = new LinkedBlockingQueue<>();
+    private BlockingQueue<Transaction> outgoingTransactions = new LinkedBlockingQueue<>();
 
     private AuctionManager auctionManager;
 
@@ -31,7 +32,7 @@ public class MSExchange implements Runnable {
     }
 
     private void startCommunication() {
-        communication = new CommunicationExchange(incomingMessages, outgoingMessages);
+        communication = new CommunicationExchange(incomingMessages);
         communication.startBrokerRunner();
         messageBuilder = new MessageBuilder(communication.getBroker());
         messageHandler = new ExchangeMessageHandler();
@@ -44,7 +45,7 @@ public class MSExchange implements Runnable {
 
         while (true) {
             processIncomingMessages();
-            processOutgoingMessages();
+            processOutgoingTransactions();
         }
 
     }
@@ -72,11 +73,12 @@ public class MSExchange implements Runnable {
         }
     }
 
-    private void processOutgoingMessages() {
-        Message message = outgoingMessages.poll();
-        if (message != null) {
-            logger.trace("Sending message: " + message);
-            communication.sendMessage(message);
+    private void processOutgoingTransactions() {
+        Transaction transaction = outgoingTransactions.poll();
+        if (transaction != null) {
+            logger.trace("Sending transaction: " + transaction);
+            ;
+            communication.sendMessage(messageBuilder.buildMessage(transaction));
         }
     }
 
