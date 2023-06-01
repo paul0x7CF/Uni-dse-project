@@ -2,14 +2,13 @@ package msExchange.auctionManagement;
 
 import Exceptions.AuctionNotFoundException;
 import Exceptions.InvalidTimeSlotException;
+import mainPackage.PropertyFileReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sendable.Bid;
 import sendable.Sell;
 import sendable.Transaction;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
@@ -19,6 +18,7 @@ public class AuctionManager implements Runnable {
     private static final Logger logger = LogManager.getLogger(AuctionManager.class);
     private final int CHECK_DURATION; //in millisecs
     private final int MINUTES_TO_LIVE_AFTER_EXPIRING; //in millisecs
+    private final int CAPACITY;
 
     private Map<UUID, Auction> auctions;
     private Map<UUID, TimeSlot> timeSlots;
@@ -33,19 +33,10 @@ public class AuctionManager implements Runnable {
         this.bidQueue = bidQueue;
         this.sellQueue = sellQueue;
 
-        //read Properties
-        //read Properties
-        Properties properties = new Properties();
-        try {
-            FileInputStream configFile = new FileInputStream("C:\\Universität\\DSE\\Gruppenprojekt\\DSE_Team_202\\implementation\\MSExchange\\src\\main\\java\\config.properties");
-            properties.load(configFile);
-            configFile.close();
-
-            CHECK_DURATION = Integer.parseInt(properties.getProperty("exchange.checkDuration"));
-            MINUTES_TO_LIVE_AFTER_EXPIRING = Integer.parseInt(properties.getProperty("exchange.minutesToLiveAfterExpiring"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        PropertyFileReader propertyFileReader = new PropertyFileReader();
+        CHECK_DURATION = Integer.parseInt(propertyFileReader.getProperty("exchange.checkDuration"));
+        MINUTES_TO_LIVE_AFTER_EXPIRING = Integer.parseInt(propertyFileReader.getProperty("exchange.minutesToLiveAfterExpiring"));
+        CAPACITY = Integer.parseInt(propertyFileReader.getProperty("exchange.capacity"));
     }
 
     @Override
@@ -54,7 +45,7 @@ public class AuctionManager implements Runnable {
         while (true) {
             try {
                 processQueues();
-
+                checkCapacity();
                 long currentTime = System.currentTimeMillis();
                 long elapsedTime = currentTime - lastCheckTime;
 
@@ -72,6 +63,19 @@ public class AuctionManager implements Runnable {
         }
     }
 
+    private void checkCapacity() {
+        if (bidQueue.size() >= CAPACITY) {
+            logger.warn("BidQueue is full!");
+            //TODO: Message to exchange
+        }
+    }
+
+
+    /**
+     * Checks the time slots and performs necessary actions based on their current state. - If a time slot is currently
+     * within its start and end time, it is opened. - If a time slot has already ended, it is removed from the list if
+     * it has exceeded the specified minutes to live after expiring.
+     */
     private void checkTimeSlots() {
         Iterator<Map.Entry<UUID, TimeSlot>> iterator = timeSlots.entrySet().iterator();
 
@@ -87,7 +91,6 @@ public class AuctionManager implements Runnable {
                 }
             }
         }
-
     }
 
     private void processQueues() throws AuctionNotFoundException, InterruptedException, InvalidTimeSlotException {
@@ -100,7 +103,6 @@ public class AuctionManager implements Runnable {
 
         //Check for ended auctions
         checkForEndedAuctions();
-
     }
 
     private void checkForEndedAuctions() {
@@ -115,7 +117,13 @@ public class AuctionManager implements Runnable {
         }
     }
 
-    private void processBidQueue() throws AuctionNotFoundException, InterruptedException {
+    /**
+     * Processes the bid queue by retrieving the next bid and adding it to the corresponding auction.
+     *
+     * @throws AuctionNotFoundException if the auction ID is missing or doesn't exist
+     * @throws InvalidTimeSlotException if the time slot is invalid
+     */
+    private void processBidQueue() throws AuctionNotFoundException, InvalidTimeSlotException {
         Bid bid = bidQueue.poll(); // Non-blocking call, retrieves the next bid or null if empty
         if (bid != null) {
             Optional<UUID> auctionID = bid.getAuctionID();
@@ -123,28 +131,31 @@ public class AuctionManager implements Runnable {
                 throw new AuctionNotFoundException("The Auction ID is missing", Optional.empty(), Optional.empty(), Optional.of(bid));
             }
             if (!auctionExists(auctionID.get())) {
-                logger.debug("Auction doesn't exist yet.");
-                bidQueue.put(bid);
-                //?? throw new AuctionNotFoundException("The Auction ID is incorrect.", auctionID, Optional.empty(), Optional.of(bid));
-            } else {
-                logger.debug("Add Bid to Auction");
-                addBidToAuction(auctionID.get(), bid);
+                logger.error("Auction doesn't exist yet.");
+                //bidQueue.put(bid);
+                //TODO: rethink: throw new AuctionNotFoundException("The Auction ID is incorrect.", auctionID, Optional.empty(), Optional.of(bid));
+                throw new AuctionNotFoundException("The Auction ID doesn't exist", auctionID, Optional.empty(), Optional.of(bid));
             }
+            if (!timeSlots.containsKey(bid.getTimeSlot())) {
+                throw new InvalidTimeSlotException("TimeSlot doesn't exist, therefore the UUID was invalid.", Optional.of(bid.getTimeSlot()), Optional.empty(), Optional.of(bid));
+            }
+            logger.debug("Add Bid to Auction");
+            addBidToAuction(auctionID.get(), bid);
         }
     }
 
+    /**
+     * Processes the sell queue by retrieving the next sell from the queue and creating a new auction for it.
+     *
+     * @throws AuctionNotFoundException if the auction is not found
+     * @throws InvalidTimeSlotException if the time slot is invalid
+     */
     private void processSellQueue() throws AuctionNotFoundException, InvalidTimeSlotException {
         Sell sell = sellQueue.poll(); // Non-blocking call, retrieves the next sell or null if empty
         if (sell != null) {
             if (timeSlots.containsKey(sell.getTimeSlot())) {
-                TimeSlot timeSlot = timeSlots.get(sell.getTimeSlot());
-                if (timeSlot.getEndTime().isBefore(LocalDateTime.now())) {
-                    //endTime is in the past
-                    //send Message to Storage -> Message Builder!
-                } else {
-                    logger.info("Creating new Auction...");
-                    addNewAuction(sell);
-                }
+                logger.info("Creating new Auction...");
+                addNewAuction(sell);
             } else {
                 throw new InvalidTimeSlotException("TimeSlot doesn't exist, therefore the UUID was invalid.", Optional.of(sell.getTimeSlot()), Optional.of(sell), Optional.empty());
             }
@@ -155,36 +166,33 @@ public class AuctionManager implements Runnable {
         return auctions.containsKey(auctionID);
     }
 
+    /**
+     * Adds a new auction based on the provided Sell object.
+     *
+     * @param sell the Sell object containing auction details
+     * @throws AuctionNotFoundException if the auction is not found
+     */
     private void addNewAuction(Sell sell) throws AuctionNotFoundException {
-        if (sell.getAuctionID().isEmpty()) {
-            throw new AuctionNotFoundException("Auction ID is missing", Optional.empty(), Optional.of(sell), Optional.empty());
-        }
-        UUID AuctionUuid = sell.getAuctionID().get();
-        Auction auction = new Auction(AuctionUuid, sell, transactionQueue);
-        auctions.put(AuctionUuid, auction);
-        logger.info("Auction has been added: " + auctions.get(AuctionUuid));
+        UUID auctionUUID = sell.getAuctionID().get();
+        Auction auction = new Auction(auctionUUID, sell, transactionQueue);
+        auctions.put(auctionUUID, auction);
+        logger.info("Auction has been added: " + auctions.get(auctionUUID));
     }
 
+    /**
+     * Adds a bid to the specified auction.
+     *
+     * @param auctionID the ID of the auction
+     * @param bid       the bid to be added
+     */
     private void addBidToAuction(UUID auctionID, Bid bid) {
         TimeSlot timeSlot = timeSlots.get(bid.getTimeSlot());
 
-        if (timeSlot.getEndTime().isBefore(LocalDateTime.now())) {
-            //endTime is in the past
-            logger.info("Bid was for a previous slot. Sending the Bid to the Storage...");
-            //send Message to Storage -> Message Builder!
+        Auction auction = auctions.get(auctionID);
+        auction.setBid(bid);
 
-            logger.error("Not implemented yet!");
-        } else {
-            Auction auction = auctions.get(auctionID);
-            auction.setBid(bid);
-            logger.info("Bid has been set");
-        }
-    }
-
-    public void endAllAuctions() {
-        for (Auction auction : auctions.values()) {
-            auction.endAuction();
-        }
+        // Log the successful addition of the bid
+        logger.info("Bid has been set");
     }
 
     public Map<UUID, Auction> getAuctions() {
