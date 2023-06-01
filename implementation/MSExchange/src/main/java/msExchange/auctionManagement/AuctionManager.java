@@ -54,7 +54,7 @@ public class AuctionManager implements Runnable {
                 Thread.currentThread().interrupt();
             } catch (AuctionNotFoundException | InvalidTimeSlotException e) {
                 logger.error(e.getMessage());
-                //build Message to tell exchange - that it was invalid!
+                //TODO: how to handle?
             }
         }
     }
