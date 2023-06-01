@@ -8,7 +8,11 @@ import java.util.List;
 
 public class CalcConsumption implements ICalAcctStrategy {
 
-    Communication comConsumption = new Communication(EServiceType.Consumption);
+    private Communication communication;
+
+    public CalcConsumption(Communication communication) {
+        this.communication = communication;
+    }
 
     @Override
     public double calculateAccounting(List<IProsumerDevice> devices) {

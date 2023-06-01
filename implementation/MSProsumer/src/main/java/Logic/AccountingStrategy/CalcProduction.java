@@ -2,13 +2,15 @@ package Logic.AccountingStrategy;
 
 import Communication.Communication;
 import Data.IProsumerDevice;
-import sendable.EServiceType;
 
 import java.util.List;
 
 public class CalcProduction implements ICalAcctStrategy{
 
-    private Communication comProduction = new Communication(EServiceType.Solar);
+    private Communication communication;
+    public CalcProduction(Communication communication) {
+        this.communication = communication;
+    }
     @Override
     public double calculateAccounting(List<IProsumerDevice> devices) {
 
