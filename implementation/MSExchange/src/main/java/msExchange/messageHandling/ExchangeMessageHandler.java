@@ -6,6 +6,7 @@ import Exceptions.InvalidTimeSlotException;
 import exceptions.MessageProcessingException;
 import mainPackage.ESubCategory;
 import messageHandling.IMessageHandler;
+import msExchange.MessageBuilder;
 import msExchange.auctionManagement.AuctionManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,7 +51,6 @@ public class ExchangeMessageHandler implements IMessageHandler {
                 case Bid -> handleBid(message);
                 case Sell -> handleSell(message);
                 case TimeSlot -> handleTimeSlot(message);
-                //TODO: only Exception - if the receiver where especially me -> not when broadcasted
                 default ->
                         throw new MessageProcessingException("Unknown message subCategory: " + message.getSubCategory());
             }

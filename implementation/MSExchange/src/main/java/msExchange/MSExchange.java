@@ -7,10 +7,6 @@ import msExchange.networkCommunication.CommunicationExchange;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protocol.Message;
-import sendable.Bid;
-import sendable.EServiceType;
-import sendable.Sell;
-import sendable.Transaction;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -24,17 +20,18 @@ public class MSExchange implements Runnable {
 
     private CommunicationExchange communication;
     private ExchangeMessageHandler messageHandler;
+    private MessageBuilder messageBuilder;
     private boolean duplicated;
 
 
     public MSExchange(boolean duplicated) {
         this.duplicated = duplicated;
-
     }
 
     private void startCommunication() {
         communication = new CommunicationExchange(incomingMessages, outgoingMessages);
         communication.startBrokerRunner();
+        messageBuilder = new MessageBuilder(communication.getBroker());
         messageHandler = new ExchangeMessageHandler();
     }
 
@@ -50,7 +47,7 @@ public class MSExchange implements Runnable {
                 try {
                     messageHandler.handleMessage(message);
                 } catch (MessageProcessingException e) {
-                    //TODO: send error message to sender
+                    messageBuilder.sendErrorMessage(message, e);
                     logger.error("SubCategory was incorrect: " + message);
                 }
             }

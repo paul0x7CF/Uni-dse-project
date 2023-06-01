@@ -19,7 +19,7 @@ public class TestCommunication {
 
 
         CommunicationExchange communication = new CommunicationExchange(incomingMessages, outgoingMessages);
-        MSData msData = communication.getMyMSData();
+        MSData msData = communication.getBroker().getCurrentService();
         BrokerRunner brokerRunner = communication.getBroker();
 
         //This test will fail, ones the port is dynamic

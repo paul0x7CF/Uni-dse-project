@@ -8,13 +8,10 @@ import org.apache.logging.log4j.Logger;
 import protocol.ECategory;
 import protocol.Message;
 import sendable.EServiceType;
-import sendable.MSData;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
 import java.util.Properties;
-import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
 public abstract class BaseCommunication {
@@ -86,20 +83,5 @@ public abstract class BaseCommunication {
         return communicationBroker;
     }
 
-    public MSData getMyMSData() {
-        return this.communicationBroker.getCurrentService();
-    }
-
-    public List<MSData> getServices() {
-        return this.communicationBroker.getServices();
-    }
-
-    public MSData getService(UUID id) {
-        return this.communicationBroker.findService(id);
-    }
-
-    public List<MSData> getServicesByType(EServiceType type) {
-        return this.communicationBroker.getServicesByType(type);
-    }
 
 }
