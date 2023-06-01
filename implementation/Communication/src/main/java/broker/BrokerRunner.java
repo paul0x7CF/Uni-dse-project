@@ -1,5 +1,6 @@
 package broker;
 
+import exceptions.RemoteException;
 import messageHandling.IMessageHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,6 +27,7 @@ public class BrokerRunner implements Runnable {
             log.info("Starting {} instance on port {}", broker.getCurrentService().getType(), broker.getCurrentService().getPort());
             broker.startBroker();
         } catch (UnknownHostException e) {
+            log.error("Error while starting broker: ", e);
             throw new RuntimeException(e);
         }
     }
