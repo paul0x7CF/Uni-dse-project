@@ -54,9 +54,6 @@ public class Communication {
         logger.info("BrokerRunner initialized with Id: {} Ip: {} Port: {}", this.myMSData.getId(), this.myMSData.getAddress(), this.myMSData.getPort());
     }
 
-    public Communication(EServiceType eServiceType) {
-    }
-
     private void createBroker(final int port) {
         this.communicationBroker = new BrokerRunner(serviceType, port);
         this.myMSData = this.communicationBroker.getCurrentService();
