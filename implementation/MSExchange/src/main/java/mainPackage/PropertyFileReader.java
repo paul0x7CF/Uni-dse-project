@@ -6,7 +6,7 @@ import java.util.Properties;
 
 public class PropertyFileReader {
 
-    public static String getProperty(String key) {
+    private static String getProperty(String key) {
         //read Properties
         Properties properties = new Properties();
         try {
@@ -18,4 +18,50 @@ public class PropertyFileReader {
             throw new RuntimeException(e);
         }
     }
+
+    public static String getNumNewTimeSlots() {
+        return getProperty("timeslot.numNewTimeSlots");
+    }
+
+    public static String getMaxNumTimeSlotSaved() {
+        return getProperty("timeslot.maxNumTimeSlotSaved");
+    }
+
+    public static String getDuration() {
+        return getProperty("timeslot.duration");
+    }
+
+    public static String getLoadManagerServiceType() {
+        return getProperty("loadManager.serviceType");
+    }
+
+    public static String getLoadManagerPort() {
+        return getProperty("loadManager.port");
+    }
+
+    public static String getMaxAuctionFindingAlgorithm() {
+        return getProperty("prosumer.maxAuctionFindingAlgorithm");
+    }
+
+    public static String getExchangePort() {
+        return getProperty("exchange.port");
+    }
+
+    public static String getExchangeServiceType() {
+        return getProperty("exchange.serviceType");
+    }
+
+    public static String getCheckDuration() {
+        return getProperty("exchange.checkDuration");
+    }
+
+    public static String getMinutesToLiveAfterExpiring() {
+        return getProperty("exchange.minutesToLiveAfterExpiring");
+    }
+
+    public static String getCapacity() {
+        return getProperty("exchange.capacity");
+    }
+
+
 }

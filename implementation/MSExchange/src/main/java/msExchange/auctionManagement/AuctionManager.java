@@ -3,7 +3,6 @@ package msExchange.auctionManagement;
 import Exceptions.AuctionNotFoundException;
 import Exceptions.InvalidTimeSlotException;
 import mainPackage.PropertyFileReader;
-import msExchange.MessageBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sendable.Bid;
@@ -19,8 +18,6 @@ public class AuctionManager implements Runnable {
     private static final Logger logger = LogManager.getLogger(AuctionManager.class);
     private final int CHECK_DURATION; //in millisecs
     private final int MINUTES_TO_LIVE_AFTER_EXPIRING; //in millisecs
-    private final int CAPACITY;
-
     private Map<UUID, Auction> auctions;
     private Map<UUID, TimeSlot> timeSlots;
     private BlockingQueue<Transaction> transactionQueue;
@@ -35,9 +32,8 @@ public class AuctionManager implements Runnable {
         this.sellQueue = sellQueue;
 
         PropertyFileReader propertyFileReader = new PropertyFileReader();
-        CHECK_DURATION = Integer.parseInt(propertyFileReader.getProperty("exchange.checkDuration"));
-        MINUTES_TO_LIVE_AFTER_EXPIRING = Integer.parseInt(propertyFileReader.getProperty("exchange.minutesToLiveAfterExpiring"));
-        CAPACITY = Integer.parseInt(propertyFileReader.getProperty("exchange.capacity"));
+        CHECK_DURATION = Integer.parseInt(propertyFileReader.getCheckDuration());
+        MINUTES_TO_LIVE_AFTER_EXPIRING = Integer.parseInt(propertyFileReader.getMinutesToLiveAfterExpiring());
     }
 
     @Override
@@ -46,7 +42,6 @@ public class AuctionManager implements Runnable {
         while (true) {
             try {
                 processQueues();
-                checkCapacity();
                 long currentTime = System.currentTimeMillis();
                 long elapsedTime = currentTime - lastCheckTime;
 
@@ -61,13 +56,6 @@ public class AuctionManager implements Runnable {
                 logger.error(e.getMessage());
                 //build Message to tell exchange - that it was invalid!
             }
-        }
-    }
-
-    private void checkCapacity() {
-        if (bidQueue.size() >= CAPACITY) {
-            logger.warn("BidQueue is full!");
-
         }
     }
 
