@@ -1,4 +1,4 @@
-package msExchange;
+package msExchange.messageHandling;
 
 import broker.BrokerRunner;
 import exceptions.MessageProcessingException;
@@ -11,11 +11,11 @@ public class MessageBuilder {
         this.broker = broker;
     }
 
-    public static Message buildMessageToSendSellToExchange() {
-        return null;
+    public void sendErrorMessage(Message message, MessageProcessingException e) {
+        //TODO: implement
     }
 
-    public void sendErrorMessage(Message message, MessageProcessingException e) {
+    public void sendCapacityMessage() {
         //TODO: implement
     }
 }

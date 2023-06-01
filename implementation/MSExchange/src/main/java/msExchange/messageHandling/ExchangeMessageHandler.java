@@ -6,7 +6,6 @@ import Exceptions.InvalidTimeSlotException;
 import exceptions.MessageProcessingException;
 import mainPackage.ESubCategory;
 import messageHandling.IMessageHandler;
-import msExchange.MessageBuilder;
 import msExchange.auctionManagement.AuctionManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

@@ -1,8 +1,10 @@
 package msExchange;
 
 import exceptions.MessageProcessingException;
+import mainPackage.PropertyFileReader;
 import msExchange.auctionManagement.AuctionManager;
 import msExchange.messageHandling.ExchangeMessageHandler;
+import msExchange.messageHandling.MessageBuilder;
 import msExchange.networkCommunication.CommunicationExchange;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,6 +50,7 @@ public class MSExchange implements Runnable {
     }
 
     private void processIncomingMessages() {
+        checkCapacity();
         Message message = incomingMessages.poll();
         if (message != null) {
             logger.debug("Received message: " + message);
@@ -60,9 +63,18 @@ public class MSExchange implements Runnable {
         }
     }
 
+    private void checkCapacity() {
+        PropertyFileReader propertyFileReader = new PropertyFileReader();
+        int CAPACITY = Integer.parseInt(propertyFileReader.getCapacity());
+        if (incomingMessages.size() >= CAPACITY) {
+            logger.warn("BidQueue is full!");
+            messageBuilder.sendCapacityMessage();
+        }
+    }
+
     private void processOutgoingMessages() {
         Message message = outgoingMessages.poll();
-        if(message != null) {
+        if (message != null) {
             logger.trace("Sending message: " + message);
             communication.sendMessage(message);
         }
