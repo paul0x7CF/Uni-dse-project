@@ -13,7 +13,7 @@ public class PropertyFileReader {
             FileInputStream configFile = new FileInputStream("C:\\Universität\\DSE\\Gruppenprojekt\\DSE_Team_202\\implementation\\MSExchange\\src\\main\\java\\config.properties");
             properties.load(configFile);
             configFile.close();
-            return properties.getProperty("key");
+            return properties.getProperty(key);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

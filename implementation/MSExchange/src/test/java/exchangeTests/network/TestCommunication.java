@@ -18,13 +18,13 @@ public class TestCommunication {
         BlockingQueue outgoingMessages = new LinkedBlockingQueue();
 
 
-        CommunicationExchange communication = new CommunicationExchange(incomingMessages, outgoingMessages);
+        CommunicationExchange communication = new CommunicationExchange(incomingMessages);
         MSData msData = communication.getBroker().getCurrentService();
         BrokerRunner brokerRunner = communication.getBroker();
 
         //This test will fail, ones the port is dynamic
         //Assertions.assertEquals(1609, msData.getPort());
-        Assertions.assertEquals(EServiceType.Exchange, msData.getType());
+        Assertions.assertEquals(EServiceType.ExchangeWorker, msData.getType());
 
         Assertions.assertEquals(msData.getPort(), brokerRunner.getCurrentService().getPort());
         Assertions.assertEquals(msData.getAddress(), brokerRunner.getCurrentService().getAddress());
