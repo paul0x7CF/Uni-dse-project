@@ -8,7 +8,6 @@ import sendable.EServiceType;
 import sendable.MSData;
 
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -49,44 +48,45 @@ public class DiscoveryService {
         int consumptionPort = Integer.parseInt(configReader.getProperty("consumptionPort"));
         int consumptionAmount = Integer.parseInt(configReader.getProperty("consumptionAmount"));
 
-
-        // register prosumer
-        for (int i = 0; i < prosumerAmount * portJumpSize; i += portJumpSize) {
-            if (currentService.getType() != EServiceType.Prosumer || currentService.getPort() != prosumerPort + i)
-                scheduleRegisterMessage(prosumerPort + i);
-        }
-
-        // register storage
-        for (int i = 0; i < storageAmount * portJumpSize; i += portJumpSize) {
-            if (currentService.getType() != EServiceType.Storage || currentService.getPort() != storagePort + i) {
-                scheduleRegisterMessage(storagePort + i);
+        if (currentService.getType() != EServiceType.ExchangeWorker) {
+            // register prosumer
+            for (int i = 0; i < prosumerAmount * portJumpSize; i += portJumpSize) {
+                if (currentService.getType() != EServiceType.Prosumer || currentService.getPort() != prosumerPort + i)
+                    scheduleRegisterMessage(prosumerPort + i);
             }
-        }
 
-        // register exchange
-        for (int i = 0; i < exchangeAmount * portJumpSize; i += portJumpSize) {
-            if (currentService.getType() != EServiceType.Exchange || currentService.getPort() != exchangePort + i) {
-                scheduleRegisterMessage(exchangePort + i);
+            // register storage
+            for (int i = 0; i < storageAmount * portJumpSize; i += portJumpSize) {
+                if (currentService.getType() != EServiceType.Storage || currentService.getPort() != storagePort + i) {
+                    scheduleRegisterMessage(storagePort + i);
+                }
             }
-        }
 
-        // register solar
-        for (int i = 0; i < solarAmount * portJumpSize; i += portJumpSize) {
-            if (currentService.getType() != EServiceType.Solar || currentService.getPort() != solarPort + i) {
-                scheduleRegisterMessage(solarPort + i);
+            // register solar
+            for (int i = 0; i < solarAmount * portJumpSize; i += portJumpSize) {
+                if (currentService.getType() != EServiceType.Solar || currentService.getPort() != solarPort + i) {
+                    scheduleRegisterMessage(solarPort + i);
+                }
             }
-        }
 
-        // register consumption
-        for (int i = 0; i < consumptionAmount * portJumpSize; i += portJumpSize) {
-            if (currentService.getType() != EServiceType.Consumption || currentService.getPort() != consumptionPort + i) {
-                scheduleRegisterMessage(consumptionPort + i);
+            // register consumption
+            for (int i = 0; i < consumptionAmount * portJumpSize; i += portJumpSize) {
+                if (currentService.getType() != EServiceType.Consumption || currentService.getPort() != consumptionPort + i) {
+                    scheduleRegisterMessage(consumptionPort + i);
+                }
             }
-        }
 
-        // Start a single thread that checks and sends register messages periodically
-        // this::checkAndSendMessages is a lambda expression for the method checkAndSendMessages
-        scheduler.scheduleAtFixedRate(this::checkAndSendMessages, 1, messageFrequency, TimeUnit.SECONDS);
+            // register exchange
+            for (int i = 0; i < exchangeAmount * portJumpSize; i += portJumpSize) {
+                if (currentService.getType() != EServiceType.Exchange || currentService.getPort() != exchangePort + i) {
+                    scheduleRegisterMessage(exchangePort + i);
+                }
+            }
+
+            // Start a single thread that checks and sends register messages periodically
+            // this::checkAndSendMessages is a lambda expression for the method checkAndSendMessages
+            scheduler.scheduleAtFixedRate(this::checkAndSendMessages, 1, messageFrequency, TimeUnit.SECONDS);
+        }
     }
 
     private void scheduleRegisterMessage(int port) {

@@ -47,6 +47,10 @@ public class NetworkHandler {
         scheduler = Executors.newScheduledThreadPool(20);
     }
 
+    public void createSockets() {
+
+    }
+
     public void startSockets() {
         executor.execute(inputSocket);
         executor.execute(outputSocket);
