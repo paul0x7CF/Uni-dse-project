@@ -22,11 +22,10 @@ public class ExchangeMessageHandler implements IMessageHandler {
     private static final Logger logger = LogManager.getLogger(ExchangeMessageHandler.class);
     private BlockingQueue<Bid> bidQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<Sell> sellQueue = new LinkedBlockingQueue<>();
-    private BlockingQueue<Transaction> transactionQueue = new LinkedBlockingQueue<>();
     private AuctionManager auctionManager;
 
-    public ExchangeMessageHandler() {
-        auctionManager = new AuctionManager(transactionQueue, bidQueue, sellQueue);
+    public ExchangeMessageHandler(BlockingQueue<Transaction> outgoingTransactions) {
+        auctionManager = new AuctionManager(outgoingTransactions, bidQueue, sellQueue);
         Thread auctionManagerThread = new Thread(auctionManager);
         auctionManagerThread.start();
     }

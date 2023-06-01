@@ -2,7 +2,6 @@ package msExchange;
 
 import exceptions.MessageProcessingException;
 import mainPackage.PropertyFileReader;
-import msExchange.auctionManagement.AuctionManager;
 import msExchange.messageHandling.ExchangeMessageHandler;
 import msExchange.messageHandling.MessageBuilder;
 import msExchange.networkCommunication.CommunicationExchange;
@@ -18,9 +17,6 @@ public class MSExchange implements Runnable {
     private static final Logger logger = LogManager.getLogger(MSExchange.class);
     private BlockingQueue<Message> incomingMessages = new LinkedBlockingQueue<>();
     private BlockingQueue<Transaction> outgoingTransactions = new LinkedBlockingQueue<>();
-
-    private AuctionManager auctionManager;
-
     private CommunicationExchange communication;
     private ExchangeMessageHandler messageHandler;
     private MessageBuilder messageBuilder;
@@ -35,13 +31,15 @@ public class MSExchange implements Runnable {
         communication = new CommunicationExchange(incomingMessages);
         communication.startBrokerRunner();
         messageBuilder = new MessageBuilder(communication.getBroker());
-        messageHandler = new ExchangeMessageHandler();
+        messageHandler = new ExchangeMessageHandler(outgoingTransactions);
     }
 
+    //TODO: think about deleting a service
     @Override
     public void run() {
         Thread communicationThread = new Thread(this::startCommunication);
         communicationThread.start();
+
 
         while (true) {
             processIncomingMessages();

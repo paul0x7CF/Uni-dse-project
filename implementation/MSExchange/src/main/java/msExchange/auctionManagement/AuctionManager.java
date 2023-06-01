@@ -24,7 +24,7 @@ public class AuctionManager implements Runnable {
     private BlockingQueue<Bid> bidQueue;
     private BlockingQueue<Sell> sellQueue;
 
-    public AuctionManager(final BlockingQueue<Transaction> transactionQueue, final BlockingQueue<Bid> bidQueue, final BlockingQueue<Sell> sellQueue) {
+    public AuctionManager(BlockingQueue<Transaction> transactionQueue, BlockingQueue<Bid> bidQueue, BlockingQueue<Sell> sellQueue) {
         this.auctions = new ConcurrentHashMap<>();
         this.timeSlots = new ConcurrentHashMap<>();
         this.transactionQueue = transactionQueue;
