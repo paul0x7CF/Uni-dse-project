@@ -41,7 +41,7 @@ public class TestAddAuction {
         }
 
         AuctionManager auctionManager = new AuctionManager(transactionQueue, bidQueue, sellQueue);
-        auctionManager.addTimeSlots(timeSlotList);
+        auctionManager.addTimeSlots(timeSlot);
 
         //act
         // Use reflection to access the private processQueues() method

@@ -1,6 +1,6 @@
 package loadManager.prosumerActionManagement;
 
-import loadManager.Exceptions.IllegalAuctionException;
+import Exceptions.IllegalAuctionException;
 import sendable.Transaction;
 
 import java.util.*;

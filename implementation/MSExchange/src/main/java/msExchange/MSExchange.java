@@ -1,5 +1,7 @@
 package msExchange;
 
+import exceptions.MessageProcessingException;
+import msExchange.auctionManagement.AuctionManager;
 import msExchange.messageHandling.ExchangeMessageHandler;
 import msExchange.networkCommunication.CommunicationExchange;
 import org.apache.logging.log4j.LogManager;
@@ -12,13 +14,12 @@ import sendable.Transaction;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class MSExchange implements IExchange, Runnable {
+public class MSExchange implements Runnable {
     private static final Logger logger = LogManager.getLogger(MSExchange.class);
     private BlockingQueue<Message> incomingMessages = new LinkedBlockingQueue<>();
     private BlockingQueue<Message> outgoingMessages = new LinkedBlockingQueue<>();
-    private BlockingQueue<Bid> bidQueue;
-    private BlockingQueue<Sell> sellQueue;
-    private BlockingQueue<Transaction> transactionQueue;
+
+    private AuctionManager auctionManager;
 
     private CommunicationExchange communication;
     private ExchangeMessageHandler messageHandler;
@@ -27,11 +28,13 @@ public class MSExchange implements IExchange, Runnable {
 
     public MSExchange(boolean duplicated) {
         this.duplicated = duplicated;
+
     }
 
     private void startCommunication() {
         communication = new CommunicationExchange(incomingMessages, outgoingMessages);
         communication.startBrokerRunner();
+        messageHandler = new ExchangeMessageHandler();
     }
 
     @Override
@@ -43,27 +46,16 @@ public class MSExchange implements IExchange, Runnable {
             Message message = incomingMessages.poll();
             if (message != null) {
                 logger.debug("Received message: " + message);
-                messageHandler.handleMessage(message);
+                try {
+                    messageHandler.handleMessage(message);
+                } catch (MessageProcessingException e) {
+                    //TODO: send error message to sender
+                    logger.error("SubCategory was incorrect: " + message);
+                }
             }
         }
 
     }
-
-    @Override
-    public void processBidQueue() {
-
-    }
-
-    @Override
-    public void receivedBid(Bid bid) {
-
-    }
-
-    @Override
-    public void receivedSell(Sell sell) {
-
-    }
-
 
     public boolean isDuplicated() {
         return duplicated;

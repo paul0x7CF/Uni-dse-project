@@ -1,4 +1,4 @@
-package loadManager.Exceptions;
+package Exceptions;
 
 public class CommandNotPossibleException extends Exception {
     public CommandNotPossibleException(String message) {

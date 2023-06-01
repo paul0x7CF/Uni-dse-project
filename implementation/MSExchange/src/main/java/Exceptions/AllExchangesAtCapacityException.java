@@ -1,4 +1,4 @@
-package loadManager.Exceptions;
+package Exceptions;
 
 public class AllExchangesAtCapacityException extends Exception {
     public AllExchangesAtCapacityException(String message) {

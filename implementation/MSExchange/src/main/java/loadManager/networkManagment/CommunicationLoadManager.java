@@ -20,10 +20,10 @@ public class CommunicationLoadManager extends BaseCommunication {
     public void addMessageHandler(ECategory category) {
         switch (category) {
             case Auction -> {
-                super.addMessageHandler(category, new IncomingMessageHandler(this.incomingMessages, this.outgoingMessages, (IServiceBroker) this.communicationBroker));
+                super.addMessageHandler(category, new IncomingMessageHandler(this.incomingMessages));
             }
             case Exchange -> {
-                super.addMessageHandler(category, new ExchangeMessageHandler(this.incomingMessages, this.outgoingMessages, (IServiceBroker) this.communicationBroker));
+                super.addMessageHandler(category, new ExchangeMessageHandler(this.incomingMessages, this.outgoingMessages, (IServiceBroker) communicationBroker));
             }
             default -> {
                 throw new RuntimeException("Category not supported");

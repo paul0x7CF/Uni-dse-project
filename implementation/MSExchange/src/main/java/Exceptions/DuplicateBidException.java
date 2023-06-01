@@ -1,4 +1,4 @@
-package loadManager.Exceptions;
+package Exceptions;
 
 public class DuplicateBidException extends Exception{
 }

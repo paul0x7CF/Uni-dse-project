@@ -1,8 +1,8 @@
 package loadManager.auctionManagement;
 
-import loadManager.Exceptions.CommandNotPossibleException;
-import loadManager.Exceptions.IllegalAuctionException;
-import loadManager.Exceptions.IllegalSlotException;
+import Exceptions.CommandNotPossibleException;
+import Exceptions.IllegalAuctionException;
+import Exceptions.IllegalSlotException;
 import sendable.Bid;
 import sendable.Transaction;
 

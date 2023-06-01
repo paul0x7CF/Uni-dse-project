@@ -1,6 +1,6 @@
 package loadManager.exchangeManagement;
 
-import loadManager.Exceptions.AllExchangesAtCapacityException;
+import Exceptions.AllExchangesAtCapacityException;
 
 import java.util.List;
 import java.util.UUID;
