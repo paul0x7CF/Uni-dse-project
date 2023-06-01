@@ -2,7 +2,6 @@ package loadManager.networkManagment;
 
 import broker.IServiceBroker;
 import mainPackage.BaseCommunication;
-import mainPackage.EExchangeType;
 import msExchange.networkCommunication.IncomingMessageHandler;
 import protocol.ECategory;
 import protocol.Message;

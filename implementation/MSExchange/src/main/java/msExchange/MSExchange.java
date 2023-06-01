@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protocol.Message;
 import sendable.Bid;
+import sendable.EServiceType;
 import sendable.Sell;
 import sendable.Transaction;
 
