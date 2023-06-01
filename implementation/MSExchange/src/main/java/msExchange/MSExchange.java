@@ -41,18 +41,31 @@ public class MSExchange implements Runnable {
         communicationThread.start();
 
         while (true) {
-            Message message = incomingMessages.poll();
-            if (message != null) {
-                logger.debug("Received message: " + message);
-                try {
-                    messageHandler.handleMessage(message);
-                } catch (MessageProcessingException e) {
-                    messageBuilder.sendErrorMessage(message, e);
-                    logger.error("SubCategory was incorrect: " + message);
-                }
-            }
+            processIncomingMessages();
+            processOutgoingMessages();
         }
 
+    }
+
+    private void processIncomingMessages() {
+        Message message = incomingMessages.poll();
+        if (message != null) {
+            logger.debug("Received message: " + message);
+            try {
+                messageHandler.handleMessage(message);
+            } catch (MessageProcessingException e) {
+                messageBuilder.sendErrorMessage(message, e);
+                logger.error("SubCategory was incorrect: " + message);
+            }
+        }
+    }
+
+    private void processOutgoingMessages() {
+        Message message = outgoingMessages.poll();
+        if(message != null) {
+            logger.trace("Sending message: " + message);
+            communication.sendMessage(message);
+        }
     }
 
     public boolean isDuplicated() {

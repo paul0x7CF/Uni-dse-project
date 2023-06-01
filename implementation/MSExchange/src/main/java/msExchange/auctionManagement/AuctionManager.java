@@ -3,6 +3,7 @@ package msExchange.auctionManagement;
 import Exceptions.AuctionNotFoundException;
 import Exceptions.InvalidTimeSlotException;
 import mainPackage.PropertyFileReader;
+import msExchange.MessageBuilder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sendable.Bid;
@@ -66,7 +67,7 @@ public class AuctionManager implements Runnable {
     private void checkCapacity() {
         if (bidQueue.size() >= CAPACITY) {
             logger.warn("BidQueue is full!");
-            //TODO: Message to exchange
+
         }
     }
 
