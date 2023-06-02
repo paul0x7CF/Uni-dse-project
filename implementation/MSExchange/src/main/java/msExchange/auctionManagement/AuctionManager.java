@@ -18,7 +18,7 @@ public class AuctionManager implements Runnable {
     private static final Logger logger = LogManager.getLogger(AuctionManager.class);
     private final int CHECK_DURATION; //in millisecs
     private final int MINUTES_TO_LIVE_AFTER_EXPIRING; //in millisecs
-    private Map<UUID, Auction> auctions;
+    private Map<UUID, Auction> auctions;    //key: auctionId, value: auction
     private Map<UUID, TimeSlot> timeSlots;
     private BlockingQueue<Transaction> transactionQueue;
     private BlockingQueue<Bid> bidQueue;
@@ -162,10 +162,9 @@ public class AuctionManager implements Runnable {
      * @throws AuctionNotFoundException if the auction is not found
      */
     private void addNewAuction(Sell sell) throws AuctionNotFoundException {
-        UUID auctionUUID = sell.getAuctionID().get();
-        Auction auction = new Auction(auctionUUID, sell, transactionQueue);
-        auctions.put(auctionUUID, auction);
-        logger.info("Auction has been added: " + auctions.get(auctionUUID));
+        Auction auction = new Auction(sell.getAuctionID().get(), sell, transactionQueue);
+        auctions.put(sell.getAuctionID().get(), auction);
+        logger.info("Auction has been added: " + auctions.get(sell.getAuctionID().get()));
     }
 
     /**

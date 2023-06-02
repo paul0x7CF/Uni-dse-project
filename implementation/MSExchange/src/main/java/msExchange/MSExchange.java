@@ -75,7 +75,6 @@ public class MSExchange implements Runnable {
         Transaction transaction = outgoingTransactions.poll();
         if (transaction != null) {
             logger.trace("Sending transaction: " + transaction);
-            ;
             communication.sendMessage(messageBuilder.buildMessage(transaction));
         }
     }

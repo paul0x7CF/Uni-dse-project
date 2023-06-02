@@ -107,4 +107,12 @@ public class ExchangeMessageHandler implements IMessageHandler {
         logger.trace("Added Bid: " + bid);
     }
 
+    /**
+     * Returns the AuctionManager.
+     *
+     * @return The AuctionManager
+     */
+    public AuctionManager getAuctionManager() {
+        return auctionManager;
+    }
 }
