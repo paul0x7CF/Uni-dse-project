@@ -2,6 +2,7 @@ package broker;
 
 import broker.discovery.DiscoveryService;
 import broker.discovery.IScheduleBroker;
+import broker.discovery.SyncService;
 import communication.LocalMessage;
 import communication.NetworkHandler;
 import exceptions.MessageProcessingException;
@@ -59,6 +60,8 @@ public class Broker implements IServiceBroker, IScheduleBroker {
         //  Its always 10.102.102.x (Prosumer(17), Exchange(13), Forecast(9)) but whats the port?
         DiscoveryService discoveryService = new DiscoveryService(this);
         discoveryService.scheduleDiscovery();
+
+        SyncService syncService = new SyncService(this);
 
         // start receiving messages in new thread
         try {

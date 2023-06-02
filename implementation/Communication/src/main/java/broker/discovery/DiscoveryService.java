@@ -1,5 +1,6 @@
 package broker.discovery;
 
+import broker.InfoMessageBuilder;
 import mainPackage.ConfigReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -92,7 +93,7 @@ public class DiscoveryService {
     private void scheduleRegisterMessage(int port) {
         if (broadcastAddress != null) {
             // TODO: address per type from config?
-            Message message = createRegisterMessage(currentService, broadcastAddress, port);
+            Message message = InfoMessageBuilder.createRegisterMessage(currentService, broadcastAddress, port);
             log.trace("Scheduling message to {} on port {}", broadcastAddress, port);
 
             // Dont send schedule immediately, store in the map instead

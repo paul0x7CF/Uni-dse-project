@@ -8,6 +8,7 @@ import protocol.MessageFactory;
 import sendable.AckInfo;
 import sendable.ErrorInfo;
 import sendable.MSData;
+import sendable.MSDataArray;
 
 public class InfoMessageBuilder { // TODO: rename to InfoMessageTemplate
     private static final Logger log = LogManager.getLogger(InfoMessageBuilder.class);
@@ -56,6 +57,13 @@ public class InfoMessageBuilder { // TODO: rename to InfoMessageTemplate
         ackMessage.setPayload(ack);
         log.trace("Ack created for {}", ack.getMessageID());
         return ackMessage;
+    }
+
+    private static Message createMSDataArrayMessage(MSData sender, MSData receiver, MSDataArray list) {
+        MessageFactory messageFactory = senderAndReceiverTemplate(sender, receiver);
+        messageFactory.setCategory(ECategory.Info, "MSDataArray").setPayload(list);
+        log.trace("MSDataArray message created");
+        return messageFactory.build();
     }
 
     private static MessageFactory senderAndReceiverTemplate(MSData sender, MSData receiver) {
