@@ -1,12 +1,13 @@
 package loadManager;
 
+import exceptions.MessageProcessingException;
 import loadManager.exchangeManagement.ExchangeServiceInformation;
 import loadManager.exchangeManagement.LoadManager;
 import loadManager.networkManagment.CommunicationLoadManager;
+import loadManager.networkManagment.LoadManagerMessageHandler;
 import loadManager.prosumerActionManagement.ProsumerManager;
 import loadManager.timeSlotManagement.MessageBuilderTimeSlot;
 import loadManager.timeSlotManagement.TimeSlotBuilder;
-import messageHandling.IMessageHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protocol.Message;
@@ -20,7 +21,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Controller implements Runnable {
@@ -28,15 +28,15 @@ public class Controller implements Runnable {
     private final int TIME_SLOT_DURATION;
     private final int NUM_NEW_TIME_SLOTS;
 
-    private ProsumerManager prosumerManager;
-    //private Communication communication;
-    private CommunicationLoadManager communication;
-    private TimeSlotBuilder timeSlotBuilder;
     private BlockingQueue<Message> incomingQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<Message> outgoingQueue = new LinkedBlockingQueue<>();
+
+
+
+    private CommunicationLoadManager communication;
+    private TimeSlotBuilder timeSlotBuilder;
+
     private LoadManager loadManager = new LoadManager();
-    private ExecutorService executorService;
-    private IMessageHandler messageHandler; //TODO: does it make sense to have a interface here? -> concrete implementation?
 
     public Controller() {
         //read Properties
@@ -100,11 +100,14 @@ public class Controller implements Runnable {
     }
 
     private void processIncomingQueue() {
-        ProcessIncomingQueue processIncomingQueue = new ProcessIncomingQueue();
+        LoadManagerMessageHandler messageHandler = new LoadManagerMessageHandler();
         Message message = (Message) incomingQueue.poll();
         if (message != null) {
-            processIncomingQueue.process(message);
-
+            try {
+                messageHandler.handleMessage(message);
+            } catch (MessageProcessingException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

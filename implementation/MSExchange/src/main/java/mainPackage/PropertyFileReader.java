@@ -35,16 +35,8 @@ public class PropertyFileReader {
         return getProperty("loadManager.serviceType");
     }
 
-    public static String getLoadManagerPort() {
-        return getProperty("loadManager.port");
-    }
-
     public static String getMaxAuctionFindingAlgorithm() {
         return getProperty("prosumer.maxAuctionFindingAlgorithm");
-    }
-
-    public static String getExchangePort() {
-        return getProperty("exchange.port");
     }
 
     public static String getExchangeServiceType() {

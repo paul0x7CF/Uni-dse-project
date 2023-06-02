@@ -15,20 +15,24 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class MSExchange implements Runnable {
     private static final Logger logger = LogManager.getLogger(MSExchange.class);
+    private final int INSTANCE_NUMBER;
+    private final boolean DUPLICATED;
+
     private BlockingQueue<Message> incomingMessages = new LinkedBlockingQueue<>();
     private BlockingQueue<Transaction> outgoingTransactions = new LinkedBlockingQueue<>();
+
     private CommunicationExchange communication;
     private ExchangeMessageHandler messageHandler;
     private MessageBuilder messageBuilder;
-    private boolean duplicated;
 
 
-    public MSExchange(boolean duplicated) {
-        this.duplicated = duplicated;
+    public MSExchange(boolean duplicated, int instanceNumber) {
+        this.DUPLICATED = duplicated;
+        this.INSTANCE_NUMBER = instanceNumber;
     }
 
     private void startCommunication() {
-        communication = new CommunicationExchange(incomingMessages);
+        communication = new CommunicationExchange(incomingMessages, INSTANCE_NUMBER);
         communication.startBrokerRunner();
         messageBuilder = new MessageBuilder(communication.getBroker());
         messageHandler = new ExchangeMessageHandler(outgoingTransactions);
@@ -67,7 +71,7 @@ public class MSExchange implements Runnable {
         int CAPACITY = Integer.parseInt(propertyFileReader.getCapacity());
         if (incomingMessages.size() >= CAPACITY) {
             logger.warn("BidQueue is full!");
-            messageBuilder.sendCapacityMessage();
+            communication.sendMessage(messageBuilder.buildCapacityMessage());
         }
     }
 
@@ -75,12 +79,13 @@ public class MSExchange implements Runnable {
         Transaction transaction = outgoingTransactions.poll();
         if (transaction != null) {
             logger.trace("Sending transaction: " + transaction);
-            ;
-            communication.sendMessage(messageBuilder.buildMessage(transaction));
+            for (Message message : messageBuilder.buildMessage(transaction)) {
+                communication.sendMessage(message);
+            }
         }
     }
 
     public boolean isDuplicated() {
-        return duplicated;
+        return DUPLICATED;
     }
 }

@@ -14,16 +14,23 @@ public class Main {
 
     public static void main(String[] args) {
         boolean duplicated = false;
+        int instanceNumber = 1;
         if (args.length == 0) {
             logger.info("No arguments passed, running as non-duplicated");
         } else {
             if ("-s".equals(args[0])) {
                 duplicated = true;
             }
+            if (args[1] == null) {
+                logger.error("No instance number passed");
+                throw new IllegalStateException("No instance number passed");
+            } else {
+                instanceNumber = Integer.parseInt(args[1]);
+            }
         }
 
 
-        msExchange = new MSExchange(duplicated);
+        msExchange = new MSExchange(duplicated, instanceNumber);
         Thread exchangeThread = new Thread(msExchange);
         exchangeThread.start();
 

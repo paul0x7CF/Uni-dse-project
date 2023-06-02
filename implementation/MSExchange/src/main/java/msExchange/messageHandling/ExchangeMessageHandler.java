@@ -3,6 +3,9 @@ package msExchange.messageHandling;
 import Exceptions.InvalidBidException;
 import Exceptions.InvalidSellException;
 import Exceptions.InvalidTimeSlotException;
+import Validator.BidValidator;
+import Validator.SellValidator;
+import Validator.TimeSlotValidator;
 import exceptions.MessageProcessingException;
 import mainPackage.ESubCategory;
 import messageHandling.IMessageHandler;
@@ -107,4 +110,12 @@ public class ExchangeMessageHandler implements IMessageHandler {
         logger.trace("Added Bid: " + bid);
     }
 
+    /**
+     * Returns the AuctionManager.
+     *
+     * @return The AuctionManager
+     */
+    public AuctionManager getAuctionManager() {
+        return auctionManager;
+    }
 }

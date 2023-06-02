@@ -9,11 +9,10 @@ import sendable.EServiceType;
 import java.util.concurrent.BlockingQueue;
 
 public class CommunicationLoadManager extends BaseCommunication {
-    private static final String PROPERTIES_FILE_PATH = "C:\\Universität\\DSE\\Gruppenprojekt\\DSE_Team_202\\implementation\\MSExchange\\src\\main\\java\\config.properties";
     private static final EServiceType EXCHANGE_TYPE = EServiceType.Exchange;
 
     public CommunicationLoadManager(BlockingQueue<Message> incomingMessages, BlockingQueue<Message> outgoingMessages) {
-        super(incomingMessages, PROPERTIES_FILE_PATH, EXCHANGE_TYPE);
+        super(incomingMessages, EXCHANGE_TYPE, 0);
     }
 
     public void addMessageHandler(ECategory category) {
@@ -22,7 +21,7 @@ public class CommunicationLoadManager extends BaseCommunication {
                 super.addMessageHandler(category, new IncomingMessageHandler(this.incomingMessages));
             }
             case Exchange -> {
-                super.addMessageHandler(category, new ExchangeMessageHandler(this.incomingMessages));
+                super.addMessageHandler(category, new LoadManagerMessageHandler(this.incomingMessages));
             }
             default -> {
                 throw new RuntimeException("Category not supported");

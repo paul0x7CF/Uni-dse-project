@@ -1,4 +1,4 @@
-package msExchange.messageHandling;
+package Validator;
 
 import Exceptions.InvalidBidException;
 import sendable.Bid;

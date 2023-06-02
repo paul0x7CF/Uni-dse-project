@@ -11,8 +11,8 @@ public class CommunicationExchange extends BaseCommunication {
     private static final String PROPERTIES_FILE_PATH = "C:\\Universität\\DSE\\Gruppenprojekt\\DSE_Team_202\\implementation\\MSExchange\\src\\main\\java\\config.properties";
     private static final EServiceType SERVICE_TYPE = EServiceType.ExchangeWorker;
 
-    public CommunicationExchange(BlockingQueue<Message> incomingMessages) {
-        super(incomingMessages, PROPERTIES_FILE_PATH, SERVICE_TYPE);
+    public CommunicationExchange(BlockingQueue<Message> incomingMessages, int instanceNumber) {
+        super(incomingMessages, SERVICE_TYPE, instanceNumber);
         addMessageHandler();
     }
 
