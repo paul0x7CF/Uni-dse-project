@@ -1,6 +1,7 @@
 package loadManager.networkManagment;
 
 import loadManager.SellInformation;
+import mainPackage.ConfigReader;
 import mainPackage.ESubCategory;
 import mainPackage.PropertyFileReader;
 import protocol.ECategory;
@@ -14,15 +15,13 @@ import java.util.UUID;
 public interface IMessageBuilder {
     private static MSData buildMSData() {
         PropertyFileReader propertyFileReader = new PropertyFileReader();
+        ConfigReader configReader = new ConfigReader();
 
-
-        int PORT = Integer.parseInt(propertyFileReader.getLoadManagerPort());
-        String ADDRESS = "";
+        int PORT = Integer.parseInt(configReader.getProperty("exchangePort"));
+        String ADDRESS = configReader.getProperty("exchangeAddress");
         EServiceType SERVICE_TYPE = EServiceType.valueOf(propertyFileReader.getLoadManagerServiceType());
         UUID id = UUID.randomUUID();
         return new MSData(id, SERVICE_TYPE, ADDRESS, PORT);
-
-
     }
 
     /**

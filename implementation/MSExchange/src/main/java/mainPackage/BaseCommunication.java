@@ -9,9 +9,6 @@ import protocol.ECategory;
 import protocol.Message;
 import sendable.EServiceType;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 
 public abstract class BaseCommunication {
@@ -21,33 +18,23 @@ public abstract class BaseCommunication {
     protected BlockingQueue<Message> incomingMessages;
 
 
-    public BaseCommunication(BlockingQueue<Message> incomingMessages,
-                             String propertiesFilePath, EServiceType exchangeType) {
+    public BaseCommunication(BlockingQueue<Message> incomingMessages, EServiceType exchangeType, int instanceNumber) {
         //read Properties
-        Properties properties = new Properties();
-        int port;
+        ConfigReader configReader = new ConfigReader();
+        PropertyFileReader properties = new PropertyFileReader();
+
+        int port = Integer.parseInt(configReader.getProperty("exchangePort"));
         EServiceType serviceType;
 
-        try {
-            FileInputStream configFile = new FileInputStream(propertiesFilePath);
-            properties.load(configFile);
-            configFile.close();
-
-            //TODO: Where do I get the port?
-            switch (exchangeType) {
-                case ExchangeWorker -> {
-                    port = Integer.parseInt(properties.getProperty("exchange.port"));
-                    serviceType = EServiceType.valueOf(properties.getProperty("exchange.serviceType"));
-                }
-                case Exchange -> {
-                    port = Integer.parseInt(properties.getProperty("loadManager.port"));
-                    serviceType = EServiceType.valueOf(properties.getProperty("loadManager.serviceType"));
-                }
-                default -> throw new IllegalStateException("Unexpected value: " + exchangeType);
+        switch (exchangeType) {
+            case ExchangeWorker -> {
+                port = port + Integer.parseInt(configReader.getProperty("portJumpSize")) * instanceNumber;
+                serviceType = EServiceType.valueOf(properties.getExchangeServiceType());
             }
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            case Exchange -> {
+                serviceType = EServiceType.valueOf(properties.getLoadManagerServiceType());
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + exchangeType);
         }
 
 

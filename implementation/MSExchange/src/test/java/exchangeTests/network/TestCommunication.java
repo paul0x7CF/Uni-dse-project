@@ -18,7 +18,7 @@ public class TestCommunication {
         BlockingQueue outgoingMessages = new LinkedBlockingQueue();
 
 
-        CommunicationExchange communication = new CommunicationExchange(incomingMessages);
+        CommunicationExchange communication = new CommunicationExchange(incomingMessages, 1);
         MSData msData = communication.getBroker().getCurrentService();
         BrokerRunner brokerRunner = communication.getBroker();
 
