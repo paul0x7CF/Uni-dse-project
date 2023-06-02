@@ -21,7 +21,7 @@ public class CommunicationLoadManager extends BaseCommunication {
                 super.addMessageHandler(category, new IncomingMessageHandler(this.incomingMessages));
             }
             case Exchange -> {
-                super.addMessageHandler(category, new ExchangeMessageHandler(this.incomingMessages));
+                super.addMessageHandler(category, new LoadManagerMessageHandler(this.incomingMessages));
             }
             default -> {
                 throw new RuntimeException("Category not supported");

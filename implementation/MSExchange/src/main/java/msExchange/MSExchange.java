@@ -17,8 +17,10 @@ public class MSExchange implements Runnable {
     private static final Logger logger = LogManager.getLogger(MSExchange.class);
     private final int INSTANCE_NUMBER;
     private final boolean DUPLICATED;
+
     private BlockingQueue<Message> incomingMessages = new LinkedBlockingQueue<>();
     private BlockingQueue<Transaction> outgoingTransactions = new LinkedBlockingQueue<>();
+
     private CommunicationExchange communication;
     private ExchangeMessageHandler messageHandler;
     private MessageBuilder messageBuilder;

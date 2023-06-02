@@ -1,4 +1,4 @@
-package msExchange.messageHandling;
+package Validator;
 
 import Exceptions.InvalidSellException;
 import sendable.Sell;
