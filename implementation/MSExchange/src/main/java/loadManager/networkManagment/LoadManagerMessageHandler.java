@@ -4,6 +4,7 @@ import Exceptions.InvalidBidException;
 import Validator.BidValidator;
 import broker.IServiceBroker;
 import exceptions.MessageProcessingException;
+import loadManager.auctionManagement.AuctionManager;
 import loadManager.prosumerActionManagement.ProsumerManager;
 import mainPackage.ESubCategory;
 import messageHandling.IMessageHandler;
@@ -13,15 +14,22 @@ import protocol.Message;
 import sendable.Bid;
 import sendable.MSData;
 
+import java.util.concurrent.BlockingQueue;
+
 
 public class LoadManagerMessageHandler implements IMessageHandler {
     private static final Logger logger = LogManager.getLogger(LoadManagerMessageHandler.class);
     private final MSData currentService;
+    private BlockingQueue<Message> outgoingQueue;
     private IServiceBroker broker;
     private ProsumerManager prosumerManager;
+    private AuctionManager auctionManager;
 
-    public LoadManagerMessageHandler() {
+    public LoadManagerMessageHandler(BlockingQueue<Message> outgoingQueue) {
+        this.outgoingQueue = outgoingQueue;
         this.currentService = broker.getCurrentService();
+        this.prosumerManager = new ProsumerManager(outgoingQueue);
+        this.auctionManager = new AuctionManager();
     }
 
     @Override
@@ -56,6 +64,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
         bidValidator.validateBid(bid);
 
         //TODO: implement
+
     }
 
     private void handleSell(Message message) {

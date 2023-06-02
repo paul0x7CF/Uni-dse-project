@@ -32,7 +32,6 @@ public class Controller implements Runnable {
     private BlockingQueue<Message> outgoingQueue = new LinkedBlockingQueue<>();
 
 
-
     private CommunicationLoadManager communication;
     private TimeSlotBuilder timeSlotBuilder;
 
@@ -100,7 +99,7 @@ public class Controller implements Runnable {
     }
 
     private void processIncomingQueue() {
-        LoadManagerMessageHandler messageHandler = new LoadManagerMessageHandler();
+        LoadManagerMessageHandler messageHandler = new LoadManagerMessageHandler(outgoingQueue);
         Message message = (Message) incomingQueue.poll();
         if (message != null) {
             try {

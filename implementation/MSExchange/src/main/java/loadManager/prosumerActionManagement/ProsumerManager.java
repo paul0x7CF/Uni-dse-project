@@ -18,11 +18,10 @@ public class ProsumerManager implements Runnable {
     AverageMechanism averageMechanism;
     AuctionProsumerTracker auctionProsumerTracker;
     List<Bidder> bidders;
-    BlockingQueue<Message> prosumerQueue;
     BlockingQueue<Message> outgoingQueue;
 
-    public ProsumerManager(BlockingQueue<Message> prosumerQueue, BlockingQueue<Message> outgoingQueue) {
-        this.prosumerQueue = prosumerQueue;
+    public ProsumerManager(BlockingQueue<Message> outgoingQueue) {
+
         this.outgoingQueue = outgoingQueue;
 
         auctionManager = new AuctionManager();
@@ -34,11 +33,11 @@ public class ProsumerManager implements Runnable {
     @Override
     public void run() {
         while (true) {
-            try {
-                Message message = prosumerQueue.take();
+       /*   try {
+               // Message message = prosumerQueue.take();
                 //TODO switch the different types and call the appropriate method
                 //bid, sell - example:
-                /*switch(message.getType()) {
+                switch(message.getType()) {
                     case BID:
                         handleNewBid((Bid) message);
                         break;
@@ -48,10 +47,10 @@ public class ProsumerManager implements Runnable {
                     default:
                         throw new RuntimeException("Unknown message type");
                 }
-                */
+
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
-            }
+            }*/
         }
     }
 
