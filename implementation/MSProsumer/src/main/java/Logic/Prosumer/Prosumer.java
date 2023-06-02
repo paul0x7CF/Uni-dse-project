@@ -3,7 +3,6 @@ package Logic.Prosumer;
 import Communication.Communication;
 import Data.Consumer;
 import Data.EProsumerType;
-import Data.SolarPanel;
 import Data.Wallet;
 import Logic.DemandManager;
 import Logic.Scheduler;
@@ -87,30 +86,7 @@ public class Prosumer implements Runnable{
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        /*
-        while (true) {
-            try {
-                Message newMessage = this.incomingMessages.take();
-                logger.debug("Message received from type : {}", newMessage.getCategory());
-                switch (newMessage.getCategory()) {
-                    case SellLowerQuestion:
-                        actSellLowerQuestion(message);
-                        break;
-                    case BidHigherQuestion:
-                        actBidHigherQuestion(message);
-                        break;
-                    default:
-                        throw new UnknownMessageException();
-                }
-            } catch (InterruptedException e) {
-                logger.error("Error while receiving message: {}", e.getMessage());
-            } catch (UnknownMessageException e) {
-                logger.warn(e.getMessage());
-            }
 
-
-        }
-        */
 
 
     }
