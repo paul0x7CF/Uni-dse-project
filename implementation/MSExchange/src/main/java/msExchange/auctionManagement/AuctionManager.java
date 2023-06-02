@@ -38,6 +38,7 @@ public class AuctionManager implements Runnable {
 
     @Override
     public void run() {
+        logger.info("AuctionManager started");
         long lastCheckTime = System.currentTimeMillis();
         while (true) {
             try {

@@ -18,7 +18,7 @@ import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class TestHandleBid {
+public class TestHandleBidAndSell {
 
     @Test
     public void receivedSellMessage_handleSell_expectedNewAuction() {
@@ -40,7 +40,11 @@ public class TestHandleBid {
         messageHandler.getAuctionManager().addTimeSlots(timeSlot);
 
         Assertions.assertDoesNotThrow(() -> messageHandler.handleMessage(message));
-
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         Assertions.assertEquals(1, messageHandler.getAuctionManager().getAuctions().size());
     }
 
@@ -75,6 +79,11 @@ public class TestHandleBid {
         Message bidMessage = IMessageBuilder.buildMessageSendBid(bid);
 
         Assertions.assertDoesNotThrow(() -> messageHandler.handleMessage(bidMessage));
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         Assertions.assertEquals(userID, messageHandler.getAuctionManager().getAuctions().get(auctionID).getBidderID());
     }
 }
