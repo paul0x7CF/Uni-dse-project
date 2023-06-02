@@ -13,13 +13,10 @@ public class ExchangeMessageHandler implements IMessageHandler {
     private static final Logger logger = Logger.getLogger(ExchangeMessageHandler.class.getName());
     private final MSData currentService;
     private BlockingQueue<Message> incomingMessages;
-    private BlockingQueue<Message> outgoingMessages;
     private IServiceBroker broker;
 
-    public ExchangeMessageHandler(BlockingQueue<Message> incomingMessages, BlockingQueue<Message> outgoingMessages, IServiceBroker communicationBroker) {
+    public ExchangeMessageHandler(BlockingQueue<Message> incomingMessages) {
         this.incomingMessages = incomingMessages;
-        this.outgoingMessages = outgoingMessages;
-        this.broker = communicationBroker;
         this.currentService = broker.getCurrentService();
     }
 

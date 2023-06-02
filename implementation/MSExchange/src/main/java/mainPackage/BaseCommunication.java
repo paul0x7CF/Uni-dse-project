@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 import protocol.ECategory;
 import protocol.Message;
 import sendable.EServiceType;
-import sendable.MSData;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,15 +16,13 @@ import java.util.concurrent.BlockingQueue;
 
 public abstract class BaseCommunication {
     private static final Logger logger = LogManager.getLogger(BaseCommunication.class.getName());
-    private MSData myMSData;
     protected BrokerRunner communicationBroker;
     protected NetworkHandler networkHandler;
     protected BlockingQueue<Message> incomingMessages;
-    protected BlockingQueue<Message> outgoingMessages;
 
 
-    public BaseCommunication(BlockingQueue<Message> incomingMessages, BlockingQueue<Message> outgoingMessages,
-                             String propertiesFilePath, EExchangeType exchangeType) {
+    public BaseCommunication(BlockingQueue<Message> incomingMessages,
+                             String propertiesFilePath, EServiceType exchangeType) {
         //read Properties
         Properties properties = new Properties();
         int port;
@@ -38,11 +35,11 @@ public abstract class BaseCommunication {
 
             //TODO: Where do I get the port?
             switch (exchangeType) {
-                case Exchange -> {
+                case ExchangeWorker -> {
                     port = Integer.parseInt(properties.getProperty("exchange.port"));
                     serviceType = EServiceType.valueOf(properties.getProperty("exchange.serviceType"));
                 }
-                case LoadManager -> {
+                case Exchange -> {
                     port = Integer.parseInt(properties.getProperty("loadManager.port"));
                     serviceType = EServiceType.valueOf(properties.getProperty("loadManager.serviceType"));
                 }
@@ -55,15 +52,13 @@ public abstract class BaseCommunication {
 
 
         this.incomingMessages = incomingMessages;
-        this.outgoingMessages = outgoingMessages;
         createBroker(port, serviceType);
 
-        logger.info("MS registered with Id:" + this.myMSData.getId() + ", Address: " + this.myMSData.getAddress() + ", Port: " + this.myMSData.getPort());
+        logger.info("MS registered with Id:" + this.communicationBroker.getCurrentService().getId() + ", Address: " + this.communicationBroker.getCurrentService().getAddress() + ", Port: " + this.communicationBroker.getCurrentService().getPort());
     }
 
     private void createBroker(int port, EServiceType serviceType) {
         this.communicationBroker = new BrokerRunner(serviceType, port);
-        this.myMSData = this.communicationBroker.getCurrentService();
     }
 
     public void startBrokerRunner() {
@@ -86,8 +81,5 @@ public abstract class BaseCommunication {
         return communicationBroker;
     }
 
-    public MSData getMyMSData() {
-        return myMSData;
-    }
 
 }
