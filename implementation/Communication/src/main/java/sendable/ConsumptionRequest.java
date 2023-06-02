@@ -1,19 +1,17 @@
 package sendable;
 
+import java.util.HashMap;
+
 public class ConsumptionRequest implements ISendable {
-    private final String type;
-    private final double consumption;
 
-    public ConsumptionRequest(String type, double consumption) {
-        this.type = type;
-        this.consumption = consumption;
+    private final HashMap<String, Double> consumptionMap;
+
+    public ConsumptionRequest(HashMap<String, Double> consumptionMap) {
+        this.consumptionMap = consumptionMap;
+
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public double getConsumption() {
-        return consumption;
+    public HashMap<String, Double> getConsumptionMap() {
+        return consumptionMap;
     }
 }

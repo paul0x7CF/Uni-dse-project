@@ -1,7 +1,9 @@
 package Logic.AccountingStrategy;
 
 import Communication.Communication;
+import Data.Consumer;
 import Data.IProsumerDevice;
+import Data.Producer;
 
 import java.util.List;
 
@@ -13,6 +15,14 @@ public class CalcProduction implements ICalAcctStrategy{
     }
     @Override
     public double calculateAccounting(List<IProsumerDevice> devices) {
+
+        devices.forEach(device ->{
+            if(device.getDevice() instanceof Producer){
+                Producer producer = (Producer) device.getDevice();
+
+            }
+        });
+
 
         return 0;
 

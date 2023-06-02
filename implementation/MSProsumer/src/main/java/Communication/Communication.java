@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protocol.ECategory;
 import protocol.Message;
+import sendable.ConsumptionRequest;
 import sendable.EServiceType;
 import sendable.MSData;
 import sendable.TimeSlot;
@@ -84,7 +85,7 @@ public class Communication {
         }
     }
 
-    private void sendMessage(Message message) {
+    private void sendConsumptionRequestMessage(ConsumptionRequest consumptionRequest) {
 
         //communicationBroker.addMessageHandler(ECategory.Auction, new AuctionMessageHandler(communicationBroker, prosumer));
 

@@ -9,11 +9,18 @@ public class Consumer implements IProsumerDevice{
 
     public Consumer(EConsumerType consumerType) {}
 
-    public void getAverageConsumption() {}
+    public double getAverageConsumption() {
+        return this.averageConsumption;
+    }
 
     public void isHeavyConsumer() {}
 
     public EConsumerType getConsumerType() {
         return this.consumerType;
+    }
+
+    @Override
+    public <T> T getDevice() {
+        return (T) this;
     }
 }
