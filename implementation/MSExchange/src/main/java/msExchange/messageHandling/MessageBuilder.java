@@ -24,8 +24,9 @@ public class MessageBuilder {
         //TODO: implement
     }
 
-    public void sendCapacityMessage() {
-        //TODO: implement
+    public Message buildCapacityMessage() {
+        MSData receiverMS = broker.getServicesByType(EServiceType.Exchange).get(0);
+        return senderAndReceiverTemplate(receiverMS).setCategory(ECategory.Exchange, String.valueOf(ESubCategory.Capacity)).build();
     }
 
     public List<Message> buildMessage(Transaction transaction) {

@@ -69,7 +69,7 @@ public class MSExchange implements Runnable {
         int CAPACITY = Integer.parseInt(propertyFileReader.getCapacity());
         if (incomingMessages.size() >= CAPACITY) {
             logger.warn("BidQueue is full!");
-            messageBuilder.sendCapacityMessage();
+            communication.sendMessage(messageBuilder.buildCapacityMessage());
         }
     }
 
@@ -77,7 +77,9 @@ public class MSExchange implements Runnable {
         Transaction transaction = outgoingTransactions.poll();
         if (transaction != null) {
             logger.trace("Sending transaction: " + transaction);
-            communication.sendMessage(messageBuilder.buildMessage(transaction));
+            for (Message message : messageBuilder.buildMessage(transaction)) {
+                communication.sendMessage(message);
+            }
         }
     }
 
