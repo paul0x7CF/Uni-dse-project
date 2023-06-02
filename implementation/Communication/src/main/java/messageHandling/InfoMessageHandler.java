@@ -5,10 +5,7 @@ import broker.InfoMessageBuilder;
 import exceptions.MessageProcessingException;
 import exceptions.RemoteException;
 import protocol.Message;
-import sendable.AckInfo;
-import sendable.ErrorInfo;
-import sendable.ISendable;
-import sendable.MSData;
+import sendable.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,6 +33,7 @@ public class InfoMessageHandler implements IMessageHandler {
             case "Unregister" -> handleUnregister(message);
             case "Ack" -> handleAck(message);
             case "Error" -> handleError(message);
+            case "Sync" -> handleSync(message);
             default -> throw new MessageProcessingException("Unknown message subCategory: " + message.getSubCategory());
         }
 
@@ -44,13 +42,13 @@ public class InfoMessageHandler implements IMessageHandler {
 
     private void handlePing(Message message) throws MessageProcessingException {
         // Ping is response to Register request
-        ISendable ping = message.getSendable(MSData.class);
-        if (ping == null) {
+        ISendable otherMS = message.getSendable(MSData.class);
+        if (otherMS == null) {
             log.error("Received Ping with null payload");
             throw new MessageProcessingException("Payload is null");
         }
-        if (ping instanceof MSData) {
-            broker.registerService((MSData) ping);
+        if (otherMS instanceof MSData) {
+            broker.registerService((MSData) otherMS);
         } else {
             log.error("Received Ping with wrong payload");
             throw new MessageProcessingException("Payload is not of type MSData");
@@ -64,9 +62,9 @@ public class InfoMessageHandler implements IMessageHandler {
             log.error("Received Register with null payload");
             throw new MessageProcessingException("Payload is null");
         }
-        if (register instanceof MSData msData) {
-            broker.registerService(msData);
-            broker.sendMessage(InfoMessageBuilder.createPingMessage(currentService, msData));
+        if (register instanceof MSData otherMS) {
+            broker.registerService(otherMS);
+            broker.sendMessage(InfoMessageBuilder.createPingMessage(currentService, otherMS));
         } else {
             log.error("Received Register with wrong payload");
             throw new MessageProcessingException("Payload is not of type MSData");
@@ -75,13 +73,13 @@ public class InfoMessageHandler implements IMessageHandler {
 
     private void handleUnregister(Message message) throws MessageProcessingException {
         // Unregister is sent when broker is stopped
-        ISendable unregister = message.getSendable(MSData.class);
-        if (unregister == null) {
+        ISendable otherMS = message.getSendable(MSData.class);
+        if (otherMS == null) {
             log.error("Received Unregister with null payload");
             throw new MessageProcessingException("Payload is null");
         }
-        if (unregister instanceof MSData) {
-            broker.unregisterService((MSData) unregister);
+        if (otherMS instanceof MSData) {
+            broker.unregisterService((MSData) otherMS);
         } else {
             log.error("Received Unregister with wrong payload");
             throw new MessageProcessingException("Payload is not of type MSData");
@@ -120,6 +118,31 @@ public class InfoMessageHandler implements IMessageHandler {
         } else {
             log.error("Received Error with wrong payload");
             throw new MessageProcessingException("Payload is not of type ErrorInfo");
+        }
+    }
+
+    private void handleSync(Message message) throws MessageProcessingException {
+        // Sync has MSDataArray as payload
+        ISendable sync = message.getSendable(MSDataArray.class);
+        if (sync == null) {
+            log.error("Received Sync with null payload");
+            return;
+        }
+        if (sync instanceof MSDataArray msToSync) {
+            if (msToSync.isEmpty()) {
+                MSDataArray allServices = new MSDataArray(currentService, broker.getServices().toArray(new MSData[0]));
+                log.trace("{} sending Sync with {} services", currentService.getPort(), allServices.getMsDataArray().length);
+                Message response = InfoMessageBuilder.createSyncMessage(currentService, msToSync.getSender(), allServices);
+                broker.sendMessage(response);
+            } else {
+                log.trace("{} received Sync with {} services", currentService.getPort(), msToSync.getMsDataArray().length);
+                for (MSData msData : msToSync.getMsDataArray()) {
+                    broker.registerService(msData);
+                }
+            }
+        } else {
+            log.error("Received Sync with wrong payload");
+            throw new MessageProcessingException("Payload is not of type MSDataArray");
         }
     }
 }

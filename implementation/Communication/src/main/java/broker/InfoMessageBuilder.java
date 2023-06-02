@@ -8,6 +8,7 @@ import protocol.MessageFactory;
 import sendable.AckInfo;
 import sendable.ErrorInfo;
 import sendable.MSData;
+import sendable.MSDataArray;
 
 public class InfoMessageBuilder { // TODO: rename to InfoMessageTemplate
     private static final Logger log = LogManager.getLogger(InfoMessageBuilder.class);
@@ -56,6 +57,14 @@ public class InfoMessageBuilder { // TODO: rename to InfoMessageTemplate
         ackMessage.setPayload(ack);
         log.trace("Ack created for {}", ack.getMessageID());
         return ackMessage;
+    }
+
+    public static Message createSyncMessage(MSData sender, MSData receiver, MSDataArray list) {
+        // TODO: should receiver be like in register?
+        MessageFactory messageFactory = senderAndReceiverTemplate(sender, receiver);
+        messageFactory.setCategory(ECategory.Info, "Sync").setPayload(list);
+        log.trace("Sync message created");
+        return messageFactory.build();
     }
 
     private static MessageFactory senderAndReceiverTemplate(MSData sender, MSData receiver) {
