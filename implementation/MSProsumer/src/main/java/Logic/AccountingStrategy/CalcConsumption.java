@@ -3,6 +3,7 @@ package Logic.AccountingStrategy;
 import Communication.Communication;
 import Data.Consumer;
 import Data.IProsumerDevice;
+import sendable.ConsumptionRequest;
 import sendable.EServiceType;
 
 import java.util.HashMap;
@@ -18,6 +19,16 @@ public class CalcConsumption implements ICalAcctStrategy {
 
     @Override
     public double calculateAccounting(List<IProsumerDevice> devices) {
+
+        HashMap<String, Double> consumptionMap = getConsumptionMap(devices);
+        ConsumptionRequest request = new ConsumptionRequest(consumptionMap);
+
+
+        return 0;
+
+    }
+
+    private HashMap<String, Double> getConsumptionMap(List<IProsumerDevice> devices) {
         HashMap<String, Double> consumptionMap = new HashMap<>();
         devices.forEach(device ->{
             if(device.getDevice() instanceof Consumer){
@@ -25,10 +36,6 @@ public class CalcConsumption implements ICalAcctStrategy {
                 consumptionMap.put(consumer.getConsumerType().toString(), consumer.getAverageConsumption());
             }
         });
-
-
-
-        return 0;
-
+        return consumptionMap;
     }
 }
