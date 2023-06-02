@@ -1,17 +1,23 @@
 package sendable;
 
 public class MSDataArray implements ISendable {
+    private MSData sender;
     private MSData[] msDataArray;
 
-    public MSDataArray(MSData[] msDataList) {
+    public MSDataArray(MSData sender, MSData[] msDataList) {
+        this.sender = sender;
         this.msDataArray = msDataList;
+    }
+
+    public MSData getSender() {
+        return sender;
     }
 
     public MSData[] getMsDataArray() {
         return msDataArray;
     }
 
-    public void setMsDataArray(MSData[] msDataList) {
-        this.msDataArray = msDataList;
+    public boolean isEmpty() {
+        return msDataArray.length == 0;
     }
 }

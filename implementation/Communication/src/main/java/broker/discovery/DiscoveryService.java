@@ -10,33 +10,23 @@ import sendable.MSData;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static broker.InfoMessageBuilder.createRegisterMessage;
-
-public class DiscoveryService {
+public class DiscoveryService implements IMessageSchedulerObserver {
     private static final Logger log = LogManager.getLogger(DiscoveryService.class);
-    private final ConfigReader configReader;
-    private final IScheduleBroker broker;
-    private final Map<Integer, Message> messagesToSchedule = new ConcurrentHashMap<>();
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    ConfigReader configReader = new ConfigReader();
     String broadcastAddress;
-    int messageFrequency;
     MSData currentService;
-
+    private final IScheduleBroker broker;
+    private final Map<Integer, Message> messagesToSchedule;
 
     public DiscoveryService(IScheduleBroker broker) {
         this.broker = broker;
-
-        this.configReader = new ConfigReader();
-        this.currentService = broker.getCurrentService();
+        this.messagesToSchedule = new ConcurrentHashMap<>();
         this.broadcastAddress = configReader.getProperty("broadcastAddress");
-        this.messageFrequency = Integer.parseInt(configReader.getProperty("registerMessageFrequency"));
-    }
+        this.currentService = broker.getCurrentService();
 
-    public void scheduleDiscovery() {
         int portJumpSize = Integer.parseInt(configReader.getProperty("portJumpSize"));
         int prosumerPort = Integer.parseInt(configReader.getProperty("prosumerPort"));
         int prosumerAmount = Integer.parseInt(configReader.getProperty("prosumerAmount"));
@@ -52,58 +42,44 @@ public class DiscoveryService {
         if (currentService.getType() != EServiceType.ExchangeWorker) {
             // register prosumer
             for (int i = 0; i < prosumerAmount * portJumpSize; i += portJumpSize) {
+                // TODO: maybe &&, not ||
                 if (currentService.getType() != EServiceType.Prosumer || currentService.getPort() != prosumerPort + i)
-                    scheduleRegisterMessage(prosumerPort + i);
+                    addMessageToSchedule(prosumerPort + i);
             }
 
             // register storage
             for (int i = 0; i < storageAmount * portJumpSize; i += portJumpSize) {
                 if (currentService.getType() != EServiceType.Storage || currentService.getPort() != storagePort + i) {
-                    scheduleRegisterMessage(storagePort + i);
+                    addMessageToSchedule(storagePort + i);
                 }
             }
 
             // register solar
             for (int i = 0; i < solarAmount * portJumpSize; i += portJumpSize) {
                 if (currentService.getType() != EServiceType.Solar || currentService.getPort() != solarPort + i) {
-                    scheduleRegisterMessage(solarPort + i);
+                    addMessageToSchedule(solarPort + i);
                 }
             }
 
             // register consumption
             for (int i = 0; i < consumptionAmount * portJumpSize; i += portJumpSize) {
                 if (currentService.getType() != EServiceType.Consumption || currentService.getPort() != consumptionPort + i) {
-                    scheduleRegisterMessage(consumptionPort + i);
+                    addMessageToSchedule(consumptionPort + i);
                 }
             }
+        }
 
-            // register exchange
-            for (int i = 0; i < exchangeAmount * portJumpSize; i += portJumpSize) {
-                if (currentService.getType() != EServiceType.Exchange || currentService.getPort() != exchangePort + i) {
-                    scheduleRegisterMessage(exchangePort + i);
-                }
+        // register exchange
+        for (int i = 0; i < exchangeAmount * portJumpSize; i += portJumpSize) {
+            if (currentService.getType() != EServiceType.Exchange || currentService.getPort() != exchangePort + i) {
+                addMessageToSchedule(exchangePort + i);
             }
-
-            // Start a single thread that checks and sends register messages periodically
-            // this::checkAndSendMessages is a lambda expression for the method checkAndSendMessages
-            scheduler.scheduleAtFixedRate(this::checkAndSendMessages, 1, messageFrequency, TimeUnit.SECONDS);
         }
     }
 
-    private void scheduleRegisterMessage(int port) {
-        if (broadcastAddress != null) {
-            // TODO: address per type from config?
-            Message message = InfoMessageBuilder.createRegisterMessage(currentService, broadcastAddress, port);
-            log.trace("Scheduling message to {} on port {}", broadcastAddress, port);
-
-            // Dont send schedule immediately, store in the map instead
-            if (currentService.getPort() != port) {
-                messagesToSchedule.put(message.getReceiverPort(), message);
-            } else {
-                // if() can be considered useless as there already is a check on that in the for loops above
-                log.debug("Is this if() useless?");
-            }
-        }
+    public void scheduleMessages(ScheduledExecutorService scheduler) {
+        int messageFrequency = Integer.parseInt(configReader.getProperty("registerMessageFrequency"));
+        scheduler.scheduleAtFixedRate(this::checkAndSendMessages, 1, messageFrequency, TimeUnit.SECONDS);
     }
 
     private void checkAndSendMessages() {
@@ -119,5 +95,9 @@ public class DiscoveryService {
                 broker.sendMessage(message);
             }
         }
+    }
+
+    private void addMessageToSchedule(int port) {
+        messagesToSchedule.put(port, InfoMessageBuilder.createRegisterMessage(currentService, broadcastAddress, port));
     }
 }

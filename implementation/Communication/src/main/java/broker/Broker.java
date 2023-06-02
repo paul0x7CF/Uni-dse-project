@@ -2,6 +2,7 @@ package broker;
 
 import broker.discovery.DiscoveryService;
 import broker.discovery.IScheduleBroker;
+import broker.discovery.MessageScheduler;
 import broker.discovery.SyncService;
 import communication.LocalMessage;
 import communication.NetworkHandler;
@@ -32,6 +33,7 @@ public class Broker implements IServiceBroker, IScheduleBroker {
     private final AckHandler ackHandler;
     // not IMessageHandler because addMessageHandler is not part of the interface.
     private final MessageHandler messageHandler;
+    private final MessageScheduler messageScheduler;
     private final NetworkHandler networkHandler;
     private final ServiceRegistry serviceRegistry;
 
@@ -49,6 +51,11 @@ public class Broker implements IServiceBroker, IScheduleBroker {
         // MessageHandlers are based on the category so that other components can have their own implementations
         messageHandler = new MessageHandler();
         messageHandler.addMessageHandler(ECategory.Info, new InfoMessageHandler(this));
+
+        messageScheduler = new MessageScheduler();
+        messageScheduler.addObserver(new DiscoveryService(this));
+        messageScheduler.addObserver(new SyncService(this));
+        messageScheduler.startScheduling();
     }
 
     protected void startBroker() throws UnknownHostException {
@@ -58,10 +65,7 @@ public class Broker implements IServiceBroker, IScheduleBroker {
         // TODO: should we add a Info;GetAllServices message which returns a list of MSData?
         // TODO: Fixed IP addresses?
         //  Its always 10.102.102.x (Prosumer(17), Exchange(13), Forecast(9)) but whats the port?
-        DiscoveryService discoveryService = new DiscoveryService(this);
-        discoveryService.scheduleDiscovery();
 
-        SyncService syncService = new SyncService(this);
 
         // start receiving messages in new thread
         try {
