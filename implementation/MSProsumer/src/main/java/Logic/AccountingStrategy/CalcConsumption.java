@@ -8,6 +8,7 @@ import sendable.EServiceType;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public class CalcConsumption implements ICalAcctStrategy {
 
@@ -18,10 +19,10 @@ public class CalcConsumption implements ICalAcctStrategy {
     }
 
     @Override
-    public double calculateAccounting(List<IProsumerDevice> devices) {
+    public double calculateAccounting(List<IProsumerDevice> devices, UUID timeSlotId) {
 
         HashMap<String, Double> consumptionMap = getConsumptionMap(devices);
-        ConsumptionRequest request = new ConsumptionRequest(consumptionMap);
+        ConsumptionRequest request = new ConsumptionRequest(consumptionMap, timeSlotId);
 
 
         return 0;
@@ -31,8 +32,7 @@ public class CalcConsumption implements ICalAcctStrategy {
     private HashMap<String, Double> getConsumptionMap(List<IProsumerDevice> devices) {
         HashMap<String, Double> consumptionMap = new HashMap<>();
         devices.forEach(device ->{
-            if(device.getDevice() instanceof Consumer){
-                Consumer consumer = (Consumer) device.getDevice();
+            if(device.getDevice() instanceof Consumer consumer){
                 consumptionMap.put(consumer.getConsumerType().toString(), consumer.getAverageConsumption());
             }
         });

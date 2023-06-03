@@ -6,6 +6,7 @@ import Data.IProsumerDevice;
 import Data.Producer;
 
 import java.util.List;
+import java.util.UUID;
 
 public class CalcProduction implements ICalAcctStrategy{
 
@@ -14,7 +15,7 @@ public class CalcProduction implements ICalAcctStrategy{
         this.communication = communication;
     }
     @Override
-    public double calculateAccounting(List<IProsumerDevice> devices) {
+    public double calculateAccounting(List<IProsumerDevice> devices, UUID timeSlotId) {
 
         devices.forEach(device ->{
             if(device.getDevice() instanceof Producer){
