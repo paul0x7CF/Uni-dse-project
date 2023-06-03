@@ -1,5 +1,7 @@
 package Communication;
 
+import Communication.MessageHandling.MessageBuilder;
+import Exceptions.ServiceNotFoundRuntimeException;
 import Exceptions.UnknownMessageException;
 import Communication.MessageHandling.AuctionMessageHandler;
 import Communication.MessageHandling.ExchangeMessageHandler;
@@ -17,6 +19,7 @@ import sendable.EServiceType;
 import sendable.MSData;
 import sendable.TimeSlot;
 
+import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 
 public class Communication {
@@ -27,6 +30,8 @@ public class Communication {
     private EServiceType serviceType;
     private BrokerRunner communicationBroker;
     private Prosumer myProsumer;
+
+    private MessageBuilder messageBuilder;
 
     private BlockingQueue<TimeSlot> inputQueueTimeSlot;
 
@@ -50,6 +55,7 @@ public class Communication {
         this.outgoingMessages = outgoingMessages;
         this.myProsumer = myProsumer;
         this.serviceType = serviceType;
+        this.messageBuilder = new MessageBuilder();
         createBroker(port);
 
         logger.info("BrokerRunner initialized with Id: {} Ip: {} Port: {}", this.myMSData.getId(), this.myMSData.getAddress(), this.myMSData.getPort());
@@ -86,9 +92,19 @@ public class Communication {
     }
 
     private void sendConsumptionRequestMessage(ConsumptionRequest consumptionRequest) {
-
-        //communicationBroker.addMessageHandler(ECategory.Auction, new AuctionMessageHandler(communicationBroker, prosumer));
-
+        final Optional<Message>[] messageToSend = new Optional[]{Optional.empty()};
+        communicationBroker.getServices().forEach(service -> {
+            if (service.getType().equals(EServiceType.Consumption)) {
+                MSData receiver = service;
+                messageToSend[0] = Optional.of(this.messageBuilder.buildConsumptionForecastMessage(consumptionRequest, receiver));
+            }
+        });
+        if(messageToSend[0].isPresent()) {
+            communicationBroker.sendMessage(messageToSend[0].get());
+        }
+        else {
+            throw new ServiceNotFoundRuntimeException();
+        }
 
     }
 
