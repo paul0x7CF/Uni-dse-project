@@ -3,9 +3,6 @@ package msExchange.messageHandling;
 import Exceptions.InvalidBidException;
 import Exceptions.InvalidSellException;
 import Exceptions.InvalidTimeSlotException;
-import Validator.BidValidator;
-import Validator.SellValidator;
-import Validator.TimeSlotValidator;
 import exceptions.MessageProcessingException;
 import mainPackage.ESubCategory;
 import messageHandling.IMessageHandler;
@@ -14,6 +11,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protocol.Message;
 import sendable.*;
+import validator.BidValidator;
+import validator.IValidator;
+import validator.SellValidator;
+import validator.TimeSlotValidator;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -82,9 +83,11 @@ public class ExchangeMessageHandler implements IMessageHandler {
      * @throws InvalidSellException if the Sell is invalid
      */
     private void handleSell(Message message) throws InvalidSellException {
-        Sell sell = (Sell) message.getSendable(Sell.class);
         SellValidator sellValidator = new SellValidator();
-        sellValidator.validateSell(sell, EServiceType.ExchangeWorker);
+        sellValidator.validateSendable(message.getSendable(ISendable.class));
+
+        Sell sell = (Sell) message.getSendable(Sell.class);
+        IValidator.validateAuctionID(sell.getAuctionID(), EServiceType.ExchangeWorker);
 
         //add sell to queue
         sellQueue.add(sell);
@@ -98,9 +101,11 @@ public class ExchangeMessageHandler implements IMessageHandler {
      * @throws InvalidBidException if the Bid is invalid
      */
     private void handleBid(Message message) throws InvalidBidException {
-        Bid bid = (Bid) message.getSendable(Bid.class);
         BidValidator bidValidator = new BidValidator();
-        bidValidator.validateBid(bid, EServiceType.ExchangeWorker);
+        bidValidator.validateSendable(message.getSendable(ISendable.class));
+
+        Bid bid = (Bid) message.getSendable(Bid.class);
+        IValidator.validateAuctionID(bid.getAuctionID(), EServiceType.ExchangeWorker);
 
         //add bid to queue
         bidQueue.add(bid);

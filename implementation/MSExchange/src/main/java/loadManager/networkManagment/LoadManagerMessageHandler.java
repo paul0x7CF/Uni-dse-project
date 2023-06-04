@@ -3,8 +3,6 @@ package loadManager.networkManagment;
 import Exceptions.AllExchangesAtCapacityException;
 import Exceptions.InvalidBidException;
 import Exceptions.InvalidSellException;
-import Validator.BidValidator;
-import Validator.SellValidator;
 import exceptions.MessageProcessingException;
 import loadManager.SellInformation;
 import loadManager.exchangeManagement.ExchangeServiceInformation;
@@ -15,9 +13,11 @@ import messageHandling.IMessageHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protocol.Message;
-import sendable.Bid;
-import sendable.MSData;
-import sendable.Sell;
+import sendable.*;
+import validator.BidValidator;
+import validator.IValidator;
+import validator.SellValidator;
+import validator.TransactionValidator;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -67,21 +67,22 @@ public class LoadManagerMessageHandler implements IMessageHandler {
     }
 
     private void handleBid(Message message) throws InvalidBidException {
-        logger.trace("Handling bid");
-        Bid bid = (Bid) message.getSendable(Bid.class);
+        logger.info("Handling bid");
         BidValidator bidValidator = new BidValidator();
-
-        bidValidator.validateBid(bid, myMSData.getType());
+        bidValidator.validateSendable(message.getSendable(ISendable.class));
+        Bid bid = (Bid) message.getSendable(Bid.class);
+        IValidator.validateAuctionID(bid.getAuctionID(), myMSData.getType());
 
         prosumerManager.handleNewBid(bid);
     }
 
     private void handleSell(Message message) throws InvalidSellException {
         logger.trace("Handling sell");
-        Sell sell = (Sell) message.getSendable(Sell.class);
         SellValidator sellValidator = new SellValidator();
+        sellValidator.validateSendable(message.getSendable(ISendable.class));
 
-        sellValidator.validateSell(sell, myMSData.getType());
+        Sell sell = (Sell) message.getSendable(Sell.class);
+        IValidator.validateAuctionID(sell.getAuctionID(), myMSData.getType());
 
         AtomicReference<ExchangeServiceInformation> exchangeServiceInformation = null;
 
@@ -118,8 +119,12 @@ public class LoadManagerMessageHandler implements IMessageHandler {
     }
 
     private void handleTransaction(Message message) {
-        //TODO: Implement
         logger.info("Handling transaction");
+        TransactionValidator transactionValidator = new TransactionValidator();
+        transactionValidator.validateSendable(message.getSendable(Transaction.class));
+
+        Transaction transaction = (Transaction) message.getSendable(Transaction.class);
+        prosumerManager.handleIncomingTransaction(transaction);
     }
 
     public void addExchangeServiceInformation(ExchangeServiceInformation exchangeServiceInformation) {
