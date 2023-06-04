@@ -2,7 +2,7 @@ package loadManager.auctionManagement;
 
 import Exceptions.CommandNotPossibleException;
 import Exceptions.IllegalAuctionException;
-import Exceptions.IllegalSlotException;
+import Exceptions.InvalidTimeSlotException;
 import sendable.Bid;
 import sendable.Transaction;
 
@@ -65,15 +65,15 @@ public class AuctionManager {
         throw new IllegalAuctionException("Auction not found with ID: " + auctionId);
     }
 
-    public List<Auction> getAllAuctionsForSlot(UUID slotId) throws IllegalSlotException {
+    public List<Auction> getAllAuctionsForSlot(UUID slotId) throws InvalidTimeSlotException {
         // Returns a copy of the entire auction list
         if (auctionsPerSlot.containsKey(slotId)) {
             return auctionsPerSlot.get(slotId);
         }
-        throw new IllegalSlotException("Slot not found with ID: " + slotId);
+        throw new InvalidTimeSlotException("Slot not found", Optional.of(slotId), Optional.empty(), Optional.empty());
     }
 
-    public List<Transaction> getTransactionsForSlot(UUID slotId) throws IllegalSlotException {
+    public List<Transaction> getTransactionsForSlot(UUID slotId) throws InvalidTimeSlotException {
         if (auctionsPerSlot.containsKey(slotId)) {
             List<Transaction> transactions = new ArrayList<>();
 
@@ -100,7 +100,7 @@ public class AuctionManager {
             return transactions;
         }
         //Throw an exception if the slot is not found
-        throw new IllegalSlotException("Slot not found with ID: " + slotId);
+        throw new InvalidTimeSlotException("Slot not found with ID: " + slotId, Optional.of(slotId), Optional.empty(), Optional.empty());
     }
 
     //expected to get called, after receiving the transaction from the market
@@ -109,19 +109,19 @@ public class AuctionManager {
         auction.setBid(bid);
     }
 
-    public void endTimeSlot(UUID slotId) {
+    public void endTimeSlot(UUID slotId) throws InvalidTimeSlotException {
         if (auctionsPerSlot.containsKey(slotId)) {
             for (Auction auction : auctionsPerSlot.get(slotId)) {
                 auction.endAuction();
             }
         }
-        throw new IllegalSlotException("Slot not found with ID: " + slotId);
+        throw new InvalidTimeSlotException("Slot not found with ID: " + slotId, Optional.of(slotId), Optional.empty(), Optional.empty());
     }
 
     //Testet and is working
-    public List<UUID> getUnsatisfiedSellers(UUID timeSlotID) {
+    public List<UUID> getUnsatisfiedSellers(UUID timeSlotID) throws InvalidTimeSlotException {
         if (!auctionsPerSlot.containsKey(timeSlotID)) {
-            throw new IllegalSlotException("Slot not found with ID: " + timeSlotID);
+            throw new InvalidTimeSlotException("Slot not found with ID: " + timeSlotID, Optional.of(timeSlotID), Optional.empty(), Optional.empty());
         }
 
         List<Auction> auctions = auctionsPerSlot.get(timeSlotID);
