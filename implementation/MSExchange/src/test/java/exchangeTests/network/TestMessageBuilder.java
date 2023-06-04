@@ -2,6 +2,7 @@ package exchangeTests.network;
 
 import broker.BrokerRunner;
 import msExchange.messageHandling.MessageBuilder;
+import msExchange.networkCommunication.CommunicationExchange;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
@@ -14,6 +15,8 @@ import sendable.Transaction;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import static org.mockito.Mockito.when;
 
@@ -23,15 +26,19 @@ public class TestMessageBuilder {
     public void givenTransaction_buildMessage_expectedCorrectMessages() {
         EServiceType serviceType = EServiceType.ExchangeWorker;
         int port = 0000;
+        BlockingQueue<Message> incomingQueue = new LinkedBlockingQueue<>();
+
+        CommunicationExchange communicationMock = Mockito.mock(CommunicationExchange.class);
 
         BrokerRunner brokerMock = Mockito.mock(BrokerRunner.class);
-        MessageBuilder messageBuilder = new MessageBuilder(brokerMock);
+        MessageBuilder messageBuilder = new MessageBuilder(communicationMock);
 
         MSData sellerMSData = new MSData(UUID.randomUUID(), EServiceType.Prosumer, "", 1111);
         MSData bidderMS = new MSData(UUID.randomUUID(), EServiceType.Prosumer, "", 2222);
         List<MSData> storageMSDataList = new ArrayList<>();
         storageMSDataList.add(new MSData(UUID.randomUUID(), EServiceType.Storage, "", 3333));
 
+        when(communicationMock.getBroker()).thenReturn(brokerMock);
         when(brokerMock.getCurrentService()).thenReturn(new MSData(UUID.randomUUID(), serviceType, "", port));
         when(brokerMock.findService(sellerMSData.getId())).thenReturn(sellerMSData);
         when(brokerMock.findService(bidderMS.getId())).thenReturn(bidderMS);
@@ -46,7 +53,7 @@ public class TestMessageBuilder {
         boolean sellerExists = false;
         boolean bidderExists = false;
         boolean storageExists = false;
-       
+
         for (Message message : messages) {
             if (message.getReceiverID() == sellerMSData.getId()) {
                 sellerExists = true;

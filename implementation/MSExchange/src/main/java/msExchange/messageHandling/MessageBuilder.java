@@ -1,8 +1,8 @@
 package msExchange.messageHandling;
 
-import broker.BrokerRunner;
 import exceptions.MessageProcessingException;
 import mainPackage.ESubCategory;
+import msExchange.networkCommunication.CommunicationExchange;
 import protocol.ECategory;
 import protocol.Message;
 import protocol.MessageFactory;
@@ -14,10 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MessageBuilder {
-    private BrokerRunner broker;
+    private CommunicationExchange communicationExchange;
 
-    public MessageBuilder(BrokerRunner broker) {
-        this.broker = broker;
+    public MessageBuilder(CommunicationExchange communication) {
+        this.communicationExchange = communication;
     }
 
     public void sendErrorMessage(Message message, MessageProcessingException e) {
@@ -25,7 +25,7 @@ public class MessageBuilder {
     }
 
     public Message buildCapacityMessage() {
-        MSData receiverMS = broker.getServicesByType(EServiceType.Exchange).get(0);
+        MSData receiverMS = communicationExchange.getBroker().getServicesByType(EServiceType.Exchange).get(0);
         return senderAndReceiverTemplate(receiverMS).setCategory(ECategory.Exchange, String.valueOf(ESubCategory.Capacity)).build();
     }
 
@@ -33,10 +33,10 @@ public class MessageBuilder {
         List<Message> messages = new ArrayList<>();
         List<MSData> receiverMS = new ArrayList<>();
 
-        receiverMS.add(broker.findService(transaction.getSellerID()));
-        receiverMS.add(broker.findService(transaction.getBuyerID()));
+        receiverMS.add(communicationExchange.getBroker().findService(transaction.getSellerID()));
+        receiverMS.add(communicationExchange.getBroker().findService(transaction.getBuyerID()));
 
-        for (MSData msData : broker.getServicesByType(EServiceType.Storage)) {
+        for (MSData msData : communicationExchange.getBroker().getServicesByType(EServiceType.Storage)) {
             receiverMS.add(msData);
         }
 
@@ -54,7 +54,7 @@ public class MessageBuilder {
 
     public MessageFactory senderAndReceiverTemplate(MSData reciever) {
         MessageFactory messageFactory = new MessageFactory();
-        MSData sender = broker.getCurrentService();
+        MSData sender = communicationExchange.getBroker().getCurrentService();
         return messageFactory.setSenderID(sender.getId())
                 .setSenderAddress(sender.getAddress())
                 .setSenderPort(sender.getPort())

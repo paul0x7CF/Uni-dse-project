@@ -15,20 +15,15 @@ import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
 public class ProsumerManager {
-    AuctionManager auctionManager;
-    AverageMechanism averageMechanism;
-    AuctionProsumerTracker auctionProsumerTracker;
-    List<Bidder> bidders;
+    AuctionManager auctionManager = new AuctionManager();
+    AverageMechanism averageMechanism = new AverageMechanism();
+    AuctionProsumerTracker auctionProsumerTracker = new AuctionProsumerTracker();
+    List<Bidder> bidders = new ArrayList<>();
     BlockingQueue<Message> outgoingQueue;
 
     public ProsumerManager(BlockingQueue<Message> outgoingQueue) {
 
         this.outgoingQueue = outgoingQueue;
-
-        auctionManager = new AuctionManager();
-        averageMechanism = new AverageMechanism();
-        auctionProsumerTracker = new AuctionProsumerTracker();
-        bidders = new ArrayList<>();
     }
 
     public void handleNewBid(Bid bid) {

@@ -34,7 +34,7 @@ public class MSExchange implements Runnable {
     private void startCommunication() {
         communication = new CommunicationExchange(incomingMessages, INSTANCE_NUMBER);
         communication.startBrokerRunner();
-        messageBuilder = new MessageBuilder(communication.getBroker());
+        messageBuilder = new MessageBuilder(communication);
         messageHandler = new ExchangeMessageHandler(outgoingTransactions);
     }
 
