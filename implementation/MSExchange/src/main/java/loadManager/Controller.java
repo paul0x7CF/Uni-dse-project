@@ -2,23 +2,19 @@ package loadManager;
 
 import exceptions.MessageProcessingException;
 import loadManager.exchangeManagement.ExchangeServiceInformation;
-import loadManager.exchangeManagement.LoadManager;
 import loadManager.networkManagment.CommunicationLoadManager;
 import loadManager.networkManagment.LoadManagerMessageHandler;
-import loadManager.prosumerActionManagement.ProsumerManager;
 import loadManager.timeSlotManagement.MessageBuilderTimeSlot;
 import loadManager.timeSlotManagement.TimeSlotBuilder;
+import mainPackage.PropertyFileReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protocol.Message;
-import sendable.Bid;
-import sendable.Sell;
-import sendable.Transaction;
+import sendable.EServiceType;
+import sendable.MSData;
 
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -27,39 +23,21 @@ public class Controller implements Runnable {
     private static final Logger logger = LogManager.getLogger(Controller.class);
     private final int TIME_SLOT_DURATION;
     private final int NUM_NEW_TIME_SLOTS;
-
+    LoadManagerMessageHandler messageHandler;
     private BlockingQueue<Message> incomingQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<Message> outgoingQueue = new LinkedBlockingQueue<>();
-
-
+    private List<UUID> exchangeServiceIds = new ArrayList<>();
     private CommunicationLoadManager communication;
     private TimeSlotBuilder timeSlotBuilder;
 
-    private LoadManager loadManager = new LoadManager();
-
     public Controller() {
         //read Properties
-        Properties properties = new Properties();
-        try {
-            FileInputStream configFile = new FileInputStream("C:\\Universität\\DSE\\Gruppenprojekt\\DSE_Team_202\\implementation\\MSExchange\\src\\main\\java\\config.properties");
-            properties.load(configFile);
-            configFile.close();
-
-            TIME_SLOT_DURATION = Integer.parseInt(properties.getProperty("timeslot.duration"));
-            NUM_NEW_TIME_SLOTS = Integer.parseInt(properties.getProperty("timeslot.numNewTimeSlots"));
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        PropertyFileReader propertyFileReader = new PropertyFileReader();
+        TIME_SLOT_DURATION = Integer.parseInt(propertyFileReader.getDuration());
+        NUM_NEW_TIME_SLOTS = Integer.parseInt(propertyFileReader.getNumNewTimeSlots());
 
         timeSlotBuilder = new TimeSlotBuilder(TIME_SLOT_DURATION, NUM_NEW_TIME_SLOTS);
     }
-
-    private void startCommunication() {
-        communication = new CommunicationLoadManager(incomingQueue, outgoingQueue);
-        communication.startBrokerRunner();
-    }
-
 
     @Override
     public void run() {
@@ -71,7 +49,25 @@ public class Controller implements Runnable {
 
         while (true) {
             processIncomingQueue();
+            checkExchangeService();
         }
+    }
+
+    private void checkExchangeService() {
+        List<MSData> exchanges = communication.getBroker().getServicesByType(EServiceType.ExchangeWorker);
+        for (MSData exchange : exchanges) {
+            if (!exchangeServiceIds.contains(exchange.getId())) {
+                exchangeServiceIds.add(exchange.getId());
+                ExchangeServiceInformation exchangeServiceInformation = new ExchangeServiceInformation(exchange.getId(), exchange.getAddress(), exchange.getPort());
+                messageHandler.addExchangeServiceInformation(exchangeServiceInformation);
+            }
+        }
+    }
+
+    private void startCommunication() {
+        communication = new CommunicationLoadManager(incomingQueue, outgoingQueue);
+        communication.startBrokerRunner();
+        messageHandler = new LoadManagerMessageHandler(outgoingQueue, communication.getBroker().getCurrentService());
     }
 
     /**
@@ -99,7 +95,6 @@ public class Controller implements Runnable {
     }
 
     private void processIncomingQueue() {
-        LoadManagerMessageHandler messageHandler = new LoadManagerMessageHandler(outgoingQueue);
         Message message = (Message) incomingQueue.poll();
         if (message != null) {
             try {
@@ -108,18 +103,5 @@ public class Controller implements Runnable {
                 throw new RuntimeException(e);
             }
         }
-    }
-
-    private void handleBid(Bid bid) {
-
-    }
-
-    private void handleSell(Sell sell, UUID exchangeID) {
-    }
-
-    private void handleExchangeService(ExchangeServiceInformation exchangeServiceInformation) {
-    }
-
-    private void handleIncomingTransaction(Transaction transaction) {
     }
 }

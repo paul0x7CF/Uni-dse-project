@@ -1,6 +1,7 @@
 package loadManager.exchangeManagement;
 
 import Exceptions.AllExchangesAtCapacityException;
+import exceptions.MessageProcessingException;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
@@ -27,7 +28,6 @@ public class LoadManager {
         } else {
             throw new IllegalArgumentException("ExchangeServiceInformation is null");
         }
-
     }
 
     public void removeExchangeServiceInformation(ExchangeServiceInformation exchangeServiceInformation) {
@@ -43,7 +43,7 @@ public class LoadManager {
         }
     }
 
-    public void setExchangeAtCapacity(UUID exchangeID) {
+    public void setExchangeAtCapacity(UUID exchangeID) throws MessageProcessingException {
         // Sets the ExchangeServiceInformation object with the given ID to at capacity.
         boolean exchangeExists = false;
         if (exchangeID != null) {
@@ -54,10 +54,10 @@ public class LoadManager {
                 }
             }
         } else {
-            throw new IllegalArgumentException("ExchangeID is null");
+            throw new MessageProcessingException("ExchangeID is null");
         }
         if (!exchangeExists) {
-            throw new IllegalArgumentException("Exchange does not exist");
+            throw new MessageProcessingException("Exchange does not exist");
         }
         duplicateExchange();
     }

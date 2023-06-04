@@ -4,12 +4,12 @@ import java.util.UUID;
 
 public class ExchangeServiceInformation {
     private UUID exchangeId;
-    private int ipAddress;
+    private String ipAddress;
     private int port;
 
     private boolean atCapacity = false;
 
-    public ExchangeServiceInformation(UUID exchangeId, int ipAddress, int port) {
+    public ExchangeServiceInformation(UUID exchangeId, String ipAddress, int port) {
         this.exchangeId = exchangeId;
         this.ipAddress = ipAddress;
         this.port = port;
@@ -19,7 +19,7 @@ public class ExchangeServiceInformation {
         return exchangeId;
     }
 
-    public int getIpAddress() {
+    public String getIpAddress() {
         return ipAddress;
     }
 

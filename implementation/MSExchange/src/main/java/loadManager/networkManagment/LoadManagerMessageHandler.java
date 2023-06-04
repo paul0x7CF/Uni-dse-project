@@ -5,7 +5,6 @@ import Exceptions.InvalidBidException;
 import Exceptions.InvalidSellException;
 import Validator.BidValidator;
 import Validator.SellValidator;
-import broker.IServiceBroker;
 import exceptions.MessageProcessingException;
 import loadManager.SellInformation;
 import loadManager.exchangeManagement.ExchangeServiceInformation;
@@ -17,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protocol.Message;
 import sendable.Bid;
+import sendable.MSData;
 import sendable.Sell;
 
 import java.util.concurrent.BlockingQueue;
@@ -29,15 +29,16 @@ import java.util.concurrent.atomic.AtomicReference;
 public class LoadManagerMessageHandler implements IMessageHandler {
     private static final Logger logger = LogManager.getLogger(LoadManagerMessageHandler.class);
     private BlockingQueue<Message> outgoingQueue;
-    private IServiceBroker broker;
+    private MSData myMSData;
     private ProsumerManager prosumerManager;
     private LoadManager loadManager;
 
 
-    public LoadManagerMessageHandler(BlockingQueue<Message> outgoingQueue) {
+    public LoadManagerMessageHandler(BlockingQueue<Message> outgoingQueue, MSData msData) {
         this.outgoingQueue = outgoingQueue;
         this.prosumerManager = new ProsumerManager(outgoingQueue);
         this.loadManager = new LoadManager();
+        this.myMSData = msData;
     }
 
     @Override
@@ -70,7 +71,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
         Bid bid = (Bid) message.getSendable(Bid.class);
         BidValidator bidValidator = new BidValidator();
 
-        bidValidator.validateBid(bid, broker.getCurrentService().getType());
+        bidValidator.validateBid(bid, myMSData.getType());
 
         prosumerManager.handleNewBid(bid);
     }
@@ -80,7 +81,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
         Sell sell = (Sell) message.getSendable(Sell.class);
         SellValidator sellValidator = new SellValidator();
 
-        sellValidator.validateSell(sell, broker.getCurrentService().getType());
+        sellValidator.validateSell(sell, myMSData.getType());
 
         AtomicReference<ExchangeServiceInformation> exchangeServiceInformation = null;
 
@@ -111,13 +112,17 @@ public class LoadManagerMessageHandler implements IMessageHandler {
         prosumerManager.handleNewSell(sellInformation);
     }
 
-    private void handleCapacity(Message message) {
+    private void handleCapacity(Message message) throws MessageProcessingException {
         logger.info("Handling capacity");
+        loadManager.setExchangeAtCapacity(message.getSenderID());
     }
 
     private void handleTransaction(Message message) {
+        //TODO: Implement
         logger.info("Handling transaction");
     }
 
-
+    public void addExchangeServiceInformation(ExchangeServiceInformation exchangeServiceInformation) {
+        loadManager.addExchangeServiceInformation(exchangeServiceInformation);
+    }
 }
