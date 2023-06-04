@@ -13,10 +13,7 @@ import msExchange.auctionManagement.AuctionManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protocol.Message;
-import sendable.Bid;
-import sendable.Sell;
-import sendable.TimeSlot;
-import sendable.Transaction;
+import sendable.*;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -87,7 +84,7 @@ public class ExchangeMessageHandler implements IMessageHandler {
     private void handleSell(Message message) throws InvalidSellException {
         Sell sell = (Sell) message.getSendable(Sell.class);
         SellValidator sellValidator = new SellValidator();
-        sellValidator.validateSell(sell);
+        sellValidator.validateSell(sell, EServiceType.ExchangeWorker);
 
         //add sell to queue
         sellQueue.add(sell);
@@ -103,7 +100,7 @@ public class ExchangeMessageHandler implements IMessageHandler {
     private void handleBid(Message message) throws InvalidBidException {
         Bid bid = (Bid) message.getSendable(Bid.class);
         BidValidator bidValidator = new BidValidator();
-        bidValidator.validateBid(bid);
+        bidValidator.validateBid(bid, EServiceType.ExchangeWorker);
 
         //add bid to queue
         bidQueue.add(bid);

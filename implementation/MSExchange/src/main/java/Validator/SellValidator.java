@@ -1,14 +1,22 @@
 package Validator;
 
 import Exceptions.InvalidSellException;
+import sendable.EServiceType;
 import sendable.Sell;
 
 import java.util.Optional;
 import java.util.UUID;
 
 public final class SellValidator {
-    public static void validateSell(Sell sell) throws InvalidSellException {
-
+    public static void validateSell(Sell sell, EServiceType serviceType) throws InvalidSellException {
+        validateSellNotNull(sell);
+        validateSellerIDNotNull(sell.getSellerID());
+        validatePriceNotNegative(sell.getAskPrice(), sell.getSellerID());
+        validateVolumeNotNegative(sell.getVolume(), sell.getSellerID());
+        if (serviceType == EServiceType.ExchangeWorker) {
+            validateAuctionIDNotNull(sell.getAuctionID(), sell.getSellerID());
+        }
+        validateTimeSlotNotNull(sell.getTimeSlot(), sell.getSellerID());
     }
 
     private static void validateSellNotNull(Sell sell) throws InvalidSellException {

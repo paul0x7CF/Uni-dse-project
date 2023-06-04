@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
-public class ProsumerManager implements Runnable {
+public class ProsumerManager {
     AuctionManager auctionManager;
     AverageMechanism averageMechanism;
     AuctionProsumerTracker auctionProsumerTracker;
@@ -30,31 +30,7 @@ public class ProsumerManager implements Runnable {
         bidders = new ArrayList<>();
     }
 
-    @Override
-    public void run() {
-        while (true) {
-       /*   try {
-               // Message message = prosumerQueue.take();
-                //TODO switch the different types and call the appropriate method
-                //bid, sell - example:
-                switch(message.getType()) {
-                    case BID:
-                        handleNewBid((Bid) message);
-                        break;
-                    case SELL:
-                        handleNewSell((SellInformation) message);
-                        break;
-                    default:
-                        throw new RuntimeException("Unknown message type");
-                }
-
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }*/
-        }
-    }
-
-    private void handleNewBid(Bid bid) {
+    public void handleNewBid(Bid bid) {
 
         try {
             if (averageMechanism.isBidPriceHighEnough(bid.getPrice())) {
@@ -78,7 +54,7 @@ public class ProsumerManager implements Runnable {
 
     }
 
-    private void handleNewSell(SellInformation sell) {
+    public void handleNewSell(SellInformation sell) {
         try {
             if (averageMechanism.isAskPriceLowEnough(sell.getSell().getAskPrice())) {
                 //TODO: check if the exchange Service has been assigned before

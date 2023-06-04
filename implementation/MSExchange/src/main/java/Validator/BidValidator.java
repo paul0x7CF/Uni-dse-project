@@ -2,17 +2,20 @@ package Validator;
 
 import Exceptions.InvalidBidException;
 import sendable.Bid;
+import sendable.EServiceType;
 
 import java.util.Optional;
 import java.util.UUID;
 
 public final class BidValidator {
-    public static void validateBid(Bid bid) throws InvalidBidException {
+    public static void validateBid(Bid bid, EServiceType serviceType) throws InvalidBidException {
         validateBidNotNull(bid);
         validateBidderIDNotNull(bid.getBidderID());
         validatePriceNotNegative(bid.getPrice(), bid.getBidderID());
         validateVolumeNotNegative(bid.getVolume(), bid.getBidderID());
-        validateAuctionIDNotNull(bid.getAuctionID(), bid.getBidderID());
+        if (serviceType == EServiceType.ExchangeWorker) {
+            validateAuctionIDNotNull(bid.getAuctionID(), bid.getBidderID());
+        }
         validateTimeSlotNotNull(bid.getTimeSlot(), bid.getBidderID());
     }
 
