@@ -1,5 +1,6 @@
 package loadManager.prosumerActionManagement;
 
+import Exceptions.InvalidTimeSlotException;
 import Exceptions.PriceNotOKException;
 import loadManager.SellInformation;
 import loadManager.auctionManagement.AuctionManager;
@@ -72,7 +73,7 @@ public class ProsumerManager {
         auctionProsumerTracker.addAuction(sell.getSell().getTimeSlot(), sell.getSell().getSellerID());
     }
 
-    public void handleUnsatisfiedBiddersAndSellers(UUID timeSlotID) {
+    public void handleUnsatisfiedBiddersAndSellers(UUID timeSlotID) throws InvalidTimeSlotException {
         //Unsatisfied Bidders
         List<UUID> unsatisfiedBidders = auctionProsumerTracker.getBiddersNotSatisfied(timeSlotID);
         //TODO: handle storage for unsatisfied bidders

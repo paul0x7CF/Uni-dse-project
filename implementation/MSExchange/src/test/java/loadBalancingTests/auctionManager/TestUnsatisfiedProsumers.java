@@ -1,5 +1,6 @@
 package loadBalancingTests.auctionManager;
 
+import Exceptions.InvalidTimeSlotException;
 import loadManager.SellInformation;
 import loadManager.auctionManagement.Auction;
 import loadManager.auctionManagement.AuctionManager;
@@ -39,7 +40,12 @@ public class TestUnsatisfiedProsumers {
         }
 
         //act
-        List<UUID> actualUnsatisfiedSellers = auctionManager.getUnsatisfiedSellers(timeSlotID);
+        List<UUID> actualUnsatisfiedSellers = null;
+        try {
+            actualUnsatisfiedSellers = auctionManager.getUnsatisfiedSellers(timeSlotID);
+        } catch (InvalidTimeSlotException e) {
+            throw new RuntimeException(e);
+        }
 
         //assert
         Assertions.assertEquals(unsatisfiedSellers.size(), actualUnsatisfiedSellers.size());
@@ -63,7 +69,7 @@ public class TestUnsatisfiedProsumers {
         UUID wrongTimeSlotID = UUID.randomUUID();
 
         //act & assert
-        Assertions.assertThrows(IllegalSlotException.class, () -> auctionManager.getUnsatisfiedSellers(wrongTimeSlotID));
+        Assertions.assertThrows(InvalidTimeSlotException.class, () -> auctionManager.getUnsatisfiedSellers(wrongTimeSlotID));
     }
 
     @Test
@@ -76,7 +82,12 @@ public class TestUnsatisfiedProsumers {
         auctionManager.addNewTimeSlots(timeSlots);
 
         //act
-        List<UUID> actualUnsatisfiedSellers = auctionManager.getUnsatisfiedSellers(timeSlotID);
+        List<UUID> actualUnsatisfiedSellers = null;
+        try {
+            actualUnsatisfiedSellers = auctionManager.getUnsatisfiedSellers(timeSlotID);
+        } catch (InvalidTimeSlotException e) {
+            throw new RuntimeException(e);
+        }
 
         //assert
         Assertions.assertEquals(0, actualUnsatisfiedSellers.size());

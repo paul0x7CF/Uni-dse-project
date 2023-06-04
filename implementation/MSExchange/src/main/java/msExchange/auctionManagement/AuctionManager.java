@@ -127,7 +127,7 @@ public class AuctionManager implements Runnable {
                 throw new AuctionNotFoundException("The Auction ID doesn't exist", auctionID, Optional.empty(), Optional.of(bid));
             }
             if (!timeSlots.containsKey(bid.getTimeSlot())) {
-                throw new InvalidTimeSlotException("TimeSlot doesn't exist, therefore the UUID was invalid.", Optional.of(bid.getTimeSlot()), Optional.empty(), Optional.of(bid));
+                throw new InvalidTimeSlotException("TimeSlot doesn't exist, therefore the UUID was invalid.", Optional.of(bid.getTimeSlot()));
             }
             logger.debug("Add Bid to Auction");
             addBidToAuction(auctionID.get(), bid);
@@ -147,7 +147,7 @@ public class AuctionManager implements Runnable {
                 logger.info("Creating new Auction...");
                 addNewAuction(sell);
             } else {
-                throw new InvalidTimeSlotException("TimeSlot doesn't exist, therefore the UUID was invalid.", Optional.of(sell.getTimeSlot()), Optional.of(sell), Optional.empty());
+                throw new InvalidTimeSlotException("TimeSlot doesn't exist, therefore the UUID was invalid.", Optional.of(sell.getTimeSlot()));
             }
         }
     }

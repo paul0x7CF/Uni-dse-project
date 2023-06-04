@@ -1,11 +1,11 @@
 package msExchange.messageHandling;
 
+import Exceptions.IllegalSendableException;
 import Exceptions.InvalidBidException;
 import Exceptions.InvalidSellException;
 import Exceptions.InvalidTimeSlotException;
 import exceptions.MessageProcessingException;
 import mainPackage.ESubCategory;
-import messageHandling.IMessageHandler;
 import msExchange.auctionManagement.AuctionManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +19,7 @@ import validator.TimeSlotValidator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class ExchangeMessageHandler implements IMessageHandler {
+public class ExchangeMessageHandler {
     private static final Logger logger = LogManager.getLogger(ExchangeMessageHandler.class);
     private BlockingQueue<Bid> bidQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<Sell> sellQueue = new LinkedBlockingQueue<>();
@@ -53,7 +53,7 @@ public class ExchangeMessageHandler implements IMessageHandler {
                 default ->
                         throw new MessageProcessingException("Unknown message subCategory: " + message.getSubCategory());
             }
-        } catch (InvalidBidException | InvalidSellException | InvalidTimeSlotException e) {
+        } catch (InvalidBidException | InvalidSellException | InvalidTimeSlotException | IllegalSendableException e) {
             throw new MessageProcessingException(e.getMessage());
         }
 
@@ -82,9 +82,9 @@ public class ExchangeMessageHandler implements IMessageHandler {
      * @param message The Sell message to handle
      * @throws InvalidSellException if the Sell is invalid
      */
-    private void handleSell(Message message) throws InvalidSellException {
+    private void handleSell(Message message) throws InvalidSellException, IllegalSendableException {
         SellValidator sellValidator = new SellValidator();
-        sellValidator.validateSendable(message.getSendable(ISendable.class));
+        sellValidator.validateSendable(message.getSendable(Sell.class));
 
         Sell sell = (Sell) message.getSendable(Sell.class);
         IValidator.validateAuctionID(sell.getAuctionID(), EServiceType.ExchangeWorker);
@@ -100,9 +100,9 @@ public class ExchangeMessageHandler implements IMessageHandler {
      * @param message The Bid message to handle
      * @throws InvalidBidException if the Bid is invalid
      */
-    private void handleBid(Message message) throws InvalidBidException {
+    private void handleBid(Message message) throws InvalidBidException, IllegalSendableException {
         BidValidator bidValidator = new BidValidator();
-        bidValidator.validateSendable(message.getSendable(ISendable.class));
+        bidValidator.validateSendable(message.getSendable(Bid.class));
 
         Bid bid = (Bid) message.getSendable(Bid.class);
         IValidator.validateAuctionID(bid.getAuctionID(), EServiceType.ExchangeWorker);

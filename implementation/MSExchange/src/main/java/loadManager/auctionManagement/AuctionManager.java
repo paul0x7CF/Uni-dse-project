@@ -70,7 +70,7 @@ public class AuctionManager {
         if (auctionsPerSlot.containsKey(slotId)) {
             return auctionsPerSlot.get(slotId);
         }
-        throw new InvalidTimeSlotException("Slot not found", Optional.of(slotId), Optional.empty(), Optional.empty());
+        throw new InvalidTimeSlotException("Slot not found", Optional.of(slotId));
     }
 
     public List<Transaction> getTransactionsForSlot(UUID slotId) throws InvalidTimeSlotException {
@@ -100,7 +100,7 @@ public class AuctionManager {
             return transactions;
         }
         //Throw an exception if the slot is not found
-        throw new InvalidTimeSlotException("Slot not found with ID: " + slotId, Optional.of(slotId), Optional.empty(), Optional.empty());
+        throw new InvalidTimeSlotException("Slot not found with ID: " + slotId, Optional.of(slotId));
     }
 
     //expected to get called, after receiving the transaction from the market
@@ -115,13 +115,13 @@ public class AuctionManager {
                 auction.endAuction();
             }
         }
-        throw new InvalidTimeSlotException("Slot not found with ID: " + slotId, Optional.of(slotId), Optional.empty(), Optional.empty());
+        throw new InvalidTimeSlotException("Slot not found with ID: " + slotId, Optional.of(slotId));
     }
 
-    //Testet and is working
+    //Tested and is working
     public List<UUID> getUnsatisfiedSellers(UUID timeSlotID) throws InvalidTimeSlotException {
         if (!auctionsPerSlot.containsKey(timeSlotID)) {
-            throw new InvalidTimeSlotException("Slot not found with ID: " + timeSlotID, Optional.of(timeSlotID), Optional.empty(), Optional.empty());
+            throw new InvalidTimeSlotException("Slot not found with ID: " + timeSlotID, Optional.of(timeSlotID));
         }
 
         List<Auction> auctions = auctionsPerSlot.get(timeSlotID);

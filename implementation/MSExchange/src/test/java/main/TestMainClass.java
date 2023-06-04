@@ -9,7 +9,7 @@ public class TestMainClass {
 
     @Test
     public void givenSFlag_main_expectedNoController() {
-        String[] args = {"-s"};
+        String[] args = {"-s", "2"};
 
         // Call the main method and check if it initializes MSExchange with duplicated as true
         Main.main(args);
@@ -24,7 +24,7 @@ public class TestMainClass {
 
     @Test
     public void givenPFlag_main_expectedController() {
-        String[] args = {"-p"};
+        String[] args = {"-p", "1"};
 
         // Call the main method and check if it initializes MSExchange with duplicated as true
         Main.main(args);
