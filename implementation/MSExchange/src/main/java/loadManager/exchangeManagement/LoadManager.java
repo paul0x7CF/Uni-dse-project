@@ -1,12 +1,19 @@
 package loadManager.exchangeManagement;
 
 import Exceptions.AllExchangesAtCapacityException;
+import org.apache.maven.shared.invoker.DefaultInvocationRequest;
+import org.apache.maven.shared.invoker.DefaultInvoker;
+import org.apache.maven.shared.invoker.InvocationRequest;
+import org.apache.maven.shared.invoker.Invoker;
 
+import java.io.File;
+import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 import java.util.UUID;
 
 public class LoadManager {
-
+    private int nextServiceID = 1;
     private List<ExchangeServiceInformation> ListExchangeServices;
 
     public void addExchangeServiceInformation(ExchangeServiceInformation exchangeServiceInformation) {
@@ -52,6 +59,7 @@ public class LoadManager {
         if (!exchangeExists) {
             throw new IllegalArgumentException("Exchange does not exist");
         }
+        duplicateExchange();
     }
 
     public ExchangeServiceInformation getFreeExchange() throws AllExchangesAtCapacityException {
@@ -65,19 +73,42 @@ public class LoadManager {
         throw new AllExchangesAtCapacityException("All exchanges are at capacity");
     }
 
-    public void duplicateExchange() {
-        // Executes the jar-File again.
+    /**
+     * The method duplicateExchange takes an integer parameter serviceInstanceID, which is used as an argument in the
+     * subsequent execution of the JAR file. It begins by retrieving the project path using
+     * System.getProperty("user.dir") and sets the pomPath by appending /pom.xml to the project path.
+     * <p>
+     * An InvocationRequest object is created, and its pomFile property is set to the pomPath obtained earlier. This
+     * tells Maven which POM (Project Object Model) file to use. The goals property is set to a singleton list
+     * containing the string "exec". This specifies that the goal to be executed is the "exec" goal, which typically
+     * executes an arbitrary Java class within the Maven project.
+     * <p>
+     * A Properties object is created to hold the properties to be passed to the Maven execution. The "exec" property is
+     * set with a value of "-d" appended with the serviceInstanceID parameter. This sets the desired command-line
+     * arguments for the JAR execution.
+     * <p>
+     * An Invoker object is created, and the execute method is called with the request object as an argument. This
+     * executes the Maven invocation with the provided request, triggering the execution of the JAR file using the
+     * specified properties and goals.
+     */
+    private void duplicateExchange() {
+        // Executes the jar-File again using Maven.
         try {
-            String jarPath = "/path/to/your/jarfile.jar"; //TODO: Replace with the actual path to your JAR file
-            ProcessBuilder processBuilder = new ProcessBuilder("java", "-jar", jarPath, "-d"); //-d: duplicated
-            Process process = processBuilder.start();
-            int exitCode = process.waitFor();
+            String projectPath = System.getProperty("user.dir"); //TODO: Replace with the actual path to your JAR file
+            String pomPath = projectPath + "/pom.xml"; //TODO: Replace with the actual path to your pom.xml file
 
-            if (exitCode == 0) {
-                System.out.println("JAR file executed successfully.");
-            } else {
-                System.out.println("Failed to execute JAR file. Exit code: " + exitCode);
-            }
+            InvocationRequest request = new DefaultInvocationRequest();
+            request.setPomFile(new File(pomPath));
+            request.setGoals(Collections.singletonList("exec"));
+
+            Properties properties = new Properties();
+            properties.setProperty("exec", "-d" + ++nextServiceID);
+            request.setProperties(properties);
+
+            Invoker invoker = new DefaultInvoker();
+            invoker.execute(request);
+
+            System.out.println("JAR file executed successfully.");
         } catch (Exception e) {
             e.printStackTrace();
         }

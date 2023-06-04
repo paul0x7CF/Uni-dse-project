@@ -92,9 +92,9 @@ public class LoadManagerMessageHandler implements IMessageHandler {
                         exchangeServiceInformation.set(loadManager.getFreeExchange());
                         break; //Exits the loop, if no exception 
                     } catch (AllExchangesAtCapacityException e) {
+                        logger.debug("All exchanges at capacity, waiting for free exchange");
                         Thread.sleep(1000); //wait 1 sec, then retry
                     }
-
                 }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
