@@ -1,6 +1,7 @@
 package loadManager.networkManagment;
 
 import Exceptions.AllExchangesAtCapacityException;
+import Exceptions.IllegalSendableException;
 import Exceptions.InvalidBidException;
 import Exceptions.InvalidSellException;
 import exceptions.MessageProcessingException;
@@ -59,14 +60,14 @@ public class LoadManagerMessageHandler implements IMessageHandler {
                 default ->
                         throw new MessageProcessingException("Unknown message subCategory: " + message.getSubCategory());
             }
-        } catch (InvalidBidException | InvalidSellException e) {
+        } catch (InvalidBidException | InvalidSellException | IllegalSendableException e) {
             throw new MessageProcessingException(e.getMessage());
         }
 
         logger.trace("{} Message processed", message.getCategory());
     }
 
-    private void handleBid(Message message) throws InvalidBidException {
+    private void handleBid(Message message) throws InvalidBidException, IllegalSendableException {
         logger.info("Handling bid");
         BidValidator bidValidator = new BidValidator();
         bidValidator.validateSendable(message.getSendable(ISendable.class));
@@ -76,7 +77,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
         prosumerManager.handleNewBid(bid);
     }
 
-    private void handleSell(Message message) throws InvalidSellException {
+    private void handleSell(Message message) throws InvalidSellException, IllegalSendableException {
         logger.trace("Handling sell");
         SellValidator sellValidator = new SellValidator();
         sellValidator.validateSendable(message.getSendable(ISendable.class));
@@ -118,7 +119,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
         loadManager.setExchangeAtCapacity(message.getSenderID());
     }
 
-    private void handleTransaction(Message message) {
+    private void handleTransaction(Message message) throws IllegalSendableException {
         logger.info("Handling transaction");
         TransactionValidator transactionValidator = new TransactionValidator();
         transactionValidator.validateSendable(message.getSendable(Transaction.class));

@@ -9,7 +9,7 @@ import java.util.Optional;
 public class TransactionValidator implements IValidator {
 
     @Override
-    public void validateSendable(ISendable sendable) {
+    public void validateSendable(ISendable sendable) throws IllegalSendableException {
         IValidator.validateSendableNotNull(sendable);
 
         if (sendable instanceof Transaction) {
@@ -26,7 +26,7 @@ public class TransactionValidator implements IValidator {
         }
     }
 
-    private void validateIDNotNULL(Transaction transaction) {
+    private void validateIDNotNULL(Transaction transaction) throws IllegalSendableException {
         if (transaction.getTransactionID() == null) {
             throw new IllegalSendableException("Transaction ID shouldn't be null");
         }

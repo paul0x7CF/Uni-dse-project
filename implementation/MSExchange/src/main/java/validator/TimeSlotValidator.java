@@ -49,4 +49,6 @@ public class TimeSlotValidator {
             throw new InvalidTimeSlotException("TimeSlot start is in the past", null, null, null);
         }
     }
+
+
 }
