@@ -1,7 +1,7 @@
 package loadManager.networkManagment;
 
 import mainPackage.BaseCommunication;
-import msExchange.networkCommunication.IncomingMessageHandler;
+import mainPackage.IncomingMessageHandler;
 import protocol.ECategory;
 import protocol.Message;
 import sendable.EServiceType;
@@ -13,19 +13,11 @@ public class CommunicationLoadManager extends BaseCommunication {
 
     public CommunicationLoadManager(BlockingQueue<Message> incomingMessages, BlockingQueue<Message> outgoingMessages) {
         super(incomingMessages, EXCHANGE_TYPE, 0);
+        addMessageHandler();
     }
 
-    public void addMessageHandler(ECategory category) {
-        switch (category) {
-            case Auction -> {
-                super.addMessageHandler(category, new IncomingMessageHandler(this.incomingMessages));
-            }
-            case Exchange -> {
-                super.addMessageHandler(category, new LoadManagerMessageHandler(this.incomingMessages));
-            }
-            default -> {
-                throw new RuntimeException("Category not supported");
-            }
-        }
+    public void addMessageHandler() {
+        super.addMessageHandler(ECategory.Auction, new IncomingMessageHandler(this.incomingMessages));
+        super.addMessageHandler(ECategory.Exchange, new IncomingMessageHandler(this.incomingMessages));
     }
 }

@@ -1,4 +1,4 @@
-package msExchange.networkCommunication;
+package mainPackage;
 
 import exceptions.MessageProcessingException;
 import exceptions.RemoteException;

@@ -1,6 +1,7 @@
 package msExchange.networkCommunication;
 
 import mainPackage.BaseCommunication;
+import mainPackage.IncomingMessageHandler;
 import protocol.ECategory;
 import protocol.Message;
 import sendable.EServiceType;
