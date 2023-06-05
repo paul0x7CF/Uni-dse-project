@@ -161,8 +161,8 @@ public class Broker implements IServiceBroker, IScheduleBroker {
     }
 
     @Override
-    public void registerService(MSData msData) {
-        serviceRegistry.registerService(msData);
+    public boolean registerService(MSData msData) {
+        return serviceRegistry.registerService(msData);
     }
 
     public void unregisterService(MSData msData) {

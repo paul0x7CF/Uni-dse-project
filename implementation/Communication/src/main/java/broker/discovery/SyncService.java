@@ -10,6 +10,7 @@ import sendable.EServiceType;
 import sendable.MSData;
 import sendable.MSDataList;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -29,7 +30,9 @@ public class SyncService implements IMessageSchedulerObserver {
     @Override
     public void scheduleMessages(ScheduledExecutorService scheduler) {
         int messageFrequency = Integer.parseInt(configReader.getProperty("syncMessageFrequency"));
-        scheduler.scheduleAtFixedRate(this::sendSyncMessages, 1, messageFrequency, TimeUnit.SECONDS);
+        // TODO: add messageFrequency to this delay (currently only 1-3 seconds)
+        int delay = (int) (Math.random() * 2) + 1; // delay between 1 and 3 seconds + messageFrequency
+        scheduler.scheduleAtFixedRate(this::sendSyncMessages, delay, messageFrequency, TimeUnit.SECONDS);
     }
 
     private void sendSyncMessages() {
@@ -37,16 +40,20 @@ public class SyncService implements IMessageSchedulerObserver {
         MSDataList servicesArray = new MSDataList(currentService, services);
         for (MSData service : services) {
             if (!service.equals(broker.getCurrentService())
-                    && service.getType() == EServiceType.Consumption && currentService.getPort() == 9000) {
-                log.info("Sending sync message with size {}", services.size()); // TODO: remove
+                    && service.getType() == EServiceType.Prosumer && currentService.getPort() == 9000) {
                 log.trace("Sending sync message to {}", service.getPort());
+//                log.warn("Sending sync message with size() {}", servicesArray.getMsDataList().size());
                 Message message = InfoMessageBuilder.createSyncMessage(currentService, service, servicesArray);
+                // TODO: This does not get unmarshalled correctly. It is the List<MSData> that is the problem.
+                // broker.sendMessage(message);
+
+/*
                 byte[] bytes = Marshaller.marshal(message);
                 String s = new String(bytes);
                 log.warn("Marshalling: {}", s);
                 log.warn("Unmarshalling: {}", Marshaller.unmarshal(bytes).getPayload());
+*/
 
-                // broker.sendMessage(message);
             }
         }
     }

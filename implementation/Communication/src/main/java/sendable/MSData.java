@@ -1,13 +1,12 @@
 package sendable;
 
-import java.time.LocalDateTime;
+import java.io.Serializable;
 import java.util.UUID;
-import com.google.gson.Gson;
 
 /**
  * This class holds the information about other microservices in the network.
  */
-public class MSData implements ISendable {
+public class MSData implements ISendable, Serializable {
     private final UUID id;
     private final EServiceType type;
     private final String address;

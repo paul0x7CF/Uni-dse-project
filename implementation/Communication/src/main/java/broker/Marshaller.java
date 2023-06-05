@@ -23,10 +23,15 @@ public class Marshaller {
 
     public static Message unmarshal(byte[] bytes) {
         String s = new String(bytes);
+        if (s.contains("Sync")) {
+//            log.warn("#".repeat(20));
+//            log.warn("Marshaller unmarshalling the message: {}", s);
+//            log.warn("#".repeat(25));
+        }
         ByteArrayInputStream byteArrayIS = new ByteArrayInputStream(bytes);
-        ObjectInputStream objectIS = null;
+
         try {
-            objectIS = new ObjectInputStream(byteArrayIS);
+            ObjectInputStream objectIS = new ObjectInputStream(byteArrayIS);
             return (Message) objectIS.readObject();
         } catch (IOException | ClassNotFoundException e) {
             log.error("Could not unmarshal message", e);

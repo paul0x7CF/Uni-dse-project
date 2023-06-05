@@ -39,6 +39,8 @@ public class DiscoveryService implements IMessageSchedulerObserver {
         int consumptionPort = Integer.parseInt(configReader.getProperty("consumptionPort"));
         int consumptionAmount = Integer.parseInt(configReader.getProperty("consumptionAmount"));
 
+        // ExchangeWorker does not need to register itself to the other services because
+        // they will only talk through the LoadManager.
         if (currentService.getType() != EServiceType.ExchangeWorker) {
             // register prosumer
             for (int i = 0; i < prosumerAmount * portJumpSize; i += portJumpSize) {
@@ -79,7 +81,8 @@ public class DiscoveryService implements IMessageSchedulerObserver {
 
     public void scheduleMessages(ScheduledExecutorService scheduler) {
         int messageFrequency = Integer.parseInt(configReader.getProperty("registerMessageFrequency"));
-        scheduler.scheduleAtFixedRate(this::checkAndSendMessages, 1, messageFrequency, TimeUnit.SECONDS);
+        long delay = (long) (Math.random() * 2) + 1;
+        scheduler.scheduleAtFixedRate(this::checkAndSendMessages, delay, messageFrequency, TimeUnit.SECONDS);
     }
 
     private void checkAndSendMessages() {

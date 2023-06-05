@@ -1,14 +1,15 @@
 package sendable;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class MSDataList implements ISendable {
+public class MSDataList implements ISendable, Serializable {
     private final MSData sender;
     private final List<MSData> msDataList;
 
-    public MSDataList(MSData sender, List<MSData> msDataArray) {
+    public MSDataList(MSData sender, List<MSData> msDataList) {
         this.sender = sender;
-        this.msDataList = msDataArray;
+        this.msDataList = msDataList;
     }
 
     public MSData getSender() {

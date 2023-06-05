@@ -9,6 +9,7 @@ import sendable.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class InfoMessageHandler implements IMessageHandler {
@@ -129,12 +130,13 @@ public class InfoMessageHandler implements IMessageHandler {
             return;
         }
         if (sync instanceof MSDataList msToSync) {
+            if (broker.registerService(msToSync.getSender())) {
+                log.warn("Registered new service through sync");
+            }
             if (msToSync.isEmpty()) {
-                MSDataList allServices = new MSDataList(currentService, broker.getServices());
-                log.trace("{} sending Sync with {} services", currentService.getPort(), allServices.getMsDataList().size());
-                Message response = InfoMessageBuilder.createSyncMessage(currentService, msToSync.getSender(), allServices);
-                broker.sendMessage(response);
+                log.warn("Received Sync with empty list");
             } else {
+                log.warn("Received Sync with {} services", msToSync.getMsDataList().size());
                 log.trace("{} received Sync with {} services", currentService.getPort(), msToSync.getMsDataList().size());
                 for (MSData msData : msToSync.getMsDataList()) {
                     broker.registerService(msData);

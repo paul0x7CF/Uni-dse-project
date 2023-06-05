@@ -17,11 +17,24 @@ public class ServiceRegistry {
         this.currentService = currentService;
     }
 
-    public void registerService(MSData msData) {
+    /**
+     * Registers a service in the registry. Return whether the service was registered or not.
+     *
+     * @param msData
+     * @return true if the service was registered, false if the service was not.
+     */
+    public boolean registerService(MSData msData) {
         if (msData.equals(currentService) || findService(msData) != null) {
             log.trace("{}, Service already registered: {}, equals: {}", currentService.getType(), msData.getId(), msData.equals(currentService));
-            return;
+            return false;
         }
+
+        // ExchangeWorker only registers Exchange because they only talk through the LoadManager.
+        if (currentService.getType() == EServiceType.ExchangeWorker && msData.getType() != EServiceType.Exchange) {
+            log.trace("{}, ExchangeWorker only registers Exchange", currentService.getType());
+            return false;
+        }
+
         log.info("{} registering service {}", currentService.getPort(), msData.getPort());
 
         EServiceType serviceType = msData.getType();
@@ -35,6 +48,7 @@ public class ServiceRegistry {
         if (!services.contains(msData)) {
             services.add(msData);
         }
+        return true;
     }
 
     public void unregisterService(MSData msData) {

@@ -10,7 +10,7 @@ import sendable.ErrorInfo;
 import sendable.MSData;
 import sendable.MSDataList;
 
-public class InfoMessageBuilder { // TODO: rename to InfoMessageTemplate
+public class InfoMessageBuilder {
     private static final Logger log = LogManager.getLogger(InfoMessageBuilder.class);
 
     private InfoMessageBuilder() {
@@ -59,9 +59,9 @@ public class InfoMessageBuilder { // TODO: rename to InfoMessageTemplate
         return ackMessage;
     }
 
-    public static Message createSyncMessage(MSData sender, MSData receiver, MSDataList array) {
+    public static Message createSyncMessage(MSData sender, MSData receiver, MSDataList msDataList) {
         MessageFactory messageFactory = senderAndReceiverTemplate(sender, receiver);
-        messageFactory.setCategory(ECategory.Info, "Sync").setPayload(array);
+        messageFactory.setCategory(ECategory.Info, "Sync").setPayload(msDataList);
         log.trace("Sync message created");
         return messageFactory.build();
     }
