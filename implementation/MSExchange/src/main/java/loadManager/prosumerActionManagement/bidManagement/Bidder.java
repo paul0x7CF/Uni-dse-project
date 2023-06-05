@@ -1,6 +1,7 @@
 package loadManager.prosumerActionManagement.bidManagement;
 
 import loadManager.auctionManagement.AuctionManager;
+import loadManager.networkManagment.MessageContent;
 import loadManager.prosumerActionManagement.AuctionProsumerTracker;
 import protocol.Message;
 import sendable.Bid;
@@ -19,12 +20,12 @@ public class Bidder {
     private Map<UUID, AuctionFindingAlgorithm> auctionFinderPerSlot;
     private UUID bidderID;
     private int maxThreadPools;
-    private BlockingQueue<Message> outgoingQueue;
+    private BlockingQueue<MessageContent> outgoingQueue;
     private AuctionManager auctionManager;
     private AuctionProsumerTracker auctionProsumerTracker;
     private ExecutorService executorService;
 
-    public Bidder(AuctionManager auctionManager, UUID bidderID, BlockingQueue<Message> outogingMessage, AuctionProsumerTracker auctionProsumerTracker) {
+    public Bidder(AuctionManager auctionManager, UUID bidderID, BlockingQueue<MessageContent> outogingMessage, AuctionProsumerTracker auctionProsumerTracker) {
         this.auctionManager = auctionManager;
         this.bidderID = bidderID;
         this.outgoingQueue = outogingMessage;

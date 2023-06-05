@@ -4,6 +4,7 @@ import exceptions.MessageProcessingException;
 import loadManager.exchangeManagement.ExchangeServiceInformation;
 import loadManager.networkManagment.CommunicationLoadManager;
 import loadManager.networkManagment.LoadManagerMessageHandler;
+import loadManager.networkManagment.MessageContent;
 import loadManager.timeSlotManagement.MessageBuilderTimeSlot;
 import loadManager.timeSlotManagement.TimeSlotBuilder;
 import mainPackage.PropertyFileReader;
@@ -25,7 +26,7 @@ public class Controller implements Runnable {
     private static final Logger logger = LogManager.getLogger(Controller.class);
     LoadManagerMessageHandler messageHandler;
     private BlockingQueue<Message> incomingQueue = new LinkedBlockingQueue<>();
-    private BlockingQueue<Message> outgoingQueue = new LinkedBlockingQueue<>();
+    private BlockingQueue<MessageContent> outgoingQueue = new LinkedBlockingQueue<>();
     private List<UUID> exchangeServiceIds = new ArrayList<>();
     private CommunicationLoadManager communication;
     private TimeSlotBuilder timeSlotBuilder = new TimeSlotBuilder();

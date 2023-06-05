@@ -4,6 +4,7 @@ import Exceptions.InvalidTimeSlotException;
 import Exceptions.PriceNotOKException;
 import loadManager.SellInformation;
 import loadManager.auctionManagement.AuctionManager;
+import loadManager.networkManagment.MessageContent;
 import loadManager.prosumerActionManagement.bidManagement.Bidder;
 import protocol.Message;
 import sendable.Bid;
@@ -19,9 +20,9 @@ public class ProsumerManager {
     AverageMechanism averageMechanism = new AverageMechanism();
     AuctionProsumerTracker auctionProsumerTracker = new AuctionProsumerTracker();
     List<Bidder> bidders = new ArrayList<>();
-    BlockingQueue<Message> outgoingQueue;
+    BlockingQueue<MessageContent> outgoingQueue;
 
-    public ProsumerManager(BlockingQueue<Message> outgoingQueue) {
+    public ProsumerManager(BlockingQueue<MessageContent> outgoingQueue) {
 
         this.outgoingQueue = outgoingQueue;
     }

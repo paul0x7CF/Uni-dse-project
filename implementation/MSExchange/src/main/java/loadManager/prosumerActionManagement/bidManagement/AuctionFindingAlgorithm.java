@@ -2,6 +2,7 @@ package loadManager.prosumerActionManagement.bidManagement;
 
 import loadManager.auctionManagement.Auction;
 import loadManager.auctionManagement.AuctionManager;
+import loadManager.networkManagment.MessageContent;
 import loadManager.prosumerActionManagement.AuctionProsumerTracker;
 import protocol.Message;
 import sendable.Bid;
@@ -12,11 +13,11 @@ import java.util.concurrent.BlockingQueue;
 
 public class AuctionFindingAlgorithm implements Runnable {
     private Bid bid;
-    private BlockingQueue<Message> outgoingQueue;
+    private BlockingQueue<MessageContent> outgoingQueue;
     private AuctionManager auctionManager;
     private AuctionProsumerTracker auctionProsumerTracker;
 
-    public AuctionFindingAlgorithm(Bid bid, AuctionManager auctionManager, BlockingQueue<Message> outgoingQueue, AuctionProsumerTracker auctionProsumerTracker) {
+    public AuctionFindingAlgorithm(Bid bid, AuctionManager auctionManager, BlockingQueue<MessageContent> outgoingQueue, AuctionProsumerTracker auctionProsumerTracker) {
         this.bid = bid;
         this.auctionManager = auctionManager;
         this.outgoingQueue = outgoingQueue;

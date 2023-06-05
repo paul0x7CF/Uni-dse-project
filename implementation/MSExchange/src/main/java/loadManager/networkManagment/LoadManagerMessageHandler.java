@@ -29,13 +29,13 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class LoadManagerMessageHandler implements IMessageHandler {
     private static final Logger logger = LogManager.getLogger(LoadManagerMessageHandler.class);
-    private BlockingQueue<Message> outgoingQueue;
+    private BlockingQueue<MessageContent> outgoingQueue;
     private MSData myMSData;
     private ProsumerManager prosumerManager;
     private LoadManager loadManager;
 
 
-    public LoadManagerMessageHandler(BlockingQueue<Message> outgoingQueue, MSData msData) {
+    public LoadManagerMessageHandler(BlockingQueue<MessageContent> outgoingQueue, MSData msData) {
         this.outgoingQueue = outgoingQueue;
         this.prosumerManager = new ProsumerManager(outgoingQueue);
         this.loadManager = new LoadManager();
