@@ -55,19 +55,20 @@ public class MSExchange implements Runnable {
             processIncomingMessages();
             processOutgoingTransactions();
         }
-
     }
 
     private void processIncomingMessages() {
         checkCapacity();
         Message message = incomingMessages.poll();
         if (message != null) {
-            logger.debug("Received message: " + message);
-            try {
-                messageHandler.handleMessage(message);
-            } catch (MessageProcessingException e) {
-                messageBuilder.sendErrorMessage(message, e);
-                logger.error("Message wasn't correct " + message.getSubCategory() + ", problem: " + e.getMessage());
+            if (message.getReceiverID().equals(communication.getBroker().getCurrentService().getId())) {
+                logger.debug("Received message: " + message);
+                try {
+                    messageHandler.handleMessage(message);
+                } catch (MessageProcessingException e) {
+                    messageBuilder.sendErrorMessage(message, e);
+                    logger.error("Message wasn't correct " + message.getSubCategory() + ", problem: " + e.getMessage());
+                }
             }
         }
     }

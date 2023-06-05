@@ -69,10 +69,12 @@ public class LoadManagerMessageHandler implements IMessageHandler {
 
     private void handleBid(Message message) throws InvalidBidException, IllegalSendableException {
         logger.info("Handling bid");
+
         BidValidator bidValidator = new BidValidator();
         bidValidator.validateSendable(message.getSendable(ISendable.class));
         Bid bid = (Bid) message.getSendable(Bid.class);
         IValidator.validateAuctionID(bid.getAuctionID(), myMSData.getType());
+        logger.trace("Bid is valid");
 
         prosumerManager.handleNewBid(bid);
     }

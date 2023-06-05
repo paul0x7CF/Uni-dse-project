@@ -19,39 +19,39 @@ public class PropertyFileReader {
         }
     }
 
-    public static String getNumNewTimeSlots() {
+    public String getNumNewTimeSlots() {
         return getProperty("timeslot.numNewTimeSlots");
     }
 
-    public static String getMaxNumTimeSlotSaved() {
+    public String getMaxNumTimeSlotSaved() {
         return getProperty("timeslot.maxNumTimeSlotSaved");
     }
 
-    public static String getDuration() {
+    public String getDuration() {
         return getProperty("timeslot.duration");
     }
 
-    public static String getLoadManagerServiceType() {
+    public String getLoadManagerServiceType() {
         return getProperty("loadManager.serviceType");
     }
 
-    public static String getMaxAuctionFindingAlgorithm() {
+    public String getMaxAuctionFindingAlgorithm() {
         return getProperty("prosumer.maxAuctionFindingAlgorithm");
     }
 
-    public static String getExchangeServiceType() {
+    public String getExchangeServiceType() {
         return getProperty("exchange.serviceType");
     }
 
-    public static String getCheckDuration() {
+    public String getCheckDuration() {
         return getProperty("exchange.checkDuration");
     }
 
-    public static String getMinutesToLiveAfterExpiring() {
+    public String getMinutesToLiveAfterExpiring() {
         return getProperty("exchange.minutesToLiveAfterExpiring");
     }
 
-    public static String getCapacity() {
+    public String getCapacity() {
         return getProperty("exchange.capacity");
     }
 

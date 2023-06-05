@@ -4,9 +4,9 @@ import Exceptions.InvalidTimeSlotException;
 import Exceptions.PriceNotOKException;
 import loadManager.SellInformation;
 import loadManager.auctionManagement.AuctionManager;
+import loadManager.networkManagment.EBuildCategory;
 import loadManager.networkManagment.MessageContent;
 import loadManager.prosumerActionManagement.bidManagement.Bidder;
-import protocol.Message;
 import sendable.Bid;
 import sendable.Transaction;
 
@@ -41,11 +41,13 @@ public class ProsumerManager {
                 bidders.add(newBidder);
                 newBidder.handleBid(bid);
             } else {
-                //TODO send message to prosumer that his bid was not high enough
-
+                bid.setPrice(averageMechanism.getAveragePrice());
+                outgoingQueue.put(new MessageContent(bid, EBuildCategory.BidToProsumer));
             }
         } catch (PriceNotOKException e) {
             //TODO send messagte to prosumer that his bid was negativ or zero
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
 
 

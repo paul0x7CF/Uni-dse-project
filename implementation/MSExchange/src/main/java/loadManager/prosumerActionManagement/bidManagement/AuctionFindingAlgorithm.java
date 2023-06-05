@@ -4,7 +4,6 @@ import loadManager.auctionManagement.Auction;
 import loadManager.auctionManagement.AuctionManager;
 import loadManager.networkManagment.MessageContent;
 import loadManager.prosumerActionManagement.AuctionProsumerTracker;
-import protocol.Message;
 import sendable.Bid;
 
 import java.util.List;
@@ -27,8 +26,22 @@ public class AuctionFindingAlgorithm implements Runnable {
     @Override
     public void run() {
         while (true) {
-
+            if (auctionProsumerTracker.getFirstInAuction(bid.getBidderID(), bid.getTimeSlot()).isEmpty()) {
+                //TODO: Algorithm
+                findAuctionsToCoverVolume();
+            } else {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
+    }
+
+    private void findAuctionsToCoverVolume() {
+        List<Auction> bidderAuctions = getBiddersAuctions();
+
     }
 
     public List<Auction> getBiddersAuctions() {

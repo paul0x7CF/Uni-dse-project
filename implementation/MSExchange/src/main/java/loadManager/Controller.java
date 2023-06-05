@@ -74,7 +74,6 @@ public class Controller implements Runnable {
         communicationThread.start();
     }
 
-
     private void addNewTimeSlotsPeriodically() {
         PropertyFileReader propertyFileReader = new PropertyFileReader();
         int slotDuration = Integer.parseInt(propertyFileReader.getDuration());
@@ -102,10 +101,12 @@ public class Controller implements Runnable {
     private void processIncomingQueue() {
         Message message = (Message) incomingQueue.poll();
         if (message != null) {
-            try {
-                messageHandler.handleMessage(message);
-            } catch (MessageProcessingException e) {
-                throw new RuntimeException(e);
+            if (message.getReceiverID().equals(communication.getBroker().getCurrentService().getId())) {
+                try {
+                    messageHandler.handleMessage(message);
+                } catch (MessageProcessingException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
