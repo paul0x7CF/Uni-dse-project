@@ -67,6 +67,7 @@ public class ExchangeMessageHandler {
      * @throws InvalidTimeSlotException if the TimeSlot is invalid
      */
     private void handleTimeSlot(Message message) throws InvalidTimeSlotException {
+        logger.trace("Handling TimeSlot message");
         TimeSlot timeSlot = (TimeSlot) message.getSendable(TimeSlot.class);
         TimeSlotValidator timeSlotValidator = new TimeSlotValidator();
         timeSlotValidator.validateTimeSlot(timeSlot, auctionManager.getTimeSlots());
