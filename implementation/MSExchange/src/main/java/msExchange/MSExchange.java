@@ -33,35 +33,42 @@ public class MSExchange implements Runnable {
 
     private void startCommunication() {
         communication = new CommunicationExchange(incomingMessages, INSTANCE_NUMBER);
-        communication.startBrokerRunner();
-        messageBuilder = new MessageBuilder(communication);
-        messageHandler = new ExchangeMessageHandler(outgoingTransactions);
+        Thread communicationThread = new Thread(() -> {
+            communication.startBrokerRunner();
+        }, "ExchangeCommunicationThread");
+        communicationThread.start();
+
     }
 
     //TODO: think about deleting a service
     @Override
     public void run() {
-        Thread communicationThread = new Thread(this::startCommunication);
-        communicationThread.start();
+        startCommunication();
+
+        messageBuilder = new MessageBuilder(communication);
+        logger.trace("Message builder initialized");
+        messageHandler = new ExchangeMessageHandler(outgoingTransactions);
+        logger.trace("message Handler initialized");
 
 
         while (true) {
             processIncomingMessages();
             processOutgoingTransactions();
         }
-
     }
 
     private void processIncomingMessages() {
         checkCapacity();
         Message message = incomingMessages.poll();
         if (message != null) {
-            logger.debug("Received message: " + message);
-            try {
-                messageHandler.handleMessage(message);
-            } catch (MessageProcessingException e) {
-                messageBuilder.sendErrorMessage(message, e);
-                logger.error("SubCategory was incorrect: " + message);
+            if (message.getReceiverID().equals(communication.getBroker().getCurrentService().getId())) {
+                logger.debug("Received message: " + message);
+                try {
+                    messageHandler.handleMessage(message);
+                } catch (MessageProcessingException e) {
+                    messageBuilder.sendErrorMessage(message, e);
+                    logger.error("Message wasn't correct " + message.getSubCategory() + ", problem: " + e.getMessage());
+                }
             }
         }
     }

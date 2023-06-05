@@ -11,7 +11,7 @@ import java.util.concurrent.BlockingQueue;
 public class CommunicationLoadManager extends BaseCommunication {
     private static final EServiceType EXCHANGE_TYPE = EServiceType.Exchange;
 
-    public CommunicationLoadManager(BlockingQueue<Message> incomingMessages, BlockingQueue<Message> outgoingMessages) {
+    public CommunicationLoadManager(BlockingQueue<Message> incomingMessages) {
         super(incomingMessages, EXCHANGE_TYPE, 0);
         addMessageHandler();
     }

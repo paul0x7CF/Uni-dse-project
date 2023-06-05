@@ -6,7 +6,7 @@ import java.util.UUID;
 public class Sell implements ISendable {
     private final UUID sellerID;
     private final double volume;
-    private final double askPrice;
+    private double askPrice;
     private UUID auctionID;
     private UUID timeSlot;
 
@@ -31,6 +31,10 @@ public class Sell implements ISendable {
 
     public double getAskPrice() {
         return askPrice;
+    }
+
+    public void setAskPrice(double askPrice) {
+        this.askPrice = askPrice;
     }
 
     public Optional<UUID> getAuctionID() {

@@ -29,13 +29,13 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class LoadManagerMessageHandler implements IMessageHandler {
     private static final Logger logger = LogManager.getLogger(LoadManagerMessageHandler.class);
-    private BlockingQueue<Message> outgoingQueue;
+    private BlockingQueue<MessageContent> outgoingQueue;
     private MSData myMSData;
     private ProsumerManager prosumerManager;
     private LoadManager loadManager;
 
 
-    public LoadManagerMessageHandler(BlockingQueue<Message> outgoingQueue, MSData msData) {
+    public LoadManagerMessageHandler(BlockingQueue<MessageContent> outgoingQueue, MSData msData) {
         this.outgoingQueue = outgoingQueue;
         this.prosumerManager = new ProsumerManager(outgoingQueue);
         this.loadManager = new LoadManager();
@@ -69,10 +69,12 @@ public class LoadManagerMessageHandler implements IMessageHandler {
 
     private void handleBid(Message message) throws InvalidBidException, IllegalSendableException {
         logger.info("Handling bid");
+
         BidValidator bidValidator = new BidValidator();
         bidValidator.validateSendable(message.getSendable(ISendable.class));
         Bid bid = (Bid) message.getSendable(Bid.class);
         IValidator.validateAuctionID(bid.getAuctionID(), myMSData.getType());
+        logger.trace("Bid is valid");
 
         prosumerManager.handleNewBid(bid);
     }
@@ -84,6 +86,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
 
         Sell sell = (Sell) message.getSendable(Sell.class);
         IValidator.validateAuctionID(sell.getAuctionID(), myMSData.getType());
+        logger.trace("Sell is valid");
 
         AtomicReference<ExchangeServiceInformation> exchangeServiceInformation = null;
 

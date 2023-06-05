@@ -8,14 +8,11 @@ import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.Invoker;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 
 public class LoadManager {
     private int nextServiceID = 1;
-    private List<ExchangeServiceInformation> ListExchangeServices;
+    private List<ExchangeServiceInformation> ListExchangeServices = Collections.synchronizedList(new ArrayList<>());
 
     public void addExchangeServiceInformation(ExchangeServiceInformation exchangeServiceInformation) {
         // Adds a new MicroserviceInformation object to the list.

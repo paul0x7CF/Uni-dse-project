@@ -33,6 +33,10 @@ public class Bid implements ISendable {
         return price;
     }
 
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
     public Optional<UUID> getAuctionID() {
         return Optional.ofNullable(auctionID);
     }

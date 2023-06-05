@@ -31,12 +31,12 @@ public class Main {
 
 
         msExchange = new MSExchange(duplicated, instanceNumber);
-        Thread exchangeThread = new Thread(msExchange);
+        Thread exchangeThread = new Thread(msExchange, "ExchangeThread");
         exchangeThread.start();
 
         if (!duplicated) {
             controller = new Controller();
-            Thread controllerThread = new Thread(controller);
+            Thread controllerThread = new Thread(controller, "LoadManagerThread");
             controllerThread.start();
         }
     }
