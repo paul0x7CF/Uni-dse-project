@@ -28,7 +28,6 @@ public class ProsumerManager {
     BlockingQueue<MessageContent> outgoingQueue;
 
     public ProsumerManager(BlockingQueue<MessageContent> outgoingQueue) {
-
         this.outgoingQueue = outgoingQueue;
     }
 
@@ -112,4 +111,11 @@ public class ProsumerManager {
 
     }
 
+    public AuctionManager getAuctionManager() {
+        return auctionManager;
+    }
+
+    public AuctionProsumerTracker getAuctionProsumerTracker() {
+        return auctionProsumerTracker;
+    }
 }
