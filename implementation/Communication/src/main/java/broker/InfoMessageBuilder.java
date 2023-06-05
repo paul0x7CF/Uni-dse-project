@@ -8,7 +8,7 @@ import protocol.MessageFactory;
 import sendable.AckInfo;
 import sendable.ErrorInfo;
 import sendable.MSData;
-import sendable.MSDataArray;
+import sendable.MSDataList;
 
 public class InfoMessageBuilder { // TODO: rename to InfoMessageTemplate
     private static final Logger log = LogManager.getLogger(InfoMessageBuilder.class);
@@ -59,7 +59,7 @@ public class InfoMessageBuilder { // TODO: rename to InfoMessageTemplate
         return ackMessage;
     }
 
-    public static Message createSyncMessage(MSData sender, MSData receiver, MSDataArray array) {
+    public static Message createSyncMessage(MSData sender, MSData receiver, MSDataList array) {
         MessageFactory messageFactory = senderAndReceiverTemplate(sender, receiver);
         messageFactory.setCategory(ECategory.Info, "Sync").setPayload(array);
         log.trace("Sync message created");

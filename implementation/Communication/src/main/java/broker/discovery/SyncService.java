@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 import protocol.Message;
 import sendable.EServiceType;
 import sendable.MSData;
-import sendable.MSDataArray;
+import sendable.MSDataList;
 
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
@@ -34,7 +34,7 @@ public class SyncService implements IMessageSchedulerObserver {
 
     private void sendSyncMessages() {
         List<MSData> services = broker.getServices();
-        MSDataArray servicesArray = new MSDataArray(currentService, services.toArray(new MSData[0]));
+        MSDataList servicesArray = new MSDataList(currentService, services);
         for (MSData service : services) {
             if (!service.equals(broker.getCurrentService())
                     && service.getType() == EServiceType.Consumption && currentService.getPort() == 9000) {
@@ -43,10 +43,10 @@ public class SyncService implements IMessageSchedulerObserver {
                 Message message = InfoMessageBuilder.createSyncMessage(currentService, service, servicesArray);
                 byte[] bytes = Marshaller.marshal(message);
                 String s = new String(bytes);
-                // log.warn("Marshalling: {}", s);
-                // log.warn("Unmarshalling: {}", Marshaller.unmarshal(bytes).getPayload());
+                log.warn("Marshalling: {}", s);
+                log.warn("Unmarshalling: {}", Marshaller.unmarshal(bytes).getPayload());
 
-                broker.sendMessage(message);
+                // broker.sendMessage(message);
             }
         }
     }

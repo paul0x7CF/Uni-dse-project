@@ -122,27 +122,27 @@ public class InfoMessageHandler implements IMessageHandler {
     }
 
     private void handleSync(Message message) throws MessageProcessingException {
-        // Sync has MSDataArray as payload
-        ISendable sync = message.getSendable(MSDataArray.class);
+        // Sync has MSDataList as payload
+        ISendable sync = message.getSendable(MSDataList.class);
         if (sync == null) {
             log.error("Received Sync with null payload");
             return;
         }
-        if (sync instanceof MSDataArray msToSync) {
+        if (sync instanceof MSDataList msToSync) {
             if (msToSync.isEmpty()) {
-                MSDataArray allServices = new MSDataArray(currentService, broker.getServices().toArray(new MSData[0]));
-                log.trace("{} sending Sync with {} services", currentService.getPort(), allServices.getMsDataArray().length);
+                MSDataList allServices = new MSDataList(currentService, broker.getServices());
+                log.trace("{} sending Sync with {} services", currentService.getPort(), allServices.getMsDataList().size());
                 Message response = InfoMessageBuilder.createSyncMessage(currentService, msToSync.getSender(), allServices);
                 broker.sendMessage(response);
             } else {
-                log.trace("{} received Sync with {} services", currentService.getPort(), msToSync.getMsDataArray().length);
-                for (MSData msData : msToSync.getMsDataArray()) {
+                log.trace("{} received Sync with {} services", currentService.getPort(), msToSync.getMsDataList().size());
+                for (MSData msData : msToSync.getMsDataList()) {
                     broker.registerService(msData);
                 }
             }
         } else {
             log.error("Received Sync with wrong payload");
-            throw new MessageProcessingException("Payload is not of type MSDataArray");
+            throw new MessageProcessingException("Payload is not of type MSDataList");
         }
     }
 }
