@@ -33,9 +33,11 @@ public class MSExchange implements Runnable {
 
     private void startCommunication() {
         communication = new CommunicationExchange(incomingMessages, INSTANCE_NUMBER);
-        communication.startBrokerRunner();
-        messageBuilder = new MessageBuilder(communication);
-        messageHandler = new ExchangeMessageHandler(outgoingTransactions);
+        Thread communicationThread = new Thread(() -> {
+            communication.startBrokerRunner();
+        });
+        communicationThread.start();
+
     }
 
     //TODO: think about deleting a service
@@ -43,6 +45,12 @@ public class MSExchange implements Runnable {
     public void run() {
         Thread communicationThread = new Thread(this::startCommunication);
         communicationThread.start();
+
+
+        messageBuilder = new MessageBuilder(communication);
+        logger.trace("Message builder initialized");
+        messageHandler = new ExchangeMessageHandler(outgoingTransactions);
+        logger.trace("message Handler initialized");
 
 
         while (true) {
