@@ -3,14 +3,15 @@ package loadManager.prosumerActionManagement;
 import Exceptions.InvalidTimeSlotException;
 import Exceptions.PriceNotOKException;
 import loadManager.SellInformation;
+import loadManager.auctionManagement.Auction;
 import loadManager.auctionManagement.AuctionManager;
 import loadManager.networkManagment.EBuildCategory;
-import loadManager.networkManagment.LoadManagerMessageHandler;
 import loadManager.networkManagment.MessageContent;
 import loadManager.prosumerActionManagement.bidManagement.Bidder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sendable.Bid;
+import sendable.Sell;
 import sendable.Transaction;
 
 import java.util.ArrayList;
@@ -60,19 +61,39 @@ public class ProsumerManager {
     public void handleNewSell(SellInformation sell) {
         try {
             if (averageMechanism.isAskPriceLowEnough(sell.getSell().getAskPrice())) {
-                //TODO: check if the exchange Service has been assigned before
                 startNewAuction(sell);
             } else {
-                //TODO: send message to prosumer that his ask price was not low enough
+                Sell s = sell.getSell();
+                s.setAskPrice(averageMechanism.getAveragePrice());
+                outgoingQueue.put(new MessageContent(s, EBuildCategory.SellToProsumer));
             }
         } catch (PriceNotOKException e) {
-            //TODO: send messagt to prosumer that his ask price was negative or zero
+            try {
+                outgoingQueue.put(new MessageContent(sell.getSell(), EBuildCategory.SellToProsumer));
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
     private void startNewAuction(SellInformation sell) {
-        //TODO: build outgoing message for exchange service
         auctionProsumerTracker.addAuction(sell.getSell().getTimeSlot(), sell.getSell().getSellerID());
+        UUID auctionID = UUID.randomUUID();
+        auctionManager.addAuction(new Auction(auctionID, sell));
+
+        //build message to exchange
+        EBuildCategory category = EBuildCategory.SellToExchange;
+        category.setUUID(sell.getExchangeID());
+        Sell s = sell.getSell();
+        s.setAuctionID(auctionID);
+        MessageContent messageContent = new MessageContent(s, category);
+        try {
+            outgoingQueue.put(messageContent);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void handleUnsatisfiedBiddersAndSellers(UUID timeSlotID) throws InvalidTimeSlotException {

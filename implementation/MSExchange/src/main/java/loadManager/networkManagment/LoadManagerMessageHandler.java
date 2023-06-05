@@ -86,6 +86,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
 
         Sell sell = (Sell) message.getSendable(Sell.class);
         IValidator.validateAuctionID(sell.getAuctionID(), myMSData.getType());
+        logger.trace("Sell is valid");
 
         AtomicReference<ExchangeServiceInformation> exchangeServiceInformation = null;
 
