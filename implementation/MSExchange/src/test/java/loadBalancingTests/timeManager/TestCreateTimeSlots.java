@@ -21,12 +21,12 @@ public class TestCreateTimeSlots {
     public void callMethodxTimes_addNewTimeSlots_expectedMaxNumTimeSlotsSaved() {
         // Arrange
         readProperties();
-        TimeSlotBuilder timeSlotManager = new TimeSlotBuilder((int) DURATION_IN_SECS, NUM_NEW_TIME_SLOTS);
+        TimeSlotBuilder timeSlotManager = new TimeSlotBuilder();
 
         // Act
-        for (int i = 0; i < (MAX_NUM_TIME_SLOTS_SAVED / NUM_NEW_TIME_SLOTS) + 2; i++) {
+        for (int i = 0; i < (MAX_NUM_TIME_SLOTS_SAVED) + 2; i++) {
             // addNewTimeSlots();
-            timeSlotManager.addNewTimeSlots();
+            timeSlotManager.addNewTimeSlot();
         }
 
         // Assert

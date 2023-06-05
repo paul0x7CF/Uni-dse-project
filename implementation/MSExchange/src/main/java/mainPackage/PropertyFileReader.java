@@ -56,4 +56,7 @@ public class PropertyFileReader {
     }
 
 
+    public String getCheckInterval() {
+        return getProperty("timeSlot.checkInterval");
+    }
 }

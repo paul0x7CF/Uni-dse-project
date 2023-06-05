@@ -2,6 +2,7 @@ package msExchange.messageHandling;
 
 import exceptions.MessageProcessingException;
 import mainPackage.ESubCategory;
+import mainPackage.IMessageBuilder;
 import msExchange.networkCommunication.CommunicationExchange;
 import protocol.ECategory;
 import protocol.Message;
@@ -26,7 +27,7 @@ public class MessageBuilder {
 
     public Message buildCapacityMessage() {
         MSData receiverMS = communicationExchange.getBroker().getServicesByType(EServiceType.Exchange).get(0);
-        return senderAndReceiverTemplate(receiverMS).setCategory(ECategory.Exchange, String.valueOf(ESubCategory.Capacity)).build();
+        return IMessageBuilder.senderAndReceiverTemplate(receiverMS, communicationExchange.getBroker().getCurrentService()).setCategory(ECategory.Exchange, String.valueOf(ESubCategory.Capacity)).build();
     }
 
     public List<Message> buildMessage(Transaction transaction) {
@@ -41,7 +42,7 @@ public class MessageBuilder {
         }
 
         for (MSData msData : receiverMS) {
-            messages.add(buildTransactionMessage(senderAndReceiverTemplate(msData), transaction));
+            messages.add(buildTransactionMessage(IMessageBuilder.senderAndReceiverTemplate(msData, communicationExchange.getBroker().getCurrentService()), transaction));
         }
 
         return messages;
@@ -50,16 +51,5 @@ public class MessageBuilder {
     private Message buildTransactionMessage(MessageFactory messageFactory, Transaction transaction) {
         messageFactory.setCategory(ECategory.Auction, String.valueOf(ESubCategory.Transaction)).setPayload(transaction);
         return messageFactory.build();
-    }
-
-    public MessageFactory senderAndReceiverTemplate(MSData reciever) {
-        MessageFactory messageFactory = new MessageFactory();
-        MSData sender = communicationExchange.getBroker().getCurrentService();
-        return messageFactory.setSenderID(sender.getId())
-                .setSenderAddress(sender.getAddress())
-                .setSenderPort(sender.getPort())
-                .setReceiverID(reciever.getId())
-                .setReceiverAddress(reciever.getAddress())
-                .setReceiverPort(reciever.getPort());
     }
 }
