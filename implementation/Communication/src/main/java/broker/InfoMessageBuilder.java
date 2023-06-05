@@ -59,10 +59,9 @@ public class InfoMessageBuilder { // TODO: rename to InfoMessageTemplate
         return ackMessage;
     }
 
-    public static Message createSyncMessage(MSData sender, MSData receiver, MSDataArray list) {
-        // TODO: should receiver be like in register?
+    public static Message createSyncMessage(MSData sender, MSData receiver, MSDataArray array) {
         MessageFactory messageFactory = senderAndReceiverTemplate(sender, receiver);
-        messageFactory.setCategory(ECategory.Info, "Sync").setPayload(list);
+        messageFactory.setCategory(ECategory.Info, "Sync").setPayload(array);
         log.trace("Sync message created");
         return messageFactory.build();
     }

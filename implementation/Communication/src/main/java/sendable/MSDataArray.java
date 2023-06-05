@@ -1,12 +1,12 @@
 package sendable;
 
 public class MSDataArray implements ISendable {
-    private MSData sender;
-    private MSData[] msDataArray;
+    private final MSData sender;
+    private final MSData[] msDataArray;
 
-    public MSDataArray(MSData sender, MSData[] msDataList) {
+    public MSDataArray(MSData sender, MSData[] msDataArray) {
         this.sender = sender;
-        this.msDataArray = msDataList;
+        this.msDataArray = msDataArray;
     }
 
     public MSData getSender() {

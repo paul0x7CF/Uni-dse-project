@@ -70,7 +70,7 @@ public class MainForTesting {
             if (solar != null && consumption != null) {
                 for (int j = 0; j < testErrorAmount; ++j) {
                     Message message = InfoMessageBuilder.createErrorMessage(solar.getCurrentService(), consumption.getCurrentService(), "test", "test");
-                    log.info("Sending message {}", message.getMessageID());
+                    log.info("Sending error message {}", message.getMessageID());
                     solar.sendMessage(message);
                 }
             } else {
@@ -98,11 +98,10 @@ public class MainForTesting {
 
          */
         log.fatal("All brokers stopped");
-        log.info("#".repeat(25));
         printServiceSize(solar);
-        log.info("#".repeat(25));
-        solar.stop();
-        sleep(3);
+        consumption.stop();
+        sleep(1);
+        printServiceSize(solar);
     }
 
     private static void sleep(long duration) {
@@ -115,7 +114,7 @@ public class MainForTesting {
 
     private static void printServiceSize(BrokerRunner broker) {
         log.info("#".repeat(25));
-        if (broker.getCurrentService() != null) {
+        if (broker != null && broker.getCurrentService() != null) {
             log.info("{} services: {}", broker.getCurrentService().getPort(), broker.getServices().size());
         }
         log.info("#".repeat(25));

@@ -1,10 +1,12 @@
 package broker.discovery;
 
 import broker.InfoMessageBuilder;
+import broker.Marshaller;
 import mainPackage.ConfigReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protocol.Message;
+import sendable.EServiceType;
 import sendable.MSData;
 import sendable.MSDataArray;
 
@@ -17,26 +19,33 @@ public class SyncService implements IMessageSchedulerObserver {
     private final IScheduleBroker broker;
     ConfigReader configReader = new ConfigReader();
     MSData currentService;
-    int messageFrequency;
 
     public SyncService(IScheduleBroker broker) {
         this.broker = broker;
 
         currentService = broker.getCurrentService();
-        messageFrequency = Integer.parseInt(configReader.getProperty("syncMessageFrequency"));
     }
 
     @Override
     public void scheduleMessages(ScheduledExecutorService scheduler) {
+        int messageFrequency = Integer.parseInt(configReader.getProperty("syncMessageFrequency"));
         scheduler.scheduleAtFixedRate(this::sendSyncMessages, 1, messageFrequency, TimeUnit.SECONDS);
     }
 
     private void sendSyncMessages() {
         List<MSData> services = broker.getServices();
+        MSDataArray servicesArray = new MSDataArray(currentService, services.toArray(new MSData[0]));
         for (MSData service : services) {
-            if (service.getId() != broker.getCurrentService().getId()) {
-                log.trace("Sending empty sync message to {}", service.getPort());
-                Message message = InfoMessageBuilder.createSyncMessage(currentService, service, new MSDataArray(currentService, new MSData[0]));
+            if (!service.equals(broker.getCurrentService())
+                    && service.getType() == EServiceType.Consumption && currentService.getPort() == 9000) {
+                log.info("Sending sync message with size {}", services.size()); // TODO: remove
+                log.trace("Sending sync message to {}", service.getPort());
+                Message message = InfoMessageBuilder.createSyncMessage(currentService, service, servicesArray);
+                byte[] bytes = Marshaller.marshal(message);
+                String s = new String(bytes);
+                // log.warn("Marshalling: {}", s);
+                // log.warn("Unmarshalling: {}", Marshaller.unmarshal(bytes).getPayload());
+
                 broker.sendMessage(message);
             }
         }

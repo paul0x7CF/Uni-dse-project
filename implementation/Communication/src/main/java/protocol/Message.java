@@ -8,6 +8,7 @@ import java.util.UUID;
 
 public class Message implements Serializable {
     private final UUID messageID = UUID.randomUUID();
+    private final String senderAddress;
     /**
      * @category: interprets the main and sub category of the message in form of "MainCategory;SubCategory"
      * @mainCategory: Info:
@@ -21,7 +22,6 @@ public class Message implements Serializable {
      */
     private String category;
     private UUID senderID;
-    private final String senderAddress;
     private int senderPort;
     private UUID receiverID;
     private String receiverAddress;
@@ -51,59 +51,60 @@ public class Message implements Serializable {
         return senderID;
     }
 
-    public String getSenderAddress() {
-        return senderAddress;
-    }
-
-    public int getSenderPort() {
-        return senderPort;
-    }
-
-    public UUID getReceiverID() {
-        return receiverID;
-    }
-
-    public String getReceiverAddress() {
-        return receiverAddress;
-    }
-
-    public int getReceiverPort() {
-        return receiverPort;
-    }
-
-    public String getPayload() {
-        return payload;
-    }
-
-    public void setCategory(ECategory mainCat, String subCat) {
-        this.category = mainCat.toString() + ";" + subCat;
-    }
-
     public void setSenderID(UUID senderID) {
         this.senderID = senderID;
+    }
+
+    public String getSenderAddress() {
+        return senderAddress;
     }
 
     public void setSenderAddress(String receiverAddress) {
         this.receiverAddress = receiverAddress;
     }
 
+    public int getSenderPort() {
+        return senderPort;
+    }
+
     public void setSenderPort(int senderPort) {
         this.senderPort = senderPort;
+    }
+
+    public UUID getReceiverID() {
+        return receiverID;
     }
 
     public void setReceiverID(UUID receiverID) {
         this.receiverID = receiverID;
     }
+
+    public String getReceiverAddress() {
+        return receiverAddress;
+    }
+
     public void setReceiverAddress(String temp) {
         this.receiverAddress = temp;
+    }
+
+    public int getReceiverPort() {
+        return receiverPort;
     }
 
     public void setReceiverPort(int receiverPort) {
         this.receiverPort = receiverPort;
     }
 
+    public String getPayload() {
+        return payload;
+    }
+
     public void setPayload(ISendable payload) {
         this.payload = PayloadConverter.toJSON(payload);
+    }
+
+    public void setCategory(ECategory mainCat, String subCat) {
+        this.category = mainCat.toString() + ";" + subCat;
     }
 
     // converts the payload using the PayloadConverter class and forwards the class which should be instantiated

@@ -9,24 +9,25 @@ import java.io.*;
 public class Marshaller {
     private static final Logger log = LogManager.getLogger(Marshaller.class);
     public static byte[] marshal(Message message) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = null;
+        ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
+        ObjectOutputStream objectOS = null;
         try {
-            oos = new ObjectOutputStream(baos);
-            oos.writeObject(message);
+            objectOS = new ObjectOutputStream(byteArrayOS);
+            objectOS.writeObject(message);
         } catch (IOException e) {
             log.error("Could not marshal message", e);
             throw new RuntimeException(e);
         }
-        return baos.toByteArray();
+        return byteArrayOS.toByteArray();
     }
 
     public static Message unmarshal(byte[] bytes) {
-        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-        ObjectInputStream ois = null;
+        String s = new String(bytes);
+        ByteArrayInputStream byteArrayIS = new ByteArrayInputStream(bytes);
+        ObjectInputStream objectIS = null;
         try {
-            ois = new ObjectInputStream(bais);
-            return (Message) ois.readObject();
+            objectIS = new ObjectInputStream(byteArrayIS);
+            return (Message) objectIS.readObject();
         } catch (IOException | ClassNotFoundException e) {
             log.error("Could not unmarshal message", e);
             throw new RuntimeException(e);

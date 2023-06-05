@@ -117,7 +117,7 @@ public class Broker implements IServiceBroker, IScheduleBroker {
             log.trace("{} received {}", getCurrentService().getType(), message.getSubCategory());
             if (getCurrentService().getPort() == 11000) {
                 log.debug("######### 11000 received {} from {}", message.getSubCategory(), message.getSenderPort());
-                // print(message,false);
+                print(message,false);
             }
             messageHandler.handleMessage(message);
 
@@ -137,7 +137,7 @@ public class Broker implements IServiceBroker, IScheduleBroker {
             String ackBind = isSender ? "sent for" : "received for";
             String messageBind = isSender ? "message sent to" : "message received from";
             if (isSender && !message.getSubCategory().equals("Ack")) {
-                log.debug("######### {} {} sent to {} | {}", port, message.getSubCategory(), message.getReceiverPort(),
+                log.trace("######### {} {} sent to {} | {}", port, message.getSubCategory(), message.getReceiverPort(),
                         message.getMessageID().toString().substring(0, 4));
             } else {
                 log.trace("######### {} received from {} | {}", port, message.getSenderPort(), message.getMessageID());
@@ -145,7 +145,7 @@ public class Broker implements IServiceBroker, IScheduleBroker {
             int from = isSender ? message.getSenderPort() : message.getReceiverPort();
             if (message.getSubCategory().equals("Ack")) {
                 AckInfo ackInfo = (AckInfo) message.getSendable(AckInfo.class);
-                log.debug("######### "+sr+port+" {} {} {} "+sr+" {}", message.getSubCategory(), ackBind,
+                log.trace("######### "+sr+port+" {} {} {} "+sr+" {}", message.getSubCategory(), ackBind,
                         ackInfo.getMessageID().toString().substring(0, 4), from);
             } else {
                 log.trace("######### "+sr+port+" {} {} {} | {}", message.getSubCategory(), messageBind, from, message.getMessageID().toString().substring(0, 4));
