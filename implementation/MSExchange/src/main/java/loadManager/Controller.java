@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Controller implements Runnable {
@@ -32,21 +33,30 @@ public class Controller implements Runnable {
     private CommunicationLoadManager communication;
     private TimeSlotBuilder timeSlotBuilder = new TimeSlotBuilder();
     private MessageBuilder messageBuilder;
+    private CountDownLatch communicationLatch;
 
     @Override
     public void run() {
+        communicationLatch = new CountDownLatch(1);
         Thread communicationThread = new Thread(this::startCommunication);
         communicationThread.start();
 
-        Thread timeSlotThread = new Thread(this::addNewTimeSlotsPeriodically);
-        timeSlotThread.start();
 
         try {
-            logger.trace("Waiting for communication to start");
-            Thread.sleep(1000);
+            logger.info("Communication starts...");
+            communicationLatch.await(); // Wait until communication is initialized
+            logger.trace("Broker runner started");
+            messageHandler = new LoadManagerMessageHandler(outgoingQueue, communication.getBroker().getCurrentService());
+            logger.trace("message Handler initialized");
+            messageBuilder = new MessageBuilder(communication);
+            logger.trace("Message builder initialized");
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
+
+        // Continue with the remaining logic
+        Thread timeSlotThread = new Thread(this::addNewTimeSlotsPeriodically);
+        timeSlotThread.start();
 
         while (true) {
             processIncomingQueue();
@@ -67,10 +77,13 @@ public class Controller implements Runnable {
     }
 
     private void startCommunication() {
+        logger.debug("Starting communication");
         communication = new CommunicationLoadManager(incomingQueue);
-        communication.startBrokerRunner();
-        messageHandler = new LoadManagerMessageHandler(outgoingQueue, communication.getBroker().getCurrentService());
-        messageBuilder = new MessageBuilder(communication);
+        Thread communicationThread = new Thread(() -> {
+            communication.startBrokerRunner();
+        });
+        communicationThread.start();
+        communicationLatch.countDown();
     }
 
 
