@@ -44,17 +44,18 @@ public class AuctionProsumerTracker {
         auctionsPerTimeSlot.computeIfAbsent(timeSlotId, k -> new HashMap<>()).put(auctionID, new ArrayList<>());
     }
 
-    public synchronized Optional<UUID> getFirstInAuction(UUID bidderId, UUID slotID) {
+    public synchronized List<UUID> getFirstInAuction(UUID bidderId, UUID slotID) {
+        List<UUID> firstInAuction = new ArrayList<>();
         for (Map.Entry<UUID, Map<UUID, List<UUID>>> entry : auctionsPerTimeSlot.entrySet()) {
             if (entry.getKey().equals(slotID)) {
                 for (Map.Entry<UUID, List<UUID>> entry2 : entry.getValue().entrySet()) {
                     if (entry2.getValue().get(0).equals(bidderId)) {
-                        return Optional.ofNullable(entry2.getKey());
+                        firstInAuction.add(entry2.getKey());
                     }
                 }
             }
         }
-        return Optional.empty();
+        return firstInAuction;
     }
 
     /*

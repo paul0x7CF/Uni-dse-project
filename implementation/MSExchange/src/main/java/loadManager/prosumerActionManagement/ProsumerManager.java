@@ -5,8 +5,11 @@ import Exceptions.PriceNotOKException;
 import loadManager.SellInformation;
 import loadManager.auctionManagement.AuctionManager;
 import loadManager.networkManagment.EBuildCategory;
+import loadManager.networkManagment.LoadManagerMessageHandler;
 import loadManager.networkManagment.MessageContent;
 import loadManager.prosumerActionManagement.bidManagement.Bidder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import sendable.Bid;
 import sendable.Transaction;
 
@@ -16,6 +19,7 @@ import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
 public class ProsumerManager {
+    private static final Logger logger = LogManager.getLogger(ProsumerManager.class);
     AuctionManager auctionManager = new AuctionManager();
     AverageMechanism averageMechanism = new AverageMechanism();
     AuctionProsumerTracker auctionProsumerTracker = new AuctionProsumerTracker();

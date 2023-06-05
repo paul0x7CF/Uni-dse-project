@@ -2,8 +2,11 @@ package loadManager.prosumerActionManagement.bidManagement;
 
 import loadManager.auctionManagement.Auction;
 import loadManager.auctionManagement.AuctionManager;
+import loadManager.networkManagment.LoadManagerMessageHandler;
 import loadManager.networkManagment.MessageContent;
 import loadManager.prosumerActionManagement.AuctionProsumerTracker;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import sendable.Bid;
 
 import java.util.List;
@@ -11,6 +14,8 @@ import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
 public class AuctionFindingAlgorithm implements Runnable {
+    private static final Logger logger = LogManager.getLogger(AuctionFindingAlgorithm.class);
+    private final Object lock = new Object(); //Create a lock object
     private Bid bid;
     private BlockingQueue<MessageContent> outgoingQueue;
     private AuctionManager auctionManager;
@@ -26,14 +31,16 @@ public class AuctionFindingAlgorithm implements Runnable {
     @Override
     public void run() {
         while (true) {
-            if (auctionProsumerTracker.getFirstInAuction(bid.getBidderID(), bid.getTimeSlot()).isEmpty()) {
-                //TODO: Algorithm
-                findAuctionsToCoverVolume();
-            } else {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+            synchronized (lock) {
+                double coveredVolume = auctionManager.coveredVolume(auctionProsumerTracker.getFirstInAuction(bid.getBidderID(), bid.getTimeSlot()));
+                if (coveredVolume != bid.getVolume()) {
+                    findAuctionsToCoverVolume();
+                } else {
+                    try {
+                        lock.wait(2000); //Release the lock and wait
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         }
@@ -41,6 +48,7 @@ public class AuctionFindingAlgorithm implements Runnable {
 
     private void findAuctionsToCoverVolume() {
         List<Auction> bidderAuctions = getBiddersAuctions();
+
 
     }
 

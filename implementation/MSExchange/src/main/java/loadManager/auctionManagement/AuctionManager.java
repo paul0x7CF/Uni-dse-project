@@ -3,16 +3,18 @@ package loadManager.auctionManagement;
 import Exceptions.CommandNotPossibleException;
 import Exceptions.IllegalAuctionException;
 import Exceptions.InvalidTimeSlotException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import sendable.Bid;
 import sendable.Transaction;
 
 import java.util.*;
-import java.util.logging.Logger;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class AuctionManager {
     //key: slotId, value: list of auctions
-    Logger logger = Logger.getLogger(getClass().getName());
-    private Map<UUID, List<Auction>> auctionsPerSlot = new HashMap<>();
+    private static final Logger logger = LogManager.getLogger(AuctionManager.class);
+    private Map<UUID, List<Auction>> auctionsPerSlot = new ConcurrentHashMap<>();
 
     public void addAuction(Auction auction) {
         // Adds an auction with the specified UUID
@@ -45,7 +47,7 @@ public class AuctionManager {
         }
     }
 */
-    private void removeAllAuctionsFromSlot(UUID slotId) throws CommandNotPossibleException {
+    private synchronized void removeAllAuctionsFromSlot(UUID slotId) throws CommandNotPossibleException {
         // Removes all auctions from the specified slot
         if (!auctionsPerSlot.containsKey(slotId)) {
             throw new CommandNotPossibleException("Slot ID not found: " + slotId);
@@ -87,14 +89,14 @@ public class AuctionManager {
                         throw new RuntimeException("Transaction not available for auction: " + auction.getAuctionId());
                     }
                 } catch (CommandNotPossibleException e) {
-                    logger.severe(e.getMessage());
+                    logger.error(e.getMessage());
                 }
             }
 
             try {
                 removeAllAuctionsFromSlot(slotId);
             } catch (CommandNotPossibleException e) {
-                throw new RuntimeException(e);
+                logger.error(e.getMessage());
             }
 
             return transactions;
@@ -144,9 +146,17 @@ public class AuctionManager {
             try {
                 auctions.add(getAuctionByID(auctionID));
             } catch (IllegalAuctionException e) {
-                logger.severe(e.getMessage());
+                logger.error(e.getMessage());
             }
         }
         return auctions;
+    }
+
+    public double coveredVolume(List<UUID> firstInAuction) {
+        double sum = 0;
+        for (Auction auction : getAuctions(firstInAuction)) {
+            sum += auction.getVolume();
+        }
+        return sum;
     }
 }

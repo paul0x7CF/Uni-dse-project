@@ -1,9 +1,12 @@
 package loadManager.prosumerActionManagement.bidManagement;
 
 import loadManager.auctionManagement.AuctionManager;
+import loadManager.networkManagment.LoadManagerMessageHandler;
 import loadManager.networkManagment.MessageContent;
 import loadManager.prosumerActionManagement.AuctionProsumerTracker;
 import mainPackage.PropertyFileReader;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import sendable.Bid;
 
 import java.util.HashMap;
@@ -14,6 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Bidder {
+    private static final Logger logger = LogManager.getLogger(Bidder.class);
     private final int MAX_THREAD_POOLS;
     //key -> slotID; each slot has its own auction finding algorithm
     private Map<UUID, AuctionFindingAlgorithm> auctionFinderPerSlot = new HashMap<>();
