@@ -27,7 +27,16 @@ public class PayloadConverter {
         return gson.toJson(object);
     }
 
+    /**TODO: @Günther: Check
+     * added this code:
+     *  Gson gson = new GsonBuilder()
+     *                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+     *                 .create();
+     */
     public static <T extends ISendable> T fromJSON(String json, Class<T> type) {
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                .create();
         return gson.fromJson(json, type);
     }
 }
