@@ -83,7 +83,7 @@ public class MessageBuilder {
     }
 
 
-    public Message buildBidToProsumerMessage(ISendable content) {
+    private Message buildBidToProsumerMessage(ISendable content) {
         Bid bid = (Bid) content;
         MSData receiverMS = communication.getBroker().findService(bid.getBidderID());
         MessageFactory messageFactory = IMessageBuilder.senderAndReceiverTemplate(receiverMS, communication.getBroker().getCurrentService());
@@ -91,7 +91,7 @@ public class MessageBuilder {
         return messageFactory.build();
     }
 
-    public Message buildBidToExchangeMessage(ISendable content, EBuildCategory buildCategory) {
+    private Message buildBidToExchangeMessage(ISendable content, EBuildCategory buildCategory) {
         Bid bid = (Bid) content;
         MSData receiverMS = communication.getBroker().findService(buildCategory.getUuid());
         MessageFactory messageFactory = IMessageBuilder.senderAndReceiverTemplate(receiverMS, communication.getBroker().getCurrentService());
@@ -99,7 +99,7 @@ public class MessageBuilder {
         return messageFactory.build();
     }
 
-    public Message buildSellToProsumerMessage(ISendable content) {
+    private Message buildSellToProsumerMessage(ISendable content) {
         Sell sell = (Sell) content;
         MSData receiverMS = communication.getBroker().findService(sell.getSellerID());
         MessageFactory messageFactory = IMessageBuilder.senderAndReceiverTemplate(receiverMS, communication.getBroker().getCurrentService());
@@ -107,7 +107,7 @@ public class MessageBuilder {
         return messageFactory.build();
     }
 
-    public Message buildSellToExchangeMessage(ISendable content, EBuildCategory buildCategory) {
+    private Message buildSellToExchangeMessage(ISendable content, EBuildCategory buildCategory) {
         Sell sell = (Sell) content;
         MSData receiverMS = communication.getBroker().findService(buildCategory.getUuid());
         MessageFactory messageFactory = IMessageBuilder.senderAndReceiverTemplate(receiverMS, communication.getBroker().getCurrentService());

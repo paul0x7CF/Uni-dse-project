@@ -12,10 +12,7 @@ public enum EBuildCategory {
 
     private UUID uuid;
 
-    EBuildCategory() {
-    }
-
-    EBuildCategory(UUID uuid) {
+    public void setUUID(UUID uuid) {
         this.uuid = uuid;
     }
 
