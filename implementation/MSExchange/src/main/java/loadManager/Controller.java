@@ -1,11 +1,12 @@
 package loadManager;
 
+import Exceptions.IllegalSendableException;
 import exceptions.MessageProcessingException;
 import loadManager.exchangeManagement.ExchangeServiceInformation;
 import loadManager.networkManagment.CommunicationLoadManager;
 import loadManager.networkManagment.LoadManagerMessageHandler;
+import loadManager.networkManagment.MessageBuilder;
 import loadManager.networkManagment.MessageContent;
-import loadManager.timeSlotManagement.MessageBuilderTimeSlot;
 import loadManager.timeSlotManagement.TimeSlotBuilder;
 import mainPackage.PropertyFileReader;
 import org.apache.logging.log4j.LogManager;
@@ -30,7 +31,7 @@ public class Controller implements Runnable {
     private List<UUID> exchangeServiceIds = new ArrayList<>();
     private CommunicationLoadManager communication;
     private TimeSlotBuilder timeSlotBuilder = new TimeSlotBuilder();
-    ;
+    private MessageBuilder messageBuilder;
 
     @Override
     public void run() {
@@ -50,6 +51,7 @@ public class Controller implements Runnable {
         while (true) {
             processIncomingQueue();
             checkExchangeService();
+            processOutgoingQueue();
         }
     }
 
@@ -68,6 +70,7 @@ public class Controller implements Runnable {
         communication = new CommunicationLoadManager(incomingQueue);
         communication.startBrokerRunner();
         messageHandler = new LoadManagerMessageHandler(outgoingQueue, communication.getBroker().getCurrentService());
+        messageBuilder = new MessageBuilder(communication);
     }
 
 
@@ -80,9 +83,7 @@ public class Controller implements Runnable {
             if (!timeSlotBuilder.getLastSlotsEndtime().isBefore(LocalDateTime.now())) {
                 TimeSlot newTimeSlot = timeSlotBuilder.addNewTimeSlot();
 
-                //TODO: message-builder: Build message to send timeSlots
-                MessageBuilderTimeSlot messageBuilderTimeSlot = new MessageBuilderTimeSlot();
-                List<Message> messages = messageBuilderTimeSlot.buildTimeSlotMessages(newTimeSlot, communication.getBroker().getServices(), communication.getBroker().getCurrentService());
+                List<Message> messages = messageBuilder.buildTimeSlotMessages(newTimeSlot);
 
                 for (Message message : messages) {
                     communication.sendMessage(message);
@@ -104,6 +105,23 @@ public class Controller implements Runnable {
                 messageHandler.handleMessage(message);
             } catch (MessageProcessingException e) {
                 throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void processOutgoingQueue() {
+        MessageContent messageContent = (MessageContent) outgoingQueue.poll();
+        if (messageContent != null) {
+            try {
+                List<Message> messages = messageBuilder.buildMessage(messageContent);
+                for (Message message : messages) {
+                    communication.sendMessage(message);
+                }
+            } catch (IllegalSendableException e) {
+                //TODO: throw RuntimeException?
+                System.err.println("Failed to send message: " + e.getMessage());
+                logger.error("Failed to send message: " + e.getMessage());
+                e.printStackTrace();
             }
         }
     }
