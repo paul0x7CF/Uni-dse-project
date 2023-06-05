@@ -35,7 +35,7 @@ public class MSExchange implements Runnable {
         communication = new CommunicationExchange(incomingMessages, INSTANCE_NUMBER);
         Thread communicationThread = new Thread(() -> {
             communication.startBrokerRunner();
-        });
+        }, "ExchangeCommunicationThread");
         communicationThread.start();
 
     }
@@ -43,9 +43,7 @@ public class MSExchange implements Runnable {
     //TODO: think about deleting a service
     @Override
     public void run() {
-        Thread communicationThread = new Thread(this::startCommunication);
-        communicationThread.start();
-
+        startCommunication();
 
         messageBuilder = new MessageBuilder(communication);
         logger.trace("Message builder initialized");
@@ -69,7 +67,7 @@ public class MSExchange implements Runnable {
                 messageHandler.handleMessage(message);
             } catch (MessageProcessingException e) {
                 messageBuilder.sendErrorMessage(message, e);
-                logger.error("SubCategory was incorrect: " + message);
+                logger.error("Message wasn't correct " + message.getSubCategory() + ", problem: " + e.getMessage());
             }
         }
     }

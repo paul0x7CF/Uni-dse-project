@@ -6,9 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sendable.TimeSlot;
 
-import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 public class TimeSlotValidator {
@@ -19,7 +17,6 @@ public class TimeSlotValidator {
         validateTimeSlotIDNotNull(timeSlot);
         validateTimeSlotIDNotInUse(timeSlot.getTimeSlotID(), timeSlots);
         validateTimeSlotStartBeforeEnd(timeSlot);
-        validateTimeSlotIsInFuture(timeSlot);
     }
 
     private void validateTimeSlotNotNull(TimeSlot timeSlot) throws InvalidTimeSlotException {
@@ -55,14 +52,6 @@ public class TimeSlotValidator {
             throw new InvalidTimeSlotException("TimeSlot start is after end", null);
         }
         logger.trace("Validated timeSlot start before end successfully");
-    }
-
-    private void validateTimeSlotIsInFuture(TimeSlot timeSlot) throws InvalidTimeSlotException {
-        logger.trace("Validating timeSlot is in future");
-        if (timeSlot.getStartTime().isAfter(LocalDateTime.now())) {
-            throw new InvalidTimeSlotException("TimeSlot start is in the past", Optional.ofNullable(timeSlot.getTimeSlotID()));
-        }
-        logger.trace("Validated timeSlot is in future successfully");
     }
 
 }

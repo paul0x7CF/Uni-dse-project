@@ -44,7 +44,6 @@ public class ExchangeMessageHandler {
         }
 
         ESubCategory subCategory = ESubCategory.valueOf(subcategory);
-
         try {
             switch (subCategory) {
                 case Bid -> handleBid(message);

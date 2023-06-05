@@ -5,6 +5,7 @@ import exceptions.RemoteException;
 import messageHandling.IMessageHandler;
 import protocol.Message;
 
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
 public class IncomingMessageHandler implements IMessageHandler {
