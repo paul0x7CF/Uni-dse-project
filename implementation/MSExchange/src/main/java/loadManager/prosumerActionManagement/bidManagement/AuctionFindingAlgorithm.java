@@ -1,14 +1,17 @@
 package loadManager.prosumerActionManagement.bidManagement;
 
+import Exceptions.CommandNotPossibleException;
+import Exceptions.InvalidTimeSlotException;
 import loadManager.auctionManagement.Auction;
 import loadManager.auctionManagement.AuctionManager;
-import loadManager.networkManagment.LoadManagerMessageHandler;
 import loadManager.networkManagment.MessageContent;
 import loadManager.prosumerActionManagement.AuctionProsumerTracker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import sendable.Bid;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
@@ -32,9 +35,14 @@ public class AuctionFindingAlgorithm implements Runnable {
     public void run() {
         while (true) {
             synchronized (lock) {
-                double coveredVolume = auctionManager.coveredVolume(auctionProsumerTracker.getFirstInAuction(bid.getBidderID(), bid.getTimeSlot()));
+                List<UUID> auctions = auctionProsumerTracker.getFirstInAuction(bid.getBidderID(), bid.getTimeSlot());
+                double coveredVolume = auctionManager.coveredVolume(auctions);
                 if (coveredVolume != bid.getVolume()) {
-                    findAuctionsToCoverVolume();
+                    try {
+                        findAuctionsToCoverVolume(coveredVolume, auctionManager.getAuctions(auctions));
+                    } catch (CommandNotPossibleException | InvalidTimeSlotException e) {
+                        throw new RuntimeException(e);
+                    }
                 } else {
                     try {
                         lock.wait(2000); //Release the lock and wait
@@ -46,15 +54,31 @@ public class AuctionFindingAlgorithm implements Runnable {
         }
     }
 
-    private void findAuctionsToCoverVolume() {
-        List<Auction> bidderAuctions = getBiddersAuctions();
+    private void findAuctionsToCoverVolume(double coveredVolume, List<Auction> auctions) throws CommandNotPossibleException, InvalidTimeSlotException {
+        if (coveredVolume > bid.getVolume()) {
+            throw new CommandNotPossibleException("coveredVolume is bigger than bid volume");
+        }
+        List<Auction> remainingAuctions = new ArrayList<>();
+        for (Auction eachAuction : auctionManager.getAllAuctionsForSlot(bid.getTimeSlot())) {
+            if (!auctions.contains(eachAuction)) {
+                remainingAuctions.add(eachAuction);
+            }
+        }
 
+        remainingAuctions.sort(Comparator.comparing(Auction::getPrice).reversed());
+        double remainingVolume = bid.getVolume() - coveredVolume;
 
-    }
+        for(Auction eachAuction : remainingAuctions) {
+            if (eachAuction.getPrice() < bid.getPrice()) {
+                if(remainingVolume<= eachAuction.getVolume()){
+                    //bid can be covered totally
 
-    public List<Auction> getBiddersAuctions() {
-        List<UUID> auctionIDs = auctionProsumerTracker.getBiddersAuctions(bid.getBidderID());
-        return auctionManager.getAuctions(auctionIDs);
+                }
+            } else {
+                break;
+            }
+        }
+
     }
 
     private synchronized void addProsumerToAuction(UUID auctionID, UUID prosumerID) {
