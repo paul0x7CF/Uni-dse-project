@@ -49,7 +49,13 @@ public class ProsumerManager {
                 outgoingQueue.put(new MessageContent(bid, EBuildCategory.BidToProsumer));
             }
         } catch (PriceNotOKException e) {
-            //TODO send messagte to prosumer that his bid was negativ or zero
+            bid.setPrice(0);
+            MessageContent messageContent = new MessageContent(bid, EBuildCategory.BidToProsumer);
+            try {
+                outgoingQueue.put(messageContent);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
