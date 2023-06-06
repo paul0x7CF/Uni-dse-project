@@ -3,7 +3,12 @@ package Logic.Prosumer;
 import Communication.Communication;
 import Data.Consumer;
 import Data.EProsumerType;
+import Data.IProsumerDevice;
 import Data.Wallet;
+import Exceptions.DeviceNotSupportedException;
+import Exceptions.UndefinedStrategyException;
+import Logic.AccountingStrategy.CalcConsumption;
+import Logic.AccountingStrategy.ContextCalcAcct;
 import Logic.DemandManager;
 import Logic.Scheduler;
 import org.apache.logging.log4j.LogManager;
@@ -15,13 +20,14 @@ import sendable.EServiceType;
 import sendable.Sell;
 import sendable.TimeSlot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class Prosumer implements Runnable{
+public class Prosumer implements Runnable {
 
     private static final Logger logger = LogManager.getLogger(Prosumer.class);
 
@@ -54,6 +60,7 @@ public class Prosumer implements Runnable{
     private void createProducer() {
 
     }
+
     private void createConsumer() {
 
     }
@@ -81,12 +88,21 @@ public class Prosumer implements Runnable{
         communicator.addMessageHandler(ECategory.Auction);
         communicator.addMessageHandler(ECategory.Forecast);
 
+
         try {
             TimeSlot newTimeSlot = incomingMessages.take();
+            ContextCalcAcct contextCalcAcct = new ContextCalcAcct();
+
+            contextCalcAcct.setCalcAcctAStrategy(new CalcConsumption(communicator));
+            contextCalcAcct.calculateAccounting(new ArrayList<>(consumer), newTimeSlot.getTimeSlotID());
+
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        } catch (DeviceNotSupportedException e) {
+            throw new RuntimeException(e);
+        } catch (UndefinedStrategyException e) {
+            throw new RuntimeException(e);
         }
-
 
 
     }
