@@ -1,6 +1,7 @@
 package Logic.AccountingStrategy;
 
 import Data.IProsumerDevice;
+import Exceptions.DeviceNotSupportedException;
 
 import java.util.List;
 import java.util.UUID;
@@ -12,7 +13,7 @@ public class ContextCalcAcct {
         this.strategy = concreteStrategy;
     }
 
-    public double calculateAccounting(List<IProsumerDevice> devices, UUID timeSlotId) {
+    public double calculateAccounting(List<IProsumerDevice> devices, UUID timeSlotId) throws DeviceNotSupportedException {
         return this.strategy.calculateAccounting(devices, timeSlotId);
 
     }
