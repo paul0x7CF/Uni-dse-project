@@ -1,11 +1,13 @@
 package Communication;
 
 import Communication.MessageHandling.MessageBuilder;
+import Data.Producer;
 import Exceptions.ServiceNotFoundRuntimeException;
 import Exceptions.UnknownMessageException;
 import Communication.MessageHandling.AuctionMessageHandler;
 import Communication.MessageHandling.ExchangeMessageHandler;
 import Communication.MessageHandling.ForecastMessageHandler;
+import Exceptions.UnsupportedSendingObjectException;
 import Logic.Prosumer.Prosumer;
 import MSProsumer.Main.ProsumerManager;
 import broker.BrokerRunner;
@@ -14,10 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import protocol.ECategory;
 import protocol.Message;
-import sendable.ConsumptionRequest;
-import sendable.EServiceType;
-import sendable.MSData;
-import sendable.TimeSlot;
+import sendable.*;
 
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
@@ -91,22 +90,34 @@ public class Communication {
         }
     }
 
-    private void sendConsumptionRequestMessage(ConsumptionRequest consumptionRequest) {
-        final Optional<Message>[] messageToSend = new Optional[]{Optional.empty()};
-        communicationBroker.getServices().forEach(service -> {
-            if (service.getType().equals(EServiceType.Consumption)) {
-                MSData receiver = service;
-                messageToSend[0] = Optional.of(this.messageBuilder.buildConsumptionForecastMessage(consumptionRequest, receiver));
-            }
-        });
-        if(messageToSend[0].isPresent()) {
-            communicationBroker.sendMessage(messageToSend[0].get());
+    public void sendConsumptionRequestMessage(ConsumptionRequest consumptionRequest) {
+
+        Optional<Message> messageToSend = Optional.empty();
+
+        for (MSData receiverService : communicationBroker.getServicesByType(EServiceType.Forecast)) {
+            messageToSend= Optional.of(this.messageBuilder.buildConsumptionForecastMessage(consumptionRequest, receiverService));
+            communicationBroker.sendMessage(messageToSend.get());
+            logger.debug("ConsumptionRequestMessage sent to: Ip:{}, Port: {}", receiverService.getAddress(), receiverService.getPort());
         }
-        else {
+        if(messageToSend.isEmpty()){
             throw new ServiceNotFoundRuntimeException();
         }
-
     }
 
+    public void sendProductionRequestMessage(SolarRequest solarRequest) {
+
+        Optional<Message> messageToSend = Optional.empty();
+
+        for (MSData receiverService : communicationBroker.getServicesByType(EServiceType.Forecast)) {
+            messageToSend= Optional.of(this.messageBuilder.buildProductionForecastMessage(solarRequest, receiverService));
+            communicationBroker.sendMessage(messageToSend.get());
+            logger.debug("ProductionRequestMessage sent to: Ip:{}, Port: {}", receiverService.getAddress(), receiverService.getPort());
+        }
+        if(messageToSend.isEmpty()){
+            throw new ServiceNotFoundRuntimeException();
+        }
+    }
 
 }
+
+

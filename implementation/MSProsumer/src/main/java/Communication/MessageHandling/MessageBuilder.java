@@ -1,10 +1,12 @@
 package Communication.MessageHandling;
 
+import Data.ESubCategory;
 import protocol.ECategory;
 import protocol.Message;
 import protocol.MessageFactory;
 import sendable.ConsumptionRequest;
 import sendable.MSData;
+import sendable.SolarRequest;
 
 public class MessageBuilder {
 
@@ -17,12 +19,19 @@ public class MessageBuilder {
     }
 
     public Message buildConsumptionForecastMessage(ConsumptionRequest consumptionRequest, MSData receiver){
-        //TODO: implement logic to build consumption forecast message
         MessageFactory consumptionMessageFactory = senderAndReceiverTemplate(receiver);
         consumptionMessageFactory.
-                setCategory(ECategory.Forecast, "Consumption").
+                setCategory(ECategory.Forecast, ESubCategory.Consumption.toString()).
                 setPayload(consumptionRequest);
         return consumptionMessageFactory.build();
+    }
+    public Message buildProductionForecastMessage(SolarRequest solarRequest, MSData receiver) {
+        MessageFactory productionMessageFactory = senderAndReceiverTemplate(receiver);
+        productionMessageFactory.
+                setCategory(ECategory.Forecast, ESubCategory.Production.toString()).
+                setPayload(solarRequest);
+        return productionMessageFactory.build();
+
     }
 
 
@@ -35,4 +44,5 @@ public class MessageBuilder {
                 setReceiverAddress(receiver.getAddress()).
                 setReceiverPort(receiver.getPort());
     }
+
 }
