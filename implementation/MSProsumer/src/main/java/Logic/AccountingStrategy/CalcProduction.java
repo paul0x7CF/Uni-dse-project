@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class CalcProduction implements ICalAcctStrategy{
 
-    private Communication communication;
+    private final Communication communication;
     public CalcProduction(Communication communication) {
         this.communication = communication;
     }

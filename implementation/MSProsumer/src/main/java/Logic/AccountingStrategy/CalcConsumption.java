@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public class CalcConsumption implements ICalAcctStrategy {
 
-    private Communication communication;
+    private final Communication communication;
 
     public CalcConsumption(Communication communication) {
         this.communication = communication;
