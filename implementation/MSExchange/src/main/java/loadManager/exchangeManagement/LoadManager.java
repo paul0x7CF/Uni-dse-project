@@ -99,7 +99,7 @@ public class LoadManager {
             request.setGoals(Collections.singletonList("exec"));
 
             Properties properties = new Properties();
-            properties.setProperty("exec", "-d" + ++nextServiceID);
+            properties.setProperty("exec", "-s" + ++nextServiceID);
             request.setProperties(properties);
 
             Invoker invoker = new DefaultInvoker();

@@ -151,12 +151,4 @@ public class AuctionManager {
         }
         return auctions;
     }
-
-    public double coveredVolume(List<UUID> firstInAuction) {
-        double sum = 0;
-        for (Auction auction : getAuctions(firstInAuction)) {
-            sum += auction.getVolume();
-        }
-        return sum;
-    }
 }

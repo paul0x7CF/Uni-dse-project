@@ -105,6 +105,5 @@ public class AuctionProsumerTracker {
         }
 
         return biddersAuctions;
-
     }
 }
