@@ -61,7 +61,8 @@ public class AuctionFindingAlgorithm implements Runnable {
 
     private synchronized void addProsumerToAuction(UUID auctionID, UUID prosumerID) {
         //TODO: add prosumer to auction
-
+        //important: volume * price > als vorheriger Bidder, dann kann man setten.
+        
 
     }
 
