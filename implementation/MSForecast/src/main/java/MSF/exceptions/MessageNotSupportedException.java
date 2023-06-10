@@ -1,4 +1,4 @@
-package exceptions;
+package MSF.exceptions;
 
 public class MessageNotSupportedException extends Exception{
     public MessageNotSupportedException() {

@@ -2,9 +2,9 @@ package MSF.forecast;
 
 import MSF.communication.ForecastCommunicationHandler;
 import CF.protocol.Message;
-import communication.ForecastCommunicationHandler;
-import protocol.Message;
-import sendable.EServiceType;
+import MSF.communication.ForecastCommunicationHandler;
+import CF.protocol.Message;
+import CF.sendable.EServiceType;
 
 import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;

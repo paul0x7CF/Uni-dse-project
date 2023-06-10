@@ -1,6 +1,6 @@
 package MSF.propertyHandler;
 
-import exceptions.ProperiyFileException;
+import MSF.exceptions.ProperiyFileException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

@@ -1,12 +1,12 @@
-package communication.messageHandler;
+package MSF.messageHandler;
 
+import CF.exceptions.MessageProcessingException;
+import CF.exceptions.RemoteException;
 import exceptions.MessageNotSupportedException;
-import exceptions.MessageProcessingException;
-import exceptions.RemoteException;
-import messageHandling.IMessageHandler;
+import CF.messageHandling.IMessageHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import protocol.Message;
+import CF.protocol.Message;
 
 public class ProsumerMessageHandler implements IMessageHandler {
     private static final Logger logger = LogManager.getLogger(ProsumerMessageHandler.class);

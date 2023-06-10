@@ -1,10 +1,10 @@
 package MSF.mainPackage;
 
 import MSF.forecast.ForecastController;
-import forecast.ForecastController;
+import MSF.forecast.ForecastController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import propertyHandler.PropertiesReader;
+import MSF.propertyHandler.PropertiesReader;
 
 public class Main {
     private static final Logger logger = LogManager.getLogger(Main.class);

@@ -2,23 +2,28 @@ package MSF.communication;
 
 import CF.protocol.Message;
 import CF.broker.Broker;
-import broker.BrokerRunner;
-import communication.messageHandler.ExchangeMessageHandler;
-import communication.messageHandler.ProsumerMessageHandler;
+import CF.broker.BrokerRunner;
+import MSF.messageHandler.ExchangeMessageHandler;
+import MSF.messageHandler.ProsumerMessageHandler;
+import MSF.propertyHandler.PropertiesReader;
 import exceptions.UnknownMessageException;
+import CF.protocol.ECategory;
+import CF.protocol.Message;
+import CF.sendable.EServiceType;
+import CF.sendable.MSData;
+import CF.sendable.TimeSlot;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import protocol.ECategory;
-import protocol.Message;
-import broker.Broker;
-import sendable.EServiceType;
-import sendable.MSData;
-import sendable.TimeSlot;
 
 import java.util.concurrent.BlockingQueue;
 
 public class ForecastCommunicationHandler {
-    private Broker broker; // TODO Günther: Don't instantiate broker here, use BrokerRunner
+    private static final Logger logger = LogManager.getLogger(ForecastCommunicationHandler.class);
+    private BrokerRunner communicationBroker;
+    private MSData myMSData;
+    private EServiceType serviceType;
+    private int port;
+
     private BlockingQueue<Message> inputQueue;
     private BlockingQueue<Message> outputQueue;
     private BlockingQueue<TimeSlot> inputQueueTimeSlot;

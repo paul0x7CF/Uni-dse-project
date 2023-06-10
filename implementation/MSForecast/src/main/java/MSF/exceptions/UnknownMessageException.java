@@ -1,4 +1,4 @@
-package exceptions;
+package MSF.exceptions;
 
 public class UnknownMessageException extends Exception{
     public UnknownMessageException() {
