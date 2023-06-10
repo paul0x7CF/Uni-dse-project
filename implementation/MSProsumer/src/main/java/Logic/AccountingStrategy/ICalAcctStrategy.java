@@ -1,5 +1,6 @@
 package Logic.AccountingStrategy;
 
+import Communication.PollForecast;
 import Data.IProsumerDevice;
 import Exceptions.DeviceNotSupportedException;
 
@@ -8,6 +9,6 @@ import java.util.UUID;
 
 public interface ICalAcctStrategy {
 
-    public double calculateAccounting(List<IProsumerDevice> devices, UUID timeSlotId) throws DeviceNotSupportedException;
+    public PollForecast calculateAccounting(List<IProsumerDevice> devices, UUID timeSlotId) throws DeviceNotSupportedException;
 
 }

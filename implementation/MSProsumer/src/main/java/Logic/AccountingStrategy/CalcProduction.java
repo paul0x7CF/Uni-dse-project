@@ -1,7 +1,7 @@
 package Logic.AccountingStrategy;
 
 import Communication.Communication;
-import Data.Consumer;
+import Communication.PollForecast;
 import Data.IProsumerDevice;
 import Data.Producer;
 import Exceptions.DeviceNotSupportedException;
@@ -16,10 +16,12 @@ public class CalcProduction implements ICalAcctStrategy{
         this.communication = communication;
     }
     @Override
-    public double calculateAccounting(List<IProsumerDevice> devices, UUID timeSlotId) throws DeviceNotSupportedException {
+    public PollForecast calculateAccounting(List<IProsumerDevice> devices, UUID timeSlotId) throws DeviceNotSupportedException {
 
         for (IProsumerDevice device : devices) {
             if (device.getDevice() instanceof Producer producer) {
+
+                // TODO: @Paul implement Logic for productionStrategy
 
             } else {
                 throw new DeviceNotSupportedException("A Producer Device was expected but a " + device.getDevice().getClass().getName() + " was found");
@@ -28,7 +30,8 @@ public class CalcProduction implements ICalAcctStrategy{
         }
 
 
-        return 0;
+        // TODO: @Paul define return type
+        return null;
 
     }
 }

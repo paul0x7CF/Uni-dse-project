@@ -1,5 +1,6 @@
 package Logic.AccountingStrategy;
 
+import Communication.PollForecast;
 import Data.IProsumerDevice;
 import Exceptions.DeviceNotSupportedException;
 import Exceptions.UndefinedStrategyException;
@@ -15,10 +16,12 @@ public class ContextCalcAcct {
         this.strategy = Optional.of(concreteStrategy);
     }
 
-    public double calculateAccounting(List<IProsumerDevice> devices, UUID timeSlotId) throws DeviceNotSupportedException, UndefinedStrategyException {
+    public PollForecast calculateAccounting(List<IProsumerDevice> devices, UUID timeSlotId) throws DeviceNotSupportedException, UndefinedStrategyException {
         if(this.strategy.isEmpty())
             throw new UndefinedStrategyException();
-        return this.strategy.get().calculateAccounting(devices, timeSlotId);
+        this.strategy.get().calculateAccounting(devices, timeSlotId);
+        // TODO: @Paul define return type
+        return null;
 
     }
 }

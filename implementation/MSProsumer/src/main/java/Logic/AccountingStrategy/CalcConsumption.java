@@ -5,7 +5,7 @@ import Data.Consumer;
 import Data.IProsumerDevice;
 import Exceptions.DeviceNotSupportedException;
 import sendable.ConsumptionRequest;
-import sendable.EServiceType;
+import Communication.PollForecast;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,14 +20,15 @@ public class CalcConsumption implements ICalAcctStrategy {
     }
 
     @Override
-    public double calculateAccounting(List<IProsumerDevice> devices, UUID timeSlotId) throws DeviceNotSupportedException {
+    public PollForecast calculateAccounting(List<IProsumerDevice> devices, UUID timeSlotId) throws DeviceNotSupportedException {
 
         HashMap<String, Double> consumptionMap = getConsumptionMap(devices);
         ConsumptionRequest request = new ConsumptionRequest(consumptionMap, timeSlotId);
         communication.sendConsumptionRequestMessage(request);
+        // TODO: @Paul define return type
+        return null;
 
 
-        return 0;
 
     }
 
