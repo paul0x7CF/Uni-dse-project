@@ -2,7 +2,7 @@ package MSF.messageHandler;
 
 import CF.exceptions.MessageProcessingException;
 import CF.exceptions.RemoteException;
-import exceptions.MessageNotSupportedException;
+import MSF.exceptions.MessageNotSupportedException;
 import CF.messageHandling.IMessageHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
