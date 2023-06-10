@@ -1,7 +1,7 @@
 package loadManager;
 
-import Exceptions.IllegalSendableException;
-import exceptions.MessageProcessingException;
+import MSP.Exceptions.IllegalSendableException;
+import CF.exceptions.MessageProcessingException;
 import loadManager.exchangeManagement.ExchangeServiceInformation;
 import loadManager.networkManagment.CommunicationLoadManager;
 import loadManager.networkManagment.LoadManagerMessageHandler;
@@ -11,10 +11,10 @@ import loadManager.timeSlotManagement.TimeSlotBuilder;
 import mainPackage.PropertyFileReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import protocol.Message;
-import sendable.EServiceType;
-import sendable.MSData;
-import sendable.TimeSlot;
+import CF.protocol.Message;
+import CF.sendable.EServiceType;
+import CF.sendable.MSData;
+import CF.sendable.TimeSlot;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

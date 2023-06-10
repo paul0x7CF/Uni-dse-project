@@ -1,11 +1,10 @@
 package mainPackage;
 
-import exceptions.MessageProcessingException;
-import exceptions.RemoteException;
-import messageHandling.IMessageHandler;
-import protocol.Message;
+import CF.exceptions.MessageProcessingException;
+import CF.exceptions.RemoteException;
+import CF.messageHandling.IMessageHandler;
+import CF.protocol.Message;
 
-import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
 public class IncomingMessageHandler implements IMessageHandler {

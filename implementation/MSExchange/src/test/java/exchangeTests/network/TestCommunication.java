@@ -1,11 +1,11 @@
 package exchangeTests.network;
 
-import broker.BrokerRunner;
+import CF.broker.BrokerRunner;
 import msExchange.networkCommunication.CommunicationExchange;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import sendable.EServiceType;
-import sendable.MSData;
+import CF.sendable.EServiceType;
+import CF.sendable.MSData;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;

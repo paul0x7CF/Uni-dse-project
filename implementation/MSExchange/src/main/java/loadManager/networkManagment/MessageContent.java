@@ -1,6 +1,6 @@
 package loadManager.networkManagment;
 
-import sendable.ISendable;
+import CF.sendable.ISendable;
 
 public class MessageContent {
     private ISendable content;

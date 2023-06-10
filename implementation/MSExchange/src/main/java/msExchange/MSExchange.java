@@ -1,14 +1,14 @@
 package msExchange;
 
-import exceptions.MessageProcessingException;
+import CF.exceptions.MessageProcessingException;
 import mainPackage.PropertyFileReader;
 import msExchange.messageHandling.ExchangeMessageHandler;
 import msExchange.messageHandling.MessageBuilder;
 import msExchange.networkCommunication.CommunicationExchange;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import protocol.Message;
-import sendable.Transaction;
+import CF.protocol.Message;
+import CF.sendable.Transaction;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;

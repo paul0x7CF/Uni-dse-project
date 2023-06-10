@@ -1,7 +1,7 @@
 package loadManager.exchangeManagement;
 
-import Exceptions.AllExchangesAtCapacityException;
-import exceptions.MessageProcessingException;
+import MSP.Exceptions.AllExchangesAtCapacityException;
+import CF.exceptions.MessageProcessingException;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;

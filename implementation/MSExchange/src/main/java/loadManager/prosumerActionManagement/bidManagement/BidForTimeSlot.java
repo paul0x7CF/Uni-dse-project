@@ -1,6 +1,6 @@
 package loadManager.prosumerActionManagement.bidManagement;
 
-import sendable.Bid;
+import CF.sendable.Bid;
 
 import java.util.ArrayList;
 import java.util.Iterator;
