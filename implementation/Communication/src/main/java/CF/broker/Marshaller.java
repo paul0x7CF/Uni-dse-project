@@ -8,7 +8,7 @@ import java.io.*;
 
 public class Marshaller {
     private static final Logger log = LogManager.getLogger(Marshaller.class);
-    public static byte[] marshal(Message message) {
+    public static synchronized byte[] marshal(Message message) {
         ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
         ObjectOutputStream objectOS = null;
         try {
@@ -21,7 +21,7 @@ public class Marshaller {
         return byteArrayOS.toByteArray();
     }
 
-    public static Message unmarshal(byte[] bytes) {
+    public static synchronized Message unmarshal(byte[] bytes) {
         String s = new String(bytes);
         if (s.contains("Sync")) {
 //            log.warn("#".repeat(20));
