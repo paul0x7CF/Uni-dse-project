@@ -43,9 +43,11 @@ public class ConfigFileReader {
     }
 
     public static String getCommunicationProperty(final String KEY) {
+        logger.trace("Reading property: " + KEY);
         return readProperty(KEY, CONFIG_FILE_PATH_FROM_COMMUNICATION);
     }
     public static String getProperty(final String KEY) {
+        logger.trace("Reading property: " + KEY);
         return readProperty(KEY, CONFIG_FILE_PATH);
     }
 }

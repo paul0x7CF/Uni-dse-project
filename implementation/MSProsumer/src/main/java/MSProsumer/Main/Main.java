@@ -36,6 +36,7 @@ public class Main {
                 }
             }
         }
+        logger.info("{} Prosumer created", PROSUMER_AMOUNT);
 
     }
 }
