@@ -6,7 +6,7 @@ import CF.broker.BrokerRunner;
 import MSF.messageHandler.ExchangeMessageHandler;
 import MSF.messageHandler.ProsumerMessageHandler;
 import MSF.propertyHandler.PropertiesReader;
-import exceptions.UnknownMessageException;
+import MSF.exceptions.UnknownMessageException;
 import CF.protocol.ECategory;
 import CF.protocol.Message;
 import CF.sendable.EServiceType;
