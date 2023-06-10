@@ -1,24 +1,24 @@
 package Logic.Prosumer;
 
 import Communication.Communication;
+import Communication.PollForecast;
 import Data.Consumer;
 import Data.EProsumerType;
-import Data.IProsumerDevice;
 import Data.Wallet;
 import Exceptions.DeviceNotSupportedException;
 import Exceptions.UndefinedStrategyException;
 import Logic.AccountingStrategy.CalcConsumption;
 import Logic.AccountingStrategy.ContextCalcAcct;
 import Logic.DemandManager;
-import Logic.Scheduler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import protocol.ECategory;
 import protocol.Message;
 import sendable.Bid;
 import sendable.EServiceType;
 import sendable.Sell;
 import sendable.TimeSlot;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -94,7 +94,7 @@ public class Prosumer implements Runnable {
             ContextCalcAcct contextCalcAcct = new ContextCalcAcct();
 
             contextCalcAcct.setCalcAcctAStrategy(new CalcConsumption(communicator));
-            contextCalcAcct.calculateAccounting(new ArrayList<>(consumer), newTimeSlot.getTimeSlotID());
+            PollForecast myPoll= contextCalcAcct.calculateAccounting(new ArrayList<>(consumer), newTimeSlot.getTimeSlotID());
 
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

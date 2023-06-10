@@ -18,7 +18,9 @@ import protocol.ECategory;
 import protocol.Message;
 import sendable.*;
 
+import java.util.HashMap;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
 public class Communication {
@@ -33,6 +35,8 @@ public class Communication {
     private MessageBuilder messageBuilder;
 
     private BlockingQueue<TimeSlot> inputQueueTimeSlot;
+    private HashMap<UUID, PollForecast> pollForecastConsumptionMap = new HashMap<>();
+    private HashMap<UUID, PollForecast> pollForecastProductionMap = new HashMap<>();
 
     private BlockingQueue<Message> incomingMessages;
 
@@ -90,18 +94,24 @@ public class Communication {
         }
     }
 
-    public void sendConsumptionRequestMessage(ConsumptionRequest consumptionRequest) {
+    public PollForecast sendConsumptionRequestMessage(ConsumptionRequest consumptionRequest) {
+        this.pollForecastConsumptionMap.put(consumptionRequest.getRequestTimeSlotId(), new PollForecast());
+        logger.trace("added ConsumptionPoll");
 
         Optional<Message> messageToSend = Optional.empty();
 
+        // TODO: @Zivan @Paul are there more than one forecast services?
         for (MSData receiverService : communicationBroker.getServicesByType(EServiceType.Forecast)) {
             messageToSend= Optional.of(this.messageBuilder.buildConsumptionForecastMessage(consumptionRequest, receiverService));
             communicationBroker.sendMessage(messageToSend.get());
             logger.debug("ConsumptionRequestMessage sent to: Ip:{}, Port: {}", receiverService.getAddress(), receiverService.getPort());
         }
+
         if(messageToSend.isEmpty()){
             throw new ServiceNotFoundRuntimeException();
         }
+
+        return this.pollForecastConsumptionMap.get(consumptionRequest.getRequestTimeSlotId());
     }
 
     public void sendProductionRequestMessage(SolarRequest solarRequest) {

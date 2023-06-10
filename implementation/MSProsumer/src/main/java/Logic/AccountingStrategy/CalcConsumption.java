@@ -24,9 +24,7 @@ public class CalcConsumption implements ICalAcctStrategy {
 
         HashMap<String, Double> consumptionMap = getConsumptionMap(devices);
         ConsumptionRequest request = new ConsumptionRequest(consumptionMap, timeSlotId);
-        communication.sendConsumptionRequestMessage(request);
-        // TODO: @Paul define return type
-        return null;
+        return communication.sendConsumptionRequestMessage(request);
 
 
 

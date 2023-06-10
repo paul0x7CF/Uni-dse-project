@@ -19,9 +19,7 @@ public class ContextCalcAcct {
     public PollForecast calculateAccounting(List<IProsumerDevice> devices, UUID timeSlotId) throws DeviceNotSupportedException, UndefinedStrategyException {
         if(this.strategy.isEmpty())
             throw new UndefinedStrategyException();
-        this.strategy.get().calculateAccounting(devices, timeSlotId);
-        // TODO: @Paul define return type
-        return null;
+        return this.strategy.get().calculateAccounting(devices, timeSlotId);
 
     }
 }
