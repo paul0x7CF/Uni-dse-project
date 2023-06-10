@@ -3,7 +3,7 @@ package loadManager.timeSlotManagement;
 import mainPackage.PropertyFileReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sendable.TimeSlot;
+import CF.sendable.TimeSlot;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

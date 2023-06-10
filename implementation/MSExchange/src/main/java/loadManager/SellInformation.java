@@ -1,6 +1,6 @@
 package loadManager;
 
-import sendable.Sell;
+import CF.sendable.Sell;
 
 import java.util.UUID;
 

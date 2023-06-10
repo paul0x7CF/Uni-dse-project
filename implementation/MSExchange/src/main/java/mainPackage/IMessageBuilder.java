@@ -1,7 +1,7 @@
 package mainPackage;
 
-import protocol.MessageFactory;
-import sendable.MSData;
+import CF.protocol.MessageFactory;
+import CF.sendable.MSData;
 
 public interface IMessageBuilder {
     static MessageFactory senderAndReceiverTemplate(MSData reciever, MSData sender) {

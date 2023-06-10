@@ -1,8 +1,8 @@
 package msExchange.auctionManagement;
 
-import sendable.Bid;
-import sendable.Sell;
-import sendable.Transaction;
+import CF.sendable.Bid;
+import CF.sendable.Sell;
+import CF.sendable.Transaction;
 
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;

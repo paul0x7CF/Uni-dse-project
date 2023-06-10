@@ -1,10 +1,10 @@
 package validator;
 
-import Exceptions.InvalidTimeSlotException;
+import MSP.Exceptions.InvalidTimeSlotException;
 import msExchange.messageHandling.ExchangeMessageHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sendable.TimeSlot;
+import CF.sendable.TimeSlot;
 
 import java.util.Map;
 import java.util.UUID;

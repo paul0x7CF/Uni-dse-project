@@ -1,8 +1,8 @@
 package validator;
 
-import Exceptions.IllegalSendableException;
-import sendable.Bid;
-import sendable.ISendable;
+import MSP.Exceptions.IllegalSendableException;
+import CF.sendable.Bid;
+import CF.sendable.ISendable;
 
 import java.util.Optional;
 

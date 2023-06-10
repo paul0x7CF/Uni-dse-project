@@ -1,14 +1,14 @@
 package exchangeTests.AuctionManager;
 
-import Exceptions.AuctionNotFoundException;
+import MSP.Exceptions.AuctionNotFoundException;
 import msExchange.auctionManagement.Auction;
 import msExchange.auctionManagement.AuctionManager;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import sendable.Bid;
-import sendable.Sell;
-import sendable.TimeSlot;
-import sendable.Transaction;
+import CF.sendable.Bid;
+import CF.sendable.Sell;
+import CF.sendable.TimeSlot;
+import CF.sendable.Transaction;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

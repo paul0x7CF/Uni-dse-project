@@ -1,13 +1,13 @@
 package loadManager.networkManagment;
 
-import Exceptions.IllegalSendableException;
+import CF.sendable.*;
+import MSP.Exceptions.IllegalSendableException;
 import mainPackage.ESubCategory;
 import mainPackage.IMessageBuilder;
 import mainPackage.PropertyFileReader;
-import protocol.ECategory;
-import protocol.Message;
-import protocol.MessageFactory;
-import sendable.*;
+import CF.protocol.ECategory;
+import CF.protocol.Message;
+import CF.protocol.MessageFactory;
 
 import java.util.ArrayList;
 import java.util.List;

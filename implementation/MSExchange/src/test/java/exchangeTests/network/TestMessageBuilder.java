@@ -1,16 +1,16 @@
 package exchangeTests.network;
 
-import broker.BrokerRunner;
+import CF.broker.BrokerRunner;
 import msExchange.messageHandling.MessageBuilder;
 import msExchange.networkCommunication.CommunicationExchange;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
-import protocol.ECategory;
-import protocol.Message;
-import sendable.EServiceType;
-import sendable.MSData;
-import sendable.Transaction;
+import CF.protocol.ECategory;
+import CF.protocol.Message;
+import CF.sendable.EServiceType;
+import CF.sendable.MSData;
+import CF.sendable.Transaction;
 
 import java.util.ArrayList;
 import java.util.List;

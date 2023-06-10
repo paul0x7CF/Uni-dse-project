@@ -1,13 +1,12 @@
 package loadManager.prosumerActionManagement.bidManagement;
 
 import loadManager.auctionManagement.AuctionManager;
-import loadManager.networkManagment.LoadManagerMessageHandler;
 import loadManager.networkManagment.MessageContent;
 import loadManager.prosumerActionManagement.AuctionProsumerTracker;
 import mainPackage.PropertyFileReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sendable.Bid;
+import CF.sendable.Bid;
 
 import java.util.HashMap;
 import java.util.Map;

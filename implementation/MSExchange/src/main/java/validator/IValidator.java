@@ -1,8 +1,8 @@
 package validator;
 
-import Exceptions.IllegalSendableException;
-import sendable.EServiceType;
-import sendable.ISendable;
+import MSP.Exceptions.IllegalSendableException;
+import CF.sendable.EServiceType;
+import CF.sendable.ISendable;
 
 import java.util.Optional;
 import java.util.UUID;

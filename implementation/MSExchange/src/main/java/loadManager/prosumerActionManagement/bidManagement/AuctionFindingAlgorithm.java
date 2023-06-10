@@ -1,14 +1,14 @@
 package loadManager.prosumerActionManagement.bidManagement;
 
-import Exceptions.CommandNotPossibleException;
-import Exceptions.InvalidTimeSlotException;
+import MSP.Exceptions.CommandNotPossibleException;
+import MSP.Exceptions.InvalidTimeSlotException;
 import loadManager.auctionManagement.Auction;
 import loadManager.auctionManagement.AuctionManager;
 import loadManager.networkManagment.MessageContent;
 import loadManager.prosumerActionManagement.AuctionProsumerTracker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import sendable.Bid;
+import CF.sendable.Bid;
 
 import java.util.List;
 import java.util.UUID;
