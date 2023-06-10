@@ -2,6 +2,7 @@ package forecast;
 
 import communication.ForecastCommunicationHandler;
 import protocol.Message;
+import sendable.EServiceType;
 
 import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;
@@ -12,9 +13,15 @@ public class ForecastController {
     private BlockingQueue<Message> outputQueue;
     private String ipAddress;
     private int port;
+    private int amount;
+    private int portJump;
     private HashMap<MSForecast, BlockingQueue<Message>> forecasts = new HashMap<>();
 
-    public ForecastController() {
+    public ForecastController(int port, int amount, int portJump) {
+        this.port = port;
+        this.amount = amount;
+        this.portJump = portJump;
+        this.forecastCommunicationHandler = new ForecastCommunicationHandler(inputQueue, outputQueue, port, EServiceType.Forecast);
     }
 
     public void processQueue() {
@@ -22,7 +29,10 @@ public class ForecastController {
     }
 
     public void startForecast() {
-
+        for (int i = 0; i < amount; i++) {
+            final int PORT = port + (i * portJump);
+            new Thread(new MSForecast(inputQueue, outputQueue),"Forecast-"+i).start();
+        }
     }
 
     private void updateTimeSlots() {
