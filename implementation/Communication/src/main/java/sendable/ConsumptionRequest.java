@@ -17,4 +17,8 @@ public class ConsumptionRequest implements ISendable {
     public HashMap<String, Double> getConsumptionMap() {
         return consumptionMap;
     }
+
+    public UUID getRequestTimeSlotId() {
+        return requestTimeSlotId;
+    }
 }
