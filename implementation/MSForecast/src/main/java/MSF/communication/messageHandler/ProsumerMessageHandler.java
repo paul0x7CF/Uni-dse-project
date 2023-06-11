@@ -1,4 +1,4 @@
-package MSF.messageHandler;
+package MSF.communication.messageHandler;
 
 import CF.exceptions.MessageProcessingException;
 import CF.exceptions.RemoteException;

@@ -1,14 +1,13 @@
-package MSF.messageHandler;
+package MSF.communication.messageHandler;
 
 import CF.exceptions.MessageProcessingException;
+import CF.exceptions.RemoteException;
 import MSF.exceptions.MessageNotSupportedException;
 import CF.messageHandling.IMessageHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import CF.protocol.Message;
 import CF.sendable.TimeSlot;
-
-import java.rmi.RemoteException;
 import java.util.concurrent.BlockingQueue;
 
 public class ExchangeMessageHandler implements IMessageHandler {
@@ -21,7 +20,7 @@ public class ExchangeMessageHandler implements IMessageHandler {
     }
 
     @Override
-    public void handleMessage(Message message) throws MessageProcessingException {
+    public void handleMessage(Message message) throws MessageProcessingException, RemoteException {
         try {
             switch (message.getSubCategory()) {
                 case "TimeSlot" -> handleTimeSlot(message);
