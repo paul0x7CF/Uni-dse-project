@@ -54,6 +54,8 @@ public class MainForTesting {
             executor.execute(solar);
         }
 
+        sleep(15);
+
         // create consumption forecast
         BrokerRunner consumption = null;
         for (int i = 0; i < consumptionAmount * portJumpSize; i += portJumpSize) {
