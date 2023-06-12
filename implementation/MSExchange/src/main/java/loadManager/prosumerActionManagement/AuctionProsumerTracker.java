@@ -49,7 +49,8 @@ public class AuctionProsumerTracker {
         for (Map.Entry<UUID, Map<UUID, List<UUID>>> entry : auctionsPerTimeSlot.entrySet()) {
             if (entry.getKey().equals(slotID)) {
                 for (Map.Entry<UUID, List<UUID>> entry2 : entry.getValue().entrySet()) {
-                    if (entry2.getValue().get(0).equals(bidderId)) {
+                    List<UUID> bidderIDs = entry2.getValue();
+                    if (!bidderIDs.isEmpty() && bidderIDs.get(bidderIDs.size()-1).equals(bidderId)) {
                         firstInAuction.add(entry2.getKey());
                     }
                 }

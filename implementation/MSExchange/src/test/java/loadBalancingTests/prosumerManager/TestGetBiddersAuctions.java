@@ -1,5 +1,6 @@
 package loadBalancingTests.prosumerManager;
 
+import MSP.Exceptions.InvalidBidException;
 import loadManager.SellInformation;
 import loadManager.auctionManagement.Auction;
 import loadManager.auctionManagement.AuctionManager;
@@ -17,7 +18,7 @@ public class TestGetBiddersAuctions {
     private UUID bidderID2 = UUID.randomUUID();
 
     @Test
-    public void givenAuctionsFromBidder_getBiddersAuctions_expectedCorrectList() {
+    public void givenAuctionsFromBidder_getBiddersAuctions_expectedCorrectList() throws InvalidBidException {
 //TODO: wrong class -> change
         // Arrange
         AuctionManager auctionManager = new AuctionManager();

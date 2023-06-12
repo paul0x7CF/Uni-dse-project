@@ -1,5 +1,6 @@
 package loadBalancingTests.auctionManager;
 
+import MSP.Exceptions.InvalidBidException;
 import MSP.Exceptions.InvalidTimeSlotException;
 import loadManager.SellInformation;
 import loadManager.auctionManagement.Auction;
@@ -32,7 +33,11 @@ public class TestUnsatisfiedProsumers {
 
             if (i < 5) {
                 Bid bid = new Bid(volume, price, timeSlotID, UUID.randomUUID());
-                auctionManager.setBidder(auction.getAuctionId(), bid);
+                try {
+                    auctionManager.setBidder(auction.getAuctionId(), bid);
+                } catch (InvalidBidException e) {
+                    throw new RuntimeException(e);
+                }
             } else {
                 //add unsatisfied sellers
                 unsatisfiedSellers.add(sell.getSellerID());

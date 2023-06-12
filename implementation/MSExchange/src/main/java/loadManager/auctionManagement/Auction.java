@@ -3,6 +3,7 @@ package loadManager.auctionManagement;
 import CF.sendable.Bid;
 import CF.sendable.Transaction;
 import MSP.Exceptions.CommandNotPossibleException;
+import MSP.Exceptions.InvalidBidException;
 import loadManager.SellInformation;
 
 import java.util.UUID;
@@ -27,18 +28,27 @@ public class Auction {
         this.exchangeID = sellPosition.getExchangeID();
     }
 
-    public void setBid(Bid bidPosition) {
+    public void setBid(Bid bidPosition) throws InvalidBidException {
         if (!auctionEnded) {
             if (this.bidderID != null) {
                 if (bidPosition.getPrice() > pricePerKWh) {
+                    if (bidPosition.getVolume() <= this.totalVolume) {
+                        this.coveredVolume = bidPosition.getVolume();
+                    } else {
+                        throw new InvalidBidException("Bid volume is higher than sell volume", bidPosition.getBidderID());
+                    }
                     this.pricePerKWh = bidPosition.getPrice();
                     this.bidderID = bidPosition.getBidderID();
-                    this.coveredVolume = bidPosition.getVolume();
                 }
             } else {
+                if (bidPosition.getVolume() <= this.totalVolume) {
+                    this.coveredVolume = bidPosition.getVolume();
+                } else {
+                    throw new InvalidBidException("Bid volume is higher than sell volume", bidPosition.getBidderID());
+                }
                 this.pricePerKWh = bidPosition.getPrice();
                 this.bidderID = bidPosition.getBidderID();
-                this.coveredVolume = bidPosition.getVolume();
+
             }
         }
     }
@@ -68,7 +78,7 @@ public class Auction {
     public double getCoveredVolume() {
         return coveredVolume;
     }
-    
+
     public UUID getAuctionId() {
         return auctionID;
     }
@@ -87,5 +97,9 @@ public class Auction {
 
     public UUID getTimeSlotID() {
         return this.timeSlotID;
+    }
+
+    public UUID getExchangeID() {
+        return this.exchangeID;
     }
 }

@@ -2,6 +2,7 @@ package loadManager.auctionManagement;
 
 import MSP.Exceptions.CommandNotPossibleException;
 import MSP.Exceptions.IllegalAuctionException;
+import MSP.Exceptions.InvalidBidException;
 import MSP.Exceptions.InvalidTimeSlotException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -106,7 +107,7 @@ public class AuctionManager {
     }
 
     //expected to get called, after receiving the transaction from the market
-    public void setBidder(UUID auctionId, Bid bid) {
+    public void setBidder(UUID auctionId, Bid bid) throws InvalidBidException {
         Auction auction = getAuctionByID(auctionId);
         auction.setBid(bid);
     }

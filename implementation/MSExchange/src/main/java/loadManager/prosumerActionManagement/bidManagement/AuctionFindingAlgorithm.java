@@ -1,14 +1,16 @@
 package loadManager.prosumerActionManagement.bidManagement;
 
+import CF.sendable.Bid;
 import MSP.Exceptions.CommandNotPossibleException;
+import MSP.Exceptions.InvalidBidException;
 import MSP.Exceptions.InvalidTimeSlotException;
 import loadManager.auctionManagement.Auction;
 import loadManager.auctionManagement.AuctionManager;
+import loadManager.networkManagment.EBuildCategory;
 import loadManager.networkManagment.MessageContent;
 import loadManager.prosumerActionManagement.AuctionProsumerTracker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import CF.sendable.Bid;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,10 +35,10 @@ public class AuctionFindingAlgorithm implements Runnable {
     public void run() {
         while (true) {
             synchronized (lock) {
-                List<UUID> auctions = auctionProsumerTracker.getFirstInAuction(bidForTimeSlot.getIncomingBid().getBidderID(), bidForTimeSlot.getIncomingBid().getTimeSlot());
-                bidForTimeSlot.updateBids(auctions);
                 double coveredVolume = bidForTimeSlot.getCoveredVolume();
                 if (coveredVolume != bidForTimeSlot.getIncomingBid().getVolume()) {
+                    List<UUID> auctions = auctionProsumerTracker.getFirstInAuction(bidForTimeSlot.getIncomingBid().getBidderID(), bidForTimeSlot.getIncomingBid().getTimeSlot());
+                    bidForTimeSlot.updateBids(auctions);
                     try {
                         findAuctionsToCoverVolume(bidForTimeSlot.getIncomingBid().getVolume() - coveredVolume, auctionManager.getAuctions(auctions));
                     } catch (CommandNotPossibleException | InvalidTimeSlotException e) {
@@ -53,17 +55,35 @@ public class AuctionFindingAlgorithm implements Runnable {
         }
     }
 
-    private void findAuctionsToCoverVolume(double remainingVolume, List<Auction> auctions) throws CommandNotPossibleException, InvalidTimeSlotException {
-        //TODO: find auctions to cover volume
+    private void findAuctionsToCoverVolume(double remainingVolume, List<Auction> winningAuctions) throws CommandNotPossibleException, InvalidTimeSlotException {
+        List<Auction> allAuctions = auctionManager.getAllAuctionsForSlot(bidForTimeSlot.getIncomingBid().getTimeSlot());
+        for (Auction auction : allAuctions) {
 
+            if (!winningAuctions.contains(auction)) {
+                double volume = auction.getTotalVolume() < remainingVolume ? auction.getTotalVolume() : remainingVolume;
+                if (auction.getPrice() * auction.getCoveredVolume() < bidForTimeSlot.getIncomingBid().getPrice() * volume) {
+                    logger.trace("in Auction finder, found auction to cover volume");
+                    Bid newBid = new Bid(volume, bidForTimeSlot.getIncomingBid().getPrice(), bidForTimeSlot.getIncomingBid().getTimeSlot(), bidForTimeSlot.getIncomingBid().getBidderID());
+                    try {
+                        auctionManager.setBidder(auction.getAuctionId(), newBid);
+                    } catch (InvalidBidException e) {
+                        throw new RuntimeException(e);
+                    }
+                    auctionProsumerTracker.addBidderToAuction(auction.getAuctionId(), bidForTimeSlot.getIncomingBid().getBidderID());
+                    remainingVolume -= volume;
 
-    }
+                    EBuildCategory bidToExchange = EBuildCategory.BidToExchange;
+                    bidToExchange.setUUID(auction.getExchangeID());
+                    MessageContent messageContent = new MessageContent(newBid, bidToExchange);
 
-    private synchronized void addProsumerToAuction(UUID auctionID, UUID prosumerID) {
-        //TODO: add prosumer to auction
-        //important: volume * price > als vorheriger Bidder, dann kann man setten.
-        
-
+                    try {
+                        outgoingQueue.put(messageContent);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
     }
 
 }
