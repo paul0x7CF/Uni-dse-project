@@ -1,9 +1,9 @@
 package loadManager.auctionManagement;
 
-import MSP.Exceptions.CommandNotPossibleException;
-import loadManager.SellInformation;
 import CF.sendable.Bid;
 import CF.sendable.Transaction;
+import MSP.Exceptions.CommandNotPossibleException;
+import loadManager.SellInformation;
 
 import java.util.UUID;
 
@@ -13,7 +13,8 @@ public class Auction {
     private UUID sellerID;
     private UUID timeSlotID;
     private double pricePerKWh;
-    private double volume;
+    private double totalVolume;
+    private double coveredVolume = 0;
     private boolean auctionEnded = false;
     private UUID exchangeID;
 
@@ -21,7 +22,7 @@ public class Auction {
         this.auctionID = auctionID;
         this.sellerID = sellPosition.getSell().getSellerID();
         this.pricePerKWh = sellPosition.getSell().getAskPrice();
-        this.volume = sellPosition.getSell().getVolume();
+        this.totalVolume = sellPosition.getSell().getVolume();
         this.timeSlotID = sellPosition.getSell().getTimeSlot();
         this.exchangeID = sellPosition.getExchangeID();
     }
@@ -32,10 +33,12 @@ public class Auction {
                 if (bidPosition.getPrice() > pricePerKWh) {
                     this.pricePerKWh = bidPosition.getPrice();
                     this.bidderID = bidPosition.getBidderID();
+                    this.coveredVolume = bidPosition.getVolume();
                 }
             } else {
                 this.pricePerKWh = bidPosition.getPrice();
                 this.bidderID = bidPosition.getBidderID();
+                this.coveredVolume = bidPosition.getVolume();
             }
         }
     }
@@ -48,7 +51,7 @@ public class Auction {
         if (!auctionEnded) {
             throw new CommandNotPossibleException("Auction has not ended yet");
         }
-        Transaction transaction = new Transaction(sellerID, bidderID, volume, pricePerKWh, auctionID);
+        Transaction transaction = new Transaction(sellerID, bidderID, totalVolume, pricePerKWh, auctionID);
 
         return transaction;
 
@@ -62,6 +65,10 @@ public class Auction {
         return pricePerKWh;
     }
 
+    public double getCoveredVolume() {
+        return coveredVolume;
+    }
+    
     public UUID getAuctionId() {
         return auctionID;
     }
@@ -70,8 +77,8 @@ public class Auction {
         return bidderID;
     }
 
-    public double getVolume() {
-        return this.volume;
+    public double getTotalVolume() {
+        return this.totalVolume;
     }
 
     public UUID getSellerID() {
