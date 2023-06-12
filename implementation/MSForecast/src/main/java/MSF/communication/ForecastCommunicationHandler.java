@@ -1,10 +1,10 @@
 package MSF.communication;
 
-import CF.exceptions.MessageProcessingException;
 import CF.protocol.Message;
 import CF.broker.BrokerRunner;
 import MSF.communication.messageHandler.ExchangeMessageHandler;
 import MSF.communication.messageHandler.ProsumerMessageHandler;
+import MSF.communication.messageHandler.ProsumerRequest;
 import MSF.exceptions.UnknownMessageException;
 import CF.protocol.ECategory;
 import CF.sendable.EServiceType;
@@ -17,13 +17,13 @@ import java.util.concurrent.BlockingQueue;
 public class ForecastCommunicationHandler {
     private static final Logger logger = LogManager.getLogger(ForecastCommunicationHandler.class);
     private BrokerRunner communicationBroker;
-    private BlockingQueue<Message> inputQueue;
+    private BlockingQueue<ProsumerRequest> inputQueueProsumerRequest;
     private BlockingQueue<Message> outputQueue;
     private BlockingQueue<TimeSlot> inputQueueTimeSlot;
     private ForecastMessageHandler forecastMessageHandler;
 
-    public ForecastCommunicationHandler(BlockingQueue<Message> inputQueue, BlockingQueue<Message> outputQueue, int port, EServiceType serviceType) {
-        this.inputQueue = inputQueue;
+    public ForecastCommunicationHandler(BlockingQueue<ProsumerRequest> inputQueueProsumerRequest, BlockingQueue<Message> outputQueue, int port, EServiceType serviceType) {
+        this.inputQueueProsumerRequest = inputQueueProsumerRequest;
         this.outputQueue = outputQueue;
 
         setUpBroker(port, serviceType);
@@ -54,7 +54,7 @@ public class ForecastCommunicationHandler {
                     this.communicationBroker.addMessageHandler(ECategory.Exchange, new ExchangeMessageHandler(inputQueueTimeSlot));
                 }
                 case Forecast -> {
-                    this.communicationBroker.addMessageHandler(ECategory.Forecast, new ProsumerMessageHandler());
+                    this.communicationBroker.addMessageHandler(ECategory.Forecast, new ProsumerMessageHandler(inputQueueProsumerRequest));
                 }
                 default -> {
                     throw new UnknownMessageException();

@@ -5,6 +5,7 @@ import CF.protocol.ECategory;
 import CF.protocol.Message;
 import CF.sendable.TimeSlot;
 import MSF.communication.ForecastCommunicationHandler;
+import MSF.communication.messageHandler.ProsumerRequest;
 import MSF.mainPackage.Main;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,10 +19,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class MSForecast implements Runnable {
     private static final Logger logger = LogManager.getLogger(MSForecast.class);
     private ForecastCommunicationHandler forecastCommunicationHandler;
-    private List<TimeSlot> timeSlots;
     private EForecastType forecastType;
     private UUID forecastId;
-    private BlockingQueue<Message> inputQueue = new LinkedBlockingQueue<>();
+    private BlockingQueue<ProsumerRequest> inputQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<Message> outputQueue = new LinkedBlockingQueue<>();
 
     public MSForecast(int port) {
