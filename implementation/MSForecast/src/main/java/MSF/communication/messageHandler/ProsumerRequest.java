@@ -36,4 +36,8 @@ public class ProsumerRequest {
     public HashMap<String, Double> getConsumptionMap() {
         return consumptionMap;
     }
+
+    public EProsumerRequestType getType() {
+        return type;
+    }
 }

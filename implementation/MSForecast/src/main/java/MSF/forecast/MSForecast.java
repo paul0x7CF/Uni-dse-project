@@ -5,6 +5,7 @@ import CF.protocol.ECategory;
 import CF.protocol.Message;
 import CF.sendable.TimeSlot;
 import MSF.communication.ForecastCommunicationHandler;
+import MSF.communication.messageHandler.EProsumerRequestType;
 import MSF.communication.messageHandler.ProsumerRequest;
 import MSF.mainPackage.Main;
 import org.apache.logging.log4j.LogManager;
@@ -21,11 +22,12 @@ public class MSForecast implements Runnable {
     private ForecastCommunicationHandler forecastCommunicationHandler;
     private EForecastType forecastType;
     private UUID forecastId;
+    private TimeSlot currentTimeSlot;
     private BlockingQueue<ProsumerRequest> inputQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<Message> outputQueue = new LinkedBlockingQueue<>();
 
     public MSForecast(int port) {
-        this.forecastCommunicationHandler = new ForecastCommunicationHandler(inputQueue, outputQueue, port, EServiceType.Forecast);
+        this.forecastCommunicationHandler = new ForecastCommunicationHandler(inputQueue, outputQueue, port, EServiceType.Forecast, this);
     }
 
     public EForecastType getForecastType() {
@@ -51,16 +53,22 @@ public class MSForecast implements Runnable {
     }
 
     private void handleRequests() {
-        //TODO: Proper message handling!!
-
         logger.info("MSForecast received message: {}", inputQueue.poll());
 
-        /*Message message = (Message) inputQueue.poll();
+        ProsumerRequest request = (ProsumerRequest) inputQueue.poll();
 
-        if (message != null) {
-            if (message.getReceiverID().equals(forecastCommunicationHandler.getBroker().getCurrentService().getId())) {
-                logger.info("MSForecast received message: {}", message);
-            }
-        }*/
+        if (request.getType() == EProsumerRequestType.CONSUMPTION) {
+            //TODO: Calculate Consumption
+        }
+        else if (request.getType() == EProsumerRequestType.PRODUCTION) {
+            //TODO: Calculate Production
+        }
+        else {
+            logger.warn("Request type not supported");
+        }
+    }
+
+    public void setCurrentTimeSlot(TimeSlot currentTimeSlot) {
+        this.currentTimeSlot = currentTimeSlot;
     }
 }

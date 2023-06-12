@@ -9,6 +9,7 @@ import MSF.exceptions.UnknownMessageException;
 import CF.protocol.ECategory;
 import CF.sendable.EServiceType;
 import CF.sendable.TimeSlot;
+import MSF.forecast.MSForecast;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,14 +18,16 @@ import java.util.concurrent.BlockingQueue;
 public class ForecastCommunicationHandler {
     private static final Logger logger = LogManager.getLogger(ForecastCommunicationHandler.class);
     private BrokerRunner communicationBroker;
+    private MSForecast msForecast;
     private BlockingQueue<ProsumerRequest> inputQueueProsumerRequest;
     private BlockingQueue<Message> outputQueue;
     private BlockingQueue<TimeSlot> inputQueueTimeSlot;
     private ForecastMessageHandler forecastMessageHandler;
 
-    public ForecastCommunicationHandler(BlockingQueue<ProsumerRequest> inputQueueProsumerRequest, BlockingQueue<Message> outputQueue, int port, EServiceType serviceType) {
+    public ForecastCommunicationHandler(BlockingQueue<ProsumerRequest> inputQueueProsumerRequest, BlockingQueue<Message> outputQueue, int port, EServiceType serviceType, MSForecast msForecast) {
         this.inputQueueProsumerRequest = inputQueueProsumerRequest;
         this.outputQueue = outputQueue;
+        this.msForecast = msForecast;
 
         setUpBroker(port, serviceType);
 
@@ -51,7 +54,7 @@ public class ForecastCommunicationHandler {
         try {
             switch (category) {
                 case Exchange -> {
-                    this.communicationBroker.addMessageHandler(ECategory.Exchange, new ExchangeMessageHandler(inputQueueTimeSlot));
+                    this.communicationBroker.addMessageHandler(ECategory.Exchange, new ExchangeMessageHandler(msForecast));
                 }
                 case Forecast -> {
                     this.communicationBroker.addMessageHandler(ECategory.Forecast, new ProsumerMessageHandler(inputQueueProsumerRequest));
