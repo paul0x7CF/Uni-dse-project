@@ -3,7 +3,7 @@ package loadBalancingTests.timeManager;
 import loadManager.timeSlotManagement.TimeSlotBuilder;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import sendable.TimeSlot;
+import CF.sendable.TimeSlot;
 
 import java.io.FileInputStream;
 import java.io.IOException;

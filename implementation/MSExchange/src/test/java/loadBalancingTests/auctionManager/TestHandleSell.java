@@ -1,6 +1,6 @@
 package loadBalancingTests.auctionManager;
 
-import Exceptions.InvalidTimeSlotException;
+import MSP.Exceptions.InvalidTimeSlotException;
 import loadManager.SellInformation;
 import loadManager.auctionManagement.Auction;
 import loadManager.networkManagment.EBuildCategory;
@@ -8,7 +8,7 @@ import loadManager.networkManagment.MessageContent;
 import loadManager.prosumerActionManagement.ProsumerManager;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import sendable.Sell;
+import CF.sendable.Sell;
 
 import java.util.List;
 import java.util.Optional;

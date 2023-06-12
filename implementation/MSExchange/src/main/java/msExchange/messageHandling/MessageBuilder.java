@@ -1,15 +1,15 @@
 package msExchange.messageHandling;
 
-import exceptions.MessageProcessingException;
+import CF.exceptions.MessageProcessingException;
 import mainPackage.ESubCategory;
 import mainPackage.IMessageBuilder;
 import msExchange.networkCommunication.CommunicationExchange;
-import protocol.ECategory;
-import protocol.Message;
-import protocol.MessageFactory;
-import sendable.EServiceType;
-import sendable.MSData;
-import sendable.Transaction;
+import CF.protocol.ECategory;
+import CF.protocol.Message;
+import CF.protocol.MessageFactory;
+import CF.sendable.EServiceType;
+import CF.sendable.MSData;
+import CF.sendable.Transaction;
 
 import java.util.ArrayList;
 import java.util.List;

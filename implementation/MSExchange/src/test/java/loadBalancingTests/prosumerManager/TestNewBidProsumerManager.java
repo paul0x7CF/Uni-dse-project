@@ -1,7 +1,7 @@
 package loadBalancingTests.prosumerManager;
 
 import org.junit.Test;
-import sendable.Bid;
+import CF.sendable.Bid;
 
 import java.util.UUID;
 

@@ -1,13 +1,14 @@
 package mainPackage;
 
-import broker.BrokerRunner;
-import communication.NetworkHandler;
-import messageHandling.IMessageHandler;
+import CF.mainPackage.ConfigReader;
+import CF.broker.BrokerRunner;
+import CF.communication.NetworkHandler;
+import CF.messageHandling.IMessageHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import protocol.ECategory;
-import protocol.Message;
-import sendable.EServiceType;
+import CF.protocol.ECategory;
+import CF.protocol.Message;
+import CF.sendable.EServiceType;
 
 import java.util.concurrent.BlockingQueue;
 

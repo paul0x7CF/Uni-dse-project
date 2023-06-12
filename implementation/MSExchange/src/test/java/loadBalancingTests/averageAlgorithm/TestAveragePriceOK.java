@@ -1,11 +1,11 @@
 package loadBalancingTests.averageAlgorithm;
 
-import Exceptions.PriceNotOKException;
+import MSP.Exceptions.PriceNotOKException;
 import loadManager.prosumerActionManagement.AverageMechanism;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import sendable.Bid;
-import sendable.Sell;
+import CF.sendable.Bid;
+import CF.sendable.Sell;
 
 import java.util.UUID;
 

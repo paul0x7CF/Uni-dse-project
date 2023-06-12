@@ -1,9 +1,9 @@
 package loadManager.auctionManagement;
 
-import Exceptions.CommandNotPossibleException;
+import MSP.Exceptions.CommandNotPossibleException;
 import loadManager.SellInformation;
-import sendable.Bid;
-import sendable.Transaction;
+import CF.sendable.Bid;
+import CF.sendable.Transaction;
 
 import java.util.UUID;
 

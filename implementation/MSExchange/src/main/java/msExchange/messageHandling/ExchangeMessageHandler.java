@@ -1,16 +1,16 @@
 package msExchange.messageHandling;
 
-import Exceptions.IllegalSendableException;
-import Exceptions.InvalidBidException;
-import Exceptions.InvalidSellException;
-import Exceptions.InvalidTimeSlotException;
-import exceptions.MessageProcessingException;
+import CF.sendable.*;
+import MSP.Exceptions.IllegalSendableException;
+import MSP.Exceptions.InvalidBidException;
+import MSP.Exceptions.InvalidSellException;
+import MSP.Exceptions.InvalidTimeSlotException;
+import CF.exceptions.MessageProcessingException;
 import mainPackage.ESubCategory;
 import msExchange.auctionManagement.AuctionManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import protocol.Message;
-import sendable.*;
+import CF.protocol.Message;
 import validator.BidValidator;
 import validator.IValidator;
 import validator.SellValidator;

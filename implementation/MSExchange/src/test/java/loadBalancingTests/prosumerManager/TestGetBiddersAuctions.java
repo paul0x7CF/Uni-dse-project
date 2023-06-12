@@ -4,8 +4,8 @@ import loadManager.SellInformation;
 import loadManager.auctionManagement.Auction;
 import loadManager.auctionManagement.AuctionManager;
 import org.junit.jupiter.api.Test;
-import sendable.Bid;
-import sendable.Sell;
+import CF.sendable.Bid;
+import CF.sendable.Sell;
 
 import java.util.UUID;
 
