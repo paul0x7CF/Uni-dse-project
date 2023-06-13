@@ -27,7 +27,7 @@ public class MSForecast implements Runnable {
     private BlockingQueue<TimeSlot> inputQueueTimeSlots = new LinkedBlockingQueue<>();
 
     public MSForecast(int port) {
-        this.forecastCommunicationHandler = new ForecastCommunicationHandler(inputQueue, port, EServiceType.Forecast, this);
+        this.forecastCommunicationHandler = new ForecastCommunicationHandler(inputQueue, inputQueueTimeSlots, port, EServiceType.Forecast, this);
     }
 
     public EForecastType getForecastType() {

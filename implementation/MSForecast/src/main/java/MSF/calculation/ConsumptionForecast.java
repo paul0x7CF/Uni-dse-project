@@ -36,6 +36,6 @@ public class ConsumptionForecast implements Runnable {
         //TODO: calculate consumption
 
         ConsumptionResponse consumptionResponse = new ConsumptionResponse(consumption, prosumerRequest.getCurrentTimeSlotID());
-        this.forecastCommunicationHandler.sendConsumptionResponseMessage(consumptionResponse);
+        this.forecastCommunicationHandler.sendConsumptionResponseMessage(consumptionResponse, prosumerRequest.getSenderAddress(), prosumerRequest.getSenderPort(), prosumerRequest.getSenderID());
     }
 }

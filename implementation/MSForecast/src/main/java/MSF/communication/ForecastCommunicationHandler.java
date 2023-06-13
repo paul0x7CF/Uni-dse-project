@@ -16,6 +16,7 @@ import MSF.forecast.MSForecast;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
 public class ForecastCommunicationHandler {
@@ -28,9 +29,10 @@ public class ForecastCommunicationHandler {
     private ForecastMessageHandler forecastMessageHandler;
     private ForecastMessageBuilder forecastMessageBuilder;
 
-    public ForecastCommunicationHandler(BlockingQueue<ProsumerRequest> inputQueueProsumerRequest, int port, EServiceType serviceType, MSForecast msForecast) {
+    public ForecastCommunicationHandler(BlockingQueue<ProsumerRequest> inputQueueProsumerRequest, BlockingQueue<TimeSlot> inputQueueTimeSlot, int port, EServiceType serviceType, MSForecast msForecast) {
         this.inputQueueProsumerRequest = inputQueueProsumerRequest;
         this.msForecast = msForecast;
+        this.inputQueueTimeSlot = inputQueueTimeSlot;
         this.forecastMessageBuilder = new ForecastMessageBuilder();
 
         setUpBroker(port, serviceType);
@@ -42,12 +44,12 @@ public class ForecastCommunicationHandler {
                 ", Port: " + this.communicationBroker.getCurrentService().getPort());
     }
 
-    public void sendConsumptionResponseMessage(ConsumptionResponse consumptionResponse) {
-
+    public void sendConsumptionResponseMessage(ConsumptionResponse consumptionResponse, String senderAddress, int senderPort, UUID senderID) {
+        communicationBroker.sendMessage(this.forecastMessageBuilder.buildConsumptionResponseMessage(consumptionResponse, senderAddress, senderPort, senderID));
     }
 
-    public void sendProductionResponseMessage(SolarResponse solarResponse) {
-
+    public void sendProductionResponseMessage(SolarResponse solarResponse, String senderAddress, int senderPort, UUID senderID) {
+        communicationBroker.sendMessage(this.forecastMessageBuilder.buildSolarResponseMessage(solarResponse, senderAddress, senderPort, senderID));
     }
 
     public void setUpBroker(int port, EServiceType serviceType) {
@@ -56,6 +58,7 @@ public class ForecastCommunicationHandler {
 
     public void startBrokerRunner() {
         this.communicationBroker.run();
+        this.forecastMessageBuilder.setMyMSData(this.communicationBroker.getCurrentService());
     }
 
     public void addMessageHandler(ECategory category) {

@@ -38,7 +38,12 @@ public class ProsumerMessageHandler implements IMessageHandler {
         logger.trace("Consumption message received");
 
         ConsumptionRequest consumptionRequest = (ConsumptionRequest) message.getSendable(ConsumptionRequest.class);
-        ProsumerRequest request = new ProsumerRequest(EProsumerRequestType.CONSUMPTION, consumptionRequest.getConsumptionMap(), consumptionRequest.getRequestTimeSlotId());
+        ProsumerRequest request = new ProsumerRequest(EProsumerRequestType.CONSUMPTION,
+                consumptionRequest.getConsumptionMap(),
+                consumptionRequest.getRequestTimeSlotId(),
+                message.getSenderAddress(),
+                message.getSenderPort(),
+                message.getSenderID());
 
         try {
             this.incomingRequest.put(request);
@@ -51,7 +56,13 @@ public class ProsumerMessageHandler implements IMessageHandler {
         logger.trace("Production message received");
 
         SolarRequest solarRequest = (SolarRequest) message.getSendable(SolarRequest.class);
-        ProsumerRequest request = new ProsumerRequest(EProsumerRequestType.PRODUCTION, solarRequest.getArea(), solarRequest.getAngle(), solarRequest.getEfficiency());
+        ProsumerRequest request = new ProsumerRequest(EProsumerRequestType.PRODUCTION,
+                solarRequest.getArea(),
+                solarRequest.getAngle(),
+                solarRequest.getEfficiency(),
+                message.getSenderAddress(),
+                message.getSenderPort(),
+                message.getSenderID());
 
         try {
             this.incomingRequest.put(request);

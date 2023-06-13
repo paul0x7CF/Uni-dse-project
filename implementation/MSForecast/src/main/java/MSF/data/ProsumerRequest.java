@@ -10,18 +10,27 @@ public class ProsumerRequest {
     private int efficiency;
     private HashMap<String, Double> consumptionMap;
     private UUID currentTimeSlotID;
+    private String senderAddress;
+    private int senderPort;
+    private UUID senderID;
 
-    public ProsumerRequest(EProsumerRequestType type, int area, int angle, int efficiency) {
+    public ProsumerRequest(EProsumerRequestType type, int area, int angle, int efficiency, String senderAddress, int senderPort, UUID senderID) {
         this.type = type;
         this.area = area;
         this.angle = angle;
         this.efficiency = efficiency;
+        this.senderAddress = senderAddress;
+        this.senderPort = senderPort;
+        this.senderID = senderID;
     }
 
-    public ProsumerRequest(EProsumerRequestType type, HashMap<String, Double> consumptionMap, UUID currentTimeSlotID) {
+    public ProsumerRequest(EProsumerRequestType type, HashMap<String, Double> consumptionMap, UUID currentTimeSlotID, String senderAddress, int senderPort, UUID senderID) {
         this.type = type;
         this.consumptionMap = consumptionMap;
         this.currentTimeSlotID = currentTimeSlotID;
+        this.senderAddress = senderAddress;
+        this.senderPort = senderPort;
+        this.senderID = senderID;
     }
 
     public int getArea() {
@@ -44,7 +53,19 @@ public class ProsumerRequest {
         return type;
     }
 
+    public String getSenderAddress() {
+        return senderAddress;
+    }
+
+    public int getSenderPort() {
+        return senderPort;
+    }
+
     public UUID getCurrentTimeSlotID() {
         return currentTimeSlotID;
+    }
+
+    public UUID getSenderID() {
+        return senderID;
     }
 }
