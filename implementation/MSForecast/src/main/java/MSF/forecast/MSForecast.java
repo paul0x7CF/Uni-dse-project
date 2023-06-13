@@ -36,7 +36,13 @@ public class MSForecast implements Runnable {
 
     @Override
     public void run() {
-        forecastCommunicationHandler.startBrokerRunner();
+        Thread communicationThread = new Thread(() -> {
+            forecastCommunicationHandler.startBrokerRunner();
+        }, "ForecastCommunicationThread");
+        communicationThread.start();
+
+        //forecastCommunicationHandler.startBrokerRunner();
+
         forecastCommunicationHandler.addMessageHandler(ECategory.Exchange);
         forecastCommunicationHandler.addMessageHandler(ECategory.Forecast);
 
