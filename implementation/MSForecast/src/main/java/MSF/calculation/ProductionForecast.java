@@ -13,7 +13,6 @@ public class ProductionForecast implements Runnable {
     private HistoricData historicData;
     private BlockingQueue<ProsumerRequest> inputQueue;
     //private BlockingQueue<ProsumerResponse> outputQueue;
-
     private ForecastCommunicationHandler forecastCommunicationHandler;
     private SolarRequest solarRequest;
 
@@ -21,7 +20,7 @@ public class ProductionForecast implements Runnable {
         this.inputQueue = inputQueue;
         this.forecastCommunicationHandler = forecastCommunicationHandler;
     }
-
+    @Override
     public void run() {
         System.out.println("ProductionForecast");
     }
