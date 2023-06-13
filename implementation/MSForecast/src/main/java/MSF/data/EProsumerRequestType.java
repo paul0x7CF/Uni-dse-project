@@ -1,4 +1,4 @@
-package MSF.communication.messageHandler;
+package MSF.data;
 
 public enum EProsumerRequestType {
     PRODUCTION,

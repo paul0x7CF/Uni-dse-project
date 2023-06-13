@@ -2,9 +2,12 @@ package MSF.communication;
 
 import CF.protocol.Message;
 import CF.broker.BrokerRunner;
+import CF.sendable.ConsumptionResponse;
+import CF.sendable.SolarResponse;
 import MSF.communication.messageHandler.ExchangeMessageHandler;
 import MSF.communication.messageHandler.ProsumerMessageHandler;
-import MSF.communication.messageHandler.ProsumerRequest;
+import MSF.data.ProsumerRequest;
+import MSF.data.ProsumerResponse;
 import MSF.exceptions.UnknownMessageException;
 import CF.protocol.ECategory;
 import CF.sendable.EServiceType;
@@ -13,6 +16,7 @@ import MSF.forecast.MSForecast;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
 public class ForecastCommunicationHandler {
@@ -20,14 +24,16 @@ public class ForecastCommunicationHandler {
     private BrokerRunner communicationBroker;
     private MSForecast msForecast;
     private BlockingQueue<ProsumerRequest> inputQueueProsumerRequest;
-    private BlockingQueue<Message> outputQueue;
+    //private BlockingQueue<ProsumerResponse> outputQueue;
     private BlockingQueue<TimeSlot> inputQueueTimeSlot;
     private ForecastMessageHandler forecastMessageHandler;
+    private ForecastMessageBuilder forecastMessageBuilder;
 
-    public ForecastCommunicationHandler(BlockingQueue<ProsumerRequest> inputQueueProsumerRequest, BlockingQueue<Message> outputQueue, int port, EServiceType serviceType, MSForecast msForecast) {
+    public ForecastCommunicationHandler(BlockingQueue<ProsumerRequest> inputQueueProsumerRequest, BlockingQueue<TimeSlot> inputQueueTimeSlot, int port, EServiceType serviceType, MSForecast msForecast) {
         this.inputQueueProsumerRequest = inputQueueProsumerRequest;
-        this.outputQueue = outputQueue;
         this.msForecast = msForecast;
+        this.inputQueueTimeSlot = inputQueueTimeSlot;
+        this.forecastMessageBuilder = new ForecastMessageBuilder();
 
         setUpBroker(port, serviceType);
 
@@ -38,8 +44,12 @@ public class ForecastCommunicationHandler {
                 ", Port: " + this.communicationBroker.getCurrentService().getPort());
     }
 
-    public void sendMessage(Message message) {
-        communicationBroker.sendMessage(message);
+    public void sendConsumptionResponseMessage(ConsumptionResponse consumptionResponse, String senderAddress, int senderPort, UUID senderID) {
+        communicationBroker.sendMessage(this.forecastMessageBuilder.buildConsumptionResponseMessage(consumptionResponse, senderAddress, senderPort, senderID));
+    }
+
+    public void sendProductionResponseMessage(SolarResponse solarResponse, String senderAddress, int senderPort, UUID senderID) {
+        communicationBroker.sendMessage(this.forecastMessageBuilder.buildSolarResponseMessage(solarResponse, senderAddress, senderPort, senderID));
     }
 
     public void setUpBroker(int port, EServiceType serviceType) {
@@ -48,6 +58,7 @@ public class ForecastCommunicationHandler {
 
     public void startBrokerRunner() {
         this.communicationBroker.run();
+        this.forecastMessageBuilder.setMyMSData(this.communicationBroker.getCurrentService());
     }
 
     public void addMessageHandler(ECategory category) {

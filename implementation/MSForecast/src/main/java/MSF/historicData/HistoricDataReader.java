@@ -20,9 +20,6 @@ public class HistoricDataReader {
         try (CSVReader reader = new CSVReader(new FileReader(HISTORIC_DATA_FILE_PATH))) {
             List<String[]> rows = reader.readAll();
 
-            // Assuming the first row contains the headers, you can access them like this:
-            String[] headers = rows.get(0);
-
             // Process the data rows
             for (int i = 1; i < rows.size(); i++) {
                 String[] data = rows.get(i);
