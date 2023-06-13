@@ -68,7 +68,7 @@ public class Communication {
     }
 
     public void startBrokerRunner() {
-        this.communicationBroker.run();
+        new Thread(this.communicationBroker).start();
     }
 
     public void addMessageHandler(ECategory category) {
