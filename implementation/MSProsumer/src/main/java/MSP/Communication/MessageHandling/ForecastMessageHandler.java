@@ -49,7 +49,7 @@ public class ForecastMessageHandler implements IMessageHandler {
 
         PollForecast pollForecastForTimeSlotID = this.pollForecastConsumptionMap.get(consumptionResponse.getRequestTimeSlotId());
 
-        // Check if the PollForecast is available because request was broadcasted to all Forecasts
+        // Check if the PollForecast is already available because request was broadcasted to all Forecasts
         if(!pollForecastForTimeSlotID.isAvailable()) {
             // Convert the HashMap<String, Double> to HashMap<EConsumerType, Double> for the PollingObject
             HashMap<String, Double> consumptionForecastMap = consumptionResponse.getConsumptionMap();
