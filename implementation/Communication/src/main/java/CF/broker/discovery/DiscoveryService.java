@@ -94,7 +94,7 @@ public class DiscoveryService implements IMessageSchedulerObserver {
                 messagesToSchedule.remove(port);
             } else {
                 Message message = messagesToSchedule.get(port);
-                log.trace("{} sending to {}", currentService.getId(), message.getSenderID());
+                log.trace("{} sending to {}", currentService.getId(), message.getReceiverID());
                 broker.sendMessage(message);
             }
         }
