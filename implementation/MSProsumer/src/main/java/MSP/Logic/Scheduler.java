@@ -1,15 +1,16 @@
 package MSP.Logic;
 
+import CF.sendable.TimeSlot;
 import MSP.Data.Consumer;
 
 import java.util.List;
 
 public class Scheduler {
     private int threshold;
-    private List<Consumer> heavyConsumers;
 
     public Scheduler() {}
 
-    public void addHeavyConsumer(Consumer consumer) {
+    public void calculate(Consumer consumer, TimeSlot timeSlot) {
+        
     }
 }

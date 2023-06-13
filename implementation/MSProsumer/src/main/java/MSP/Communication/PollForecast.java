@@ -16,7 +16,7 @@ public class PollForecast {
         isAvailable = available;
     }
 
-    public void setForecastResult(HashMap<EConsumerType, Double> responseMap) {
+    public void setPollResult(HashMap<EConsumerType, Double> responseMap) {
         this.responseMap = responseMap;
     }
 

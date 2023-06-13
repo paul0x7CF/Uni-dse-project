@@ -81,7 +81,7 @@ public class Communication {
                     this.communicationBroker.addMessageHandler(ECategory.Exchange, new ExchangeMessageHandler(myProsumer, inputQueueTimeSlot));
                 }
                 case Forecast -> {
-                    this.communicationBroker.addMessageHandler(ECategory.Forecast, new ForecastMessageHandler(myProsumer));
+                    this.communicationBroker.addMessageHandler(ECategory.Forecast, new ForecastMessageHandler(this.pollForecastConsumptionMap, this.pollForecastProductionMap));
                 }
                 default -> {
                     throw new UnknownMessageException();
@@ -98,7 +98,8 @@ public class Communication {
 
         Optional<Message> messageToSend = Optional.empty();
 
-        // TODO: @Zivan @Paul are there more than one forecast services?
+        // Send message to all services of type Forecast for ConsumptionRequest
+        // Only one Response message will be needed because all services of type Forecast will send the same response
         for (MSData receiverService : communicationBroker.getServicesByType(EServiceType.Forecast)) {
             messageToSend= Optional.of(this.messageBuilder.buildConsumptionForecastMessage(consumptionRequest, receiverService));
             communicationBroker.sendMessage(messageToSend.get());

@@ -1,21 +1,29 @@
 package MSP.Communication.MessageHandling;
 
+import CF.sendable.ConsumptionResponse;
+import MSP.Communication.PollForecast;
+import MSP.Data.EConsumerType;
 import MSP.Exceptions.MessageNotSupportedException;
-import MSP.Logic.Prosumer.Prosumer;
 import CF.exceptions.MessageProcessingException;
 import CF.exceptions.RemoteException;
 import CF.messageHandling.IMessageHandler;
+import MSP.Exceptions.UnknownForecastResponseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import CF.protocol.Message;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 public class ForecastMessageHandler implements IMessageHandler {
     private static final Logger logger = LogManager.getLogger(ForecastMessageHandler.class);
 
-    Prosumer myProsumer;
+    private HashMap<UUID, PollForecast> pollForecastConsumptionMap;
+    private HashMap<UUID, PollForecast> pollForecastProductionMap;
 
-    public ForecastMessageHandler(Prosumer prosumer) {
-        this.myProsumer = prosumer;
+    public ForecastMessageHandler(HashMap<UUID, PollForecast> pollForecastConsumptionMap, HashMap<UUID, PollForecast> pollForecastProductionMap) {
+        this.pollForecastConsumptionMap = pollForecastConsumptionMap;
+        this.pollForecastProductionMap = pollForecastProductionMap;
 
     }
 
@@ -27,13 +35,38 @@ public class ForecastMessageHandler implements IMessageHandler {
                 case "Consumption" -> handleConsumption(message);
                 default -> throw new MessageNotSupportedException();
             }
-        } catch (MessageNotSupportedException e) {
+        } catch (MessageNotSupportedException | UnknownForecastResponseException e) {
             logger.warn(e.getMessage());
         }
     }
 
-    private void handleConsumption(Message message) {
-        logger.trace("Consumption message received");
+    private void handleConsumption(Message message) throws UnknownForecastResponseException {
+        logger.debug("Consumption message received");
+        ConsumptionResponse consumptionResponse = (ConsumptionResponse) message.getSendable(ConsumptionResponse.class);
+        if (!this.pollForecastConsumptionMap.containsKey(consumptionResponse.getRequestTimeSlotId())) {
+            throw new UnknownForecastResponseException();
+        }
+
+        PollForecast pollForecastForTimeSlotID = this.pollForecastConsumptionMap.get(consumptionResponse.getRequestTimeSlotId());
+
+        // Check if the PollForecast is already available because request was broadcasted to all Forecasts
+        if(!pollForecastForTimeSlotID.isAvailable()) {
+            // Convert the HashMap<String, Double> to HashMap<EConsumerType, Double> for the PollingObject
+            HashMap<String, Double> consumptionForecastMap = consumptionResponse.getConsumptionMap();
+            HashMap<EConsumerType, Double> pollingResult = new HashMap<>();
+            for (var entry : consumptionForecastMap.entrySet()) {
+                pollingResult.put(EConsumerType.valueOf(entry.getKey()), entry.getValue());
+            }
+
+            pollForecastForTimeSlotID.setPollResult(pollingResult);
+            pollForecastForTimeSlotID.setAvailable(true);
+            logger.debug("Consumption Forecast Response was set on Poll Object");
+        }
+        else {
+            logger.warn("Received a forecast response for a time slot that is already available");
+        }
+
+
     }
 
     private void handleProduction(Message message) {
