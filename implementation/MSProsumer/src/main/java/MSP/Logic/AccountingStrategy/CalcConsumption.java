@@ -32,21 +32,25 @@ public class CalcConsumption implements ICalAcctStrategy {
         return communication.sendConsumptionRequestMessage(request);
 
 
-
     }
 
     private HashMap<String, Double> getConsumptionMap(List<IProsumerDevice> devices, TimeSlot timeSlot) throws DeviceNotSupportedException{
         HashMap<String, Double> consumptionMap = new HashMap<>();
+        int deviceCount = 0;
+        int deviceAdded = 0;
         for (IProsumerDevice device : devices) {
+            deviceCount++;
             if (device.getDevice() instanceof Consumer consumer) {
                 if(consumer.isAllowedToConsume(timeSlot.getStartTime().toLocalTime())) {
                     consumptionMap.put(consumer.getConsumerType().toString(), consumer.getAverageConsumption());
+                    deviceAdded++;
                     logger.trace("Consumer " + consumer.getConsumerType() + " was put into the consumptionMap");
                 }
             } else {
                 throw new DeviceNotSupportedException("A Consumer Device was expected but a " + device.getDevice().getClass().getName() + " was found");
             }
         }
+        logger.debug("{} of {} devices were added to the consumptionMap", deviceAdded, deviceCount);
         return consumptionMap;
     }
 }
