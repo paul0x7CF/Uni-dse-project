@@ -6,6 +6,6 @@ public class UnknownForecastResponseException extends Exception{
     }
 
     public UnknownForecastResponseException() {
-        super("Couldn't find an expected response for the given TimeSlotId");
+        super("Couldn't find an expected response for the given TimeSlotId in the ForecastResponse");
     }
 }
