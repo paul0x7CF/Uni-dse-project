@@ -38,7 +38,7 @@ public class ExchangeMessageHandler implements IMessageHandler {
     }
 
     private void handleTimeSlot(Message message) {
-        logger.trace("TimeSlot message received adding to BlockingQueue");
+        logger.debug("TimeSlot message received adding to BlockingQueue");
         TimeSlot newTimeSlot = (TimeSlot) message.getSendable(TimeSlot.class);
         try {
             this.availableTimeSlots.put(newTimeSlot);
