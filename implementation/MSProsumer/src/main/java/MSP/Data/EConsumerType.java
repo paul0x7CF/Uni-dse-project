@@ -6,8 +6,9 @@ public enum EConsumerType {
     HEATING,
     LIGHTING,
     COOLING,
+    FRIDGE,
     STOVE,
-    LOUNDRY_EQUIPMENT,
+    WASHING_MACHINE,
     DISHWASHER,
-    ENTERTAINMENT_EQUIPMENT,
+    TV,
 }
