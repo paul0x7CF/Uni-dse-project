@@ -13,10 +13,10 @@ import java.util.concurrent.BlockingQueue;
 
 public class ExchangeMessageHandler implements IMessageHandler {
     private static final Logger logger = LogManager.getLogger(ExchangeMessageHandler.class);
-    private MSForecast msForecast;
+    private BlockingQueue<TimeSlot> inputQueueTimeSlot;
 
-    public ExchangeMessageHandler(MSForecast msForecast) {
-        this.msForecast = msForecast;
+    public ExchangeMessageHandler(BlockingQueue<TimeSlot> inputQueueTimeSlot) {
+        this.inputQueueTimeSlot = inputQueueTimeSlot;
     }
 
     @Override
@@ -36,6 +36,6 @@ public class ExchangeMessageHandler implements IMessageHandler {
         logger.trace("TimeSlot message received adding to BlockingQueue");
         TimeSlot newTimeSlot = (TimeSlot) message.getSendable(TimeSlot.class);
 
-        this.msForecast.setCurrentTimeSlot(newTimeSlot);
+        this.inputQueueTimeSlot.add(newTimeSlot);
     }
 }

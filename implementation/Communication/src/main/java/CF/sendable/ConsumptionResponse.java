@@ -10,6 +10,7 @@ public class ConsumptionResponse implements ISendable {
         this.consumption = consumption;
     }
 
+    //TODO: Change UUID to String
     public Map<UUID, Double> getConsumption() {
         return consumption;
     }

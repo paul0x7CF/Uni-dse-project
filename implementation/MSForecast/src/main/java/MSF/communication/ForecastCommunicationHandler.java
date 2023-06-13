@@ -54,7 +54,7 @@ public class ForecastCommunicationHandler {
         try {
             switch (category) {
                 case Exchange -> {
-                    this.communicationBroker.addMessageHandler(ECategory.Exchange, new ExchangeMessageHandler(msForecast));
+                    this.communicationBroker.addMessageHandler(ECategory.Exchange, new ExchangeMessageHandler(inputQueueTimeSlot));
                 }
                 case Forecast -> {
                     this.communicationBroker.addMessageHandler(ECategory.Forecast, new ProsumerMessageHandler(inputQueueProsumerRequest));
