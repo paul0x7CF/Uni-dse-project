@@ -1,5 +1,6 @@
 package MSP.Data;
 
+import CF.sendable.TimeSlot;
 import MSP.Clock.TimeProvider;
 import MSP.Configuration.ConfigFileReader;
 
@@ -34,6 +35,10 @@ public class Consumer implements IProsumerDevice {
 
     public EConsumerType getConsumerType() {
         return this.consumerType;
+    }
+
+    public boolean isAllowedToConsume(LocalTime timeSlotStart) {
+        return timeSlotStart.isAfter(allowedStartConsume) && timeSlotStart.isBefore(allowedEndConsume);
     }
 
     @Override
