@@ -8,7 +8,10 @@ public class InvalidTimeSlotException extends Exception {
 
     public InvalidTimeSlotException(String message, Optional<UUID> timeSlotID) {
         super(message);
-        this.timeSlotID = timeSlotID.get();
+        if (timeSlotID.isPresent()) {
+            this.timeSlotID = timeSlotID.get();
+        }
+
     }
 
     public Optional<UUID> getTimeSlotID() {

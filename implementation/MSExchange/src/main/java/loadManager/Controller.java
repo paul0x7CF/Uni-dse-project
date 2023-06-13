@@ -59,7 +59,7 @@ public class Controller implements Runnable {
         for (MSData exchange : exchanges) {
             if (!exchangeServiceIds.contains(exchange.getId())) {
                 exchangeServiceIds.add(exchange.getId());
-                ExchangeServiceInformation exchangeServiceInformation = new ExchangeServiceInformation(exchange.getId(), exchange.getAddress(), exchange.getPort());
+                ExchangeServiceInformation exchangeServiceInformation = new ExchangeServiceInformation(exchange.getId());
                 messageHandler.addExchangeServiceInformation(exchangeServiceInformation);
             }
         }

@@ -1,7 +1,9 @@
 package loadManager.exchangeManagement;
 
-import MSP.Exceptions.AllExchangesAtCapacityException;
 import CF.exceptions.MessageProcessingException;
+import MSP.Exceptions.AllExchangesAtCapacityException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
@@ -11,14 +13,16 @@ import java.io.File;
 import java.util.*;
 
 public class LoadManager {
+    private static final Logger logger = LogManager.getLogger(LoadManager.class);
     private int nextServiceID = 1;
-    private List<ExchangeServiceInformation> ListExchangeServices = Collections.synchronizedList(new ArrayList<>());
+    private List<ExchangeServiceInformation> listExchangeServices = Collections.synchronizedList(new ArrayList<>());
 
     public void addExchangeServiceInformation(ExchangeServiceInformation exchangeServiceInformation) {
         // Adds a new MicroserviceInformation object to the list.
         if (exchangeServiceInformation != null) {
-            if (!ListExchangeServices.contains(exchangeServiceInformation)) {
-                ListExchangeServices.add(exchangeServiceInformation);
+            if (!listExchangeServices.contains(exchangeServiceInformation)) {
+                listExchangeServices.add(exchangeServiceInformation);
+                logger.info("Added ExchangeServiceInformation with ID: " + exchangeServiceInformation.getExchangeID());
             } else {
                 throw new IllegalArgumentException("ExchangeServiceInformation already exists");
             }
@@ -30,8 +34,9 @@ public class LoadManager {
     public void removeExchangeServiceInformation(ExchangeServiceInformation exchangeServiceInformation) {
         // Removes the MicroserviceInformation object with the given ID from the list.
         if (exchangeServiceInformation != null) {
-            if (ListExchangeServices.contains(exchangeServiceInformation)) {
-                ListExchangeServices.remove(exchangeServiceInformation);
+            if (listExchangeServices.contains(exchangeServiceInformation)) {
+                listExchangeServices.remove(exchangeServiceInformation);
+                logger.info("Removed ExchangeServiceInformation with ID: " + exchangeServiceInformation.getExchangeID());
             } else {
                 throw new IllegalArgumentException("ExchangeServiceInformation does not exist");
             }
@@ -44,7 +49,7 @@ public class LoadManager {
         // Sets the ExchangeServiceInformation object with the given ID to at capacity.
         boolean exchangeExists = false;
         if (exchangeID != null) {
-            for (ExchangeServiceInformation exchangeServiceInformation : ListExchangeServices) {
+            for (ExchangeServiceInformation exchangeServiceInformation : listExchangeServices) {
                 if (exchangeServiceInformation.getExchangeID().equals(exchangeID)) {
                     exchangeServiceInformation.setAtCapacity(true);
                     exchangeExists = true;
@@ -62,7 +67,7 @@ public class LoadManager {
     public ExchangeServiceInformation getFreeExchange() throws AllExchangesAtCapacityException {
         // Returns the first ExchangeServiceInformation object in the list that is not at capacity.
 
-        for (ExchangeServiceInformation exchangeServiceInformation : ListExchangeServices) {
+        for (ExchangeServiceInformation exchangeServiceInformation : listExchangeServices) {
             if (!exchangeServiceInformation.isAtCapacity()) {
                 return exchangeServiceInformation;
             }
