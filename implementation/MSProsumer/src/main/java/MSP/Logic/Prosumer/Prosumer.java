@@ -11,7 +11,7 @@ import MSP.Exceptions.DeviceNotSupportedException;
 import MSP.Exceptions.UndefinedStrategyException;
 import MSP.Logic.AccountingStrategy.CalcConsumption;
 import MSP.Logic.AccountingStrategy.ContextCalcAcct;
-import MSP.Logic.DemandManager;
+
 import CF.protocol.ECategory;
 import CF.protocol.Message;
 import CF.sendable.Bid;
@@ -32,7 +32,6 @@ public class Prosumer implements Runnable {
 
 
     private EProsumerType prosumerType;
-    private DemandManager demandManager;
     private List<Consumer> consumerList = new LinkedList<>();
     private Wallet wallet;
     private Communication communicator;
@@ -69,6 +68,13 @@ public class Prosumer implements Runnable {
         consumerList.add(newConsumer);
     }
 
+    public void increaseCashBalance(double amount) {
+        wallet.incrementCashBalance(amount);
+    }
+    public void decreaseCashBalance(double amount) {
+        wallet.decrementCashBalance(amount);
+    }
+
     public void actSellLowerQuestion(Message message) {
 
     }
@@ -98,7 +104,7 @@ public class Prosumer implements Runnable {
             ContextCalcAcct contextCalcAcct = new ContextCalcAcct();
 
             contextCalcAcct.setCalcAcctAStrategy(new CalcConsumption(communicator));
-            PollForecast myPoll= contextCalcAcct.calculateAccounting(new ArrayList<>(consumerList), newTimeSlot.getTimeSlotID());
+            PollForecast myPoll= contextCalcAcct.calculateAccounting(new ArrayList<>(consumerList), newTimeSlot);
 
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

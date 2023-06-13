@@ -1,8 +1,12 @@
 package MSP.Communication;
 
+import MSP.Data.EConsumerType;
+
+import java.util.HashMap;
+
 public class PollForecast {
     private boolean isAvailable;
-    private double forecastResult;
+    private HashMap<EConsumerType, Double> responseMap;
 
     public PollForecast() {
         this.isAvailable = false;
@@ -12,16 +16,16 @@ public class PollForecast {
         isAvailable = available;
     }
 
-    public void setForecastResult(double forecastResult) {
-        this.forecastResult = forecastResult;
+    public void setPollResult(HashMap<EConsumerType, Double> responseMap) {
+        this.responseMap = responseMap;
     }
 
     public boolean isAvailable() {
         return isAvailable;
     }
 
-    public double getForecastResult() {
-        return forecastResult;
+    public HashMap<EConsumerType, Double> getForecastResult() {
+       return this.responseMap;
     }
 }
  

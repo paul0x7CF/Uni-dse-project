@@ -1,5 +1,6 @@
 package MSP.Logic.AccountingStrategy;
 
+import CF.sendable.TimeSlot;
 import MSP.Communication.Communication;
 import MSP.Communication.PollForecast;
 import MSP.Data.IProsumerDevice;
@@ -7,7 +8,6 @@ import MSP.Data.Producer;
 import MSP.Exceptions.DeviceNotSupportedException;
 
 import java.util.List;
-import java.util.UUID;
 
 public class CalcProduction implements ICalAcctStrategy{
 
@@ -16,7 +16,7 @@ public class CalcProduction implements ICalAcctStrategy{
         this.communication = communication;
     }
     @Override
-    public PollForecast calculateAccounting(List<IProsumerDevice> devices, UUID timeSlotId) throws DeviceNotSupportedException {
+    public PollForecast calculateAccounting(List<IProsumerDevice> devices, TimeSlot timeSlotId) throws DeviceNotSupportedException {
 
         for (IProsumerDevice device : devices) {
             if (device.getDevice() instanceof Producer producer) {

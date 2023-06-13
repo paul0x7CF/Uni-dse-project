@@ -1,21 +1,24 @@
 package CF.sendable;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class ConsumptionResponse implements ISendable {
-    private Map<UUID, Double> consumption;
+    private final HashMap<String, Double> consumptionMap;
+    private final UUID requestTimeSlotId;
 
-    public ConsumptionResponse(Map<UUID, Double> consumption) {
-        this.consumption = consumption;
+    public ConsumptionResponse(HashMap<String, Double> consumptionMap, UUID requestTimeSlotId) {
+        this.consumptionMap = consumptionMap;
+        this.requestTimeSlotId = requestTimeSlotId;
     }
 
     //TODO: Change UUID to String
-    public Map<UUID, Double> getConsumption() {
-        return consumption;
+    public HashMap<String, Double> getConsumptionMap() {
+        return consumptionMap;
     }
 
-    public void addConsumption(UUID id, Double consumption) {
-        this.consumption.put(id, consumption);
+    public UUID getRequestTimeSlotId() {
+        return requestTimeSlotId;
     }
 }
