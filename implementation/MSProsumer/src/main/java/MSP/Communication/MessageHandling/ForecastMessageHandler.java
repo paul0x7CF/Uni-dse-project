@@ -1,6 +1,7 @@
 package MSP.Communication.MessageHandling;
 
 import CF.sendable.ConsumptionResponse;
+import CF.sendable.SolarResponse;
 import MSP.Communication.PollForecast;
 import MSP.Data.EConsumerType;
 import MSP.Exceptions.MessageNotSupportedException;
@@ -69,7 +70,14 @@ public class ForecastMessageHandler implements IMessageHandler {
 
     }
 
-    private void handleProduction(Message message) {
+    private void handleProduction(Message message) throws UnknownForecastResponseException {
         logger.trace("Production message received");
+        SolarResponse solarResponse = (SolarResponse) message.getSendable(SolarResponse.class);
+        if(!this.pollForecastProductionMap.containsKey(solarResponse.getResponseTimeSlotId())) {
+            throw new UnknownForecastResponseException();
+        }
+
+        PollForecast pollForecastForTimeSlotID = this.pollForecastProductionMap.get(solarResponse.getResponseTimeSlotId());
+        // TODO: @Paul: Implement the logic check the SolarResponse Object and if an other Poll is nessesary
     }
 }
