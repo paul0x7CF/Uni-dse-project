@@ -12,6 +12,7 @@ import MSP.Exceptions.UndefinedStrategyException;
 import MSP.Logic.AccountingStrategy.CalcConsumption;
 import MSP.Logic.AccountingStrategy.ContextCalcAcct;
 import MSP.Logic.DemandManager;
+
 import CF.protocol.ECategory;
 import CF.protocol.Message;
 import CF.sendable.Bid;
@@ -67,6 +68,13 @@ public class Prosumer implements Runnable {
     private void createConsumer(EConsumerType type) {
         Consumer newConsumer = new Consumer(type);
         consumerList.add(newConsumer);
+    }
+
+    public void increaseCashBalance(double amount) {
+        wallet.incrementCashBalance(amount);
+    }
+    public void decreaseCashBalance(double amount) {
+        wallet.decrementCashBalance(amount);
     }
 
     public void actSellLowerQuestion(Message message) {
