@@ -1,5 +1,6 @@
 package MSP.Logic.AccountingStrategy;
 
+import CF.sendable.TimeSlot;
 import MSP.Communication.Communication;
 import MSP.Data.Consumer;
 import MSP.Data.IProsumerDevice;
@@ -9,7 +10,6 @@ import MSP.Communication.PollForecast;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 public class CalcConsumption implements ICalAcctStrategy {
 
@@ -20,10 +20,10 @@ public class CalcConsumption implements ICalAcctStrategy {
     }
 
     @Override
-    public PollForecast calculateAccounting(List<IProsumerDevice> devices, UUID timeSlotId) throws DeviceNotSupportedException {
+    public PollForecast calculateAccounting(List<IProsumerDevice> devices, TimeSlot timeSlot) throws DeviceNotSupportedException {
 
         HashMap<String, Double> consumptionMap = getConsumptionMap(devices);
-        ConsumptionRequest request = new ConsumptionRequest(consumptionMap, timeSlotId);
+        ConsumptionRequest request = new ConsumptionRequest(consumptionMap, timeSlot.getTimeSlotID());
         return communication.sendConsumptionRequestMessage(request);
 
 

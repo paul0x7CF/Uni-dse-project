@@ -11,7 +11,6 @@ import MSP.Exceptions.DeviceNotSupportedException;
 import MSP.Exceptions.UndefinedStrategyException;
 import MSP.Logic.AccountingStrategy.CalcConsumption;
 import MSP.Logic.AccountingStrategy.ContextCalcAcct;
-import MSP.Logic.DemandManager;
 
 import CF.protocol.ECategory;
 import CF.protocol.Message;
@@ -33,7 +32,6 @@ public class Prosumer implements Runnable {
 
 
     private EProsumerType prosumerType;
-    private DemandManager demandManager;
     private List<Consumer> consumerList = new LinkedList<>();
     private Wallet wallet;
     private Communication communicator;
@@ -106,7 +104,7 @@ public class Prosumer implements Runnable {
             ContextCalcAcct contextCalcAcct = new ContextCalcAcct();
 
             contextCalcAcct.setCalcAcctAStrategy(new CalcConsumption(communicator));
-            PollForecast myPoll= contextCalcAcct.calculateAccounting(new ArrayList<>(consumerList), newTimeSlot.getTimeSlotID());
+            PollForecast myPoll= contextCalcAcct.calculateAccounting(new ArrayList<>(consumerList), newTimeSlot);
 
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
