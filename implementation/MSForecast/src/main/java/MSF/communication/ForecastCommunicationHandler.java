@@ -77,8 +77,4 @@ public class ForecastCommunicationHandler {
             logger.warn(e.getMessage());
         }
     }
-
-    public BrokerRunner getBroker() {
-        return communicationBroker;
-    }
 }
