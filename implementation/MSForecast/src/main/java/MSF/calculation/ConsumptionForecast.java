@@ -1,41 +1,41 @@
 package MSF.calculation;
 
 import CF.protocol.Message;
-import CF.sendable.TimeSlot;
-import MSF.communication.messageHandler.ProsumerRequest;
+import CF.sendable.ConsumptionResponse;
+import MSF.communication.ForecastCommunicationHandler;
+import MSF.data.ProsumerRequest;
+import MSF.data.ProsumerResponse;
 
-import java.util.List;
+import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;
 
 public class ConsumptionForecast implements Runnable {
     private BlockingQueue<ProsumerRequest> inputQueue;
-    private BlockingQueue<Message> outputQueue;
+    //private BlockingQueue<ProsumerResponse> outputQueue;
+    private ForecastCommunicationHandler forecastCommunicationHandler;
 
-    public ConsumptionForecast(BlockingQueue<ProsumerRequest> inputQueue, BlockingQueue<Message> outputQueue) {
+    public ConsumptionForecast(BlockingQueue<ProsumerRequest> inputQueue, ForecastCommunicationHandler forecastCommunicationHandler) {
         this.inputQueue = inputQueue;
-        this.outputQueue = outputQueue;
+        this.forecastCommunicationHandler = forecastCommunicationHandler;
     }
 
     public void run() {
         System.out.println("ConsumptionForecast");
 
-        //take from inputQueue
         try {
             ProsumerRequest prosumerRequest = inputQueue.take();
-            double consumption = predictConsumption(prosumerRequest);
-            // TODO: create Message ConsumptionResponse
+            predictConsumption(prosumerRequest);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    private double predictConsumption(ProsumerRequest prosumerRequest) {
-        // calculate consumption
+    private void predictConsumption(ProsumerRequest prosumerRequest) {
+        HashMap<String, Double> consumption = new HashMap<>();
 
-        return 0;
-    }
+        //TODO: calculate consumption
 
-    private void addToOutputQueueConsumption() {
-
+        ConsumptionResponse consumptionResponse = new ConsumptionResponse(consumption, prosumerRequest.getCurrentTimeSlotID());
+        this.forecastCommunicationHandler.sendConsumptionResponseMessage(consumptionResponse);
     }
 }

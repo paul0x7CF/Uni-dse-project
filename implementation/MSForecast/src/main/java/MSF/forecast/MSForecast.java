@@ -1,20 +1,17 @@
 package MSF.forecast;
 
-import CF.exceptions.MessageProcessingException;
 import CF.protocol.ECategory;
 import CF.protocol.Message;
 import CF.sendable.TimeSlot;
 import MSF.calculation.ConsumptionForecast;
 import MSF.calculation.ProductionForecast;
 import MSF.communication.ForecastCommunicationHandler;
-import MSF.communication.messageHandler.EProsumerRequestType;
-import MSF.communication.messageHandler.ProsumerRequest;
-import MSF.mainPackage.Main;
+import MSF.data.ProsumerRequest;
+import MSF.data.ProsumerResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import CF.sendable.EServiceType;
 
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -26,11 +23,11 @@ public class MSForecast implements Runnable {
     private UUID forecastId;
     private TimeSlot currentTimeSlot;
     private BlockingQueue<ProsumerRequest> inputQueue = new LinkedBlockingQueue<>();
-    private BlockingQueue<Message> outputQueue = new LinkedBlockingQueue<>();
+    //private BlockingQueue<ProsumerResponse> outputQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<TimeSlot> inputQueueTimeSlots = new LinkedBlockingQueue<>();
 
     public MSForecast(int port) {
-        this.forecastCommunicationHandler = new ForecastCommunicationHandler(inputQueue, outputQueue, port, EServiceType.Forecast, this);
+        this.forecastCommunicationHandler = new ForecastCommunicationHandler(inputQueue, port, EServiceType.Forecast, this);
     }
 
     public EForecastType getForecastType() {
@@ -46,11 +43,11 @@ public class MSForecast implements Runnable {
         logger.info("MSForecast started");
 
         for (int i = 0; i < 5; i++) {
-            new Thread(new ConsumptionForecast(inputQueue, outputQueue), "ConsumptionForecast-" + i).start();
+            new Thread(new ConsumptionForecast(inputQueue, this.forecastCommunicationHandler), "ConsumptionForecast-" + i).start();
         }
 
         for (int i = 0; i < 5; i++) {
-            new Thread(new ProductionForecast(inputQueue, outputQueue), "ProductionForecast-" + i).start();
+            new Thread(new ProductionForecast(inputQueue, this.forecastCommunicationHandler), "ProductionForecast-" + i).start();
         }
 
         while (true)

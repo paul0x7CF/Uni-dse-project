@@ -4,6 +4,8 @@ import CF.exceptions.MessageProcessingException;
 import CF.exceptions.RemoteException;
 import CF.sendable.ConsumptionRequest;
 import CF.sendable.SolarRequest;
+import MSF.data.EProsumerRequestType;
+import MSF.data.ProsumerRequest;
 import MSF.exceptions.MessageNotSupportedException;
 import CF.messageHandling.IMessageHandler;
 import org.apache.logging.log4j.LogManager;

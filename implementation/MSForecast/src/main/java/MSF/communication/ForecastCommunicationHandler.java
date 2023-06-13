@@ -2,9 +2,12 @@ package MSF.communication;
 
 import CF.protocol.Message;
 import CF.broker.BrokerRunner;
+import CF.sendable.ConsumptionResponse;
+import CF.sendable.SolarResponse;
 import MSF.communication.messageHandler.ExchangeMessageHandler;
 import MSF.communication.messageHandler.ProsumerMessageHandler;
-import MSF.communication.messageHandler.ProsumerRequest;
+import MSF.data.ProsumerRequest;
+import MSF.data.ProsumerResponse;
 import MSF.exceptions.UnknownMessageException;
 import CF.protocol.ECategory;
 import CF.sendable.EServiceType;
@@ -20,14 +23,15 @@ public class ForecastCommunicationHandler {
     private BrokerRunner communicationBroker;
     private MSForecast msForecast;
     private BlockingQueue<ProsumerRequest> inputQueueProsumerRequest;
-    private BlockingQueue<Message> outputQueue;
+    //private BlockingQueue<ProsumerResponse> outputQueue;
     private BlockingQueue<TimeSlot> inputQueueTimeSlot;
     private ForecastMessageHandler forecastMessageHandler;
+    private ForecastMessageBuilder forecastMessageBuilder;
 
-    public ForecastCommunicationHandler(BlockingQueue<ProsumerRequest> inputQueueProsumerRequest, BlockingQueue<Message> outputQueue, int port, EServiceType serviceType, MSForecast msForecast) {
+    public ForecastCommunicationHandler(BlockingQueue<ProsumerRequest> inputQueueProsumerRequest, int port, EServiceType serviceType, MSForecast msForecast) {
         this.inputQueueProsumerRequest = inputQueueProsumerRequest;
-        this.outputQueue = outputQueue;
         this.msForecast = msForecast;
+        this.forecastMessageBuilder = new ForecastMessageBuilder();
 
         setUpBroker(port, serviceType);
 
@@ -38,8 +42,12 @@ public class ForecastCommunicationHandler {
                 ", Port: " + this.communicationBroker.getCurrentService().getPort());
     }
 
-    public void sendMessage(Message message) {
-        communicationBroker.sendMessage(message);
+    public void sendConsumptionResponseMessage(ConsumptionResponse consumptionResponse) {
+
+    }
+
+    public void sendProductionResponseMessage(SolarResponse solarResponse) {
+
     }
 
     public void setUpBroker(int port, EServiceType serviceType) {

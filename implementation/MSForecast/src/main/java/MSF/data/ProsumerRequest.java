@@ -1,6 +1,4 @@
-package MSF.communication.messageHandler;
-
-import CF.sendable.TimeSlot;
+package MSF.data;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -44,5 +42,9 @@ public class ProsumerRequest {
 
     public EProsumerRequestType getType() {
         return type;
+    }
+
+    public UUID getCurrentTimeSlotID() {
+        return currentTimeSlotID;
     }
 }
