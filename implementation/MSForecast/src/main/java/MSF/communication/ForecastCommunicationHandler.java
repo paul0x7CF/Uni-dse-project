@@ -26,7 +26,6 @@ public class ForecastCommunicationHandler {
     private BlockingQueue<ProsumerRequest> inputQueueProsumerRequest;
     //private BlockingQueue<ProsumerResponse> outputQueue;
     private BlockingQueue<TimeSlot> inputQueueTimeSlot;
-    private ForecastMessageHandler forecastMessageHandler;
     private ForecastMessageBuilder forecastMessageBuilder;
 
     public ForecastCommunicationHandler(BlockingQueue<ProsumerRequest> inputQueueProsumerRequest, BlockingQueue<TimeSlot> inputQueueTimeSlot, int port, EServiceType serviceType, MSForecast msForecast) {
