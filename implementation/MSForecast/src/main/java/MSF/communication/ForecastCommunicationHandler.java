@@ -32,9 +32,9 @@ public class ForecastCommunicationHandler {
         this.inputQueueProsumerRequest = inputQueueProsumerRequest;
         this.msForecast = msForecast;
         this.inputQueueTimeSlot = inputQueueTimeSlot;
-        this.forecastMessageBuilder = new ForecastMessageBuilder();
-
         setUpBroker(port, serviceType);
+
+        this.forecastMessageBuilder = new ForecastMessageBuilder(this.communicationBroker.getCurrentService());
 
         logger.info("Broker registered with Id:" +
                 this.communicationBroker.getCurrentService().getId() +
@@ -57,7 +57,6 @@ public class ForecastCommunicationHandler {
 
     public void startBrokerRunner() {
         this.communicationBroker.run();
-        this.forecastMessageBuilder.setMyMSData(this.communicationBroker.getCurrentService());
     }
 
     public void addMessageHandler(ECategory category) {
