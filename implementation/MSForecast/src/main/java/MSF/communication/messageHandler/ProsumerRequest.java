@@ -1,6 +1,9 @@
 package MSF.communication.messageHandler;
 
+import CF.sendable.TimeSlot;
+
 import java.util.HashMap;
+import java.util.UUID;
 
 public class ProsumerRequest {
     private EProsumerRequestType type;
@@ -8,6 +11,7 @@ public class ProsumerRequest {
     private int angle;
     private int efficiency;
     private HashMap<String, Double> consumptionMap;
+    private UUID currentTimeSlotID;
 
     public ProsumerRequest(EProsumerRequestType type, int area, int angle, int efficiency) {
         this.type = type;
@@ -16,9 +20,10 @@ public class ProsumerRequest {
         this.efficiency = efficiency;
     }
 
-    public ProsumerRequest(EProsumerRequestType type, HashMap<String, Double> consumptionMap) {
+    public ProsumerRequest(EProsumerRequestType type, HashMap<String, Double> consumptionMap, UUID currentTimeSlotID) {
         this.type = type;
         this.consumptionMap = consumptionMap;
+        this.currentTimeSlotID = currentTimeSlotID;
     }
 
     public int getArea() {

@@ -35,8 +35,8 @@ public class ProsumerMessageHandler implements IMessageHandler {
     private void handleConsumption(Message message) {
         logger.trace("Consumption message received");
 
-        ConsumptionRequest consumptionRequestR = (ConsumptionRequest) message.getSendable(ConsumptionRequest.class);
-        ProsumerRequest request = new ProsumerRequest(EProsumerRequestType.CONSUMPTION, consumptionRequestR.getConsumptionMap());
+        ConsumptionRequest consumptionRequest = (ConsumptionRequest) message.getSendable(ConsumptionRequest.class);
+        ProsumerRequest request = new ProsumerRequest(EProsumerRequestType.CONSUMPTION, consumptionRequest.getConsumptionMap(), consumptionRequest.getRequestTimeSlotId());
 
         try {
             this.incomingRequest.put(request);

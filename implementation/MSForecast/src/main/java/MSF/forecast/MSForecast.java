@@ -4,6 +4,8 @@ import CF.exceptions.MessageProcessingException;
 import CF.protocol.ECategory;
 import CF.protocol.Message;
 import CF.sendable.TimeSlot;
+import MSF.calculation.ConsumptionForecast;
+import MSF.calculation.ProductionForecast;
 import MSF.communication.ForecastCommunicationHandler;
 import MSF.communication.messageHandler.EProsumerRequestType;
 import MSF.communication.messageHandler.ProsumerRequest;
@@ -25,6 +27,7 @@ public class MSForecast implements Runnable {
     private TimeSlot currentTimeSlot;
     private BlockingQueue<ProsumerRequest> inputQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<Message> outputQueue = new LinkedBlockingQueue<>();
+    private BlockingQueue<TimeSlot> inputQueueTimeSlots = new LinkedBlockingQueue<>();
 
     public MSForecast(int port) {
         this.forecastCommunicationHandler = new ForecastCommunicationHandler(inputQueue, outputQueue, port, EServiceType.Forecast, this);
@@ -42,33 +45,46 @@ public class MSForecast implements Runnable {
 
         logger.info("MSForecast started");
 
+        for (int i = 0; i < 5; i++) {
+            new Thread(new ConsumptionForecast(inputQueue, outputQueue), "ConsumptionForecast-" + i).start();
+        }
+
+        for (int i = 0; i < 5; i++) {
+            new Thread(new ProductionForecast(inputQueue, outputQueue), "ProductionForecast-" + i).start();
+        }
+
         while (true)
         {
-            handleRequests();
+            try {
+                TimeSlot currentTimeSlot = inputQueueTimeSlots.take();
+                updateTimeSlots(currentTimeSlot);
+            } catch (InterruptedException e) {
+                logger.error("Error while taking from inputQueueTimeSlot: {}", e.getMessage());
+            }
         }
     }
 
-    private void updateTimeSlots() {
-
+    private void updateTimeSlots(TimeSlot currentTimeSlot) {
+        this.currentTimeSlot = currentTimeSlot;
     }
 
-    private void handleRequests() {
+    /*private void handleRequests() {
         logger.info("MSForecast received message: {}", inputQueue.poll());
 
         ProsumerRequest request = (ProsumerRequest) inputQueue.poll();
 
         if (request.getType() == EProsumerRequestType.CONSUMPTION) {
-            //TODO: Calculate Consumption
+            //TODO: Calculate Consumption (Also check the UUID for the TimeSlot)
         }
         else if (request.getType() == EProsumerRequestType.PRODUCTION) {
-            //TODO: Calculate Production
+            //TODO: Calculate Production (Also check the UUID for the TimeSlot)
         }
         else {
             logger.warn("Request type not supported");
         }
-    }
+    }*/
 
-    public void setCurrentTimeSlot(TimeSlot currentTimeSlot) {
+    /*public void setCurrentTimeSlot(TimeSlot currentTimeSlot) {
         this.currentTimeSlot = currentTimeSlot;
-    }
+    }*/
 }

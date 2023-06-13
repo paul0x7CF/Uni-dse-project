@@ -1,5 +1,6 @@
 package MSF.calculation;
 
+import MSF.communication.messageHandler.ProsumerRequest;
 import MSF.historicData.HistoricData;
 import CF.protocol.Message;
 import CF.sendable.SolarRequest;
@@ -10,12 +11,11 @@ import java.util.concurrent.BlockingQueue;
 
 public class ProductionForecast implements Runnable {
     private HistoricData historicData;
-    private BlockingQueue<Message> inputQueue;
+    private BlockingQueue<ProsumerRequest> inputQueue;
     private BlockingQueue<Message> outputQueue;
     private SolarRequest solarRequest;
-    private List<TimeSlot> timeSlots;
 
-    public ProductionForecast(BlockingQueue<Message> inputQueue, BlockingQueue<Message> outputQueue) {
+    public ProductionForecast(BlockingQueue<ProsumerRequest> inputQueue, BlockingQueue<Message> outputQueue) {
         this.inputQueue = inputQueue;
         this.outputQueue = outputQueue;
     }
