@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -39,13 +40,39 @@ public class HistoricDataReader {
         try (CSVReader reader = new CSVReader(new FileReader(HISTORIC_DATA_FILE_PATH + "APOLIS Data.csv"))) {
             List<String[]> rows = reader.readAll();
 
+            LocalDateTime truncatedDateTime = LocalDateTime.of(
+                    0,
+                    currentTime.getStartTime().getMonth(),
+                    currentTime.getStartTime().getDayOfMonth(),
+                    currentTime.getStartTime().getHour(),
+                    currentTime.getStartTime().getMinute(),
+                    currentTime.getStartTime().getSecond());
+
+            double sunHours = 0;
+            double radiation = 0;
+
             // Process the data rows
             for (int i = 1; i < rows.size(); i++) {
                 String[] data = rows.get(i);
 
-                if (currentTime.getStartTime().toString().substring(0, 10).equals(data[0]))
-                    return data[1] + ", " + data[2];
+                String dateTimeString = data[0];
+                LocalDateTime rowDateTime = LocalDateTime.parse(dateTimeString);
+
+                LocalDateTime truncatedRowDateTime = LocalDateTime.of(
+                        0,
+                        rowDateTime.getMonth(),
+                        rowDateTime.getDayOfMonth(),
+                        rowDateTime.getHour(),
+                        rowDateTime.getMinute(),
+                        rowDateTime.getSecond());
+
+                if (truncatedDateTime.isAfter(truncatedRowDateTime) && truncatedDateTime.isBefore(truncatedRowDateTime.plusDays(1))) {
+                    sunHours += Double.parseDouble(data[1]);
+                    radiation += Double.parseDouble(data[2]);
+                }
             }
+
+            return sunHours / 4 + ";" + radiation / 4;
         } catch (IOException | CsvException e) {
             e.printStackTrace();
         }
@@ -57,13 +84,40 @@ public class HistoricDataReader {
         try (CSVReader reader = new CSVReader(new FileReader(HISTORIC_DATA_FILE_PATH + "GROUNDSTATION Data.csv"))) {
             List<String[]> rows = reader.readAll();
 
+            LocalDateTime truncatedDateTime = LocalDateTime.of(
+                    0,
+                    currentTime.getStartTime().getMonth(),
+                    currentTime.getStartTime().getDayOfMonth(),
+                    currentTime.getStartTime().getHour(),
+                    currentTime.getStartTime().getMinute(),
+                    currentTime.getStartTime().getSecond());
+
+            double radiation = 0;
+            double sunlight = 0;
+
             // Process the data rows
             for (int i = 1; i < rows.size(); i++) {
                 String[] data = rows.get(i);
 
-                if (currentTime.getStartTime().toString().substring(0, 10).equals(data[0]))
-                    return data[2] + ", " + data[3];
+                String dateTimeString = data[0];
+                LocalDateTime rowDateTime = LocalDateTime.parse(dateTimeString);
+
+                LocalDateTime truncatedRowDateTime = LocalDateTime.of(
+                        0,
+                        rowDateTime.getMonth(),
+                        rowDateTime.getDayOfMonth(),
+                        rowDateTime.getHour(),
+                        rowDateTime.getMinute(),
+                        rowDateTime.getSecond());
+
+                if (truncatedDateTime.isAfter(truncatedRowDateTime) && truncatedDateTime.isBefore(truncatedRowDateTime.plusHours(1))) {
+                    radiation += Double.parseDouble(data[2]);
+                    sunlight += Double.parseDouble(data[3]);
+                }
+
             }
+
+            return radiation / 4 + ";" + sunlight / 4;
         } catch (IOException | CsvException e) {
             e.printStackTrace();
         }
@@ -86,7 +140,7 @@ public class HistoricDataReader {
             }
 
             int sunshineHours = 0;
-            // Process the data rows
+
             for (int i = dataStartIndex + 1; i < rows.size(); i++) {
                 String[] data = rows.get(i);
 
@@ -95,7 +149,7 @@ public class HistoricDataReader {
                         data[j] = "0";
                 }
 
-                switch (currentTime.getStartTime().toString().substring(5, 6)) {
+                switch (currentTime.getStartTime().getMonth().toString()) {
                     case "01":
                         sunshineHours += Integer.parseInt(data[1]);
                     case "02":
@@ -123,7 +177,7 @@ public class HistoricDataReader {
                 }
             }
 
-            return String.valueOf(sunshineHours / 5);
+            return String.valueOf(sunshineHours / 4);
         } catch (IOException | CsvException e) {
             e.printStackTrace();
         }
@@ -135,13 +189,36 @@ public class HistoricDataReader {
         try (CSVReader reader = new CSVReader(new FileReader(HISTORIC_DATA_FILE_PATH + "INCA_L Data.csv"))) {
             List<String[]> rows = reader.readAll();
 
+            LocalDateTime truncatedDateTime = LocalDateTime.of(
+                    0,
+                    currentTime.getStartTime().getMonth(),
+                    currentTime.getStartTime().getDayOfMonth(),
+                    currentTime.getStartTime().getHour(),
+                    currentTime.getStartTime().getMinute(),
+                    currentTime.getStartTime().getSecond());
+
+            double radiation = 0;
+
             // Process the data rows
             for (int i = 1; i < rows.size(); i++) {
                 String[] data = rows.get(i);
 
-                if (currentTime.getStartTime().toString().substring(0, 10).equals(data[0]))
-                    return data[1];
+                String dateTimeString = data[0];
+                LocalDateTime rowDateTime = LocalDateTime.parse(dateTimeString);
+
+                LocalDateTime truncatedRowDateTime = LocalDateTime.of(
+                        0,
+                        rowDateTime.getMonth(),
+                        rowDateTime.getDayOfMonth(),
+                        rowDateTime.getHour(),
+                        rowDateTime.getMinute(),
+                        rowDateTime.getSecond());
+
+                if (truncatedDateTime.isAfter(truncatedRowDateTime) && truncatedDateTime.isBefore(truncatedRowDateTime.plusHours(1)))
+                    radiation += Double.parseDouble(data[1]);
             }
+
+            return String.valueOf(radiation / 4);
         } catch (IOException | CsvException e) {
             e.printStackTrace();
         }
