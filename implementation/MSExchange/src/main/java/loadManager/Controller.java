@@ -26,7 +26,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class Controller implements Runnable {
     private static final Logger logger = LogManager.getLogger(Controller.class);
-    LoadManagerMessageHandler messageHandler;
+    private LoadManagerMessageHandler messageHandler;
     private BlockingQueue<Message> incomingQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<MessageContent> outgoingQueue = new LinkedBlockingQueue<>();
     private List<UUID> exchangeServiceIds = new ArrayList<>();
@@ -84,7 +84,11 @@ public class Controller implements Runnable {
             if (timeSlotBuilder.getLastSlotsEndtime().isBefore(LocalDateTime.now())) {
                 if (timeSlotBuilder.getLastTimeSlot().isPresent()) {
                     UUID endedTimeSlotID = timeSlotBuilder.getLastTimeSlot().get();
-                   // messageHandler.endTimeSlot(endedTimeSlotID);
+                    try {
+                        messageHandler.endTimeSlot(endedTimeSlotID);
+                    } catch (InvalidTimeSlotException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
 
                 try {

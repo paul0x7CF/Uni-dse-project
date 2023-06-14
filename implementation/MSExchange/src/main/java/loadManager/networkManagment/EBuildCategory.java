@@ -8,7 +8,10 @@ public enum EBuildCategory {
     SellToProsumer,
     SellToExchange,
     Transaction,
-    TimeSlot;
+    TimeSlot,
+    BidToStorage,
+    SellToStorage;
+
 
     private UUID uuid;
 
