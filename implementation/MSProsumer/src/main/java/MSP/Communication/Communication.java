@@ -56,8 +56,8 @@ public class Communication {
         this.outgoingMessages = outgoingMessages;
         this.myProsumer = myProsumer;
         this.serviceType = serviceType;
-        this.messageBuilder = new MessageBuilder();
         createBroker(port);
+        this.messageBuilder = new MessageBuilder(this.myMSData);
 
         logger.info("BrokerRunner initialized with Id: {} Ip: {} Port: {}", this.myMSData.getId(), this.myMSData.getAddress(), this.myMSData.getPort());
     }

@@ -10,9 +10,10 @@ import CF.sendable.SolarResponse;
 import java.util.UUID;
 
 public class ForecastMessageBuilder {
-    private MSData myMSData;
+    private final MSData  myMSData;
 
-    public ForecastMessageBuilder() {
+    public ForecastMessageBuilder(MSData myMSData) {
+        this.myMSData = myMSData;
     }
 
     public Message buildSolarResponseMessage(SolarResponse solarResponse, String senderAddress, int senderPort, UUID senderID) {
@@ -41,7 +42,4 @@ public class ForecastMessageBuilder {
                 setReceiverPort(senderPort);
     }
 
-    public void setMyMSData(MSData myMSData) {
-        this.myMSData = myMSData;
-    }
 }

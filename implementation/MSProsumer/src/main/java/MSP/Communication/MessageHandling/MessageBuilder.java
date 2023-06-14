@@ -12,7 +12,8 @@ public class MessageBuilder {
 
     private MSData sender;
 
-    public MessageBuilder() {
+    public MessageBuilder(MSData myMSData) {
+        this.sender = myMSData;
         //TODO: implement constructor
         //Maybe add broker here?
         //Maybe only some types of broker?
