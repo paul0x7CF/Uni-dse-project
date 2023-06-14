@@ -113,6 +113,8 @@ public class ProsumerManager {
 
     public void handleIncomingTransaction(Transaction transaction) {
         //TODO: set Bidders / Sellers as satisfied
+       /* Bid bid = new Bid(transaction.getAmount(), transaction.getPrice(), transaction.get)
+        auctionManager.setBidder(transaction.getAuctionID(), transaction.getBuyerID());*/
         //TODO: end the auctions
 
     }

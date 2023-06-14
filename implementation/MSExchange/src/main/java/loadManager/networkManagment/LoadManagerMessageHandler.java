@@ -135,8 +135,4 @@ public class LoadManagerMessageHandler implements IMessageHandler {
     public void addExchangeServiceInformation(ExchangeServiceInformation exchangeServiceInformation) {
         loadManager.addExchangeServiceInformation(exchangeServiceInformation);
     }
-
-    public void endTimeSlot(UUID timeSlotID){
-        //TODO: Implement
-    }
 }

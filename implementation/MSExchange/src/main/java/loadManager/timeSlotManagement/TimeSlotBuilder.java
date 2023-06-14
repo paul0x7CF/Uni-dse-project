@@ -1,6 +1,7 @@
 package loadManager.timeSlotManagement;
 
 import CF.sendable.TimeSlot;
+import MSP.Exceptions.InvalidTimeSlotException;
 import mainPackage.PropertyFileReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,13 +28,18 @@ public class TimeSlotBuilder {
 
     /*needs to be called every duration
      * adds NUM_NEW_TIME_SLOTS */
-    public TimeSlot addNewTimeSlot() {
+    public TimeSlot addNewTimeSlot() throws InvalidTimeSlotException {
         TimeSlot resultTimeSlot;
         if (timeSlots == null) {
             timeSlots = new ArrayList<>();
             LocalDateTime now = LocalDateTime.now();
             resultTimeSlot = addNewTimeSlot(now);
         } else {
+            if (timeSlots.get(timeSlots.size() - 1).getEndTime().isAfter(LocalDateTime.now())) {
+                log.error("TimeSlotBuilder: addNewTimeSlot: last timeSlot is not finished yet");
+                throw new InvalidTimeSlotException("TimeSlotBuilder: addNewTimeSlot: last timeSlot is not finished yet", Optional.ofNullable(timeSlots.get(timeSlots.size() - 1).getTimeSlotID()));
+            }
+
             LocalDateTime start = timeSlots.get(timeSlots.size() - 1).getEndTime();
 
             resultTimeSlot = addNewTimeSlot(start);

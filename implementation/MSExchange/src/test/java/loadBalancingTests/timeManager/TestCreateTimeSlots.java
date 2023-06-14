@@ -1,9 +1,10 @@
 package loadBalancingTests.timeManager;
 
+import CF.sendable.TimeSlot;
+import MSP.Exceptions.InvalidTimeSlotException;
 import loadManager.timeSlotManagement.TimeSlotBuilder;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import CF.sendable.TimeSlot;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -18,21 +19,43 @@ public class TestCreateTimeSlots {
 
 
     @Test
-    public void callMethodxTimes_addNewTimeSlots_expectedMaxNumTimeSlotsSaved() {
+    public void callMethodxTimes_addNewTimeSlots_expectedMaxNumTimeSlotsSaved() throws InterruptedException {
         // Arrange
         readProperties();
         TimeSlotBuilder timeSlotManager = new TimeSlotBuilder();
 
         // Act
         for (int i = 0; i < (MAX_NUM_TIME_SLOTS_SAVED) + 2; i++) {
-            // addNewTimeSlots();
-            timeSlotManager.addNewTimeSlot();
+            Thread.sleep(DURATION_IN_SECS * 1000);
+            try {
+                timeSlotManager.addNewTimeSlot();
+            } catch (InvalidTimeSlotException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         // Assert
         Assertions.assertTrue(timeSlotManager.getTimeSlots().size() <= MAX_NUM_TIME_SLOTS_SAVED);
         Assertions.assertEquals(MAX_NUM_TIME_SLOTS_SAVED, timeSlotManager.getTimeSlots().size());
         checkTimeCorrect(timeSlotManager.getTimeSlots());
+    }
+
+    @Test
+    public void tryCreateTimeSlotBeforeLastOneHasFinished_addNewTimeSlots_expectedTimeSlotException() throws InterruptedException {
+        // Arrange
+        TimeSlotBuilder timeSlotManager = new TimeSlotBuilder();
+
+        // Act && Assert
+        for (int i = 0; i < 3; i++) {
+            if (i == 0) {
+                Assertions.assertDoesNotThrow(() -> timeSlotManager.addNewTimeSlot());
+            }
+            else {
+                Assertions.assertThrows(InvalidTimeSlotException.class, () -> timeSlotManager.addNewTimeSlot());
+            }
+        }
+
+
     }
 
     private void checkTimeCorrect(List<TimeSlot> timeSlots) {

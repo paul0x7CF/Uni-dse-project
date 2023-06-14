@@ -6,6 +6,7 @@ import CF.sendable.EServiceType;
 import CF.sendable.MSData;
 import CF.sendable.TimeSlot;
 import MSP.Exceptions.IllegalSendableException;
+import MSP.Exceptions.InvalidTimeSlotException;
 import loadManager.exchangeManagement.ExchangeServiceInformation;
 import loadManager.networkManagment.CommunicationLoadManager;
 import loadManager.networkManagment.LoadManagerMessageHandler;
@@ -81,18 +82,23 @@ public class Controller implements Runnable {
 
         while (true) {
             if (timeSlotBuilder.getLastSlotsEndtime().isBefore(LocalDateTime.now())) {
-                if(timeSlotBuilder.getLastTimeSlot().isPresent()){
+                if (timeSlotBuilder.getLastTimeSlot().isPresent()) {
                     UUID endedTimeSlotID = timeSlotBuilder.getLastTimeSlot().get();
-                    messageHandler.endTimeSlot(endedTimeSlotID);
+                   // messageHandler.endTimeSlot(endedTimeSlotID);
                 }
 
-                TimeSlot newTimeSlot = timeSlotBuilder.addNewTimeSlot();
+                try {
+                    TimeSlot newTimeSlot = timeSlotBuilder.addNewTimeSlot();
+                    List<Message> messages = messageBuilder.buildTimeSlotMessages(newTimeSlot);
 
-                List<Message> messages = messageBuilder.buildTimeSlotMessages(newTimeSlot);
+                    for (Message message : messages) {
+                        communication.sendMessage(message);
+                    }
 
-                for (Message message : messages) {
-                    communication.sendMessage(message);
+                } catch (InvalidTimeSlotException e) {
+                    throw new RuntimeException(e);
                 }
+
             }
             try {
                 //Wait for the specified duration in secs
