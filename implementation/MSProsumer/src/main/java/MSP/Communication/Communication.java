@@ -93,6 +93,7 @@ public class Communication {
     }
 
     public PollConsumptionForecast sendConsumptionRequestMessage(ConsumptionRequest consumptionRequest) {
+        logger.debug("Executing Send Consumption Request Message");
         this.pollForecastConsumptionMap.put(consumptionRequest.getRequestTimeSlotId(), new PollConsumptionForecast());
         logger.trace("added ConsumptionPoll");
 
@@ -100,11 +101,14 @@ public class Communication {
 
         // Send message to all services of type Forecast for ConsumptionRequest
         // Only one Response message will be needed because all services of type Forecast will send the same response
+        int countSending = 0;
         for (MSData receiverService : communicationBroker.getServicesByType(EServiceType.Forecast)) {
             messageToSend= Optional.of(this.messageBuilder.buildConsumptionForecastMessage(consumptionRequest, receiverService));
             communicationBroker.sendMessage(messageToSend.get());
-            logger.debug("ConsumptionRequestMessage sent to: Ip:{}, Port: {}", receiverService.getAddress(), receiverService.getPort());
+            logger.trace("ConsumptionRequestMessage sent to: Ip:{}, Port: {}", receiverService.getAddress(), receiverService.getPort());
+            countSending++;
         }
+        logger.debug("ConsumptionRequestMessage was sent to {} Forecast services", countSending);
 
         if(messageToSend.isEmpty()){
             throw new ServiceNotFoundRuntimeException();
@@ -113,18 +117,24 @@ public class Communication {
         return this.pollForecastConsumptionMap.get(consumptionRequest.getRequestTimeSlotId());
     }
 
-    public void sendProductionRequestMessage(SolarRequest solarRequest) {
-
+    public PollProductionForecast sendProductionRequestMessage(SolarRequest solarRequest) {
+        logger.debug("Executing Send Production Request Message");
+        this.pollForecastProductionMap.put(solarRequest.getRequestTimeSlotId(), new PollProductionForecast());
+        logger.trace("added ProductionPoll");
         Optional<Message> messageToSend = Optional.empty();
 
+        int countSending = 0;
         for (MSData receiverService : communicationBroker.getServicesByType(EServiceType.Forecast)) {
             messageToSend= Optional.of(this.messageBuilder.buildProductionForecastMessage(solarRequest, receiverService));
             communicationBroker.sendMessage(messageToSend.get());
-            logger.debug("ProductionRequestMessage sent to: Ip:{}, Port: {}", receiverService.getAddress(), receiverService.getPort());
+            logger.trace("ProductionRequestMessage sent to: Ip:{}, Port: {}", receiverService.getAddress(), receiverService.getPort());
+            countSending++;
         }
+        logger.debug("ConsumptionRequestMessage was sent to {} Forecast services", countSending);
         if(messageToSend.isEmpty()){
             throw new ServiceNotFoundRuntimeException();
         }
+        return this.pollForecastProductionMap.get(solarRequest.getRequestTimeSlotId());
     }
 
 }
