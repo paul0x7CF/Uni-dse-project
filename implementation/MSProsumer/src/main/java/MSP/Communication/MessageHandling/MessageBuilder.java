@@ -10,13 +10,10 @@ import CF.sendable.SolarRequest;
 
 public class MessageBuilder {
 
-    private MSData sender;
+    private final MSData sender;
 
     public MessageBuilder(MSData myMSData) {
         this.sender = myMSData;
-        //TODO: implement constructor
-        //Maybe add broker here?
-        //Maybe only some types of broker?
     }
 
     public Message buildConsumptionForecastMessage(ConsumptionRequest consumptionRequest, MSData receiver){
@@ -34,7 +31,6 @@ public class MessageBuilder {
         return productionMessageFactory.build();
 
     }
-
 
     private MessageFactory senderAndReceiverTemplate(MSData receiver) {
         MessageFactory messageFactory = new MessageFactory();
