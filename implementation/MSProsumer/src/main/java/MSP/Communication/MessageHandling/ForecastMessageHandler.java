@@ -78,6 +78,9 @@ public class ForecastMessageHandler implements IMessageHandler {
             throw new UnknownForecastResponseException();
         }
 
-        // TODO: @Paul: Implement the logic check the SolarResponse Object and if an other Poll is nessesary
+        PollProductionForecast pollForecastForTimeSlotID = this.pollForecastProductionMap.get(solarResponse.getResponseTimeSlotId());
+        logger.debug("Until now {} Production Forecast Results were received for the TimeSlot", pollForecastForTimeSlotID.getResponseSize());
+        pollForecastForTimeSlotID.setPollResult(solarResponse);
+
     }
 }
