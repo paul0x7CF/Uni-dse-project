@@ -59,7 +59,7 @@ public class Communication {
         createBroker(port);
         this.messageBuilder = new MessageBuilder(this.myMSData);
 
-        logger.info("BrokerRunner initialized with Id: {} Ip: {} Port: {}", this.myMSData.getId(), this.myMSData.getAddress(), this.myMSData.getPort());
+        logger.info("BrokerRunner initialized with Ip: {} Port: {}", this.myMSData.getAddress(), this.myMSData.getPort());
     }
 
     private void createBroker(final int port) {
@@ -67,8 +67,8 @@ public class Communication {
         this.myMSData = this.communicationBroker.getCurrentService();
     }
 
-    public void startBrokerRunner() {
-        new Thread(this.communicationBroker).start();
+    public void startBrokerRunner(String threadName) {
+        new Thread(this.communicationBroker,"Com-of-"+threadName).start();
     }
 
     public void addMessageHandler(ECategory category) {
