@@ -112,13 +112,12 @@ public class AuctionManager {
         auction.setBid(bid);
     }
 
-    public void endTimeSlot(UUID slotId) throws InvalidTimeSlotException {
+    public void endTimeSlot(UUID slotId) {
         if (auctionsPerSlot.containsKey(slotId)) {
             for (Auction auction : auctionsPerSlot.get(slotId)) {
                 auction.endAuction();
             }
         }
-        throw new InvalidTimeSlotException("Slot not found with ID: " + slotId, Optional.of(slotId));
     }
 
     //Tested and is working

@@ -137,7 +137,7 @@ public class ProsumerManager {
         return auctionProsumerTracker;
     }
 
-    public void endTimeSlot(UUID endedTimeSlotID) throws InvalidTimeSlotException {
+    public void endTimeSlot(UUID endedTimeSlotID)  {
         auctionManager.endTimeSlot(endedTimeSlotID);
         for (Bidder bidder : bidders) {
             bidder.endTimeSlot(endedTimeSlotID);
