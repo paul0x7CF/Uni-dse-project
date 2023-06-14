@@ -43,8 +43,6 @@ public class MSForecast implements Runnable {
         }, "ForecastCommunicationThread");
         communicationThread.start();
 
-        //forecastCommunicationHandler.startBrokerRunner();
-
         this.forecastCommunicationHandler.addMessageHandler(ECategory.Exchange);
         this.forecastCommunicationHandler.addMessageHandler(ECategory.Forecast);
 

@@ -5,12 +5,12 @@ import CF.sendable.TimeSlot;
 import MSF.communication.ForecastCommunicationHandler;
 import MSF.data.ProsumerConsumptionRequest;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;
 
 public class ConsumptionForecast implements Runnable {
     private BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest;
-    //private BlockingQueue<ProsumerResponse> outputQueue;
     private ForecastCommunicationHandler forecastCommunicationHandler;
     private TimeSlot currentTimeSlot;
 
@@ -21,8 +21,6 @@ public class ConsumptionForecast implements Runnable {
     }
     @Override
     public void run() {
-        System.out.println("ConsumptionForecast");
-
         while (true) {
             try {
                 ProsumerConsumptionRequest prosumerConsumptionRequest = incomingConsumptionRequest.take();
@@ -36,22 +34,15 @@ public class ConsumptionForecast implements Runnable {
     private void predictConsumption(ProsumerConsumptionRequest prosumerConsumptionRequest) {
         HashMap<String, Double> consumption = new HashMap<>();
 
-        //TODO: calculate consumption
+        //TODO: calculate consumption (also check currentTimeSlotID)
 
-        //TEST
+        Duration duration = Duration.between(currentTimeSlot.getStartTime(), currentTimeSlot.getEndTime());
 
-        //loop through consumptionMap in the prosumerRequest
         for (String key : prosumerConsumptionRequest.getConsumptionMap().keySet()) {
-            //get the consumption value for the current key
             double consumptionValue = prosumerConsumptionRequest.getConsumptionMap().get(key);
-            //add the consumption value to the consumption map
-            //consumption.put(key, consumptionValue);
 
-            //add random value to consumption
-            consumption.put(key, Math.random() * 100);
+            consumption.put(key, consumptionValue / (3600 / duration.getSeconds()));
         }
-
-        //END TEST
 
         ConsumptionResponse consumptionResponse = new ConsumptionResponse(consumption, prosumerConsumptionRequest.getCurrentTimeSlotID());
         this.forecastCommunicationHandler.sendConsumptionResponseMessage(consumptionResponse, prosumerConsumptionRequest.getSenderAddress(), prosumerConsumptionRequest.getSenderPort(), prosumerConsumptionRequest.getSenderID());

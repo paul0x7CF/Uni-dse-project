@@ -11,9 +11,7 @@ import java.util.concurrent.BlockingQueue;
 
 public class ProductionForecast implements Runnable {
     private BlockingQueue<ProsumerSolarRequest> incomingSolarRequest;
-    //private BlockingQueue<ProsumerResponse> outputQueue;
     private ForecastCommunicationHandler forecastCommunicationHandler;
-    private SolarRequest solarRequest;
     private EForecastType forecastType;
     private TimeSlot currentTimeSlot;
 
@@ -25,8 +23,6 @@ public class ProductionForecast implements Runnable {
     }
     @Override
     public void run() {
-        System.out.println("ProductionForecast");
-
         while (true) {
             try {
                 ProsumerSolarRequest prosumerSolarRequest = incomingSolarRequest.take();
@@ -39,9 +35,7 @@ public class ProductionForecast implements Runnable {
 
     private void predictProduction(ProsumerSolarRequest prosumerSolarRequest) {
 
-    }
+        //TODO: calculate production (also check currentTimeSlotID)
 
-    private SolarRequest getSolarRequest() {
-        return solarRequest;
     }
 }
