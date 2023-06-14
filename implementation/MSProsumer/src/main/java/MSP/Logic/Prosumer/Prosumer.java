@@ -1,7 +1,7 @@
 package MSP.Logic.Prosumer;
 
 import MSP.Communication.Communication;
-import MSP.Communication.PollForecast;
+import MSP.Communication.polling.PollForecast;
 import MSP.Configuration.ConfigFileReader;
 import MSP.Data.Consumer;
 import MSP.Data.EConsumerType;
@@ -52,11 +52,11 @@ public class Prosumer implements Runnable {
         this.outgoingMessages = new LinkedBlockingQueue<>();
         this.communicator = new Communication(this.incomingMessages, this.outgoingMessages, port, this, EServiceType.Prosumer);
         final int INITIALIZED_CONSUMER_AMOUNT = Integer.parseInt(ConfigFileReader.getProperty("consumer.amount"));
-        for(int i = 0; i < INITIALIZED_CONSUMER_AMOUNT; i++) {
+        for (int i = 0; i < INITIALIZED_CONSUMER_AMOUNT; i++) {
             createConsumer(EConsumerType.valueOf(ConfigFileReader.getProperty("consumer.type" + ++i)));
         }
 
-        logger.info("Prosumer created from type {} with: {} Consumer, cash balance {}", prosumerType,consumerList.size()+1, cashBalance);
+        logger.info("Prosumer created from type {} with: {} Consumer, cash balance {}", prosumerType, consumerList.size() + 1, cashBalance);
     }
 
     private void createProducer() {
@@ -71,6 +71,7 @@ public class Prosumer implements Runnable {
     public void increaseCashBalance(double amount) {
         wallet.incrementCashBalance(amount);
     }
+
     public void decreaseCashBalance(double amount) {
         wallet.decrementCashBalance(amount);
     }
@@ -91,6 +92,19 @@ public class Prosumer implements Runnable {
         return null;
     }
 
+    public void executeAccountingStrategy(TimeSlot newTimeSlot) {
+        try {
+            ContextCalcAcct contextCalcAcct = new ContextCalcAcct();
+            contextCalcAcct.setCalcAcctAStrategy(new CalcConsumption(communicator));
+
+            PollForecast pollOnConsumption = contextCalcAcct.calculateAccounting(new ArrayList<>(consumerList), newTimeSlot);
+        } catch (DeviceNotSupportedException | UndefinedStrategyException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+
     @Override
     public void run() {
         communicator.startBrokerRunner();
@@ -101,16 +115,9 @@ public class Prosumer implements Runnable {
 
         try {
             TimeSlot newTimeSlot = incomingMessages.take();
-            ContextCalcAcct contextCalcAcct = new ContextCalcAcct();
 
-            contextCalcAcct.setCalcAcctAStrategy(new CalcConsumption(communicator));
-            PollForecast myPoll= contextCalcAcct.calculateAccounting(new ArrayList<>(consumerList), newTimeSlot);
 
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (DeviceNotSupportedException e) {
-            throw new RuntimeException(e);
-        } catch (UndefinedStrategyException e) {
             throw new RuntimeException(e);
         }
 

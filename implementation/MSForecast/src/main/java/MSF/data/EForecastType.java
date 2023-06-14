@@ -1,4 +1,4 @@
-package MSF.forecast;
+package MSF.data;
 
 /**
  * Category for forecasts
@@ -6,7 +6,6 @@ package MSF.forecast;
 public enum EForecastType {
     GROUNDSTATION,
     APOLIS,
-    SPARTACUS,
-    WINFORE,
+    HISTALP,
     INCA_L,
 }

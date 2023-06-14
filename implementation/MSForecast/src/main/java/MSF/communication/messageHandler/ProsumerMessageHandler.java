@@ -56,10 +56,14 @@ public class ProsumerMessageHandler implements IMessageHandler {
         logger.trace("Production message received");
 
         SolarRequest solarRequest = (SolarRequest) message.getSendable(SolarRequest.class);
+
         ProsumerRequest request = new ProsumerRequest(EProsumerRequestType.PRODUCTION,
+                solarRequest.getAmountOfPanels(),
                 solarRequest.getArea(),
-                solarRequest.getAngle(),
+                solarRequest.getCompassAngle(),
+                solarRequest.getStandingAngle(),
                 solarRequest.getEfficiency(),
+                solarRequest.getRequestTimeSlotId(),
                 message.getSenderAddress(),
                 message.getSenderPort(),
                 message.getSenderID());

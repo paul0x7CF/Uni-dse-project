@@ -2,6 +2,8 @@ package MSP.Communication;
 
 import CF.sendable.*;
 import MSP.Communication.MessageHandling.MessageBuilder;
+import MSP.Communication.polling.PollConsumptionForecast;
+import MSP.Communication.polling.PollProductionForecast;
 import MSP.Exceptions.ServiceNotFoundRuntimeException;
 import MSP.Exceptions.UnknownMessageException;
 import MSP.Communication.MessageHandling.AuctionMessageHandler;
@@ -33,8 +35,8 @@ public class Communication {
     private MessageBuilder messageBuilder;
 
     private BlockingQueue<TimeSlot> inputQueueTimeSlot;
-    private HashMap<UUID, PollForecast> pollForecastConsumptionMap = new HashMap<>();
-    private HashMap<UUID, PollForecast> pollForecastProductionMap = new HashMap<>();
+    private HashMap<UUID, PollConsumptionForecast> pollForecastConsumptionMap = new HashMap<>();
+    private HashMap<UUID, PollProductionForecast> pollForecastProductionMap = new HashMap<>();
 
     private BlockingQueue<Message> incomingMessages;
 
@@ -92,8 +94,8 @@ public class Communication {
         }
     }
 
-    public PollForecast sendConsumptionRequestMessage(ConsumptionRequest consumptionRequest) {
-        this.pollForecastConsumptionMap.put(consumptionRequest.getRequestTimeSlotId(), new PollForecast());
+    public PollConsumptionForecast sendConsumptionRequestMessage(ConsumptionRequest consumptionRequest) {
+        this.pollForecastConsumptionMap.put(consumptionRequest.getRequestTimeSlotId(), new PollConsumptionForecast());
         logger.trace("added ConsumptionPoll");
 
         Optional<Message> messageToSend = Optional.empty();
