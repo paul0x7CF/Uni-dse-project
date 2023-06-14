@@ -1,18 +1,16 @@
 package MSF.communication;
 
-import CF.protocol.Message;
 import CF.broker.BrokerRunner;
 import CF.sendable.ConsumptionResponse;
 import CF.sendable.SolarResponse;
 import MSF.communication.messageHandler.ExchangeMessageHandler;
 import MSF.communication.messageHandler.ProsumerMessageHandler;
-import MSF.data.ProsumerRequest;
-import MSF.data.ProsumerResponse;
+import MSF.data.ProsumerConsumptionRequest;
+import MSF.data.ProsumerSolarRequest;
 import MSF.exceptions.UnknownMessageException;
 import CF.protocol.ECategory;
 import CF.sendable.EServiceType;
 import CF.sendable.TimeSlot;
-import MSF.forecast.MSForecast;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,13 +20,15 @@ import java.util.concurrent.BlockingQueue;
 public class ForecastCommunicationHandler {
     private static final Logger logger = LogManager.getLogger(ForecastCommunicationHandler.class);
     private BrokerRunner communicationBroker;
-    private BlockingQueue<ProsumerRequest> inputQueueProsumerRequest;
+    private BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest;
+    private BlockingQueue<ProsumerSolarRequest> incomingSolarRequest;
     //private BlockingQueue<ProsumerResponse> outputQueue;
     private BlockingQueue<TimeSlot> inputQueueTimeSlot;
     private ForecastMessageBuilder forecastMessageBuilder;
 
-    public ForecastCommunicationHandler(BlockingQueue<ProsumerRequest> inputQueueProsumerRequest, BlockingQueue<TimeSlot> inputQueueTimeSlot, int port, EServiceType serviceType) {
-        this.inputQueueProsumerRequest = inputQueueProsumerRequest;
+    public ForecastCommunicationHandler(BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest, BlockingQueue<ProsumerSolarRequest> incomingSolarRequest, BlockingQueue<TimeSlot> inputQueueTimeSlot, int port, EServiceType serviceType) {
+        this.incomingConsumptionRequest = incomingConsumptionRequest;
+        this.incomingSolarRequest = incomingSolarRequest;
         this.inputQueueTimeSlot = inputQueueTimeSlot;
         setUpBroker(port, serviceType);
 
@@ -64,7 +64,7 @@ public class ForecastCommunicationHandler {
                     this.communicationBroker.addMessageHandler(ECategory.Exchange, new ExchangeMessageHandler(inputQueueTimeSlot));
                 }
                 case Forecast -> {
-                    this.communicationBroker.addMessageHandler(ECategory.Forecast, new ProsumerMessageHandler(inputQueueProsumerRequest));
+                    this.communicationBroker.addMessageHandler(ECategory.Forecast, new ProsumerMessageHandler(incomingConsumptionRequest, incomingSolarRequest));
                 }
                 default -> {
                     throw new UnknownMessageException();

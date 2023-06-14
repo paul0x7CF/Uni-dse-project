@@ -1,23 +1,21 @@
 package MSF.calculation;
 
-import CF.protocol.Message;
 import CF.sendable.ConsumptionResponse;
 import CF.sendable.TimeSlot;
 import MSF.communication.ForecastCommunicationHandler;
-import MSF.data.ProsumerRequest;
-import MSF.data.ProsumerResponse;
+import MSF.data.ProsumerConsumptionRequest;
 
 import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;
 
 public class ConsumptionForecast implements Runnable {
-    private BlockingQueue<ProsumerRequest> inputQueue;
+    private BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest;
     //private BlockingQueue<ProsumerResponse> outputQueue;
     private ForecastCommunicationHandler forecastCommunicationHandler;
     private TimeSlot currentTimeSlot;
 
-    public ConsumptionForecast(BlockingQueue<ProsumerRequest> inputQueue, ForecastCommunicationHandler forecastCommunicationHandler, TimeSlot currentTimeSlot) {
-        this.inputQueue = inputQueue;
+    public ConsumptionForecast(BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest, ForecastCommunicationHandler forecastCommunicationHandler, TimeSlot currentTimeSlot) {
+        this.incomingConsumptionRequest = incomingConsumptionRequest;
         this.forecastCommunicationHandler = forecastCommunicationHandler;
         this.currentTimeSlot = currentTimeSlot;
     }
@@ -27,15 +25,15 @@ public class ConsumptionForecast implements Runnable {
 
         while (true) {
             try {
-                ProsumerRequest prosumerRequest = inputQueue.take();
-                predictConsumption(prosumerRequest);
+                ProsumerConsumptionRequest prosumerConsumptionRequest = incomingConsumptionRequest.take();
+                predictConsumption(prosumerConsumptionRequest);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private void predictConsumption(ProsumerRequest prosumerRequest) {
+    private void predictConsumption(ProsumerConsumptionRequest prosumerConsumptionRequest) {
         HashMap<String, Double> consumption = new HashMap<>();
 
         //TODO: calculate consumption
@@ -43,9 +41,9 @@ public class ConsumptionForecast implements Runnable {
         //TEST
 
         //loop through consumptionMap in the prosumerRequest
-        for (String key : prosumerRequest.getConsumptionMap().keySet()) {
+        for (String key : prosumerConsumptionRequest.getConsumptionMap().keySet()) {
             //get the consumption value for the current key
-            double consumptionValue = prosumerRequest.getConsumptionMap().get(key);
+            double consumptionValue = prosumerConsumptionRequest.getConsumptionMap().get(key);
             //add the consumption value to the consumption map
             //consumption.put(key, consumptionValue);
 
@@ -55,7 +53,7 @@ public class ConsumptionForecast implements Runnable {
 
         //END TEST
 
-        ConsumptionResponse consumptionResponse = new ConsumptionResponse(consumption, prosumerRequest.getCurrentTimeSlotID());
-        this.forecastCommunicationHandler.sendConsumptionResponseMessage(consumptionResponse, prosumerRequest.getSenderAddress(), prosumerRequest.getSenderPort(), prosumerRequest.getSenderID());
+        ConsumptionResponse consumptionResponse = new ConsumptionResponse(consumption, prosumerConsumptionRequest.getCurrentTimeSlotID());
+        this.forecastCommunicationHandler.sendConsumptionResponseMessage(consumptionResponse, prosumerConsumptionRequest.getSenderAddress(), prosumerConsumptionRequest.getSenderPort(), prosumerConsumptionRequest.getSenderID());
     }
 }
