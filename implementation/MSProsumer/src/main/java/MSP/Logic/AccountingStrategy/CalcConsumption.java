@@ -2,7 +2,7 @@ package MSP.Logic.AccountingStrategy;
 
 import CF.sendable.TimeSlot;
 import MSP.Communication.Communication;
-import MSP.Communication.PollForecast;
+import MSP.Communication.polling.PollForecast;
 import MSP.Data.Consumer;
 import MSP.Data.IProsumerDevice;
 import MSP.Exceptions.DeviceNotSupportedException;

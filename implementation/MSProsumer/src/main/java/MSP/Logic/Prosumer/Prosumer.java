@@ -1,8 +1,7 @@
 package MSP.Logic.Prosumer;
 
 import MSP.Communication.Communication;
-import MSP.Communication.PollConsumptionForecast;
-import MSP.Communication.PollForecast;
+import MSP.Communication.polling.PollForecast;
 import MSP.Configuration.ConfigFileReader;
 import MSP.Data.Consumer;
 import MSP.Data.EConsumerType;

@@ -2,8 +2,8 @@ package MSP.Communication.MessageHandling;
 
 import CF.sendable.ConsumptionResponse;
 import CF.sendable.SolarResponse;
-import MSP.Communication.PollConsumptionForecast;
-import MSP.Communication.PollProductionForecast;
+import MSP.Communication.polling.PollConsumptionForecast;
+import MSP.Communication.polling.PollProductionForecast;
 import MSP.Data.EConsumerType;
 import MSP.Exceptions.MessageNotSupportedException;
 import CF.exceptions.MessageProcessingException;

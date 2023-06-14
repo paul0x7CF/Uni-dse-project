@@ -1,4 +1,4 @@
-package MSP.Communication;
+package MSP.Communication.polling;
 
 import MSP.Data.EConsumerType;
 

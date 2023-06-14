@@ -2,6 +2,8 @@ package MSP.Communication;
 
 import CF.sendable.*;
 import MSP.Communication.MessageHandling.MessageBuilder;
+import MSP.Communication.polling.PollConsumptionForecast;
+import MSP.Communication.polling.PollProductionForecast;
 import MSP.Exceptions.ServiceNotFoundRuntimeException;
 import MSP.Exceptions.UnknownMessageException;
 import MSP.Communication.MessageHandling.AuctionMessageHandler;
