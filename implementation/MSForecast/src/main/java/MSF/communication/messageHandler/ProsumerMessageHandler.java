@@ -56,7 +56,8 @@ public class ProsumerMessageHandler implements IMessageHandler {
         logger.trace("Production message received");
 
         SolarRequest solarRequest = (SolarRequest) message.getSendable(SolarRequest.class);
-        ProsumerRequest request = new ProsumerRequest(EProsumerRequestType.PRODUCTION,
+        // TODO: @Zivan: adjust for solar request
+       /* ProsumerRequest request = new ProsumerRequest(EProsumerRequestType.PRODUCTION,
                 solarRequest.getArea(),
                 solarRequest.getAngle(),
                 solarRequest.getEfficiency(),
@@ -68,6 +69,6 @@ public class ProsumerMessageHandler implements IMessageHandler {
             this.incomingRequest.put(request);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
-        }
+        }*/
     }
 }
