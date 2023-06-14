@@ -5,7 +5,8 @@ import CF.exceptions.RemoteException;
 import CF.sendable.ConsumptionRequest;
 import CF.sendable.SolarRequest;
 import MSF.data.EProsumerRequestType;
-import MSF.data.ProsumerRequest;
+import MSF.data.ProsumerConsumptionRequest;
+import MSF.data.ProsumerSolarRequest;
 import MSF.exceptions.MessageNotSupportedException;
 import CF.messageHandling.IMessageHandler;
 import org.apache.logging.log4j.LogManager;
@@ -15,10 +16,12 @@ import java.util.concurrent.BlockingQueue;
 
 public class ProsumerMessageHandler implements IMessageHandler {
     private static final Logger logger = LogManager.getLogger(ProsumerMessageHandler.class);
-    private BlockingQueue<ProsumerRequest> incomingRequest;
+    private BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest;
+    private BlockingQueue<ProsumerSolarRequest> incomingSolarRequest;
 
-    public ProsumerMessageHandler(BlockingQueue<ProsumerRequest> incomingRequest) {
-        this.incomingRequest = incomingRequest;
+    public ProsumerMessageHandler(BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest, BlockingQueue<ProsumerSolarRequest> incomingSolarRequest) {
+        this.incomingConsumptionRequest = incomingConsumptionRequest;
+        this.incomingSolarRequest = incomingSolarRequest;
     }
 
     @Override
@@ -38,7 +41,7 @@ public class ProsumerMessageHandler implements IMessageHandler {
         logger.trace("Consumption message received");
 
         ConsumptionRequest consumptionRequest = (ConsumptionRequest) message.getSendable(ConsumptionRequest.class);
-        ProsumerRequest request = new ProsumerRequest(EProsumerRequestType.CONSUMPTION,
+        ProsumerConsumptionRequest request = new ProsumerConsumptionRequest(EProsumerRequestType.CONSUMPTION,
                 consumptionRequest.getConsumptionMap(),
                 consumptionRequest.getRequestTimeSlotId(),
                 message.getSenderAddress(),
@@ -46,7 +49,7 @@ public class ProsumerMessageHandler implements IMessageHandler {
                 message.getSenderID());
 
         try {
-            this.incomingRequest.put(request);
+            this.incomingConsumptionRequest.put(request);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -57,7 +60,7 @@ public class ProsumerMessageHandler implements IMessageHandler {
 
         SolarRequest solarRequest = (SolarRequest) message.getSendable(SolarRequest.class);
 
-        ProsumerRequest request = new ProsumerRequest(EProsumerRequestType.PRODUCTION,
+        ProsumerSolarRequest request = new ProsumerSolarRequest(
                 solarRequest.getAmountOfPanels(),
                 solarRequest.getArea(),
                 solarRequest.getCompassAngle(),
@@ -67,9 +70,8 @@ public class ProsumerMessageHandler implements IMessageHandler {
                 message.getSenderAddress(),
                 message.getSenderPort(),
                 message.getSenderID());
-
         try {
-            this.incomingRequest.put(request);
+            this.incomingSolarRequest.put(request);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
