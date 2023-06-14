@@ -2,6 +2,7 @@ package MSF.calculation;
 
 import CF.protocol.Message;
 import CF.sendable.ConsumptionResponse;
+import CF.sendable.TimeSlot;
 import MSF.communication.ForecastCommunicationHandler;
 import MSF.data.ProsumerRequest;
 import MSF.data.ProsumerResponse;
@@ -13,20 +14,24 @@ public class ConsumptionForecast implements Runnable {
     private BlockingQueue<ProsumerRequest> inputQueue;
     //private BlockingQueue<ProsumerResponse> outputQueue;
     private ForecastCommunicationHandler forecastCommunicationHandler;
+    private TimeSlot currentTimeSlot;
 
-    public ConsumptionForecast(BlockingQueue<ProsumerRequest> inputQueue, ForecastCommunicationHandler forecastCommunicationHandler) {
+    public ConsumptionForecast(BlockingQueue<ProsumerRequest> inputQueue, ForecastCommunicationHandler forecastCommunicationHandler, TimeSlot currentTimeSlot) {
         this.inputQueue = inputQueue;
         this.forecastCommunicationHandler = forecastCommunicationHandler;
+        this.currentTimeSlot = currentTimeSlot;
     }
     @Override
     public void run() {
         System.out.println("ConsumptionForecast");
 
-        try {
-            ProsumerRequest prosumerRequest = inputQueue.take();
-            predictConsumption(prosumerRequest);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        while (true) {
+            try {
+                ProsumerRequest prosumerRequest = inputQueue.take();
+                predictConsumption(prosumerRequest);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 

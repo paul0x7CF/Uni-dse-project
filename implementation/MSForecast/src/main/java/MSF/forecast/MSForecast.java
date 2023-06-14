@@ -1,13 +1,12 @@
 package MSF.forecast;
 
 import CF.protocol.ECategory;
-import CF.protocol.Message;
 import CF.sendable.TimeSlot;
 import MSF.calculation.ConsumptionForecast;
 import MSF.calculation.ProductionForecast;
 import MSF.communication.ForecastCommunicationHandler;
+import MSF.data.EForecastType;
 import MSF.data.ProsumerRequest;
-import MSF.data.ProsumerResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import CF.sendable.EServiceType;
@@ -26,8 +25,9 @@ public class MSForecast implements Runnable {
     //private BlockingQueue<ProsumerResponse> outputQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<TimeSlot> inputQueueTimeSlots = new LinkedBlockingQueue<>();
 
-    public MSForecast(int port) {
-        this.forecastCommunicationHandler = new ForecastCommunicationHandler(inputQueue, inputQueueTimeSlots, port, EServiceType.Forecast, this);
+    public MSForecast(int port, EForecastType forecastType) {
+        this.forecastCommunicationHandler = new ForecastCommunicationHandler(inputQueue, inputQueueTimeSlots, port, EServiceType.Forecast);
+        this.forecastType = forecastType;
     }
 
     public EForecastType getForecastType() {
@@ -37,29 +37,29 @@ public class MSForecast implements Runnable {
     @Override
     public void run() {
         Thread communicationThread = new Thread(() -> {
-            forecastCommunicationHandler.startBrokerRunner();
+            this.forecastCommunicationHandler.startBrokerRunner();
         }, "ForecastCommunicationThread");
         communicationThread.start();
 
         //forecastCommunicationHandler.startBrokerRunner();
 
-        forecastCommunicationHandler.addMessageHandler(ECategory.Exchange);
-        forecastCommunicationHandler.addMessageHandler(ECategory.Forecast);
+        this.forecastCommunicationHandler.addMessageHandler(ECategory.Exchange);
+        this.forecastCommunicationHandler.addMessageHandler(ECategory.Forecast);
 
         logger.info("MSForecast started");
 
         for (int i = 0; i < 5; i++) {
-            new Thread(new ConsumptionForecast(inputQueue, this.forecastCommunicationHandler), "ConsumptionForecast-" + i).start();
+            new Thread(new ConsumptionForecast(this.inputQueue, this.forecastCommunicationHandler, this.currentTimeSlot), "ConsumptionForecast-" + i).start();
         }
 
         for (int i = 0; i < 5; i++) {
-            new Thread(new ProductionForecast(inputQueue, this.forecastCommunicationHandler), "ProductionForecast-" + i).start();
+            new Thread(new ProductionForecast(this.inputQueue, this.forecastCommunicationHandler, this.currentTimeSlot, this.forecastType), "ProductionForecast-" + i).start();
         }
 
         while (true)
         {
             try {
-                TimeSlot currentTimeSlot = inputQueueTimeSlots.take();
+                TimeSlot currentTimeSlot = this.inputQueueTimeSlots.take();
                 updateTimeSlots(currentTimeSlot);
             } catch (InterruptedException e) {
                 logger.error("Error while taking from inputQueueTimeSlot: {}", e.getMessage());
@@ -70,24 +70,4 @@ public class MSForecast implements Runnable {
     private void updateTimeSlots(TimeSlot currentTimeSlot) {
         this.currentTimeSlot = currentTimeSlot;
     }
-
-    /*private void handleRequests() {
-        logger.info("MSForecast received message: {}", inputQueue.poll());
-
-        ProsumerRequest request = (ProsumerRequest) inputQueue.poll();
-
-        if (request.getType() == EProsumerRequestType.CONSUMPTION) {
-            //TODO: Calculate Consumption (Also check the UUID for the TimeSlot)
-        }
-        else if (request.getType() == EProsumerRequestType.PRODUCTION) {
-            //TODO: Calculate Production (Also check the UUID for the TimeSlot)
-        }
-        else {
-            logger.warn("Request type not supported");
-        }
-    }*/
-
-    /*public void setCurrentTimeSlot(TimeSlot currentTimeSlot) {
-        this.currentTimeSlot = currentTimeSlot;
-    }*/
 }

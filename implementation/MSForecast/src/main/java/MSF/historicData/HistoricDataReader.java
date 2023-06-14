@@ -1,6 +1,8 @@
 package MSF.historicData;
 
 import CF.sendable.TimeSlot;
+import MSF.data.EForecastType;
+import MSF.exceptions.UnknownForecastTypeException;
 import MSF.propertyHandler.PropertiesReader;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
@@ -16,7 +18,24 @@ import java.util.List;
 public class HistoricDataReader {
     private static final Logger logger = LogManager.getLogger(HistoricDataReader.class);
     private static final String HISTORIC_DATA_FILE_PATH = "implementation/MSForecast/src/main/resources/APOLIS Data.csv";
-    public static String getHistoricData(TimeSlot currentTime) {
+    public static String getHistoricData(TimeSlot currentTime, EForecastType forecastType) throws UnknownForecastTypeException {
+        switch (forecastType)
+        {
+            case GROUNDSTATION:
+                return getGroundstationData(currentTime);
+            case APOLIS:
+                return getApolisData(currentTime);
+            case HISTALP:
+                return getHistalpData(currentTime);
+            case INCA_L:
+                return getIncaLData(currentTime);
+            default:
+                logger.error("ForecastType not found");
+                throw new UnknownForecastTypeException();
+        }
+    }
+
+    private static String getApolisData(TimeSlot currentTime) {
         try (CSVReader reader = new CSVReader(new FileReader(HISTORIC_DATA_FILE_PATH))) {
             List<String[]> rows = reader.readAll();
 
@@ -31,6 +50,18 @@ public class HistoricDataReader {
             e.printStackTrace();
         }
 
+        return "ERROR";
+    }
+
+    private static String getGroundstationData(TimeSlot currentTime) {
+        return "ERROR";
+    }
+
+    private static String getHistalpData(TimeSlot currentTime) {
+        return "ERROR";
+    }
+
+    private static String getIncaLData(TimeSlot currentTime) {
         return "ERROR";
     }
 }

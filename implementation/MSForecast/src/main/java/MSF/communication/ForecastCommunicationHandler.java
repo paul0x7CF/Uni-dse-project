@@ -22,15 +22,13 @@ import java.util.concurrent.BlockingQueue;
 public class ForecastCommunicationHandler {
     private static final Logger logger = LogManager.getLogger(ForecastCommunicationHandler.class);
     private BrokerRunner communicationBroker;
-    private MSForecast msForecast;
     private BlockingQueue<ProsumerRequest> inputQueueProsumerRequest;
     //private BlockingQueue<ProsumerResponse> outputQueue;
     private BlockingQueue<TimeSlot> inputQueueTimeSlot;
     private ForecastMessageBuilder forecastMessageBuilder;
 
-    public ForecastCommunicationHandler(BlockingQueue<ProsumerRequest> inputQueueProsumerRequest, BlockingQueue<TimeSlot> inputQueueTimeSlot, int port, EServiceType serviceType, MSForecast msForecast) {
+    public ForecastCommunicationHandler(BlockingQueue<ProsumerRequest> inputQueueProsumerRequest, BlockingQueue<TimeSlot> inputQueueTimeSlot, int port, EServiceType serviceType) {
         this.inputQueueProsumerRequest = inputQueueProsumerRequest;
-        this.msForecast = msForecast;
         this.inputQueueTimeSlot = inputQueueTimeSlot;
         setUpBroker(port, serviceType);
 
