@@ -5,23 +5,21 @@ import java.util.UUID;
 
 public class SolarResponse implements ISendable {
 
-    private final UUID requestTimeSlotId;
-    private Map<UUID, Double> solarProduction;
+    private final UUID responseTimeSlotId;
+    private final double solarProduction;
 
-    public SolarResponse(UUID requestTimeSlotId, Map<UUID, Double> solarProduction) {
-        this.requestTimeSlotId = requestTimeSlotId;
+    public SolarResponse(UUID responseTimeSlotId, double solarProduction) {
+        this.responseTimeSlotId = responseTimeSlotId;
         this.solarProduction = solarProduction;
     }
 
     public UUID getResponseTimeSlotId() {
-        return requestTimeSlotId;
+        return responseTimeSlotId;
     }
 
-    public Map<UUID, Double> getSolarProduction() {
+    public double getSolarProduction() {
         return solarProduction;
     }
 
-    public void addSolarProduction(UUID id, double production) {
-        solarProduction.put(id, production);
-    }
+
 }
