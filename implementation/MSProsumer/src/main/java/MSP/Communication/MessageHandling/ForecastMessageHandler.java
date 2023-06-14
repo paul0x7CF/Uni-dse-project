@@ -2,7 +2,8 @@ package MSP.Communication.MessageHandling;
 
 import CF.sendable.ConsumptionResponse;
 import CF.sendable.SolarResponse;
-import MSP.Communication.PollForecast;
+import MSP.Communication.PollConsumptionForecast;
+import MSP.Communication.PollProductionForecast;
 import MSP.Data.EConsumerType;
 import MSP.Exceptions.MessageNotSupportedException;
 import CF.exceptions.MessageProcessingException;
@@ -19,10 +20,10 @@ import java.util.UUID;
 public class ForecastMessageHandler implements IMessageHandler {
     private static final Logger logger = LogManager.getLogger(ForecastMessageHandler.class);
 
-    private HashMap<UUID, PollForecast> pollForecastConsumptionMap;
-    private HashMap<UUID, PollForecast> pollForecastProductionMap;
+    private HashMap<UUID, PollConsumptionForecast> pollForecastConsumptionMap;
+    private HashMap<UUID, PollProductionForecast> pollForecastProductionMap;
 
-    public ForecastMessageHandler(HashMap<UUID, PollForecast> pollForecastConsumptionMap, HashMap<UUID, PollForecast> pollForecastProductionMap) {
+    public ForecastMessageHandler(HashMap<UUID, PollConsumptionForecast> pollForecastConsumptionMap, HashMap<UUID, PollProductionForecast> pollForecastProductionMap) {
         this.pollForecastConsumptionMap = pollForecastConsumptionMap;
         this.pollForecastProductionMap = pollForecastProductionMap;
 
@@ -48,7 +49,7 @@ public class ForecastMessageHandler implements IMessageHandler {
             throw new UnknownForecastResponseException();
         }
 
-        PollForecast pollForecastForTimeSlotID = this.pollForecastConsumptionMap.get(consumptionResponse.getRequestTimeSlotId());
+        PollConsumptionForecast pollForecastForTimeSlotID = this.pollForecastConsumptionMap.get(consumptionResponse.getRequestTimeSlotId());
 
         // Check if the PollForecast is already available because request was broadcasted to all Forecasts
         if(!pollForecastForTimeSlotID.isAvailable()) {
@@ -77,7 +78,6 @@ public class ForecastMessageHandler implements IMessageHandler {
             throw new UnknownForecastResponseException();
         }
 
-        PollForecast pollForecastForTimeSlotID = this.pollForecastProductionMap.get(solarResponse.getResponseTimeSlotId());
         // TODO: @Paul: Implement the logic check the SolarResponse Object and if an other Poll is nessesary
     }
 }

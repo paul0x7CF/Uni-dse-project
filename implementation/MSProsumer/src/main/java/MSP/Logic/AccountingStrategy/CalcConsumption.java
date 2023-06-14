@@ -2,12 +2,11 @@ package MSP.Logic.AccountingStrategy;
 
 import CF.sendable.TimeSlot;
 import MSP.Communication.Communication;
+import MSP.Communication.PollForecast;
 import MSP.Data.Consumer;
 import MSP.Data.IProsumerDevice;
 import MSP.Exceptions.DeviceNotSupportedException;
 import CF.sendable.ConsumptionRequest;
-import MSP.Communication.PollForecast;
-import MSP.Logic.Prosumer.Prosumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
