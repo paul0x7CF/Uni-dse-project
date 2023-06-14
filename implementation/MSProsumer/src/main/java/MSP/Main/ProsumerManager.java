@@ -1,7 +1,7 @@
 package MSP.Main;
 
 import MSP.Communication.Communication;
-import MSP.Logic.Prosumer.Prosumer;
+import MSP.Logic.Prosumer.ConsumptionBuilding;
 import CF.protocol.Message;
 import CF.sendable.Bid;
 import CF.sendable.Sell;
@@ -13,7 +13,7 @@ import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
 public class ProsumerManager {
-    private HashMap<UUID, Prosumer> prosumers;
+    private HashMap<UUID, ConsumptionBuilding> prosumers;
     private HashMap<UUID, BlockingQueue<TimeSlot>> prosumerTimeSlots;
     private BlockingQueue<Message> outgoingMessages;
     private BlockingQueue<TimeSlot> inputQueueTimeSlots;
@@ -48,7 +48,7 @@ public class ProsumerManager {
 
     }
 
-    private Prosumer getProsumerByID(UUID id) {
+    private ConsumptionBuilding getProsumerByID(UUID id) {
         return null;
     }
 

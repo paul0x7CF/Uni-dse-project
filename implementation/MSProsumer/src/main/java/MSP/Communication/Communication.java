@@ -9,7 +9,7 @@ import MSP.Exceptions.UnknownMessageException;
 import MSP.Communication.MessageHandling.AuctionMessageHandler;
 import MSP.Communication.MessageHandling.ExchangeMessageHandler;
 import MSP.Communication.MessageHandling.ForecastMessageHandler;
-import MSP.Logic.Prosumer.Prosumer;
+import MSP.Logic.Prosumer.ConsumptionBuilding;
 import MSP.Main.ProsumerManager;
 import CF.broker.BrokerRunner;
 import CF.messageHandling.MessageHandler;
@@ -30,7 +30,6 @@ public class Communication {
     private MSData myMSData;
     private EServiceType serviceType;
     private BrokerRunner communicationBroker;
-    private Prosumer myProsumer;
 
     private MessageBuilder messageBuilder;
 
@@ -53,10 +52,9 @@ public class Communication {
         this.prosumerManager = prosumerManager;
     }
 
-    public Communication(BlockingQueue<TimeSlot> availableTimeSlot, BlockingQueue<Message> outgoingMessages, final int port, Prosumer myProsumer, EServiceType serviceType) {
+    public Communication(BlockingQueue<TimeSlot> availableTimeSlot, BlockingQueue<Message> outgoingMessages, final int port, EServiceType serviceType) {
         this.inputQueueTimeSlot = availableTimeSlot;
         this.outgoingMessages = outgoingMessages;
-        this.myProsumer = myProsumer;
         this.serviceType = serviceType;
         createBroker(port);
         this.messageBuilder = new MessageBuilder(this.myMSData);
@@ -80,7 +78,7 @@ public class Communication {
                     this.communicationBroker.addMessageHandler(ECategory.Auction, new AuctionMessageHandler());
                 }
                 case Exchange -> {
-                    this.communicationBroker.addMessageHandler(ECategory.Exchange, new ExchangeMessageHandler(myProsumer, inputQueueTimeSlot));
+                    this.communicationBroker.addMessageHandler(ECategory.Exchange, new ExchangeMessageHandler(inputQueueTimeSlot));
                 }
                 case Forecast -> {
                     this.communicationBroker.addMessageHandler(ECategory.Forecast, new ForecastMessageHandler(this.pollForecastConsumptionMap, this.pollForecastProductionMap));
