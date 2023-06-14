@@ -1,0 +1,10 @@
+package MSP.Data;
+
+public enum EProducerType {
+    MONOCRYSTALLINE_TYPE_x1,
+    MONOCRYSTALLINE_TYPE_x2,
+    POLYCRYSTALLINE_TYPE_y1,
+    POLYCRYSTALLINE_TYPE_y2,
+    THIN_FILM_TYPE_z1,
+    THIN_FILM_TYPE_z2,
+}

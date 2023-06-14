@@ -1,7 +1,7 @@
 package MSP.Communication.MessageHandling;
 
 import MSP.Exceptions.MessageNotSupportedException;
-import MSP.Logic.Prosumer.Prosumer;
+import MSP.Logic.Prosumer.ConsumptionBuilding;
 import CF.exceptions.MessageProcessingException;
 import CF.exceptions.RemoteException;
 import CF.messageHandling.IMessageHandler;
@@ -15,11 +15,9 @@ import java.util.concurrent.BlockingQueue;
 public class ExchangeMessageHandler implements IMessageHandler {
 
     private static final Logger logger = LogManager.getLogger(ExchangeMessageHandler.class);
-    private Prosumer myProsumer;
     private BlockingQueue<TimeSlot> availableTimeSlots;
 
-    public ExchangeMessageHandler(Prosumer prosumer, BlockingQueue<TimeSlot> availableTimeSlots) {
-        this.myProsumer = prosumer;
+    public ExchangeMessageHandler(BlockingQueue<TimeSlot> availableTimeSlots) {
         this.availableTimeSlots = availableTimeSlots;
 
     }
