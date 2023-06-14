@@ -1,25 +1,23 @@
 package loadManager.networkManagment;
 
-import CF.sendable.*;
-import MSP.Exceptions.AllExchangesAtCapacityException;
-import MSP.Exceptions.IllegalSendableException;
-import MSP.Exceptions.InvalidBidException;
-import MSP.Exceptions.InvalidSellException;
 import CF.exceptions.MessageProcessingException;
+import CF.messageHandling.IMessageHandler;
+import CF.protocol.Message;
+import CF.sendable.*;
+import MSP.Exceptions.*;
 import loadManager.SellInformation;
 import loadManager.exchangeManagement.ExchangeServiceInformation;
 import loadManager.exchangeManagement.LoadManager;
 import loadManager.prosumerActionManagement.ProsumerManager;
 import mainPackage.ESubCategory;
-import CF.messageHandling.IMessageHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import CF.protocol.Message;
 import validator.BidValidator;
 import validator.IValidator;
 import validator.SellValidator;
 import validator.TransactionValidator;
 
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -60,7 +58,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
                 default ->
                         throw new MessageProcessingException("Unknown message subCategory: " + message.getSubCategory());
             }
-        } catch (InvalidBidException | InvalidSellException | IllegalSendableException e) {
+        } catch (InvalidBidException | InvalidSellException | IllegalSendableException | ProsumerUnknownException e) {
             throw new MessageProcessingException(e.getMessage());
         }
 
@@ -122,7 +120,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
         loadManager.setExchangeAtCapacity(message.getSenderID());
     }
 
-    private void handleTransaction(Message message) throws IllegalSendableException {
+    private void handleTransaction(Message message) throws IllegalSendableException, ProsumerUnknownException {
         logger.info("Handling transaction");
         TransactionValidator transactionValidator = new TransactionValidator();
         transactionValidator.validateSendable(message.getSendable(Transaction.class));
@@ -133,5 +131,9 @@ public class LoadManagerMessageHandler implements IMessageHandler {
 
     public void addExchangeServiceInformation(ExchangeServiceInformation exchangeServiceInformation) {
         loadManager.addExchangeServiceInformation(exchangeServiceInformation);
+    }
+
+    public void endTimeSlot(UUID endedTimeSlotID) throws InvalidTimeSlotException {
+        prosumerManager.endTimeSlot(endedTimeSlotID);
     }
 }

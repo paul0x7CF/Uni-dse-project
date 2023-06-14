@@ -1,7 +1,8 @@
 package loadManager.prosumerActionManagement;
 
-import MSP.Exceptions.IllegalAuctionException;
 import CF.sendable.Transaction;
+import MSP.Exceptions.IllegalAuctionException;
+import MSP.Exceptions.ProsumerUnknownException;
 
 import java.util.*;
 
@@ -50,13 +51,30 @@ public class AuctionProsumerTracker {
             if (entry.getKey().equals(slotID)) {
                 for (Map.Entry<UUID, List<UUID>> entry2 : entry.getValue().entrySet()) {
                     List<UUID> bidderIDs = entry2.getValue();
-                    if (!bidderIDs.isEmpty() && bidderIDs.get(bidderIDs.size()-1).equals(bidderId)) {
+                    if (!bidderIDs.isEmpty() && bidderIDs.get(bidderIDs.size() - 1).equals(bidderId)) {
                         firstInAuction.add(entry2.getKey());
                     }
                 }
             }
         }
         return firstInAuction;
+    }
+
+    public synchronized Map<UUID, UUID> getWonAuctions(UUID timeSlotID) {
+        Map<UUID, UUID> wonAuctions = new HashMap<>();
+        if (auctionsPerTimeSlot.containsKey(timeSlotID)) {
+            Map<UUID, List<UUID>> auctions = auctionsPerTimeSlot.get(timeSlotID);
+
+            for (Map.Entry<UUID, List<UUID>> entry : auctions.entrySet()) {
+                if (!entry.getValue().isEmpty()) {
+                    if(entry.getValue().size()==1){
+                        wonAuctions.put(entry.getKey(), entry.getValue().get(0));
+                    }
+                }
+            }
+        }
+
+        return wonAuctions;
     }
 
     /*
@@ -75,10 +93,8 @@ public class AuctionProsumerTracker {
         return auctionsWithoutBidders;
     }
 */
-
-    //TODO: Maybe add winner variable to Auction - to check who are the real losers
-    //adds the winning bidder to the list of bidders
-    public void checkWithTransactions(Transaction transaction) {
+    //set the winning bidder and delets every other one
+    public void checkWithTransactions(Transaction transaction) throws ProsumerUnknownException {
         if (transaction == null) {
             throw new IllegalArgumentException("Transaction cannot be null");
         }
@@ -88,7 +104,13 @@ public class AuctionProsumerTracker {
 
         for (Map.Entry<UUID, Map<UUID, List<UUID>>> entry : auctionsPerTimeSlot.entrySet()) {
             if (entry.getValue().containsKey(auctionID)) {
-                entry.getValue().get(auctionID).add(bidderID);
+                List<UUID> bidders = entry.getValue().get(auctionID);
+                if (!bidders.contains(bidderID)) {
+                    throw new ProsumerUnknownException("Prosumer seems to be unknown to the auction", Optional.ofNullable(bidderID));
+                }
+
+                //Remove all UUIDs except the winning bidder ID from the list
+                bidders.removeIf(uuid -> !uuid.equals(bidderID));
             }
         }
     }

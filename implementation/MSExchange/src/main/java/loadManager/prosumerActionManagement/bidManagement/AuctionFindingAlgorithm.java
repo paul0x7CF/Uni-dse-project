@@ -1,6 +1,7 @@
 package loadManager.prosumerActionManagement.bidManagement;
 
 import CF.sendable.Bid;
+import CF.sendable.ISendable;
 import MSP.Exceptions.CommandNotPossibleException;
 import MSP.Exceptions.InvalidBidException;
 import MSP.Exceptions.InvalidTimeSlotException;
@@ -12,7 +13,9 @@ import loadManager.prosumerActionManagement.AuctionProsumerTracker;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
@@ -23,6 +26,8 @@ public class AuctionFindingAlgorithm implements Runnable {
     private BlockingQueue<MessageContent> outgoingQueue;
     private AuctionManager auctionManager;
     private AuctionProsumerTracker auctionProsumerTracker;
+    private boolean shouldContinue = true;
+    private boolean timeSlotIsOpen = true;
 
     public AuctionFindingAlgorithm(Bid incomingBid, AuctionManager auctionManager, BlockingQueue<MessageContent> outgoingQueue, AuctionProsumerTracker auctionProsumerTracker) {
         bidForTimeSlot = new BidForTimeSlot(incomingBid);
@@ -33,7 +38,8 @@ public class AuctionFindingAlgorithm implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+
+        while (timeSlotIsOpen) {
             synchronized (lock) {
                 double coveredVolume = bidForTimeSlot.getCoveredVolume();
                 if (coveredVolume != bidForTimeSlot.getIncomingBid().getVolume()) {
@@ -53,6 +59,56 @@ public class AuctionFindingAlgorithm implements Runnable {
                 }
             }
         }
+
+        double volumeInAuctions = getVolumeInAuctions();
+        logger.info("The volume in auctions is " + volumeInAuctions);
+        double notCoveredVolume = bidForTimeSlot.getIncomingBid().getVolume() - volumeInAuctions;
+        createMessageContent(new Bid(notCoveredVolume, 0, bidForTimeSlot.getIncomingBid().getTimeSlot(), bidForTimeSlot.getIncomingBid().getBidderID()), EBuildCategory.BidToStorage);
+        logger.info("Part of the bid with volume " + notCoveredVolume + " was sent to storage");
+
+        while (!timeSlotIsOpen && shouldContinue) {
+            synchronized (lock) {
+                Map<UUID, UUID> wonAuctions = auctionProsumerTracker.getWonAuctions(bidForTimeSlot.getIncomingBid().getTimeSlot());
+                Iterator<Bid> iterator = bidForTimeSlot.getBidsInAuctions().iterator();
+
+                while (iterator.hasNext()) {
+                    Bid bidInAuction = iterator.next();
+                    if (wonAuctions.containsKey(bidInAuction.getAuctionID()) && !wonAuctions.containsValue(bidInAuction.getBidderID())) {
+                        volumeInAuctions -= bidInAuction.getVolume();
+                        createMessageContent(new Bid(bidInAuction.getVolume(), 0, bidInAuction.getTimeSlot(), bidInAuction.getBidderID()), EBuildCategory.BidToStorage);
+                        iterator.remove(); // Remove the Bid from the list
+                        logger.info("Part of the bid with volume " + bidInAuction.getVolume() + " has been sent to storage");
+                    }
+                }
+
+                if (volumeInAuctions == 0) {
+                    shouldContinue = false;
+                }
+
+                try {
+                    lock.wait(2000); //Release the lock and wait
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+
+    private void createMessageContent(ISendable sendable, EBuildCategory buildCategory) {
+        MessageContent messageContent = new MessageContent(sendable, buildCategory);
+        try {
+            outgoingQueue.put(messageContent);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private double getVolumeInAuctions() {
+        double volume = 0;
+        for (Bid bidInAuction : bidForTimeSlot.getBidsInAuctions()) {
+            volume += bidInAuction.getVolume();
+        }
+        return volume;
     }
 
     private void findAuctionsToCoverVolume(double remainingVolume, List<Auction> winningAuctions) throws CommandNotPossibleException, InvalidTimeSlotException {
@@ -61,15 +117,19 @@ public class AuctionFindingAlgorithm implements Runnable {
 
             if (!winningAuctions.contains(auction)) {
                 double volume = auction.getTotalVolume() < remainingVolume ? auction.getTotalVolume() : remainingVolume;
+
                 if (auction.getPrice() * auction.getCoveredVolume() < bidForTimeSlot.getIncomingBid().getPrice() * volume) {
                     logger.trace("in Auction finder, found auction to cover volume");
                     Bid newBid = new Bid(volume, bidForTimeSlot.getIncomingBid().getPrice(), bidForTimeSlot.getIncomingBid().getTimeSlot(), bidForTimeSlot.getIncomingBid().getBidderID());
+                    newBid.setAuctionID(auction.getAuctionId());
                     try {
                         auctionManager.setBidder(auction.getAuctionId(), newBid);
                     } catch (InvalidBidException e) {
                         throw new RuntimeException(e);
                     }
                     auctionProsumerTracker.addBidderToAuction(auction.getAuctionId(), bidForTimeSlot.getIncomingBid().getBidderID());
+                    bidForTimeSlot.addBid(newBid);
+                    logger.info("Added bid to bidForTimeSlot: " + newBid.getVolume());
                     remainingVolume -= volume;
 
                     EBuildCategory bidToExchange = EBuildCategory.BidToExchange;
@@ -86,4 +146,10 @@ public class AuctionFindingAlgorithm implements Runnable {
         }
     }
 
+    public void endAuctionFinder() {
+        synchronized (lock) {
+            timeSlotIsOpen = false;
+            lock.notify();
+        }
+    }
 }

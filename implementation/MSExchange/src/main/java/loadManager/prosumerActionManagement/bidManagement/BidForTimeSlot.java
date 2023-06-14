@@ -1,13 +1,15 @@
 package loadManager.prosumerActionManagement.bidManagement;
 
 import CF.sendable.Bid;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
 public class BidForTimeSlot {
+    private static final Logger logger = LogManager.getLogger(BidForTimeSlot.class);
     private Bid incomingBid;
     private List<Bid> bidsInAuctions;
 
@@ -32,13 +34,14 @@ public class BidForTimeSlot {
         bidsInAuctions.add(bid);
     }
 
-    public void updateBids(List<UUID> auctions) {
-        Iterator<Bid> iterator = bidsInAuctions.iterator();
-        while (iterator.hasNext()) {
-            Bid bid = iterator.next();
-            if (!auctions.contains(bid.getAuctionID())) {
-                iterator.remove();
+    public void updateBids(List<UUID> auctionsBidderIsCurrentWinner) {
+        List<Bid> bidsToRemove = new ArrayList<>();
+        for (Bid bid : bidsInAuctions) {
+            if (!auctionsBidderIsCurrentWinner.contains(bid.getAuctionID().get())) {
+                bidsToRemove.add(bid);
+                logger.debug("Bidder has been outbid for auction " + bid.getAuctionID().get());
             }
         }
+        bidsInAuctions.removeAll(bidsToRemove);
     }
 }

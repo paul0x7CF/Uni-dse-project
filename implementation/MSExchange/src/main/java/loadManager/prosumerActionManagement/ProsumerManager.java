@@ -1,7 +1,12 @@
 package loadManager.prosumerActionManagement;
 
+import CF.sendable.Bid;
+import CF.sendable.Sell;
+import CF.sendable.Transaction;
+import MSP.Exceptions.InvalidBidException;
 import MSP.Exceptions.InvalidTimeSlotException;
 import MSP.Exceptions.PriceNotOKException;
+import MSP.Exceptions.ProsumerUnknownException;
 import loadManager.SellInformation;
 import loadManager.auctionManagement.Auction;
 import loadManager.auctionManagement.AuctionManager;
@@ -10,9 +15,6 @@ import loadManager.networkManagment.MessageContent;
 import loadManager.prosumerActionManagement.bidManagement.Bidder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import CF.sendable.Bid;
-import CF.sendable.Sell;
-import CF.sendable.Transaction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,8 +113,18 @@ public class ProsumerManager {
         //TODO: handle storage for unsatisfied sellers
     }
 
-    public void handleIncomingTransaction(Transaction transaction) {
+    public void handleIncomingTransaction(Transaction transaction) throws ProsumerUnknownException {
         //TODO: set Bidders / Sellers as satisfied
+        UUID timeSlotID = auctionManager.getAuctionByID(transaction.getAuctionID()).getTimeSlotID();
+        Bid bid = new Bid(transaction.getAmount(), transaction.getPrice(), timeSlotID, transaction.getBuyerID());
+        try {
+            auctionManager.setBidder(transaction.getAuctionID(), bid);
+        } catch (InvalidBidException e) {
+            throw new RuntimeException(e);
+        }
+
+        auctionProsumerTracker.checkWithTransactions(transaction);
+
         //TODO: end the auctions
 
     }
@@ -123,5 +135,12 @@ public class ProsumerManager {
 
     public AuctionProsumerTracker getAuctionProsumerTracker() {
         return auctionProsumerTracker;
+    }
+
+    public void endTimeSlot(UUID endedTimeSlotID) throws InvalidTimeSlotException {
+        auctionManager.endTimeSlot(endedTimeSlotID);
+        for (Bidder bidder : bidders) {
+            bidder.endTimeSlot(endedTimeSlotID);
+        }
     }
 }

@@ -1,12 +1,12 @@
 package loadManager.prosumerActionManagement.bidManagement;
 
+import CF.sendable.Bid;
 import loadManager.auctionManagement.AuctionManager;
 import loadManager.networkManagment.MessageContent;
 import loadManager.prosumerActionManagement.AuctionProsumerTracker;
 import mainPackage.PropertyFileReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import CF.sendable.Bid;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -62,5 +62,9 @@ public class Bidder {
 
     public UUID getBidderID() {
         return bidderID;
+    }
+
+    public void endTimeSlot(UUID timeSlotID) {
+        auctionFinderPerSlot.get(timeSlotID).endAuctionFinder();
     }
 }
