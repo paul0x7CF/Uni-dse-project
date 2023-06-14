@@ -25,14 +25,15 @@ import org.apache.logging.log4j.Logger;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConsumptionBuilding implements Runnable {
 
     private static final Logger logger = LogManager.getLogger(ConsumptionBuilding.class);
 
 
-    private EProsumerType prosumerType;
-    private List<Consumer> consumerList = new LinkedList<>();
+    private final EProsumerType prosumerType;
+    private LinkedHashSet<Consumer> consumerList = new LinkedHashSet<>();
     private Wallet wallet;
     protected Communication communicator;
     private HashMap<UUID, BlockingQueue<Message>> slotsDemand;
@@ -40,11 +41,6 @@ public class ConsumptionBuilding implements Runnable {
     private BlockingQueue<Message> outgoingMessages;
     protected PollConsumptionForecast pollOnConsumption;
 
-    public ConsumptionBuilding(EProsumerType prosumerType, BlockingQueue<TimeSlot> availableTimeSlots, BlockingQueue<Message> outgoingMessages) {
-        this.prosumerType = prosumerType;
-        //this.availableTimeSlots = availableTimeSlots;
-        this.outgoingMessages = outgoingMessages;
-    }
 
     public ConsumptionBuilding(EProsumerType prosumerType, double cashBalance, final int port) {
         this.prosumerType = prosumerType;
@@ -64,6 +60,24 @@ public class ConsumptionBuilding implements Runnable {
         Consumer newConsumer = new Consumer(type);
         consumerList.add(newConsumer);
     }
+
+    private boolean deleteConsumer(EConsumerType type) {
+        AtomicInteger countDeleted = new AtomicInteger();
+        this.consumerList.removeIf(consumer -> {
+            countDeleted.getAndIncrement();
+            return consumer.getConsumerType().equals(type);
+        });
+        if(countDeleted.get() > 0) {
+            logger.info("Deleted {} Consumer from type {}", countDeleted.get(), type);
+            return true;
+        }
+        else {
+            logger.info("No Producer Consumer from type {}", type);
+            return false;
+        }
+    }
+
+
 
     public void increaseCashBalance(double amount) {
         wallet.incrementCashBalance(amount);
@@ -102,7 +116,7 @@ public class ConsumptionBuilding implements Runnable {
 
     @Override
     public void run() {
-        communicator.startBrokerRunner();
+        communicator.startBrokerRunner(Thread.currentThread().getName());
         communicator.addMessageHandler(ECategory.Exchange);
         communicator.addMessageHandler(ECategory.Auction);
         communicator.addMessageHandler(ECategory.Forecast);

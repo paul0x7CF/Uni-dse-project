@@ -1,18 +1,26 @@
 package MSP.Data;
 
-public class Producer implements IProsumerDevice {
-        private final double area;
-        private final int efficiency;
-        private final int compassAngle;
-        private final int standingAngle;
+import MSP.Configuration.ConfigFileReader;
 
-    public Producer(double area, int efficiency, int compassAngle, int standingAngle) {
-        this.area = area;
-        this.efficiency = efficiency;
-        this.compassAngle = compassAngle;
-        this.standingAngle = standingAngle;
+public class Producer implements IProsumerDevice {
+
+    private final EProducerType producerType;
+    private final double area;
+    private final int efficiency;
+    private final int compassAngle;
+    private final int standingAngle;
+
+    public Producer(EProducerType producerType) {
+        this.producerType = producerType;
+        this.area = Double.parseDouble(ConfigFileReader.getProperty("producer." + producerType + ".area"));
+        this.efficiency = Integer.parseInt(ConfigFileReader.getProperty("producer." + producerType + ".efficiency"));
+        this.compassAngle = Integer.parseInt(ConfigFileReader.getProperty("producer." + producerType + ".compassAngle"));
+        this.standingAngle = Integer.parseInt(ConfigFileReader.getProperty("producer." + producerType + ".standingAngle"));
     }
 
+    public EProducerType getProducerType() {
+        return producerType;
+    }
     public double getArea() {
         return area;
     }

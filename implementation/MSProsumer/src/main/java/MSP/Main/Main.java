@@ -21,6 +21,10 @@ public class Main {
         final int PROSUMER_AMOUNT = Integer.parseInt(ConfigFileReader.getCommunicationProperty("prosumerAmount"));
         final int PORT_JUMP = Integer.parseInt(ConfigFileReader.getCommunicationProperty("portJumpSize"));
 
+        int amountOfConsumptionBuilding = 0;
+        int amountOfNettoZeroBuilding = 0;
+        int amountOfPublicBuilding = 0;
+
         for (int i = 0; i < PROSUMER_AMOUNT; i++) {
             final int PORT = PROSUMER_START_PORT + (i * PORT_JUMP);
             Random random = new Random();
@@ -28,14 +32,19 @@ public class Main {
             EProsumerType prosumerType = EProsumerType.values()[randomValue];
             switch (prosumerType) {
                 case NETTO_ZERO_BUILDING ->{
+                    amountOfNettoZeroBuilding++;
                     new Thread(new NettoZeroBuilding(prosumerType, CASH_BALANCE, PORT),"Prosumer-"+i).start();
                 }
                 case CONSUMPTION_BUILDING, PUBLIC_BUILDING -> {
+                    amountOfConsumptionBuilding++;
                     new Thread(new ConsumptionBuilding(prosumerType, CASH_BALANCE, PORT),"Prosumer-"+i).start();
                 }
             }
         }
-        logger.info("{} Prosumer created", PROSUMER_AMOUNT);
+        logger.info("{} NettoZeroBuilding were created", amountOfNettoZeroBuilding);
+        logger.info("{} ConsumptionBuilding were created", amountOfConsumptionBuilding);
+        logger.info("{} PublicBuilding were created", amountOfPublicBuilding);
+        System.out.println("Main Thread ended");
 
     }
 }

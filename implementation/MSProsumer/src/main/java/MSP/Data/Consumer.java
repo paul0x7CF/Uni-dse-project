@@ -7,8 +7,6 @@ import MSP.Configuration.ConfigFileReader;
 import java.time.LocalTime;
 
 public class Consumer implements IProsumerDevice {
-
-    private final TimeProvider clock = new TimeProvider();
     private final EConsumerType consumerType;
     private final boolean isHeavyConsumer;
     private final double averageConsumption;

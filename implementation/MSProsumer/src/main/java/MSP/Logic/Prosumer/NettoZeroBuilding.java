@@ -2,6 +2,9 @@ package MSP.Logic.Prosumer;
 
 import CF.sendable.TimeSlot;
 import MSP.Communication.polling.PollProductionForecast;
+import MSP.Configuration.ConfigFileReader;
+import MSP.Data.EConsumerType;
+import MSP.Data.EProducerType;
 import MSP.Data.EProsumerType;
 import MSP.Data.Producer;
 import MSP.Exceptions.DeviceNotSupportedException;
@@ -9,21 +12,53 @@ import MSP.Exceptions.UndefinedStrategyException;
 import MSP.Logic.AccountingStrategy.CalcProduction;
 import MSP.Logic.AccountingStrategy.ContextCalcAcct;
 import MSP.Logic.Scheduler;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class NettoZeroBuilding extends ConsumptionBuilding {
 
-    private List<Producer> producerList;
+    private static final Logger logger = LogManager.getLogger(NettoZeroBuilding.class);
+
+    private LinkedHashSet<Producer> producerList = new LinkedHashSet<>();
     private PollProductionForecast pollOnProduction;
     private Scheduler scheduler;
 
     public NettoZeroBuilding(EProsumerType prosumerType, double cashBalance, int port) {
         super(prosumerType, cashBalance, port);
+        final int INITIALIZED_PRODUCER_AMOUNT = Integer.parseInt(ConfigFileReader.getProperty("producer.amount"));
+        for (int i = 0; i < INITIALIZED_PRODUCER_AMOUNT; i++) {
+            createProducer(EProducerType.valueOf(ConfigFileReader.getProperty("producer.type" + ++i)));
+        }
+
+        logger.info("{} Producer created", producerList.size() + 1);
+
     }
 
-    private void createProducer() {
+    private void createProducer(EProducerType panelType) {
+        Producer producer = new Producer(panelType);
+        producerList.add(producer);
+    }
+
+    private boolean deleteProducer(EProducerType panelType){
+        AtomicInteger countDeleted = new AtomicInteger();
+        this.producerList.removeIf(producer -> {
+            countDeleted.getAndIncrement();
+            return producer.getProducerType().equals(panelType);
+        });
+        if(countDeleted.get() > 0) {
+            logger.info("Deleted {} Producer from type {}", countDeleted.get(), panelType);
+            return true;
+        }
+        else {
+            logger.info("No Producer delete from type {}", panelType);
+            return false;
+        }
 
     }
 
