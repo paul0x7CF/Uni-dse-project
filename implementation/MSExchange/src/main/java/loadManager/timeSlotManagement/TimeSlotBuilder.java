@@ -1,13 +1,15 @@
 package loadManager.timeSlotManagement;
 
+import CF.sendable.TimeSlot;
 import mainPackage.PropertyFileReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import CF.sendable.TimeSlot;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public class TimeSlotBuilder {
     private static final Logger log = LogManager.getLogger(TimeSlotBuilder.class);
@@ -33,6 +35,7 @@ public class TimeSlotBuilder {
             resultTimeSlot = addNewTimeSlot(now);
         } else {
             LocalDateTime start = timeSlots.get(timeSlots.size() - 1).getEndTime();
+
             resultTimeSlot = addNewTimeSlot(start);
         }
         return resultTimeSlot;
@@ -64,5 +67,12 @@ public class TimeSlotBuilder {
         if (timeSlots == null || timeSlots.size() == 0)
             return LocalDateTime.now();
         return timeSlots.get(timeSlots.size() - 1).getEndTime();
+    }
+
+    public Optional<UUID> getLastTimeSlot() {
+        if (getLastSlotsEndtime().isBefore(LocalDateTime.now())) {
+            return Optional.ofNullable(timeSlots.get(timeSlots.size() - 1).getTimeSlotID());
+        }
+        return Optional.empty();
     }
 }

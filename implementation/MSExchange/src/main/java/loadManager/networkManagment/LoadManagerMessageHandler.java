@@ -20,6 +20,7 @@ import validator.IValidator;
 import validator.SellValidator;
 import validator.TransactionValidator;
 
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -133,5 +134,9 @@ public class LoadManagerMessageHandler implements IMessageHandler {
 
     public void addExchangeServiceInformation(ExchangeServiceInformation exchangeServiceInformation) {
         loadManager.addExchangeServiceInformation(exchangeServiceInformation);
+    }
+
+    public void endTimeSlot(UUID timeSlotID){
+        //TODO: Implement
     }
 }

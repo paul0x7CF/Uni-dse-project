@@ -1,7 +1,11 @@
 package loadManager;
 
-import MSP.Exceptions.IllegalSendableException;
 import CF.exceptions.MessageProcessingException;
+import CF.protocol.Message;
+import CF.sendable.EServiceType;
+import CF.sendable.MSData;
+import CF.sendable.TimeSlot;
+import MSP.Exceptions.IllegalSendableException;
 import loadManager.exchangeManagement.ExchangeServiceInformation;
 import loadManager.networkManagment.CommunicationLoadManager;
 import loadManager.networkManagment.LoadManagerMessageHandler;
@@ -11,10 +15,6 @@ import loadManager.timeSlotManagement.TimeSlotBuilder;
 import mainPackage.PropertyFileReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import CF.protocol.Message;
-import CF.sendable.EServiceType;
-import CF.sendable.MSData;
-import CF.sendable.TimeSlot;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -80,7 +80,12 @@ public class Controller implements Runnable {
         int checkInterval = Integer.parseInt(propertyFileReader.getCheckInterval());
 
         while (true) {
-            if (!timeSlotBuilder.getLastSlotsEndtime().isBefore(LocalDateTime.now())) {
+            if (timeSlotBuilder.getLastSlotsEndtime().isBefore(LocalDateTime.now())) {
+                if(timeSlotBuilder.getLastTimeSlot().isPresent()){
+                    UUID endedTimeSlotID = timeSlotBuilder.getLastTimeSlot().get();
+                    messageHandler.endTimeSlot(endedTimeSlotID);
+                }
+
                 TimeSlot newTimeSlot = timeSlotBuilder.addNewTimeSlot();
 
                 List<Message> messages = messageBuilder.buildTimeSlotMessages(newTimeSlot);
