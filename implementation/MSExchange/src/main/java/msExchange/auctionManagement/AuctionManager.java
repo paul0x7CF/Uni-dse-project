@@ -1,13 +1,13 @@
 package msExchange.auctionManagement;
 
+import CF.sendable.Bid;
+import CF.sendable.Sell;
+import CF.sendable.Transaction;
 import MSP.Exceptions.AuctionNotFoundException;
 import MSP.Exceptions.InvalidTimeSlotException;
 import mainPackage.PropertyFileReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import CF.sendable.Bid;
-import CF.sendable.Sell;
-import CF.sendable.Transaction;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -196,6 +196,7 @@ public class AuctionManager implements Runnable {
     public void addTimeSlots(CF.sendable.TimeSlot newTimeSlot) {
         if (timeSlots.get(newTimeSlot.getTimeSlotID()) == null) {
             timeSlots.put(newTimeSlot.getTimeSlotID(), new TimeSlot(newTimeSlot.getTimeSlotID(), newTimeSlot.getStartTime(), newTimeSlot.getEndTime()));
+            logger.info("TimeSlot has been added: " + timeSlots.get(newTimeSlot.getTimeSlotID()));
         }
     }
 }
