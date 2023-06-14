@@ -5,20 +5,25 @@ import java.util.UUID;
 
 public class ProsumerRequest {
     private EProsumerRequestType type;
-    private int area;
-    private int angle;
-    private int efficiency;
+    private int amountOfPanels;
+    private double[] area;
+    private int[] compassAngle;
+    private int[] standingAngle;
+    private int[] efficiency;
     private HashMap<String, Double> consumptionMap;
     private UUID currentTimeSlotID;
     private String senderAddress;
     private int senderPort;
     private UUID senderID;
 
-    public ProsumerRequest(EProsumerRequestType type, int area, int angle, int efficiency, String senderAddress, int senderPort, UUID senderID) {
+    public ProsumerRequest(EProsumerRequestType type, int amountOfPanels, double[] area, int[] compassAngle, int[] standingAngle, int[] efficiency, UUID currentTimeSlotID, String senderAddress, int senderPort, UUID senderID) {
         this.type = type;
+        this.amountOfPanels = amountOfPanels;
         this.area = area;
-        this.angle = angle;
+        this.compassAngle = compassAngle;
+        this.standingAngle = standingAngle;
         this.efficiency = efficiency;
+        this.currentTimeSlotID = currentTimeSlotID;
         this.senderAddress = senderAddress;
         this.senderPort = senderPort;
         this.senderID = senderID;
@@ -33,15 +38,23 @@ public class ProsumerRequest {
         this.senderID = senderID;
     }
 
-    public int getArea() {
+    public int getAmountOfPanels() {
+        return amountOfPanels;
+    }
+
+    public double[] getArea() {
         return area;
     }
 
-    public int getAngle() {
-        return angle;
+    public int[] getCompassAngle() {
+        return compassAngle;
     }
 
-    public int getEfficiency() {
+    public int[] getStandingAngle() {
+        return standingAngle;
+    }
+
+    public int[] getEfficiency() {
         return efficiency;
     }
 
