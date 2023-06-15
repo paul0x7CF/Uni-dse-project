@@ -26,7 +26,6 @@ public class MSForecast implements Runnable {
     private TimeSlot currentTimeSlot;
     private BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest = new LinkedBlockingQueue<>();
     private BlockingQueue<ProsumerSolarRequest> incomingSolarRequest = new LinkedBlockingQueue<>();
-    //private BlockingQueue<ProsumerResponse> outputQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<TimeSlot> inputQueueTimeSlots = new LinkedBlockingQueue<>();
 
     public MSForecast(int port, EForecastType forecastType) {
@@ -55,7 +54,11 @@ public class MSForecast implements Runnable {
         }
 
         for (int i = 0; i < 5; i++) {
-            new Thread(new ProductionForecast(this.incomingSolarRequest, this.forecastCommunicationHandler, this.currentTimeSlot, this.forecastType), "ProductionForecast-" + i).start();
+            try {
+                new Thread(new ProductionForecast(this.incomingSolarRequest, this.forecastCommunicationHandler, this.currentTimeSlot, this.forecastType), "ProductionForecast-" + i).start();
+            } catch (UnknownForecastTypeException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         while (true)

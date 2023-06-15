@@ -34,7 +34,7 @@ public class ConsumptionForecast implements Runnable {
     private void predictConsumption(ProsumerConsumptionRequest prosumerConsumptionRequest) {
         HashMap<String, Double> consumption = new HashMap<>();
 
-        //TODO: calculate consumption (also check currentTimeSlotID)
+        //TODO: CHECK TimeSlotID
 
         Duration duration = Duration.between(currentTimeSlot.getStartTime(), currentTimeSlot.getEndTime());
 

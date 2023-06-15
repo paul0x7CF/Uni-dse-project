@@ -18,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
@@ -103,14 +104,21 @@ public class ProsumerManager {
         }
     }
 
-    public void handleUnsatisfiedBiddersAndSellers(UUID timeSlotID) throws InvalidTimeSlotException {
-        //Unsatisfied Bidders
-        List<UUID> unsatisfiedBidders = auctionProsumerTracker.getBiddersNotSatisfied(timeSlotID);
-        //TODO: handle storage for unsatisfied bidders
-
+    public void handleUnsatisfiedSellers(UUID timeSlotID) throws InvalidTimeSlotException {
         //Unsatisfied Sellers
-        List<UUID> unsatisfiedSellers = auctionManager.getUnsatisfiedSellers(timeSlotID);
-        //TODO: handle storage for unsatisfied sellers
+        Map<UUID, Double> unsatisfiedSellers = auctionManager.getUnsatisfiedSellers(timeSlotID);
+
+        for (Map.Entry<UUID, Double> entry : unsatisfiedSellers.entrySet()) {
+            UUID sellerID = entry.getKey();
+            Double amount = entry.getValue();
+            MessageContent messageContent = new MessageContent(new Sell(amount, averageMechanism.getAveragePrice(), timeSlotID, sellerID), EBuildCategory.SellToStorage);
+            try {
+                outgoingQueue.put(messageContent);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
     }
 
     public void handleIncomingTransaction(Transaction transaction) throws ProsumerUnknownException {
@@ -137,10 +145,12 @@ public class ProsumerManager {
         return auctionProsumerTracker;
     }
 
-    public void endTimeSlot(UUID endedTimeSlotID)  {
+    public void endTimeSlot(UUID endedTimeSlotID) throws InvalidTimeSlotException {
         auctionManager.endTimeSlot(endedTimeSlotID);
         for (Bidder bidder : bidders) {
             bidder.endTimeSlot(endedTimeSlotID);
         }
+
+        handleUnsatisfiedSellers(endedTimeSlotID);
     }
 }

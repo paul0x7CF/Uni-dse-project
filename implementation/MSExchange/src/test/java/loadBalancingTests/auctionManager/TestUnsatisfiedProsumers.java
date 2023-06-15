@@ -1,5 +1,7 @@
 package loadBalancingTests.auctionManager;
 
+import CF.sendable.Bid;
+import CF.sendable.Sell;
 import MSP.Exceptions.InvalidBidException;
 import MSP.Exceptions.InvalidTimeSlotException;
 import loadManager.SellInformation;
@@ -7,12 +9,8 @@ import loadManager.auctionManagement.Auction;
 import loadManager.auctionManagement.AuctionManager;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import CF.sendable.Bid;
-import CF.sendable.Sell;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class TestUnsatisfiedProsumers {
     private double volume = 100;
@@ -45,7 +43,7 @@ public class TestUnsatisfiedProsumers {
         }
 
         //act
-        List<UUID> actualUnsatisfiedSellers = null;
+        Map<UUID, Double> actualUnsatisfiedSellers = new HashMap<>();
         try {
             actualUnsatisfiedSellers = auctionManager.getUnsatisfiedSellers(timeSlotID);
         } catch (InvalidTimeSlotException e) {
@@ -57,7 +55,7 @@ public class TestUnsatisfiedProsumers {
 
         int i = 0;
         for (UUID unsatisfiedSeller : unsatisfiedSellers) {
-            for (UUID actualUnsatisfiedSeller : actualUnsatisfiedSellers) {
+            for (UUID actualUnsatisfiedSeller : actualUnsatisfiedSellers.keySet()) {
                 if (unsatisfiedSeller.equals(actualUnsatisfiedSeller)) {
                     i++;
                 }
@@ -87,7 +85,7 @@ public class TestUnsatisfiedProsumers {
         auctionManager.addNewTimeSlots(timeSlots);
 
         //act
-        List<UUID> actualUnsatisfiedSellers = null;
+        Map<UUID, Double> actualUnsatisfiedSellers = null;
         try {
             actualUnsatisfiedSellers = auctionManager.getUnsatisfiedSellers(timeSlotID);
         } catch (InvalidTimeSlotException e) {
