@@ -8,6 +8,7 @@ import MSP.Data.EConsumerType;
 import MSP.Data.EProsumerType;
 import MSP.Data.Wallet;
 import MSP.Exceptions.DeviceNotSupportedException;
+import MSP.Exceptions.ServiceNotFoundException;
 import MSP.Exceptions.UndefinedStrategyException;
 import MSP.Logic.AccountingStrategy.CalcConsumption;
 import MSP.Logic.AccountingStrategy.ContextCalcAcct;
@@ -99,7 +100,7 @@ public class ConsumptionBuilding implements Runnable {
 
     }
 
-    protected void executeAccountingStrategy(TimeSlot newTimeSlot) {
+    protected void executeAccountingStrategy(TimeSlot newTimeSlot) throws DeviceNotSupportedException, UndefinedStrategyException, ServiceNotFoundException {
         try {
             ContextCalcAcct contextCalcAcct = new ContextCalcAcct();
             contextCalcAcct.setCalcAcctAStrategy(new CalcConsumption(communicator));
@@ -157,6 +158,7 @@ public class ConsumptionBuilding implements Runnable {
             reset();
 
             TimeSlot newTimeSlot = incomingMessages.take();
+            // TODO: check if new Day
             logger.info("Start executing Prosumer logic for new TimeSlot");
             this.executeAccountingStrategy(newTimeSlot);
             logger.debug("Waiting for forecast result");
@@ -169,7 +171,7 @@ public class ConsumptionBuilding implements Runnable {
             energyAmount = scheduleEnergyAmount(newTimeSlot);
             if (energyAmount > 0) {
                 logger.info("Prosumer {} need {} kWh", prosumerType, energyAmount);
-                // TODO: create Bid
+                this.communicator.sendBid(energyAmount, this.wallet.getMinAskPrice(), newTimeSlot);
             } else if (energyAmount < 0) {
                 logger.info("Prosumer {} has {} kWh more as needed", prosumerType, energyAmount);
                 // TODO: create Sell
@@ -178,6 +180,8 @@ public class ConsumptionBuilding implements Runnable {
             }
 
         } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ServiceNotFoundException | DeviceNotSupportedException | UndefinedStrategyException e) {
             throw new RuntimeException(e);
         }
 

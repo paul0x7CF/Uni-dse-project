@@ -9,6 +9,7 @@ import MSP.Data.EProducerType;
 import MSP.Data.IProsumerDevice;
 import MSP.Data.Producer;
 import MSP.Exceptions.DeviceNotSupportedException;
+import MSP.Exceptions.ServiceNotFoundException;
 import MSP.Logic.AccountingStrategy.CalcProduction;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +35,7 @@ public class TestCalculateProduction {
     }
 
     @Test
-    public void calculateAcounting_WithProducers_ReturnsPollForecast() throws DeviceNotSupportedException {
+    public void calculateAcounting_WithProducers_ReturnsPollForecast() throws DeviceNotSupportedException, ServiceNotFoundException {
         // Arrange
         List<IProsumerDevice> devices = new ArrayList<>();
         Producer producer1 = new Producer(EProducerType.MONOCRYSTALLINE_TYPE_x1);

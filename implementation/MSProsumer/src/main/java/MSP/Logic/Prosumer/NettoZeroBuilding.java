@@ -8,6 +8,7 @@ import MSP.Data.EProducerType;
 import MSP.Data.EProsumerType;
 import MSP.Data.Producer;
 import MSP.Exceptions.DeviceNotSupportedException;
+import MSP.Exceptions.ServiceNotFoundException;
 import MSP.Exceptions.UndefinedStrategyException;
 import MSP.Logic.AccountingStrategy.CalcProduction;
 import MSP.Logic.AccountingStrategy.ContextCalcAcct;
@@ -71,7 +72,7 @@ public class NettoZeroBuilding extends ConsumptionBuilding {
     // Define the methods for the Logic
 
     @Override
-    protected void executeAccountingStrategy(TimeSlot newTimeSlot) {
+    protected void executeAccountingStrategy(TimeSlot newTimeSlot) throws ServiceNotFoundException, DeviceNotSupportedException, UndefinedStrategyException {
         super.executeAccountingStrategy(newTimeSlot);
         try {
 
