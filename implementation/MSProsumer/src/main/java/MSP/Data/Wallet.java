@@ -1,10 +1,16 @@
 package MSP.Data;
 
+import MSP.Exceptions.WalletEmptyException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class Wallet {
 
+    private static final Logger logger = LogManager.getLogger(Wallet.class);
+
     private double cashBalance;
-    private double minAskPrice;
-    private double maxBuyPrice;
+    private double sellPrice;
+    private double bidPrice;
 
     public Wallet(double cashBalance) {
         this.cashBalance = cashBalance;
@@ -14,18 +20,33 @@ public class Wallet {
         return this.cashBalance;
     }
 
-    public double getMinAskPrice() {
-        return this.minAskPrice;
+    public double getSellPrice() {
+        return this.sellPrice;
     }
 
-    public double getMaxBuyPrice() {
-        return this.maxBuyPrice;
+    public double getLowerSellPrice(double minPrice) {
+        return minPrice * 0.90;
     }
 
-    public void incrementCashBalance(double cashBalance) {
-        this.cashBalance += cashBalance;
+    public double getHigherBidPrice(double maxPrice) {
+        return maxPrice * 1.10;
     }
-    public void decrementCashBalance(double cashBalance) {
-        this.cashBalance -= cashBalance;
+
+    public double getBidPrice() {
+        return this.bidPrice;
+    }
+
+    public void incrementCashBalance(double moneyToAdd) {
+        this.cashBalance += moneyToAdd;
+    }
+
+    public void decrementCashBalance(double moneyToRemove) {
+        if(this.cashBalance - moneyToRemove < 0) {
+            try {
+                throw new WalletEmptyException("only {} in wallet but {} needed to be removed; Prosumer is bankrupt");
+            } catch (WalletEmptyException e) {
+                logger.warn(e.getMessage());
+            }
+        }
     }
 }

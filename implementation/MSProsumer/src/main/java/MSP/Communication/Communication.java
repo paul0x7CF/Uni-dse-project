@@ -2,6 +2,9 @@ package MSP.Communication;
 
 import CF.sendable.*;
 import MSP.Communication.MessageHandling.MessageBuilder;
+import MSP.Communication.callback.CallbackBidHigher;
+import MSP.Communication.callback.CallbackSellLower;
+import MSP.Communication.callback.CallbackTransaction;
 import MSP.Communication.polling.PollConsumptionForecast;
 import MSP.Communication.polling.PollProductionForecast;
 import MSP.Exceptions.ServiceNotFoundException;
@@ -36,6 +39,8 @@ public class Communication {
     private HashMap<UUID, PollConsumptionForecast> pollForecastConsumptionMap = new HashMap<>();
     private HashMap<UUID, PollProductionForecast> pollForecastProductionMap = new HashMap<>();
     private CallbackTransaction callbackOnTransaction;
+    private CallbackSellLower callbackOnSellLower;
+    private CallbackBidHigher callbackOnBidHigher;
 
     // Define the constructor
 
@@ -56,17 +61,17 @@ public class Communication {
     }
 
     public void startBrokerRunner(String threadName) {
-        new Thread(this.communicationBroker,"Com-of-"+threadName).start();
+        new Thread(this.communicationBroker, "Com-of-" + threadName).start();
     }
 
     public void addMessageHandler(ECategory category) {
         try {
             switch (category) {
                 case Auction -> {
-                    this.communicationBroker.addMessageHandler(ECategory.Auction, new AuctionMessageHandler());
+                    this.communicationBroker.addMessageHandler(ECategory.Auction, new AuctionMessageHandler(this.myMSData, this.callbackOnBidHigher, this.callbackOnSellLower));
                 }
                 case Exchange -> {
-                    this.communicationBroker.addMessageHandler(ECategory.Exchange, new ExchangeMessageHandler(inputQueueTimeSlot, callbackOnTransaction, myMSData));
+                    this.communicationBroker.addMessageHandler(ECategory.Exchange, new ExchangeMessageHandler(this.inputQueueTimeSlot, this.callbackOnTransaction, this.myMSData));
                 }
                 case Forecast -> {
                     this.communicationBroker.addMessageHandler(ECategory.Forecast, new ForecastMessageHandler(this.pollForecastConsumptionMap, this.pollForecastProductionMap));
@@ -80,8 +85,18 @@ public class Communication {
         }
     }
 
+    // Set the callbacks
+
     public void setCallbackOnTransaction(CallbackTransaction callbackOnTransaction) {
         this.callbackOnTransaction = callbackOnTransaction;
+    }
+
+    public void setCallbackOnSellLower(CallbackSellLower callbackSellLower) {
+        this.callbackOnSellLower = callbackSellLower;
+    }
+
+    public void setCallbackOnBidHigher(CallbackBidHigher callbackBidHigher) {
+        this.callbackOnBidHigher = callbackBidHigher;
     }
 
     // Define the methods for sending messages
@@ -97,14 +112,14 @@ public class Communication {
         // Only one Response message will be needed because all services of type Forecast will send the same response
         int countSending = 0;
         for (MSData receiverService : communicationBroker.getServicesByType(EServiceType.Forecast)) {
-            messageToSend= Optional.of(this.messageBuilder.buildConsumptionForecastMessage(consumptionRequest, receiverService));
+            messageToSend = Optional.of(this.messageBuilder.buildConsumptionForecastMessage(consumptionRequest, receiverService));
             communicationBroker.sendMessage(messageToSend.get());
             logger.trace("ConsumptionRequestMessage sent to: Ip:{}, Port: {}", receiverService.getAddress(), receiverService.getPort());
             countSending++;
         }
         logger.debug("ConsumptionRequestMessage was sent to {} Forecast services", countSending);
 
-        if(messageToSend.isEmpty()){
+        if (messageToSend.isEmpty()) {
             throw new ServiceNotFoundException("Forecast Service was not found to send Consumption Request");
         }
 
@@ -119,13 +134,13 @@ public class Communication {
 
         int countSending = 0;
         for (MSData receiverService : communicationBroker.getServicesByType(EServiceType.Forecast)) {
-            messageToSend= Optional.of(this.messageBuilder.buildProductionForecastMessage(solarRequest, receiverService));
+            messageToSend = Optional.of(this.messageBuilder.buildProductionForecastMessage(solarRequest, receiverService));
             communicationBroker.sendMessage(messageToSend.get());
             logger.trace("ProductionRequestMessage sent to: Ip:{}, Port: {}", receiverService.getAddress(), receiverService.getPort());
             countSending++;
         }
         logger.debug("ConsumptionRequestMessage was sent to {} Forecast services", countSending);
-        if(messageToSend.isEmpty()){
+        if (messageToSend.isEmpty()) {
             throw new ServiceNotFoundException("Forecast Service was not found to send Production Request");
         }
         return this.pollForecastProductionMap.get(solarRequest.getRequestTimeSlotId());
@@ -134,43 +149,37 @@ public class Communication {
     public void sendBid(double energyAmount, double price, TimeSlot auctionTimeSlot) throws ServiceNotFoundException {
         logger.debug("Executing Send Bid Message");
         Bid bidToSend = new Bid(energyAmount, price, auctionTimeSlot.getTimeSlotID(), this.myMSData.getId());
-
-        Optional<Message> messageToSend = Optional.empty();
-
-        int countExchangeServices = 0;
-        int countSending = 0;
         logger.trace("Bid created with: energyAmount: {}, price: {}", energyAmount, price);
-        for(MSData receiverService : communicationBroker.getServicesByType(EServiceType.Exchange)){
-            if(countSending == 0) {
-                messageToSend = Optional.of(this.messageBuilder.buildBidMessage(bidToSend, receiverService));
-                communicationBroker.sendMessage(messageToSend.get());
-                logger.trace("Bid Message sent to: Ip:{}, Port: {}", receiverService.getAddress(), receiverService.getPort());
-                countSending++;
-            }
-            countExchangeServices++;
-        }
-        logger.debug("Bid Message was sent to {} Exchange services", countExchangeServices);
-        if(countExchangeServices > 0){
-            logger.warn("More than one Exchange service was found; expected only one; Message was sent to the first one");
-        }
-
-        if(messageToSend.isEmpty()){
-            throw new ServiceNotFoundException("Exchange Service was not found to send Bid");
-        }
+        sendBid(bidToSend);
 
     }
 
     public void sendSell(double energyAmount, double price, TimeSlot auctionTimeSlot) throws ServiceNotFoundException {
         logger.debug("Executing Send Sell Message");
         Sell sellToSend = new Sell(energyAmount, price, auctionTimeSlot.getTimeSlotID(), this.myMSData.getId());
+        logger.trace("Sell created with: energyAmount: {}, price: {}", energyAmount, price);
+        sendSell(sellToSend);
 
+    }
+
+    public void sendLowerSell(Sell sellToSend) throws ServiceNotFoundException {
+        logger.debug("Executing Send Lower Sell Message");
+        sendSell(sellToSend);
+
+    }
+
+    public void sendHigherBid(Bid bidToChange) throws ServiceNotFoundException {
+        logger.debug("Executing Send Higher Bid Message");
+        sendBid(bidToChange);
+    }
+
+
+    private void sendSell(Sell sellToSend) throws ServiceNotFoundException {
         Optional<Message> messageToSend = Optional.empty();
-
         int countExchangeServices = 0;
         int countSending = 0;
-        logger.trace("Bid created with: energyAmount: {}, price: {}", energyAmount, price);
-        for(MSData receiverService : communicationBroker.getServicesByType(EServiceType.Exchange)){
-            if(countSending == 0) {
+        for (MSData receiverService : communicationBroker.getServicesByType(EServiceType.Exchange)) {
+            if (countSending == 0) {
                 messageToSend = Optional.of(this.messageBuilder.buildSellMessage(sellToSend, receiverService));
                 communicationBroker.sendMessage(messageToSend.get());
                 logger.trace("Sell Message sent to: Ip:{}, Port: {}", receiverService.getAddress(), receiverService.getPort());
@@ -179,16 +188,39 @@ public class Communication {
             countExchangeServices++;
         }
         logger.debug("Sell Message was sent to {} Forecast services", countExchangeServices);
-        if(countExchangeServices > 0){
+        if (countExchangeServices > 0) {
             logger.warn("More than one Exchange service was found; expected only one; Message was sent to the first one");
         }
 
-        if(messageToSend.isEmpty()){
+        if (messageToSend.isEmpty()) {
             throw new ServiceNotFoundException("Exchange Service was not found to send Sell");
         }
-
     }
 
+    private void sendBid(Bid bidToSend) throws ServiceNotFoundException {
+
+        Optional<Message> messageToSend = Optional.empty();
+
+        int countExchangeServices = 0;
+        int countSending = 0;
+        for (MSData receiverService : communicationBroker.getServicesByType(EServiceType.Exchange)) {
+            if (countSending == 0) {
+                messageToSend = Optional.of(this.messageBuilder.buildBidMessage(bidToSend, receiverService));
+                communicationBroker.sendMessage(messageToSend.get());
+                logger.trace("Bid Message sent to: Ip:{}, Port: {}", receiverService.getAddress(), receiverService.getPort());
+                countSending++;
+            }
+            countExchangeServices++;
+        }
+        logger.debug("Bid Message was sent to {} Exchange services", countExchangeServices);
+        if (countExchangeServices > 0) {
+            logger.warn("More than one Exchange service was found; expected only one; Message was sent to the first one");
+        }
+
+        if (messageToSend.isEmpty()) {
+            throw new ServiceNotFoundException("Exchange Service was not found to send Bid");
+        }
+    }
 }
 
 

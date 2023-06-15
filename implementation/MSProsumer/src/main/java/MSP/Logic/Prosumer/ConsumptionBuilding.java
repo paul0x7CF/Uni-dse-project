@@ -1,6 +1,8 @@
 package MSP.Logic.Prosumer;
 
-import MSP.Communication.CallbackTransaction;
+import MSP.Communication.callback.CallbackBidHigher;
+import MSP.Communication.callback.CallbackSellLower;
+import MSP.Communication.callback.CallbackTransaction;
 import MSP.Communication.Communication;
 import MSP.Communication.polling.PollConsumptionForecast;
 import MSP.Configuration.ConfigFileReader;
@@ -84,7 +86,7 @@ public class ConsumptionBuilding implements Runnable {
 
     // Define the methods for the Logic
 
-    public CallbackTransaction actOnTransactionFinished() {
+    private CallbackTransaction actOnTransactionFinished() {
         CallbackTransaction callbackOnTransaction = price -> {
             logger.info("Transaction callback received with price {}", price);
             if (price > 0) {
@@ -96,11 +98,37 @@ public class ConsumptionBuilding implements Runnable {
         return callbackOnTransaction;
     }
 
-    public void actSellLowerQuestion(Message message) {
+    private CallbackSellLower actSellLowerQuestion() {
+        CallbackSellLower callbackOnSellLower = sellToChange -> {
+            logger.info("SellLower callback received with price {}", sellToChange.getAskPrice());
+            double priceToChange = sellToChange.getAskPrice();
+            priceToChange = this.wallet.getLowerSellPrice(priceToChange);
+            sellToChange.setAskPrice(priceToChange);
+            try {
+                this.communicator.sendLowerSell(sellToChange);
+            } catch (ServiceNotFoundException e) {
+                logger.error(e.getMessage());
+            }
+
+        };
+        return callbackOnSellLower;
 
     }
 
-    public void actBidHigherQuestion(Message message) {
+    public CallbackBidHigher actBidHigherQuestion() {
+        CallbackBidHigher callbackOnBidHigher = bidToChange -> {
+            logger.info("BidHigher callback received with price {}", bidToChange.getPrice());
+            double priceToChange = bidToChange.getPrice();
+            priceToChange = this.wallet.getHigherBidPrice(priceToChange);
+            bidToChange.setPrice(priceToChange);
+            try {
+                this.communicator.sendHigherBid(bidToChange);
+            } catch (ServiceNotFoundException e) {
+                logger.error(e.getMessage());
+            }
+
+        };
+        return callbackOnBidHigher;
 
     }
 
@@ -152,12 +180,16 @@ public class ConsumptionBuilding implements Runnable {
 
     @Override
     public void run() {
+        // Initialize the Broker
         communicator.startBrokerRunner(Thread.currentThread().getName());
         communicator.addMessageHandler(ECategory.Exchange);
         communicator.addMessageHandler(ECategory.Auction);
         communicator.addMessageHandler(ECategory.Forecast);
-        logger.debug("Set callback on transaction finished");
+
+        // Set Callbacks
         communicator.setCallbackOnTransaction(this.actOnTransactionFinished());
+        communicator.setCallbackOnSellLower(this.actSellLowerQuestion());
+        communicator.setCallbackOnBidHigher(this.actBidHigherQuestion());
         TimeSlot newTimeSlot = new TimeSlot(LocalDateTime.now(), LocalDateTime.now().plusHours(1));
 
 
@@ -166,22 +198,22 @@ public class ConsumptionBuilding implements Runnable {
 
             //TimeSlot newTimeSlot = incomingMessages.take();
             // TODO: check if new Day
-            logger.info("Start executing Prosumer logic for new TimeSlot");
+            logger.info("------------------Start executing Prosumer logic for new TimeSlot---------------------");
             this.executeAccountingStrategy(newTimeSlot);
             logger.debug("Waiting for forecast result");
             do {
                 Thread.sleep(1000);
             } while (!isForecastResultAvailable());
-            logger.debug("Forecast result is available continue with execution");
+            logger.info("Forecast result is available continue with execution");
 
             double energyAmount = 0;
             energyAmount = scheduleEnergyAmount(newTimeSlot);
             if (energyAmount > 0) {
                 logger.info("Prosumer {} need {} kWh", prosumerType, energyAmount);
-                this.communicator.sendBid(energyAmount, this.wallet.getMinAskPrice(), newTimeSlot);
+                this.communicator.sendBid(energyAmount, this.wallet.getSellPrice(), newTimeSlot);
             } else if (energyAmount < 0) {
                 logger.info("Prosumer {} has {} kWh more as needed", prosumerType, energyAmount);
-                // TODO: create Sell
+                this.communicator.sendBid(energyAmount, this.wallet.getSellPrice(), newTimeSlot);
             } else {
                 logger.info("-------------0--------------");
             }

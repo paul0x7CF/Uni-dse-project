@@ -2,10 +2,9 @@ package MSP.Communication.MessageHandling;
 
 import CF.sendable.MSData;
 import CF.sendable.Transaction;
-import MSP.Communication.CallbackTransaction;
+import MSP.Communication.callback.CallbackTransaction;
 import MSP.Exceptions.MessageNotSupportedException;
 import MSP.Exceptions.TransactionInvalidException;
-import MSP.Logic.Prosumer.ConsumptionBuilding;
 import CF.exceptions.MessageProcessingException;
 import CF.exceptions.RemoteException;
 import CF.messageHandling.IMessageHandler;
@@ -53,31 +52,38 @@ public class ExchangeMessageHandler implements IMessageHandler {
         }
 
     }
+
     private void handleTransaction(Message message) {
         logger.debug("Transaction message received");
         Transaction newTransaction = (Transaction) message.getSendable(Transaction.class);
-        validateTransaction(newTransaction);
-        double transactionPrice = calculateTransactionPrice(newTransaction);
-        logger.debug("Call callbackOnTransaction with price: {}", transactionPrice);
-        this.callbackOnTransaction.callback(transactionPrice);
+        if (validateTransaction(newTransaction)) {
+            double transactionPrice = calculateTransactionPrice(newTransaction);
+            logger.debug("Call callbackOnTransaction with price: {}", transactionPrice);
+            this.callbackOnTransaction.callback(transactionPrice);
+        }
+        else {
+            logger.warn("Transaction was Ignored");
+        }
 
     }
 
-    private void validateTransaction(Transaction transactionToValidate) {
+    private boolean validateTransaction(Transaction transactionToValidate) {
         if (transactionToValidate.getBuyerID().equals(this.myMSData.getId()) || transactionToValidate.getSellerID().equals(this.myMSData.getId())) {
-            logger.debug("Transaction is for Me");
+            logger.trace("Transaction is for Me");
+            return true;
         } else {
             try {
                 throw new TransactionInvalidException("Received Transaction has no corresponding ID  to this MS");
             } catch (TransactionInvalidException e) {
                 logger.warn(e.getMessage());
             }
+            return false;
         }
     }
 
     private double calculateTransactionPrice(Transaction transactionToCalculate) {
         double resultPrice = 0;
-        if(transactionToCalculate.getBuyerID().equals(this.myMSData.getId())) {
+        if (transactionToCalculate.getBuyerID().equals(this.myMSData.getId())) {
             resultPrice = transactionToCalculate.getPrice() * transactionToCalculate.getAmount();
         } else {
             resultPrice = transactionToCalculate.getPrice() * transactionToCalculate.getAmount() * -1;
