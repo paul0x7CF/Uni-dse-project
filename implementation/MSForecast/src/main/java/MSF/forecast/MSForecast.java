@@ -26,7 +26,6 @@ public class MSForecast implements Runnable {
     private TimeSlot currentTimeSlot;
     private BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest = new LinkedBlockingQueue<>();
     private BlockingQueue<ProsumerSolarRequest> incomingSolarRequest = new LinkedBlockingQueue<>();
-    //private BlockingQueue<ProsumerResponse> outputQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<TimeSlot> inputQueueTimeSlots = new LinkedBlockingQueue<>();
 
     public MSForecast(int port, EForecastType forecastType) {

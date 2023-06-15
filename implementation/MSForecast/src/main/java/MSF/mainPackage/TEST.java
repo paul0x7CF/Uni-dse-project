@@ -23,10 +23,10 @@ public class TEST {
 
 
 
-        List<String> historicData = HistoricDataReader.getHistoricData(new TimeSlot(LocalDateTime.now(), LocalDateTime.now().plusHours(1)), EForecastType.INCA_L);
+        List<String> historicData = HistoricDataReader.getHistoricData(new TimeSlot(LocalDateTime.now(), LocalDateTime.now().plusHours(1)), EForecastType.APOLIS);
 
         double smoothedData = 0;
-        double smoothingFactor = 0.8;
+        double smoothingFactor = 0.5;
         boolean firstValue = true;
 
         for (String data : historicData) {

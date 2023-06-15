@@ -22,7 +22,6 @@ public class ForecastCommunicationHandler {
     private BrokerRunner communicationBroker;
     private BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest;
     private BlockingQueue<ProsumerSolarRequest> incomingSolarRequest;
-    //private BlockingQueue<ProsumerResponse> outputQueue;
     private BlockingQueue<TimeSlot> inputQueueTimeSlot;
     private ForecastMessageBuilder forecastMessageBuilder;
 

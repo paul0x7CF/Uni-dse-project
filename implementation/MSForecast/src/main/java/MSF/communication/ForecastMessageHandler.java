@@ -1,3 +1,4 @@
+/*
 package MSF.communication;
 
 import CF.exceptions.MessageProcessingException;
@@ -18,3 +19,4 @@ public class ForecastMessageHandler implements IMessageHandler {
 
     }
 }
+*/
