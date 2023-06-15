@@ -21,19 +21,23 @@ public class HistoricDataReader {
     private static final Logger logger = LogManager.getLogger(HistoricDataReader.class);
     private static final String HISTORIC_DATA_FILE_PATH = "implementation/MSForecast/src/main/resources/";
     public static List<String> getHistoricData(TimeSlot currentTime, EForecastType forecastType) throws UnknownForecastTypeException {
-        switch (forecastType)
-        {
-            case GROUNDSTATION:
+        switch (forecastType) {
+            case GROUNDSTATION -> {
                 return getGroundstationData(currentTime);
-            case APOLIS:
+            }
+            case APOLIS -> {
                 return getApolisData(currentTime);
-            case HISTALP:
+            }
+            case HISTALP -> {
                 return getHistalpData(currentTime);
-            case INCA_L:
+            }
+            case INCA_L -> {
                 return getIncaLData(currentTime);
-            default:
+            }
+            default -> {
                 logger.error("ForecastType not found");
                 throw new UnknownForecastTypeException();
+            }
         }
     }
 
@@ -44,51 +48,37 @@ public class HistoricDataReader {
             List<String[]> rows = reader.readAll();
 
             LocalDateTime truncatedDateTime = LocalDateTime.of(
-                    0,
+                    currentTime.getStartTime().getYear(),
                     currentTime.getStartTime().getMonth(),
                     currentTime.getStartTime().getDayOfMonth(),
                     currentTime.getStartTime().getHour(),
                     currentTime.getStartTime().getMinute(),
                     currentTime.getStartTime().getSecond());
 
-            /*double sunHours = 0;
-            double radiation = 0;*/
-
-            // Process the data rows
             for (int i = 1; i < rows.size(); i++) {
                 String[] data = rows.get(i);
 
-                String dateTimeString = data[0];
+                String dateTimeString = data[0].substring(0, 16);
                 LocalDateTime rowDateTime = LocalDateTime.parse(dateTimeString);
 
                 LocalDateTime truncatedRowDateTime = LocalDateTime.of(
-                        0,
+                        rowDateTime.getYear(),
                         rowDateTime.getMonth(),
                         rowDateTime.getDayOfMonth(),
                         rowDateTime.getHour(),
                         rowDateTime.getMinute(),
                         rowDateTime.getSecond());
 
-                /*if (truncatedDateTime.isAfter(truncatedRowDateTime) && truncatedDateTime.isBefore(truncatedRowDateTime.plusDays(1))) {
-                    sunHours += Double.parseDouble(data[1]);
-                    radiation += Double.parseDouble(data[2]);
-                }*/
-
-                if (truncatedRowDateTime.getYear() != truncatedDateTime.getYear() && truncatedRowDateTime.getMonth() == truncatedDateTime.getMonth() && truncatedRowDateTime.getDayOfMonth() == truncatedDateTime.getDayOfMonth() && truncatedRowDateTime.getHour() == truncatedDateTime.getHour())
+                if (truncatedRowDateTime.getYear() != truncatedDateTime.getYear() && truncatedRowDateTime.getMonth() == truncatedDateTime.getMonth() && truncatedRowDateTime.getDayOfMonth() == truncatedDateTime.getDayOfMonth())
                     values.add(String.valueOf(Double.parseDouble(data[2]) * 1000 / 24));
 
-                if (truncatedRowDateTime.isAfter(truncatedDateTime.minusDays(14)) && truncatedRowDateTime.isBefore(truncatedDateTime)) {
-                    if (truncatedRowDateTime.getHour() == truncatedDateTime.getHour())
-                        values.add(String.valueOf(Double.parseDouble(data[2]) * 1000 / 24));
-                }
+                if (truncatedRowDateTime.isAfter(truncatedDateTime.minusDays(14)) && truncatedRowDateTime.isBefore(truncatedDateTime))
+                    values.add(String.valueOf(Double.parseDouble(data[2]) * 1000 / 24));
             }
 
-            //return sunHours / 4 + ";" + radiation / 4;
         } catch (IOException | CsvException e) {
             e.printStackTrace();
         }
-
-        //return "ERROR";
 
         return values;
     }
@@ -100,35 +90,26 @@ public class HistoricDataReader {
             List<String[]> rows = reader.readAll();
 
             LocalDateTime truncatedDateTime = LocalDateTime.of(
-                    0,
+                    currentTime.getStartTime().getYear(),
                     currentTime.getStartTime().getMonth(),
                     currentTime.getStartTime().getDayOfMonth(),
                     currentTime.getStartTime().getHour(),
                     currentTime.getStartTime().getMinute(),
                     currentTime.getStartTime().getSecond());
 
-            /*double radiation = 0;
-            double sunlight = 0;*/
-
-            // Process the data rows
             for (int i = 1; i < rows.size(); i++) {
                 String[] data = rows.get(i);
 
-                String dateTimeString = data[0];
+                String dateTimeString = data[0].substring(0, 16);
                 LocalDateTime rowDateTime = LocalDateTime.parse(dateTimeString);
 
                 LocalDateTime truncatedRowDateTime = LocalDateTime.of(
-                        0,
+                        rowDateTime.getYear(),
                         rowDateTime.getMonth(),
                         rowDateTime.getDayOfMonth(),
                         rowDateTime.getHour(),
                         rowDateTime.getMinute(),
                         rowDateTime.getSecond());
-
-               /* if (truncatedDateTime.isAfter(truncatedRowDateTime) && truncatedDateTime.isBefore(truncatedRowDateTime.plusHours(1))) {
-                    radiation += Double.parseDouble(data[2]);
-                    sunlight += Double.parseDouble(data[3]);
-                }*/
 
                 if (truncatedRowDateTime.getYear() != truncatedDateTime.getYear() && truncatedRowDateTime.getMonth() == truncatedDateTime.getMonth() && truncatedRowDateTime.getDayOfMonth() == truncatedDateTime.getDayOfMonth() && truncatedRowDateTime.getHour() == truncatedDateTime.getHour())
                     values.add(data[2]);
@@ -139,13 +120,11 @@ public class HistoricDataReader {
                 }
             }
 
-            /*return radiation / 4 + ";" + sunlight / 4;*/
         } catch (IOException | CsvException e) {
             e.printStackTrace();
         }
 
         return values;
-        /*return "ERROR";*/
     }
 
     private static List<String> getHistalpData(TimeSlot currentTime) {
@@ -215,32 +194,26 @@ public class HistoricDataReader {
             List<String[]> rows = reader.readAll();
 
             LocalDateTime truncatedDateTime = LocalDateTime.of(
-                    0,
+                    currentTime.getStartTime().getYear(),
                     currentTime.getStartTime().getMonth(),
                     currentTime.getStartTime().getDayOfMonth(),
                     currentTime.getStartTime().getHour(),
                     currentTime.getStartTime().getMinute(),
                     currentTime.getStartTime().getSecond());
 
-            /*double radiation = 0;*/
-
-            // Process the data rows
             for (int i = 1; i < rows.size(); i++) {
                 String[] data = rows.get(i);
 
-                String dateTimeString = data[0];
+                String dateTimeString = data[0].substring(0, 16);
                 LocalDateTime rowDateTime = LocalDateTime.parse(dateTimeString);
 
                 LocalDateTime truncatedRowDateTime = LocalDateTime.of(
-                        0,
+                        rowDateTime.getYear(),
                         rowDateTime.getMonth(),
                         rowDateTime.getDayOfMonth(),
                         rowDateTime.getHour(),
                         rowDateTime.getMinute(),
                         rowDateTime.getSecond());
-
-                /*if (truncatedDateTime.isAfter(truncatedRowDateTime) && truncatedDateTime.isBefore(truncatedRowDateTime.plusHours(1)))
-                    radiation += Double.parseDouble(data[1]);*/
 
                 if (truncatedRowDateTime.getYear() != truncatedDateTime.getYear() && truncatedRowDateTime.getMonth() == truncatedDateTime.getMonth() && truncatedRowDateTime.getDayOfMonth() == truncatedDateTime.getDayOfMonth() && truncatedRowDateTime.getHour() == truncatedDateTime.getHour())
                     values.add(data[1]);
@@ -251,13 +224,10 @@ public class HistoricDataReader {
                 }
             }
 
-            /*return String.valueOf(radiation / 4);*/
         } catch (IOException | CsvException e) {
             e.printStackTrace();
         }
 
         return values;
-
-        /*return "ERROR";*/
     }
 }
