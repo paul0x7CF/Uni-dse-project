@@ -6,6 +6,5 @@ package MSF.data;
 public enum EForecastType {
     GROUNDSTATION,
     APOLIS,
-    HISTALP,
     INCA_L,
 }

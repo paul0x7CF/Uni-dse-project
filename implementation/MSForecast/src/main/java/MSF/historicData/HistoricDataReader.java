@@ -28,9 +28,6 @@ public class HistoricDataReader {
             case APOLIS -> {
                 return getApolisData(currentTime);
             }
-            case HISTALP -> {
-                return getHistalpData(currentTime);
-            }
             case INCA_L -> {
                 return getIncaLData(currentTime);
             }
@@ -125,66 +122,6 @@ public class HistoricDataReader {
         }
 
         return values;
-    }
-
-    private static List<String> getHistalpData(TimeSlot currentTime) {
-        try (CSVReader reader = new CSVReader(new FileReader(HISTORIC_DATA_FILE_PATH + "HISTALP Data.csv"))) {
-            List<String[]> rows = reader.readAll();
-
-            // Skip the header comments
-            int dataStartIndex = 0;
-            for (int i = 0; i < rows.size(); i++) {
-                String[] row = rows.get(i);
-                if (row.length > 0 && !row[0].startsWith("#")) {
-                    dataStartIndex = i;
-                    break;
-                }
-            }
-
-            int sunshineHours = 0;
-
-            for (int i = dataStartIndex + 1; i < rows.size(); i++) {
-                String[] data = rows.get(i);
-
-                for (int j = 0; j < data.length; j++) {
-                    if (data[j].equals("999999"))
-                        data[j] = "0";
-                }
-
-                switch (currentTime.getStartTime().getMonth().toString()) {
-                    case "01":
-                        sunshineHours += Integer.parseInt(data[1]);
-                    case "02":
-                        sunshineHours += Integer.parseInt(data[2]);
-                    case "03":
-                        sunshineHours += Integer.parseInt(data[3]);
-                    case "04":
-                        sunshineHours += Integer.parseInt(data[4]);
-                    case "05":
-                        sunshineHours += Integer.parseInt(data[5]);
-                    case "06":
-                        sunshineHours += Integer.parseInt(data[6]);
-                    case "07":
-                        sunshineHours += Integer.parseInt(data[7]);
-                    case "08":
-                        sunshineHours += Integer.parseInt(data[8]);
-                    case "09":
-                        sunshineHours += Integer.parseInt(data[9]);
-                    case "10":
-                        sunshineHours += Integer.parseInt(data[10]);
-                    case "11":
-                        sunshineHours += Integer.parseInt(data[11]);
-                    case "12":
-                        sunshineHours += Integer.parseInt(data[12]);
-                }
-            }
-
-            /*return String.valueOf(sunshineHours / 4);*/
-        } catch (IOException | CsvException e) {
-            e.printStackTrace();
-        }
-        return new LinkedList<>();
-        /*return "ERROR";*/
     }
 
     private static List<String> getIncaLData(TimeSlot currentTime) {
