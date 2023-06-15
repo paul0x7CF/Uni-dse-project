@@ -1,10 +1,10 @@
 package validator;
 
+import CF.sendable.TimeSlot;
 import MSP.Exceptions.InvalidTimeSlotException;
 import msExchange.messageHandling.ExchangeMessageHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import CF.sendable.TimeSlot;
 
 import java.util.Map;
 import java.util.UUID;
@@ -13,10 +13,12 @@ public class TimeSlotValidator {
     private static final Logger logger = LogManager.getLogger(ExchangeMessageHandler.class);
 
     public void validateTimeSlot(TimeSlot timeSlot, Map<UUID, msExchange.auctionManagement.TimeSlot> timeSlots) throws InvalidTimeSlotException {
+        logger.debug("Validating timeSlot");
         validateTimeSlotNotNull(timeSlot);
         validateTimeSlotIDNotNull(timeSlot);
         validateTimeSlotIDNotInUse(timeSlot.getTimeSlotID(), timeSlots);
         validateTimeSlotStartBeforeEnd(timeSlot);
+        logger.debug("Validated timeSlot successfully");
     }
 
     private void validateTimeSlotNotNull(TimeSlot timeSlot) throws InvalidTimeSlotException {
