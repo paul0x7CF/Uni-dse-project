@@ -23,11 +23,16 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class NettoZeroBuilding extends ConsumptionBuilding {
 
+    // Define the logger
+
     private static final Logger logger = LogManager.getLogger(NettoZeroBuilding.class);
+
+    // Define the private fields
 
     private LinkedHashSet<Producer> producerList = new LinkedHashSet<>();
     private PollProductionForecast pollOnProduction;
-    private Scheduler scheduler;
+
+    // Define the constructor
 
     public NettoZeroBuilding(EProsumerType prosumerType, double cashBalance, int port) {
         super(prosumerType, cashBalance, port);
@@ -39,6 +44,8 @@ public class NettoZeroBuilding extends ConsumptionBuilding {
         logger.info("{} Producer created", producerList.size() + 1);
 
     }
+
+    // Define the CRUD methods
 
     private void createProducer(EProducerType panelType) {
         Producer producer = new Producer(panelType);
@@ -55,11 +62,13 @@ public class NettoZeroBuilding extends ConsumptionBuilding {
             logger.info("Deleted {} Producer from type {}", countDeleted.get(), panelType);
             return true;
         } else {
-            logger.info("No Producer delete from type {}", panelType);
+            logger.info("No Producer found to delete from type {}", panelType);
             return false;
         }
 
     }
+
+    // Define the methods for the Logic
 
     @Override
     protected void executeAccountingStrategy(TimeSlot newTimeSlot) {
