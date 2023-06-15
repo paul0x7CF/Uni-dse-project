@@ -1,16 +1,17 @@
 package loadManager.networkManagment;
 
+import CF.protocol.ECategory;
+import CF.protocol.Message;
+import CF.protocol.MessageFactory;
 import CF.sendable.*;
 import MSP.Exceptions.IllegalSendableException;
 import mainPackage.ESubCategory;
 import mainPackage.IMessageBuilder;
 import mainPackage.PropertyFileReader;
-import CF.protocol.ECategory;
-import CF.protocol.Message;
-import CF.protocol.MessageFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class MessageBuilder {
     private final int DURATION;
@@ -37,12 +38,55 @@ public class MessageBuilder {
             case SellToExchange ->
                     messages.add(buildSellToExchangeMessage(messageContent.getContent(), messageContent.getBuildCategory()));
             case Transaction -> messages.addAll(buildTransactionMessages(messageContent.getContent()));
-
+            case BidToStorage -> messages.addAll(buildBidToStorageMessage(messageContent.getContent()));
+            case SellToStorage -> messages.addAll(buildSellToStorageMessage(messageContent.getContent()));
             default ->
                     throw new IllegalSendableException("Illegal message content type: " + messageContent.getBuildCategory());
         }
         return messages;
     }
+
+    private List<Message> buildSellToStorageMessage(ISendable content) {
+        Sell sell = (Sell) content;
+        List<Message> messages = new ArrayList<>();
+        List<MSData> receiverMS = new ArrayList<>();
+        //TODO: Stoarage ID
+        MSData storage = communication.getBroker().getServicesByType(EServiceType.Storage).get(0);
+        Transaction transaction = new Transaction(sell.getSellerID(), storage.getId(), sell.getVolume(), sell.getAskPrice(), UUID.randomUUID());
+
+        receiverMS.add(communication.getBroker().findService(transaction.getSellerID()));
+
+        for (MSData msData : communication.getBroker().getServicesByType(EServiceType.Storage)) {
+            receiverMS.add(msData);
+        }
+
+        for (MSData msData : receiverMS) {
+            messages.add(buildTransactionMessage(IMessageBuilder.senderAndReceiverTemplate(msData, communication.getBroker().getCurrentService()), transaction));
+        }
+        return messages;
+    }
+
+    private List<Message> buildBidToStorageMessage(ISendable content) {
+        List<Message> messages = new ArrayList<>();
+        List<MSData> receiverMS = new ArrayList<>();
+        Bid bid = (Bid) content;
+
+        MSData stoarageData = communication.getBroker().getServicesByType(EServiceType.Storage).get(0);
+        Transaction transaction = new Transaction(stoarageData.getId(), bid.getBidderID(), bid.getVolume(), bid.getPrice(), UUID.randomUUID());
+
+        receiverMS.add(communication.getBroker().findService(transaction.getBuyerID()));
+
+        for (MSData msData : communication.getBroker().getServicesByType(EServiceType.Storage)) {
+            receiverMS.add(msData);
+        }
+
+        for (MSData msData : receiverMS) {
+            messages.add(buildTransactionMessage(IMessageBuilder.senderAndReceiverTemplate(msData, communication.getBroker().getCurrentService()), transaction));
+        }
+        
+        return messages;
+    }
+
 
     private List<Message> buildTransactionMessages(ISendable content) {
         List<Message> messages = new ArrayList<>();
@@ -114,6 +158,5 @@ public class MessageBuilder {
         messageFactory.setCategory(ECategory.Auction, String.valueOf(ESubCategory.Sell)).setPayload(sell);
         return messageFactory.build();
     }
-
 
 }

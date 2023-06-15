@@ -104,7 +104,7 @@ public class LoadManager {
             request.setGoals(Collections.singletonList("exec"));
 
             Properties properties = new Properties();
-            properties.setProperty("exec", "-s" + ++nextServiceID);
+            properties.setProperty("exec", "-d" + ++nextServiceID);
             request.setProperties(properties);
 
             Invoker invoker = new DefaultInvoker();
