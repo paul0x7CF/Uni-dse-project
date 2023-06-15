@@ -18,7 +18,7 @@ public class TestCreateTimeSlots {
     private int MAX_NUM_TIME_SLOTS_SAVED;
 
 
-  /*  @Test
+    @Test
     public void callMethodxTimes_addNewTimeSlots_expectedMaxNumTimeSlotsSaved() throws InterruptedException {
         // Arrange
         readProperties();
@@ -98,5 +98,5 @@ public class TestCreateTimeSlots {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }*/
+    }
 }

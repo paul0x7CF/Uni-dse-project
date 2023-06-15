@@ -9,15 +9,16 @@ public class TestMainClass {
 
     @Test
     public void givenSFlag_main_expectedNoController() {
-        String[] args = {"-d", "2"};
+        String[] args = {"-s", "2"};
 
         // Call the main method and check if it initializes MSExchange with duplicated as true
         Main.main(args);
 
         // Access the msExchange object from Main and assert its properties
         Main mainInstance = new Main();
-        MSExchange msExchange = mainInstance.getMSExchange().get();
+        MSExchange msExchange = mainInstance.getMsExchange();
         Assertions.assertTrue(msExchange.isDuplicated());
+
         Assertions.assertTrue(mainInstance.getController().isEmpty());
     }
 
@@ -30,8 +31,9 @@ public class TestMainClass {
 
         // Access the msExchange object from Main and assert its properties
         Main mainInstance = new Main();
-        MSExchange msExchange = mainInstance.getMSExchange().get();
+        MSExchange msExchange = mainInstance.getMsExchange();
         Assertions.assertFalse(msExchange.isDuplicated());
+
         Assertions.assertFalse(mainInstance.getController().isEmpty());
     }
 }
