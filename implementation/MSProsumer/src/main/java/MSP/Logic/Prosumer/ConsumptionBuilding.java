@@ -114,6 +114,10 @@ public class ConsumptionBuilding implements Runnable {
 
     }
 
+    public boolean isForecastResultAvailable() {
+        return this.pollOnConsumption.isAvailable();
+    }
+
     @Override
     public void run() {
         communicator.startBrokerRunner(Thread.currentThread().getName());
@@ -124,6 +128,13 @@ public class ConsumptionBuilding implements Runnable {
 
         try {
             TimeSlot newTimeSlot = incomingMessages.take();
+            logger.info("Start executing Prosumer logic for new TimeSlot");
+            this.executeAccountingStrategy(newTimeSlot);
+            logger.debug("Waiting for forecast result");
+            do{
+                Thread.sleep(1000);
+            }while (!isForecastResultAvailable());
+            logger.debug("Forecast result is available continue with execution");
 
 
         } catch (InterruptedException e) {
