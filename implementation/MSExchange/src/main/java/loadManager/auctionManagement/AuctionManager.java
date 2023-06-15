@@ -123,7 +123,7 @@ public class AuctionManager {
     //Tested and is working
     public Map<UUID, Double> getUnsatisfiedSellers(UUID timeSlotID) throws InvalidTimeSlotException {
         if (!auctionsPerSlot.containsKey(timeSlotID)) {
-            throw new InvalidTimeSlotException("Slot not found with ID: " + timeSlotID, Optional.of(timeSlotID));
+            return Collections.emptyMap();
         }
 
         List<Auction> auctions = auctionsPerSlot.get(timeSlotID);
