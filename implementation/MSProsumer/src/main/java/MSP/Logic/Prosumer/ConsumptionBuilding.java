@@ -53,11 +53,11 @@ public class ConsumptionBuilding implements Runnable {
         this.incomingMessages = new LinkedBlockingQueue<>();
         this.communicator = new Communication(this.incomingMessages, port, EServiceType.Prosumer);
         final int INITIALIZED_CONSUMER_AMOUNT = Integer.parseInt(ConfigFileReader.getProperty("consumer.amount"));
-        for (int i = 0; i < INITIALIZED_CONSUMER_AMOUNT; i++) {
-            createConsumer(EConsumerType.valueOf(ConfigFileReader.getProperty("consumer.type" + ++i)));
+        for (int i = 1; i <= INITIALIZED_CONSUMER_AMOUNT; i++) {
+            createConsumer(EConsumerType.valueOf(ConfigFileReader.getProperty("consumer.type" + i)));
         }
 
-        logger.info("Prosumer created from type {} with: {} Consumer, cash balance {}", prosumerType, consumerList.size() + 1, cashBalance);
+        logger.info("Prosumer created from type {} with: {} Consumer from type {}, cash balance {}", prosumerType, consumerList.size(), cashBalance);
     }
 
     // Define the CRUD methods
