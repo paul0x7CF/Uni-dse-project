@@ -44,4 +44,5 @@ public class Bid implements ISendable {
     public void setAuctionID(UUID auctionID) {
         this.auctionID = auctionID;
     }
+
 }

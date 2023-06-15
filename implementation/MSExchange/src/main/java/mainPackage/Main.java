@@ -18,7 +18,7 @@ public class Main {
         if (args.length == 0) {
             logger.info("No arguments passed, running as non-duplicated");
         } else {
-            if ("-s".equals(args[0])) {
+            if ("-d".equals(args[0])) {
                 duplicated = true;
             }
             if (args[1] == null) {
@@ -39,10 +39,6 @@ public class Main {
             Thread controllerThread = new Thread(controller, "LoadManagerThread");
             controllerThread.start();
         }
-    }
-
-    public static MSExchange getMsExchange() {
-        return msExchange;
     }
 
     public static Optional<Controller> getController() {

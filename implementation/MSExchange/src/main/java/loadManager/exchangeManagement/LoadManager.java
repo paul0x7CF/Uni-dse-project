@@ -4,12 +4,12 @@ import CF.exceptions.MessageProcessingException;
 import MSP.Exceptions.AllExchangesAtCapacityException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.maven.shared.invoker.DefaultInvocationRequest;
-import org.apache.maven.shared.invoker.DefaultInvoker;
-import org.apache.maven.shared.invoker.InvocationRequest;
-import org.apache.maven.shared.invoker.Invoker;
+import org.apache.maven.shared.invoker.*;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.*;
 
 public class LoadManager {
@@ -96,21 +96,37 @@ public class LoadManager {
     private void duplicateExchange() {
         // Executes the jar-File again using Maven.
         try {
-            String projectPath = System.getProperty("user.dir"); //TODO: Replace with the actual path to your JAR file
-            String pomPath = projectPath + "/pom.xml"; //TODO: Replace with the actual path to your pom.xml file
+            String projectPath = System.getProperty("C://temp//DSE_jars//MSExchange.jar"); //TODO: Replace with the actual path to your JAR file
+            String pomPath = projectPath + "C://Universität//DSE//Gruppenprojekt//DSE_Team_202//implementation//MSExchange//pom.xml"; //TODO: Replace with the actual path to your pom.xml file
 
             InvocationRequest request = new DefaultInvocationRequest();
             request.setPomFile(new File(pomPath));
             request.setGoals(Collections.singletonList("exec"));
 
             Properties properties = new Properties();
-            properties.setProperty("exec", "-s" + ++nextServiceID);
+            properties.setProperty("exec", "-d" + ++nextServiceID);
             request.setProperties(properties);
 
             Invoker invoker = new DefaultInvoker();
-            invoker.execute(request);
+            invoker.setMavenHome(new File("C:\\Program Files\\JetBrains\\IntelliJ IDEA Community Edition 2022.2\\plugins\\maven\\lib\\maven3\n"));
+            invoker.setMavenExecutable(new File(invoker.getMavenHome(), "bin\\mvn.cmd"));
 
-            System.out.println("JAR file executed successfully.");
+            //configure input and output streams
+            InputStream inputStream = System.in;
+            OutputStream outputStream = System.out;
+            PrintStream printStream = new PrintStream(outputStream);
+            invoker.setErrorHandler(new PrintStreamHandler(printStream, true));
+            invoker.setOutputHandler(new PrintStreamHandler(printStream, true));
+            invoker.setInputStream(inputStream);
+
+
+            InvocationResult result = invoker.execute(request);
+
+            if (result.getExitCode() == 0) {
+                System.out.println("JAR file executed successfully.");
+            } else {
+                System.out.println("JAR file execution failed. Exit code: " + result.getExitCode());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
