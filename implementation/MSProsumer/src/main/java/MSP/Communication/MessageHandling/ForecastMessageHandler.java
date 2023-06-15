@@ -80,7 +80,7 @@ public class ForecastMessageHandler implements IMessageHandler {
 
         PollProductionForecast pollForecastForTimeSlotID = this.pollForecastProductionMap.get(solarResponse.getResponseTimeSlotId());
         logger.debug("Until now {} Production Forecast Results were received for the TimeSlot", pollForecastForTimeSlotID.getResponseSize());
-        pollForecastForTimeSlotID.setPollResult(solarResponse);
+        pollForecastForTimeSlotID.setPollResult(solarResponse.getSolarProduction());
 
     }
 }
