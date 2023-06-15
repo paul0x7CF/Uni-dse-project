@@ -85,7 +85,11 @@ public class Controller implements Runnable {
                 if (timeSlotBuilder.getLastTimeSlot().isPresent()) {
                     UUID endedTimeSlotID = timeSlotBuilder.getLastTimeSlot().get();
 
-                    messageHandler.endTimeSlot(endedTimeSlotID);
+                    try {
+                        messageHandler.endTimeSlot(endedTimeSlotID);
+                    } catch (InvalidTimeSlotException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
 
                 try {

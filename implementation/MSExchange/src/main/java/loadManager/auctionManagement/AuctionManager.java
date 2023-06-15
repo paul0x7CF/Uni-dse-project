@@ -1,13 +1,13 @@
 package loadManager.auctionManagement;
 
+import CF.sendable.Bid;
+import CF.sendable.Transaction;
 import MSP.Exceptions.CommandNotPossibleException;
 import MSP.Exceptions.IllegalAuctionException;
 import MSP.Exceptions.InvalidBidException;
 import MSP.Exceptions.InvalidTimeSlotException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import CF.sendable.Bid;
-import CF.sendable.Transaction;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -121,23 +121,23 @@ public class AuctionManager {
     }
 
     //Tested and is working
-    public List<UUID> getUnsatisfiedSellers(UUID timeSlotID) throws InvalidTimeSlotException {
+    public Map<UUID, Double> getUnsatisfiedSellers(UUID timeSlotID) throws InvalidTimeSlotException {
         if (!auctionsPerSlot.containsKey(timeSlotID)) {
             throw new InvalidTimeSlotException("Slot not found with ID: " + timeSlotID, Optional.of(timeSlotID));
         }
 
         List<Auction> auctions = auctionsPerSlot.get(timeSlotID);
-        List<UUID> unsatisfiedSellers = new ArrayList<>();
+        Map<UUID, Double> unsatisfiedSellers = new HashMap<>();
         if (auctions != null) {
             for (Auction auction : auctions) {
-                if (auction.getBidderID() == null) {
-                    unsatisfiedSellers.add(auction.getSellerID());
+                if (auction.getTotalVolume() - auction.getCoveredVolume() != 0) {
+                    unsatisfiedSellers.put(auction.getSellerID(), auction.getTotalVolume() - auction.getCoveredVolume());
                 }
             }
             return unsatisfiedSellers;
         }
 
-        return Collections.emptyList();
+        return Collections.emptyMap();
     }
 
     public List<Auction> getAuctions(List<UUID> auctionIDs) {

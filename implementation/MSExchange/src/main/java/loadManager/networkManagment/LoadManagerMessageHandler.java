@@ -133,7 +133,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
         loadManager.addExchangeServiceInformation(exchangeServiceInformation);
     }
 
-    public void endTimeSlot(UUID endedTimeSlotID) {
+    public void endTimeSlot(UUID endedTimeSlotID) throws InvalidTimeSlotException {
         prosumerManager.endTimeSlot(endedTimeSlotID);
     }
 }
