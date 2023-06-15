@@ -8,6 +8,7 @@ import MSP.Data.EConsumerType;
 import MSP.Data.EProsumerType;
 import MSP.Data.Wallet;
 import MSP.Exceptions.DeviceNotSupportedException;
+import MSP.Exceptions.ServiceNotFoundException;
 import MSP.Exceptions.UndefinedStrategyException;
 import MSP.Logic.AccountingStrategy.CalcConsumption;
 import MSP.Logic.AccountingStrategy.ContextCalcAcct;
@@ -30,26 +31,27 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ConsumptionBuilding implements Runnable {
 
+    // Define the logger
+
     private static final Logger logger = LogManager.getLogger(ConsumptionBuilding.class);
 
+    // Define the private fields
 
     private final EProsumerType prosumerType;
     private LinkedHashSet<Consumer> consumerList = new LinkedHashSet<>();
     private Wallet wallet;
     protected Communication communicator;
-    private HashMap<UUID, BlockingQueue<Message>> slotsDemand;
     private BlockingQueue<TimeSlot> incomingMessages;
-    private BlockingQueue<Message> outgoingMessages;
     protected PollConsumptionForecast pollOnConsumption;
     protected Scheduler scheduler = new Scheduler();
 
+    // Define the constructor
 
     public ConsumptionBuilding(EProsumerType prosumerType, double cashBalance, final int port) {
         this.prosumerType = prosumerType;
         this.wallet = new Wallet(cashBalance);
         this.incomingMessages = new LinkedBlockingQueue<>();
-        this.outgoingMessages = new LinkedBlockingQueue<>();
-        this.communicator = new Communication(this.incomingMessages, this.outgoingMessages, port, EServiceType.Prosumer);
+        this.communicator = new Communication(this.incomingMessages, port, EServiceType.Prosumer);
         final int INITIALIZED_CONSUMER_AMOUNT = Integer.parseInt(ConfigFileReader.getProperty("consumer.amount"));
         for (int i = 0; i < INITIALIZED_CONSUMER_AMOUNT; i++) {
             createConsumer(EConsumerType.valueOf(ConfigFileReader.getProperty("consumer.type" + ++i)));
@@ -57,6 +59,8 @@ public class ConsumptionBuilding implements Runnable {
 
         logger.info("Prosumer created from type {} with: {} Consumer, cash balance {}", prosumerType, consumerList.size() + 1, cashBalance);
     }
+
+    // Define the CRUD methods
 
     private void createConsumer(EConsumerType type) {
         Consumer newConsumer = new Consumer(type);
@@ -78,6 +82,7 @@ public class ConsumptionBuilding implements Runnable {
         }
     }
 
+    // Define the methods for the Logic
 
     public void increaseCashBalance(double amount) {
         wallet.incrementCashBalance(amount);
@@ -95,15 +100,7 @@ public class ConsumptionBuilding implements Runnable {
 
     }
 
-    private Bid createBid(double volume) {
-        return null;
-    }
-
-    private Sell createSell(double volume) {
-        return null;
-    }
-
-    protected void executeAccountingStrategy(TimeSlot newTimeSlot) {
+    protected void executeAccountingStrategy(TimeSlot newTimeSlot) throws DeviceNotSupportedException, UndefinedStrategyException, ServiceNotFoundException {
         try {
             ContextCalcAcct contextCalcAcct = new ContextCalcAcct();
             contextCalcAcct.setCalcAcctAStrategy(new CalcConsumption(communicator));
@@ -161,6 +158,7 @@ public class ConsumptionBuilding implements Runnable {
             reset();
 
             TimeSlot newTimeSlot = incomingMessages.take();
+            // TODO: check if new Day
             logger.info("Start executing Prosumer logic for new TimeSlot");
             this.executeAccountingStrategy(newTimeSlot);
             logger.debug("Waiting for forecast result");
@@ -173,7 +171,7 @@ public class ConsumptionBuilding implements Runnable {
             energyAmount = scheduleEnergyAmount(newTimeSlot);
             if (energyAmount > 0) {
                 logger.info("Prosumer {} need {} kWh", prosumerType, energyAmount);
-                // TODO: create Bid
+                this.communicator.sendBid(energyAmount, this.wallet.getMinAskPrice(), newTimeSlot);
             } else if (energyAmount < 0) {
                 logger.info("Prosumer {} has {} kWh more as needed", prosumerType, energyAmount);
                 // TODO: create Sell
@@ -182,6 +180,8 @@ public class ConsumptionBuilding implements Runnable {
             }
 
         } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ServiceNotFoundException | DeviceNotSupportedException | UndefinedStrategyException e) {
             throw new RuntimeException(e);
         }
 

@@ -4,6 +4,7 @@ import CF.sendable.TimeSlot;
 import MSP.Communication.polling.PollForecast;
 import MSP.Data.IProsumerDevice;
 import MSP.Exceptions.DeviceNotSupportedException;
+import MSP.Exceptions.ServiceNotFoundException;
 import MSP.Exceptions.UndefinedStrategyException;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class ContextCalcAcct {
         this.strategy = Optional.of(concreteStrategy);
     }
 
-    public PollForecast calculateAccounting(List<IProsumerDevice> devices, TimeSlot timeSlotId) throws DeviceNotSupportedException, UndefinedStrategyException {
+    public PollForecast calculateAccounting(List<IProsumerDevice> devices, TimeSlot timeSlotId) throws DeviceNotSupportedException, UndefinedStrategyException, ServiceNotFoundException {
         if(this.strategy.isEmpty())
             throw new UndefinedStrategyException();
         return this.strategy.get().calculateAccounting(devices, timeSlotId);

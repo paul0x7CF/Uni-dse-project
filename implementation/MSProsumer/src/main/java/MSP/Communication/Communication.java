@@ -4,15 +4,12 @@ import CF.sendable.*;
 import MSP.Communication.MessageHandling.MessageBuilder;
 import MSP.Communication.polling.PollConsumptionForecast;
 import MSP.Communication.polling.PollProductionForecast;
-import MSP.Exceptions.ServiceNotFoundRuntimeException;
+import MSP.Exceptions.ServiceNotFoundException;
 import MSP.Exceptions.UnknownMessageException;
 import MSP.Communication.MessageHandling.AuctionMessageHandler;
 import MSP.Communication.MessageHandling.ExchangeMessageHandler;
 import MSP.Communication.MessageHandling.ForecastMessageHandler;
-import MSP.Logic.Prosumer.ConsumptionBuilding;
-import MSP.Main.ProsumerManager;
 import CF.broker.BrokerRunner;
-import CF.messageHandling.MessageHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import CF.protocol.ECategory;
@@ -25,42 +22,32 @@ import java.util.concurrent.BlockingQueue;
 
 public class Communication {
 
+    // Define the logger
+
     private static final Logger logger = LogManager.getLogger(Communication.class);
+
+    // Define the private fields
 
     private MSData myMSData;
     private EServiceType serviceType;
     private BrokerRunner communicationBroker;
-
     private MessageBuilder messageBuilder;
-
     private BlockingQueue<TimeSlot> inputQueueTimeSlot;
     private HashMap<UUID, PollConsumptionForecast> pollForecastConsumptionMap = new HashMap<>();
     private HashMap<UUID, PollProductionForecast> pollForecastProductionMap = new HashMap<>();
 
-    private BlockingQueue<Message> incomingMessages;
+    // Define the constructor
 
-    private BlockingQueue<Message> outgoingMessages;
-
-    private ProsumerManager prosumerManager;
-
-    private MessageHandler prosMessageHandler;
-
-    public Communication(BlockingQueue<TimeSlot> inputQueueTimeSlot, BlockingQueue<Message> inputForecastResponse, BlockingQueue<Message> outgoingMessages, ProsumerManager prosumerManager) {
-        this.inputQueueTimeSlot = inputQueueTimeSlot;
-        //this.inputForecastResponse = inputForecastResponse;
-        this.outgoingMessages = outgoingMessages;
-        this.prosumerManager = prosumerManager;
-    }
-
-    public Communication(BlockingQueue<TimeSlot> availableTimeSlot, BlockingQueue<Message> outgoingMessages, final int port, EServiceType serviceType) {
+    public Communication(BlockingQueue<TimeSlot> availableTimeSlot, final int port, EServiceType serviceType) {
         this.inputQueueTimeSlot = availableTimeSlot;
-        this.outgoingMessages = outgoingMessages;
         this.serviceType = serviceType;
         createBroker(port);
         this.messageBuilder = new MessageBuilder(this.myMSData);
 
         logger.info("BrokerRunner initialized with Ip: {} Port: {}", this.myMSData.getAddress(), this.myMSData.getPort());
     }
+
+    // Define the initialization methods
 
     private void createBroker(final int port) {
         this.communicationBroker = new BrokerRunner(serviceType, port);
@@ -92,7 +79,9 @@ public class Communication {
         }
     }
 
-    public PollConsumptionForecast sendConsumptionRequestMessage(ConsumptionRequest consumptionRequest) {
+    // Define the methods for sending messages
+
+    public PollConsumptionForecast sendConsumptionRequestMessage(ConsumptionRequest consumptionRequest) throws ServiceNotFoundException {
         logger.debug("Executing Send Consumption Request Message");
         this.pollForecastConsumptionMap.put(consumptionRequest.getRequestTimeSlotId(), new PollConsumptionForecast());
         logger.trace("added ConsumptionPoll");
@@ -111,13 +100,13 @@ public class Communication {
         logger.debug("ConsumptionRequestMessage was sent to {} Forecast services", countSending);
 
         if(messageToSend.isEmpty()){
-            throw new ServiceNotFoundRuntimeException();
+            throw new ServiceNotFoundException();
         }
 
         return this.pollForecastConsumptionMap.get(consumptionRequest.getRequestTimeSlotId());
     }
 
-    public PollProductionForecast sendProductionRequestMessage(SolarRequest solarRequest) {
+    public PollProductionForecast sendProductionRequestMessage(SolarRequest solarRequest) throws ServiceNotFoundException {
         logger.debug("Executing Send Production Request Message");
         this.pollForecastProductionMap.put(solarRequest.getRequestTimeSlotId(), new PollProductionForecast());
         logger.trace("added ProductionPoll");
@@ -132,9 +121,67 @@ public class Communication {
         }
         logger.debug("ConsumptionRequestMessage was sent to {} Forecast services", countSending);
         if(messageToSend.isEmpty()){
-            throw new ServiceNotFoundRuntimeException();
+            throw new ServiceNotFoundException();
         }
         return this.pollForecastProductionMap.get(solarRequest.getRequestTimeSlotId());
+    }
+
+    public void sendBid(double energyAmount, double price, TimeSlot auctionTimeSlot) throws ServiceNotFoundException {
+        logger.debug("Executing Send Bid Message");
+        Bid bidToSend = new Bid(energyAmount, price, auctionTimeSlot.getTimeSlotID(), this.myMSData.getId());
+
+        Optional<Message> messageToSend = Optional.empty();
+
+        int countExchangeServices = 0;
+        int countSending = 0;
+        logger.trace("Bid created with: energyAmount: {}, price: {}", energyAmount, price);
+        for(MSData receiverService : communicationBroker.getServicesByType(EServiceType.Exchange)){
+            if(countSending == 0) {
+                messageToSend = Optional.of(this.messageBuilder.buildBidMessage(bidToSend, receiverService));
+                communicationBroker.sendMessage(messageToSend.get());
+                logger.trace("Bid Message sent to: Ip:{}, Port: {}", receiverService.getAddress(), receiverService.getPort());
+                countSending++;
+            }
+            countExchangeServices++;
+        }
+        logger.debug("Bid Message was sent to {} Exchange services", countExchangeServices);
+        if(countExchangeServices > 0){
+            logger.warn("More than one Exchange service was found; expected only one; Message was sent to the first one");
+        }
+
+        if(messageToSend.isEmpty()){
+            throw new ServiceNotFoundException();
+        }
+
+    }
+
+    public void sendSell(double energyAmount, double price, TimeSlot auctionTimeSlot) throws ServiceNotFoundException {
+        logger.debug("Executing Send Sell Message");
+        Sell sellToSend = new Sell(energyAmount, price, auctionTimeSlot.getTimeSlotID(), this.myMSData.getId());
+
+        Optional<Message> messageToSend = Optional.empty();
+
+        int countExchangeServices = 0;
+        int countSending = 0;
+        logger.trace("Bid created with: energyAmount: {}, price: {}", energyAmount, price);
+        for(MSData receiverService : communicationBroker.getServicesByType(EServiceType.Exchange)){
+            if(countSending == 0) {
+                messageToSend = Optional.of(this.messageBuilder.buildSellMessage(sellToSend, receiverService));
+                communicationBroker.sendMessage(messageToSend.get());
+                logger.trace("Sell Message sent to: Ip:{}, Port: {}", receiverService.getAddress(), receiverService.getPort());
+                countSending++;
+            }
+            countExchangeServices++;
+        }
+        logger.debug("Sell Message was sent to {} Forecast services", countExchangeServices);
+        if(countExchangeServices > 0){
+            logger.warn("More than one Exchange service was found; expected only one; Message was sent to the first one");
+        }
+
+        if(messageToSend.isEmpty()){
+            throw new ServiceNotFoundException();
+        }
+
     }
 
 }
