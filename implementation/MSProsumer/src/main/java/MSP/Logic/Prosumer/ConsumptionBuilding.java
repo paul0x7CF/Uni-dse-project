@@ -213,7 +213,7 @@ public class ConsumptionBuilding implements Runnable {
                 this.communicator.sendBid(energyAmount, this.wallet.getSellPrice(), newTimeSlot);
             } else if (energyAmount < 0) {
                 logger.info("Prosumer {} has {} kWh more as needed", prosumerType, energyAmount);
-                this.communicator.sendBid(energyAmount, this.wallet.getSellPrice(), newTimeSlot);
+                this.communicator.sendBid(energyAmount, this.wallet.getBidPrice(), newTimeSlot);
             } else {
                 logger.info("-------------0--------------");
             }
