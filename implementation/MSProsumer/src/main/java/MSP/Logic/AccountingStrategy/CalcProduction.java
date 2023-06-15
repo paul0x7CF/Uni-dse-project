@@ -7,6 +7,7 @@ import MSP.Communication.polling.PollForecast;
 import MSP.Data.IProsumerDevice;
 import MSP.Data.Producer;
 import MSP.Exceptions.DeviceNotSupportedException;
+import MSP.Exceptions.ServiceNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,7 +24,7 @@ public class CalcProduction implements ICalAcctStrategy{
         this.communication = communication;
     }
     @Override
-    public PollForecast calculateAccounting(List<IProsumerDevice> devices, TimeSlot timeSlotId) throws DeviceNotSupportedException {
+    public PollForecast calculateAccounting(List<IProsumerDevice> devices, TimeSlot timeSlotId) throws DeviceNotSupportedException, ServiceNotFoundException {
         List<Producer> producers = new LinkedList<>();
         for (IProsumerDevice device : devices) {
             if (device.getDevice() instanceof Producer producer) {
