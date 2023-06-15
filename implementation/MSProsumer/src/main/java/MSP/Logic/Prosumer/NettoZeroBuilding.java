@@ -45,17 +45,16 @@ public class NettoZeroBuilding extends ConsumptionBuilding {
         producerList.add(producer);
     }
 
-    private boolean deleteProducer(EProducerType panelType){
+    private boolean deleteProducer(EProducerType panelType) {
         AtomicInteger countDeleted = new AtomicInteger();
         this.producerList.removeIf(producer -> {
             countDeleted.getAndIncrement();
             return producer.getProducerType().equals(panelType);
         });
-        if(countDeleted.get() > 0) {
+        if (countDeleted.get() > 0) {
             logger.info("Deleted {} Producer from type {}", countDeleted.get(), panelType);
             return true;
-        }
-        else {
+        } else {
             logger.info("No Producer delete from type {}", panelType);
             return false;
         }
@@ -63,7 +62,7 @@ public class NettoZeroBuilding extends ConsumptionBuilding {
     }
 
     @Override
-    public void executeAccountingStrategy(TimeSlot newTimeSlot) {
+    protected void executeAccountingStrategy(TimeSlot newTimeSlot) {
         super.executeAccountingStrategy(newTimeSlot);
         try {
 
@@ -76,6 +75,22 @@ public class NettoZeroBuilding extends ConsumptionBuilding {
             throw new RuntimeException(e);
         }
     }
+
+    @Override
+    protected double scheduleEnergyAmount(TimeSlot currTimeSlot) {
+        double resultEnergyAmount;
+        double neededEnergyAmount = super.scheduleEnergyAmount(currTimeSlot);
+        double producedEnergyAmount = (double) this.pollOnProduction.getForecastResult();
+        resultEnergyAmount = neededEnergyAmount - producedEnergyAmount;
+        return resultEnergyAmount;
+    }
+
+    @Override
+    protected void reset() {
+        super.reset();
+        this.pollOnProduction = null;
+    }
+
 
 }
 
