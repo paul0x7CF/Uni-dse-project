@@ -8,6 +8,8 @@ import MSF.communication.ForecastCommunicationHandler;
 import MSF.data.EForecastType;
 import MSF.data.ProsumerConsumptionRequest;
 import MSF.data.ProsumerSolarRequest;
+import MSF.exceptions.UnknownForecastTypeException;
+import MSF.historicData.HistoricDataReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import CF.sendable.EServiceType;
