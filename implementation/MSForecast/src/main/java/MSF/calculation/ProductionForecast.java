@@ -63,7 +63,7 @@ public class ProductionForecast implements Runnable {
 
     private void predictProduction(ProsumerSolarRequest prosumerSolarRequest) throws UnknownForecastTypeException {
 
-        //TODO: calculate production with exponential smoothing (also check currentTimeSlotID)
+        //TODO: CHECK TimeSlotID
 
         double production = 0;
         double irradiation = getHistoricMeasurements();
@@ -85,34 +85,4 @@ public class ProductionForecast implements Runnable {
         SolarResponse solarResponse = new SolarResponse(prosumerSolarRequest.getCurrentTimeSlotID(), production);
         this.forecastCommunicationHandler.sendProductionResponseMessage(solarResponse, prosumerSolarRequest.getSenderAddress(), prosumerSolarRequest.getSenderPort(), prosumerSolarRequest.getSenderID());
     }
-
-    /*private void predictProduction(ProsumerSolarRequest prosumerSolarRequest) throws UnknownForecastTypeException {
-
-        //TODO: calculate production with exponential smoothing (also check currentTimeSlotID)
-
-        double production = 0;
-
-        for (int i = 0; i < prosumerSolarRequest.getAmountOfPanels(); i++) {
-            double irradiation = 0;
-            double standingAngleRad = prosumerSolarRequest.getStandingAngle()[i] * (Math.PI / 180);
-            double compassAngleRad = prosumerSolarRequest.getCompassAngle()[i] * (Math.PI / 180);
-            double efficiency = (double) prosumerSolarRequest.getEfficiency()[i] / 100;
-
-            switch (forecastType) {
-                case APOLIS ->
-                    irradiation = Double.parseDouble(HistoricDataReader.getHistoricData(currentTimeSlot, forecastType).split(";")[1]) * 1000 / 24;
-                case GROUNDSTATION, INCA_L ->
-                    irradiation = Double.parseDouble(HistoricDataReader.getHistoricData(currentTimeSlot, forecastType).split(";")[1]);
-                default ->
-                    throw new UnknownForecastTypeException();
-            }
-
-            production += irradiation * prosumerSolarRequest.getArea()[i] * efficiency * Math.cos(compassAngleRad) * Math.cos(standingAngleRad);
-        }
-
-        lastForecasts.add(production);
-
-        SolarResponse solarResponse = new SolarResponse(prosumerSolarRequest.getCurrentTimeSlotID(), production);
-        this.forecastCommunicationHandler.sendProductionResponseMessage(solarResponse, prosumerSolarRequest.getSenderAddress(), prosumerSolarRequest.getSenderPort(), prosumerSolarRequest.getSenderID());
-    }*/
 }

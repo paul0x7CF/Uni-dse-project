@@ -15,8 +15,7 @@ public class Main {
 
         new Thread(new MSForecast(FORECAST_START_PORT + (0 * PORT_JUMP), EForecastType.APOLIS), "Forecast-APOLIS").start();
         new Thread(new MSForecast(FORECAST_START_PORT + (1 * PORT_JUMP), EForecastType.GROUNDSTATION), "Forecast-GROUNDSTATION").start();
-        new Thread(new MSForecast(FORECAST_START_PORT + (2 * PORT_JUMP), EForecastType.HISTALP), "Forecast-HISTALP").start();
-        new Thread(new MSForecast(FORECAST_START_PORT + (3 * PORT_JUMP), EForecastType.INCA_L), "Forecast-INCA_L").start();
+        new Thread(new MSForecast(FORECAST_START_PORT + (2 * PORT_JUMP), EForecastType.INCA_L), "Forecast-INCA_L").start();
 
         logger.info("{} Forecasts created", FORECAST_AMOUNT);
     }

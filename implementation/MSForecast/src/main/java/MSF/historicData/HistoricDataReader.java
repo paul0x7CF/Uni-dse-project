@@ -66,11 +66,11 @@ public class HistoricDataReader {
                         rowDateTime.getMinute(),
                         rowDateTime.getSecond());
 
-                if (truncatedRowDateTime.getYear() != truncatedDateTime.getYear() && truncatedRowDateTime.getMonth() == truncatedDateTime.getMonth() && truncatedRowDateTime.getDayOfMonth() == truncatedDateTime.getDayOfMonth())
-                    values.add(String.valueOf(Double.parseDouble(data[2]) * 1000 / 24));
+                if (truncatedRowDateTime.getYear() != truncatedDateTime.getYear() && truncatedRowDateTime.getMonth() == truncatedDateTime.getMonth() && truncatedRowDateTime.getDayOfMonth() == truncatedDateTime.getDayOfMonth() && truncatedDateTime.getHour() > 8 && truncatedDateTime.getHour() < 20)
+                    values.add(String.valueOf(Double.parseDouble(data[2]) * Double.parseDouble(data[1]) * 1000 / 24));
 
-                if (truncatedRowDateTime.isAfter(truncatedDateTime.minusDays(14)) && truncatedRowDateTime.isBefore(truncatedDateTime))
-                    values.add(String.valueOf(Double.parseDouble(data[2]) * 1000 / 24));
+                if (truncatedRowDateTime.isAfter(truncatedDateTime.minusDays(14)) && truncatedRowDateTime.isBefore(truncatedDateTime) && truncatedDateTime.getHour() > 8 && truncatedDateTime.getHour() < 20)
+                    values.add(String.valueOf(Double.parseDouble(data[2]) * Double.parseDouble(data[1]) * 1000 / 24));
             }
 
         } catch (IOException | CsvException e) {
@@ -109,11 +109,11 @@ public class HistoricDataReader {
                         rowDateTime.getSecond());
 
                 if (truncatedRowDateTime.getYear() != truncatedDateTime.getYear() && truncatedRowDateTime.getMonth() == truncatedDateTime.getMonth() && truncatedRowDateTime.getDayOfMonth() == truncatedDateTime.getDayOfMonth() && truncatedRowDateTime.getHour() == truncatedDateTime.getHour())
-                    values.add(data[2]);
+                    values.add(String.valueOf(Double.parseDouble(data[2]) * Double.parseDouble(data[3])));
 
                 if (truncatedRowDateTime.isAfter(truncatedDateTime.minusDays(14)) && truncatedRowDateTime.isBefore(truncatedDateTime)) {
                     if (truncatedRowDateTime.getHour() == truncatedDateTime.getHour())
-                        values.add(data[2]);
+                        values.add(String.valueOf(Double.parseDouble(data[2]) * Double.parseDouble(data[3])));
                 }
             }
 

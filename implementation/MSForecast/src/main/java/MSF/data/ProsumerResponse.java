@@ -1,3 +1,4 @@
+/*
 package MSF.data;
 
 import java.util.HashMap;
@@ -20,3 +21,4 @@ public class ProsumerResponse {
         return type;
     }
 }
+*/
