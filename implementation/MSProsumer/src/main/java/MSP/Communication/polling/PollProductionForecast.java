@@ -41,7 +41,14 @@ public class PollProductionForecast implements PollForecast {
 
     @Override
     public Object getForecastResult() {
-        return this.response;
+        double average = 0;
+        double accumulated = 0;
+        int resultAmount = this.response.size();
+        for (Double currResult : this.response) {
+            accumulated += currResult;
+        }
+        average = accumulated / resultAmount;
+        return average;
     }
 
     public int getResponseSize() {
