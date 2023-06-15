@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -19,7 +20,7 @@ import java.util.List;
 public class HistoricDataReader {
     private static final Logger logger = LogManager.getLogger(HistoricDataReader.class);
     private static final String HISTORIC_DATA_FILE_PATH = "implementation/MSForecast/src/main/resources/";
-    public static String getHistoricData(TimeSlot currentTime, EForecastType forecastType) throws UnknownForecastTypeException {
+    public static List<String> getHistoricData(TimeSlot currentTime, EForecastType forecastType) throws UnknownForecastTypeException {
         switch (forecastType)
         {
             case GROUNDSTATION:
@@ -36,7 +37,9 @@ public class HistoricDataReader {
         }
     }
 
-    private static String getApolisData(TimeSlot currentTime) {
+    private static List<String> getApolisData(TimeSlot currentTime) {
+        List<String> values = new LinkedList<>();
+
         try (CSVReader reader = new CSVReader(new FileReader(HISTORIC_DATA_FILE_PATH + "APOLIS Data.csv"))) {
             List<String[]> rows = reader.readAll();
 
@@ -48,8 +51,8 @@ public class HistoricDataReader {
                     currentTime.getStartTime().getMinute(),
                     currentTime.getStartTime().getSecond());
 
-            double sunHours = 0;
-            double radiation = 0;
+            /*double sunHours = 0;
+            double radiation = 0;*/
 
             // Process the data rows
             for (int i = 1; i < rows.size(); i++) {
@@ -66,21 +69,33 @@ public class HistoricDataReader {
                         rowDateTime.getMinute(),
                         rowDateTime.getSecond());
 
-                if (truncatedDateTime.isAfter(truncatedRowDateTime) && truncatedDateTime.isBefore(truncatedRowDateTime.plusDays(1))) {
+                /*if (truncatedDateTime.isAfter(truncatedRowDateTime) && truncatedDateTime.isBefore(truncatedRowDateTime.plusDays(1))) {
                     sunHours += Double.parseDouble(data[1]);
                     radiation += Double.parseDouble(data[2]);
+                }*/
+
+                if (truncatedRowDateTime.getYear() != truncatedDateTime.getYear() && truncatedRowDateTime.getMonth() == truncatedDateTime.getMonth() && truncatedRowDateTime.getDayOfMonth() == truncatedDateTime.getDayOfMonth() && truncatedRowDateTime.getHour() == truncatedDateTime.getHour())
+                    values.add(String.valueOf(Double.parseDouble(data[2]) * 1000 / 24));
+
+                if (truncatedRowDateTime.isAfter(truncatedDateTime.minusDays(14)) && truncatedRowDateTime.isBefore(truncatedDateTime)) {
+                    if (truncatedRowDateTime.getHour() == truncatedDateTime.getHour())
+                        values.add(String.valueOf(Double.parseDouble(data[2]) * 1000 / 24));
                 }
             }
 
-            return sunHours / 4 + ";" + radiation / 4;
+            //return sunHours / 4 + ";" + radiation / 4;
         } catch (IOException | CsvException e) {
             e.printStackTrace();
         }
 
-        return "ERROR";
+        //return "ERROR";
+
+        return values;
     }
 
-    private static String getGroundstationData(TimeSlot currentTime) {
+    private static List<String> getGroundstationData(TimeSlot currentTime) {
+        List<String> values = new LinkedList<>();
+
         try (CSVReader reader = new CSVReader(new FileReader(HISTORIC_DATA_FILE_PATH + "GROUNDSTATION Data.csv"))) {
             List<String[]> rows = reader.readAll();
 
@@ -92,8 +107,8 @@ public class HistoricDataReader {
                     currentTime.getStartTime().getMinute(),
                     currentTime.getStartTime().getSecond());
 
-            double radiation = 0;
-            double sunlight = 0;
+            /*double radiation = 0;
+            double sunlight = 0;*/
 
             // Process the data rows
             for (int i = 1; i < rows.size(); i++) {
@@ -110,22 +125,30 @@ public class HistoricDataReader {
                         rowDateTime.getMinute(),
                         rowDateTime.getSecond());
 
-                if (truncatedDateTime.isAfter(truncatedRowDateTime) && truncatedDateTime.isBefore(truncatedRowDateTime.plusHours(1))) {
+               /* if (truncatedDateTime.isAfter(truncatedRowDateTime) && truncatedDateTime.isBefore(truncatedRowDateTime.plusHours(1))) {
                     radiation += Double.parseDouble(data[2]);
                     sunlight += Double.parseDouble(data[3]);
-                }
+                }*/
 
+                if (truncatedRowDateTime.getYear() != truncatedDateTime.getYear() && truncatedRowDateTime.getMonth() == truncatedDateTime.getMonth() && truncatedRowDateTime.getDayOfMonth() == truncatedDateTime.getDayOfMonth() && truncatedRowDateTime.getHour() == truncatedDateTime.getHour())
+                    values.add(data[2]);
+
+                if (truncatedRowDateTime.isAfter(truncatedDateTime.minusDays(14)) && truncatedRowDateTime.isBefore(truncatedDateTime)) {
+                    if (truncatedRowDateTime.getHour() == truncatedDateTime.getHour())
+                        values.add(data[2]);
+                }
             }
 
-            return radiation / 4 + ";" + sunlight / 4;
+            /*return radiation / 4 + ";" + sunlight / 4;*/
         } catch (IOException | CsvException e) {
             e.printStackTrace();
         }
 
-        return "ERROR";
+        return values;
+        /*return "ERROR";*/
     }
 
-    private static String getHistalpData(TimeSlot currentTime) {
+    private static List<String> getHistalpData(TimeSlot currentTime) {
         try (CSVReader reader = new CSVReader(new FileReader(HISTORIC_DATA_FILE_PATH + "HISTALP Data.csv"))) {
             List<String[]> rows = reader.readAll();
 
@@ -177,15 +200,17 @@ public class HistoricDataReader {
                 }
             }
 
-            return String.valueOf(sunshineHours / 4);
+            /*return String.valueOf(sunshineHours / 4);*/
         } catch (IOException | CsvException e) {
             e.printStackTrace();
         }
-
-        return "ERROR";
+        return new LinkedList<>();
+        /*return "ERROR";*/
     }
 
-    private static String getIncaLData(TimeSlot currentTime) {
+    private static List<String> getIncaLData(TimeSlot currentTime) {
+        List<String> values = new LinkedList<>();
+
         try (CSVReader reader = new CSVReader(new FileReader(HISTORIC_DATA_FILE_PATH + "INCA_L Data.csv"))) {
             List<String[]> rows = reader.readAll();
 
@@ -197,7 +222,7 @@ public class HistoricDataReader {
                     currentTime.getStartTime().getMinute(),
                     currentTime.getStartTime().getSecond());
 
-            double radiation = 0;
+            /*double radiation = 0;*/
 
             // Process the data rows
             for (int i = 1; i < rows.size(); i++) {
@@ -214,15 +239,25 @@ public class HistoricDataReader {
                         rowDateTime.getMinute(),
                         rowDateTime.getSecond());
 
-                if (truncatedDateTime.isAfter(truncatedRowDateTime) && truncatedDateTime.isBefore(truncatedRowDateTime.plusHours(1)))
-                    radiation += Double.parseDouble(data[1]);
+                /*if (truncatedDateTime.isAfter(truncatedRowDateTime) && truncatedDateTime.isBefore(truncatedRowDateTime.plusHours(1)))
+                    radiation += Double.parseDouble(data[1]);*/
+
+                if (truncatedRowDateTime.getYear() != truncatedDateTime.getYear() && truncatedRowDateTime.getMonth() == truncatedDateTime.getMonth() && truncatedRowDateTime.getDayOfMonth() == truncatedDateTime.getDayOfMonth() && truncatedRowDateTime.getHour() == truncatedDateTime.getHour())
+                    values.add(data[1]);
+
+                if (truncatedRowDateTime.isAfter(truncatedDateTime.minusDays(14)) && truncatedRowDateTime.isBefore(truncatedDateTime)) {
+                    if (truncatedRowDateTime.getHour() == truncatedDateTime.getHour())
+                        values.add(data[1]);
+                }
             }
 
-            return String.valueOf(radiation / 4);
+            /*return String.valueOf(radiation / 4);*/
         } catch (IOException | CsvException e) {
             e.printStackTrace();
         }
 
-        return "ERROR";
+        return values;
+
+        /*return "ERROR";*/
     }
 }

@@ -2,11 +2,15 @@ package MSF.mainPackage;
 
 public class TEST {
     public static void main(String[] args) {
-        double irradiation = (double) (6 * 1000) / 24;
-        double production = irradiation * 2.5 * 0.20 * Math.cos(140 * (Math.PI / 180)) * Math.cos(20 * (Math.PI / 180));
+        double frequency = 1; // Adjust this value for the desired frequency
+        double amplitude = 100; // Adjust this value for the desired amplitude
+        double phase = 0.0;
 
-        double angleRad = 220 * (Math.PI / 180);
-        System.out.println("Cosinus: " + Math.cos(angleRad));
-        System.out.println("Production: " + production);
+        double energyConsumption = amplitude * Math.sin((2 * Math.PI * frequency * 3600 + phase) * (Math.PI / 180));
+
+        double consumption = (double) 100 / ((double) 3600 / 60);
+        System.out.println("energyConsumption: " + energyConsumption / 60);
+
+        System.out.println("Consumption: " + consumption);
     }
 }
