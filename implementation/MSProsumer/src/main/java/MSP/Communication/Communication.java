@@ -35,6 +35,7 @@ public class Communication {
     private BlockingQueue<TimeSlot> inputQueueTimeSlot;
     private HashMap<UUID, PollConsumptionForecast> pollForecastConsumptionMap = new HashMap<>();
     private HashMap<UUID, PollProductionForecast> pollForecastProductionMap = new HashMap<>();
+    private CallbackTransaction callbackOnTransaction;
 
     // Define the constructor
 
@@ -65,7 +66,7 @@ public class Communication {
                     this.communicationBroker.addMessageHandler(ECategory.Auction, new AuctionMessageHandler());
                 }
                 case Exchange -> {
-                    this.communicationBroker.addMessageHandler(ECategory.Exchange, new ExchangeMessageHandler(inputQueueTimeSlot));
+                    this.communicationBroker.addMessageHandler(ECategory.Exchange, new ExchangeMessageHandler(inputQueueTimeSlot, callbackOnTransaction, myMSData));
                 }
                 case Forecast -> {
                     this.communicationBroker.addMessageHandler(ECategory.Forecast, new ForecastMessageHandler(this.pollForecastConsumptionMap, this.pollForecastProductionMap));
@@ -77,6 +78,10 @@ public class Communication {
         } catch (UnknownMessageException e) {
             logger.warn(e.getMessage());
         }
+    }
+
+    public void setCallbackOnTransaction(CallbackTransaction callbackOnTransaction) {
+        this.callbackOnTransaction = callbackOnTransaction;
     }
 
     // Define the methods for sending messages
@@ -100,7 +105,7 @@ public class Communication {
         logger.debug("ConsumptionRequestMessage was sent to {} Forecast services", countSending);
 
         if(messageToSend.isEmpty()){
-            throw new ServiceNotFoundException();
+            throw new ServiceNotFoundException("Forecast Service was not found to send Consumption Request");
         }
 
         return this.pollForecastConsumptionMap.get(consumptionRequest.getRequestTimeSlotId());
@@ -121,7 +126,7 @@ public class Communication {
         }
         logger.debug("ConsumptionRequestMessage was sent to {} Forecast services", countSending);
         if(messageToSend.isEmpty()){
-            throw new ServiceNotFoundException();
+            throw new ServiceNotFoundException("Forecast Service was not found to send Production Request");
         }
         return this.pollForecastProductionMap.get(solarRequest.getRequestTimeSlotId());
     }
@@ -150,7 +155,7 @@ public class Communication {
         }
 
         if(messageToSend.isEmpty()){
-            throw new ServiceNotFoundException();
+            throw new ServiceNotFoundException("Exchange Service was not found to send Bid");
         }
 
     }
@@ -179,7 +184,7 @@ public class Communication {
         }
 
         if(messageToSend.isEmpty()){
-            throw new ServiceNotFoundException();
+            throw new ServiceNotFoundException("Exchange Service was not found to send Sell");
         }
 
     }

@@ -3,6 +3,7 @@ package CF.sendable;
 import java.util.UUID;
 
 public class Transaction implements ISendable {
+
     private final UUID transactionID = UUID.randomUUID();
     private final UUID sellerID;
     private final UUID buyerID;

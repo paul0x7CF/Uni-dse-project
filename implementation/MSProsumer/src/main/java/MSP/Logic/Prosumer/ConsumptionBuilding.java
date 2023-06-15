@@ -1,5 +1,6 @@
 package MSP.Logic.Prosumer;
 
+import MSP.Communication.CallbackTransaction;
 import MSP.Communication.Communication;
 import MSP.Communication.polling.PollConsumptionForecast;
 import MSP.Configuration.ConfigFileReader;
@@ -15,15 +16,14 @@ import MSP.Logic.AccountingStrategy.ContextCalcAcct;
 
 import CF.protocol.ECategory;
 import CF.protocol.Message;
-import CF.sendable.Bid;
 import CF.sendable.EServiceType;
-import CF.sendable.Sell;
 import CF.sendable.TimeSlot;
 
 import MSP.Logic.Scheduler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -84,12 +84,16 @@ public class ConsumptionBuilding implements Runnable {
 
     // Define the methods for the Logic
 
-    public void increaseCashBalance(double amount) {
-        wallet.incrementCashBalance(amount);
-    }
-
-    public void decreaseCashBalance(double amount) {
-        wallet.decrementCashBalance(amount);
+    public CallbackTransaction actOnTransactionFinished() {
+        CallbackTransaction callbackOnTransaction = price -> {
+            logger.info("Transaction callback received with price {}", price);
+            if (price > 0) {
+                wallet.incrementCashBalance(price);
+            } else {
+                wallet.decrementCashBalance(price);
+            }
+        };
+        return callbackOnTransaction;
     }
 
     public void actSellLowerQuestion(Message message) {
@@ -152,12 +156,15 @@ public class ConsumptionBuilding implements Runnable {
         communicator.addMessageHandler(ECategory.Exchange);
         communicator.addMessageHandler(ECategory.Auction);
         communicator.addMessageHandler(ECategory.Forecast);
+        logger.debug("Set callback on transaction finished");
+        communicator.setCallbackOnTransaction(this.actOnTransactionFinished());
+        TimeSlot newTimeSlot = new TimeSlot(LocalDateTime.now(), LocalDateTime.now().plusHours(1));
 
 
         try {
             reset();
 
-            TimeSlot newTimeSlot = incomingMessages.take();
+            //TimeSlot newTimeSlot = incomingMessages.take();
             // TODO: check if new Day
             logger.info("Start executing Prosumer logic for new TimeSlot");
             this.executeAccountingStrategy(newTimeSlot);
@@ -182,7 +189,7 @@ public class ConsumptionBuilding implements Runnable {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ServiceNotFoundException | DeviceNotSupportedException | UndefinedStrategyException e) {
-            throw new RuntimeException(e);
+            logger.error(e.getMessage());
         }
 
 
