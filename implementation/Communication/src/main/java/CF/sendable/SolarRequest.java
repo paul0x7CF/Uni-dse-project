@@ -21,8 +21,8 @@ public class SolarRequest implements ISendable {
         this.compassAngle = compassAngle;
         this.standingAngle = standingAngle;
 
-        if(area.length != --amountOfPanels || efficiency.length != --amountOfPanels ||
-                compassAngle.length != --amountOfPanels || standingAngle.length != --amountOfPanels) {
+        if(area.length != amountOfPanels || efficiency.length != amountOfPanels ||
+                compassAngle.length != amountOfPanels || standingAngle.length != amountOfPanels) {
             throw new IllegalArgumentException("The length of the arrays must be equal to the amount of panels");
         }
 

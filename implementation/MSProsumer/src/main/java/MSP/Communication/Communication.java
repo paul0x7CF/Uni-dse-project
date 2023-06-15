@@ -25,42 +25,32 @@ import java.util.concurrent.BlockingQueue;
 
 public class Communication {
 
+    // Define the logger
+
     private static final Logger logger = LogManager.getLogger(Communication.class);
+
+    // Define the private fields
 
     private MSData myMSData;
     private EServiceType serviceType;
     private BrokerRunner communicationBroker;
-
     private MessageBuilder messageBuilder;
-
     private BlockingQueue<TimeSlot> inputQueueTimeSlot;
     private HashMap<UUID, PollConsumptionForecast> pollForecastConsumptionMap = new HashMap<>();
     private HashMap<UUID, PollProductionForecast> pollForecastProductionMap = new HashMap<>();
 
-    private BlockingQueue<Message> incomingMessages;
+    // Define the constructor
 
-    private BlockingQueue<Message> outgoingMessages;
-
-    private ProsumerManager prosumerManager;
-
-    private MessageHandler prosMessageHandler;
-
-    public Communication(BlockingQueue<TimeSlot> inputQueueTimeSlot, BlockingQueue<Message> inputForecastResponse, BlockingQueue<Message> outgoingMessages, ProsumerManager prosumerManager) {
-        this.inputQueueTimeSlot = inputQueueTimeSlot;
-        //this.inputForecastResponse = inputForecastResponse;
-        this.outgoingMessages = outgoingMessages;
-        this.prosumerManager = prosumerManager;
-    }
-
-    public Communication(BlockingQueue<TimeSlot> availableTimeSlot, BlockingQueue<Message> outgoingMessages, final int port, EServiceType serviceType) {
+    public Communication(BlockingQueue<TimeSlot> availableTimeSlot, final int port, EServiceType serviceType) {
         this.inputQueueTimeSlot = availableTimeSlot;
-        this.outgoingMessages = outgoingMessages;
         this.serviceType = serviceType;
         createBroker(port);
         this.messageBuilder = new MessageBuilder(this.myMSData);
 
         logger.info("BrokerRunner initialized with Ip: {} Port: {}", this.myMSData.getAddress(), this.myMSData.getPort());
     }
+
+    // Define the initialization methods
 
     private void createBroker(final int port) {
         this.communicationBroker = new BrokerRunner(serviceType, port);
@@ -91,6 +81,8 @@ public class Communication {
             logger.warn(e.getMessage());
         }
     }
+
+    // Define the methods for sending messages
 
     public PollConsumptionForecast sendConsumptionRequestMessage(ConsumptionRequest consumptionRequest) {
         logger.debug("Executing Send Consumption Request Message");

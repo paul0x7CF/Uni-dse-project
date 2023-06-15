@@ -41,7 +41,7 @@ public class CalcConsumption implements ICalAcctStrategy {
             deviceCount++;
             if (device.getDevice() instanceof Consumer consumer) {
                 if(consumer.isAllowedToConsume(timeSlot.getStartTime().toLocalTime())) {
-                    consumptionMap.put(consumer.getConsumerType().toString(), consumer.getAverageConsumption());
+                    consumptionMap.put(consumer.getConsumerType().toString(), consumer.getAverageConsumptionpH());
                     deviceAdded++;
                     logger.trace("Consumer " + consumer.getConsumerType() + " was put into the consumptionMap");
                 }
