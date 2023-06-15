@@ -7,6 +7,7 @@ import MSP.Data.Consumer;
 import MSP.Data.IProsumerDevice;
 import MSP.Exceptions.DeviceNotSupportedException;
 import CF.sendable.ConsumptionRequest;
+import MSP.Exceptions.ServiceNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -24,7 +25,7 @@ public class CalcConsumption implements ICalAcctStrategy {
     }
 
     @Override
-    public PollForecast calculateAccounting(List<IProsumerDevice> devices, TimeSlot timeSlot) throws DeviceNotSupportedException {
+    public PollForecast calculateAccounting(List<IProsumerDevice> devices, TimeSlot timeSlot) throws DeviceNotSupportedException, ServiceNotFoundException {
 
         HashMap<String, Double> consumptionMap = getConsumptionMap(devices, timeSlot);
         ConsumptionRequest request = new ConsumptionRequest(consumptionMap, timeSlot.getTimeSlotID());
