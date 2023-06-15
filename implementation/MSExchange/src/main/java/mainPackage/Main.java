@@ -46,7 +46,8 @@ public class Main {
         return controller;
     }
 
-    public MSExchange getMsExchange() {
+    public static Optional<MSExchange> getMSExchange() {
+        Optional<MSExchange> msExchange = Optional.ofNullable(Main.msExchange);
         return msExchange;
     }
 }

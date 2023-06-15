@@ -96,8 +96,8 @@ public class LoadManager {
     private void duplicateExchange() {
         // Executes the jar-File again using Maven.
         try {
-            String projectPath = System.getProperty("C://temp//DSE_jars//MSExchange.jar"); //TODO: Replace with the actual path to your JAR file
-            String pomPath = projectPath + "C://Universität//DSE//Gruppenprojekt//DSE_Team_202//implementation//MSExchange//pom.xml"; //TODO: Replace with the actual path to your pom.xml file
+            String projectPath = "C://temp//DSE_jars//MSExchange.jar"; //TODO: Replace with the actual path to your JAR file
+            String pomPath = "C://Universität//DSE//Gruppenprojekt//DSE_Team_202//implementation//MSExchange//pom.xml"; //TODO: Replace with the actual path to your pom.xml file
 
             InvocationRequest request = new DefaultInvocationRequest();
             request.setPomFile(new File(pomPath));
@@ -127,6 +127,7 @@ public class LoadManager {
             } else {
                 System.out.println("JAR file execution failed. Exit code: " + result.getExitCode());
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
