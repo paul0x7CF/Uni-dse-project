@@ -45,4 +45,8 @@ public class Main {
         Optional<Controller> controller = Optional.ofNullable(Main.controller);
         return controller;
     }
+
+    public MSExchange getMsExchange() {
+        return msExchange;
+    }
 }
