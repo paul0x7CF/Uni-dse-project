@@ -8,6 +8,19 @@ import CF.protocol.Message;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * MessageHandler class that handles messages by calling the appropriate handler. It is used to handle messages
+ * received by the broker.
+ * <p>
+ * Before handling messages the user has to add a message handler for every category a message can have.
+ * <p>
+ * The message handler for the Info category is added by default by the broker, as it is the same for every component.
+ * <p>
+ * The MessageHandler has a Map<ECategory, IMessageHandler> which maps the category of a message to the appropriate
+ * handler.
+ *
+ * @see IMessageHandler
+ */
 public class MessageHandler implements IMessageHandler {
     private final Map<ECategory, IMessageHandler> handlers = new HashMap<>();
 

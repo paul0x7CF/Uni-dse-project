@@ -9,8 +9,9 @@ import org.apache.logging.log4j.Logger;
 import java.util.UUID;
 
 /**
- * This class will create a message object. It will also validate the message. The setter classes all return the
- * MessageFactory object, so that the builder can be used in a fluent way.
+ * This class will create a message object. It will also validate the message.
+ * <p>
+ * The setter classes all return the MessageFactory object, so that the builder can be used in a fluent way.
  */
 public class MessageFactory {
     private static final Logger log = LogManager.getLogger(MessageFactory.class);
@@ -27,6 +28,12 @@ public class MessageFactory {
     public MessageFactory() {
     }
 
+    /**
+     * This method will reverse the sender and receiver of a message.
+     *
+     * @param   message Message to be reversed
+     * @return  Message with sender and receiver reversed
+     */
     public static Message reverse(Message message) {
         return new Message(message.getCategory(), message.getReceiverID(), message.getReceiverAddress(),
                 message.getReceiverPort(), message.getSenderID(), message.getSenderAddress(),
@@ -36,6 +43,10 @@ public class MessageFactory {
     public static boolean validateMessage(Message message) {
         // TODO: if payload is e.g. Ack, category should be Info;Ack
         // TODO: category can only have 0 or 1 semicolons
+        if (message.getCategory() == null) {
+            log.error("Category is null");
+            return false;
+        }
         return true;
     }
 

@@ -15,7 +15,7 @@ import java.util.concurrent.*;
  * This class handles the network communication for a microservice and provides methods to send and receive messages.
  * It uses two threads to send and receive messages.
  * The input and output queues are blocking queues so that the threads are blocked when there is no message to send or
- * receive.
+ * receive, respectively.
  */
 public class NetworkHandler {
     private static final Logger log = LogManager.getLogger(NetworkHandler.class);
@@ -28,7 +28,13 @@ public class NetworkHandler {
     private final ExecutorService executor;
     private final ScheduledExecutorService scheduler;
 
-
+    /**
+     * Constructor for the NetworkHandler. It initializes the input and output queues and the input and output sockets.
+     * It also initializes the executor and the scheduler.
+     *
+     * @param serviceType   The type of the service.
+     * @param listeningPort The port the broker should listen on. The sending port is always the listening port + 1.
+     */
     public NetworkHandler(EServiceType serviceType, int listeningPort) {
         this.serviceType = serviceType;
         this.listeningPort = listeningPort;
@@ -43,6 +49,9 @@ public class NetworkHandler {
         scheduler = Executors.newScheduledThreadPool(20);
     }
 
+    /**
+     * This method starts the input and output sockets. It uses the executor to start the sockets in separate threads.
+     */
     public void startSockets() {
         executor.execute(inputSocket);
         executor.execute(outputSocket);
@@ -57,6 +66,11 @@ public class NetworkHandler {
         outputQueue.add(localMessage);
     }
 
+    /**
+     * This message blocks until a message is received.
+     *
+     * @return the received message as byte array or null if an error occurred.
+     */
     public byte[] receiveMessage() {
         try {
             return inputQueue.take();
@@ -66,10 +80,15 @@ public class NetworkHandler {
         }
     }
 
+    /**
+     * This method creates the currentMSData data of the microservice.
+     * It reads the IP address from the config file depending on the serviceType.
+     *
+     * @return the MSData data of the microservice.
+     */
     public MSData getMSData() {
             ConfigReader configReader = new ConfigReader();
             String ipAddresss = configReader.getProperty(serviceType+ ".Address");
             return new MSData(UUID.randomUUID(), serviceType, ipAddresss, listeningPort);
-
     }
 }
