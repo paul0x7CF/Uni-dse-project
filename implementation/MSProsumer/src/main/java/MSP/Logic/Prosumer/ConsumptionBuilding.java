@@ -111,11 +111,12 @@ public class ConsumptionBuilding implements Runnable {
 
     private CallbackSellLower actSellLowerQuestion() {
         CallbackSellLower callbackOnSellLower = sellToChange -> {
-            logger.info("SellLower callback received with price {}", sellToChange.getAskPrice());
+            logger.info("SellLower callback received with min sell price from Exchange {}", sellToChange.getAskPrice());
             double priceToChange = sellToChange.getAskPrice();
             priceToChange = this.wallet.getLowerSellPrice(priceToChange);
             sellToChange.setAskPrice(priceToChange);
             try {
+                logger.debug("SellLower Response with price {}", sellToChange.getAskPrice());
                 this.communicator.sendLowerSell(sellToChange);
             } catch (ServiceNotFoundException e) {
                 logger.error(e.getMessage());
@@ -128,11 +129,12 @@ public class ConsumptionBuilding implements Runnable {
 
     public CallbackBidHigher actBidHigherQuestion() {
         return bidToChange -> {
-            logger.info("BidHigher callback received with price {}", bidToChange.getPrice());
+            logger.info("BidHigher callback received with min Bid price from Exchange {}", bidToChange.getPrice());
             double priceToChange = bidToChange.getPrice();
             priceToChange = this.wallet.getHigherBidPrice(priceToChange);
             bidToChange.setPrice(priceToChange);
             try {
+                logger.debug("BidHigher Response with price {}", bidToChange.getPrice());
                 this.communicator.sendHigherBid(bidToChange);
             } catch (ServiceNotFoundException e) {
                 logger.error(e.getMessage());

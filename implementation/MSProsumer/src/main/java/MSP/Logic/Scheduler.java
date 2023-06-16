@@ -40,6 +40,7 @@ public class Scheduler {
                 currConsumer.decrementStillNeededEnergy(currConsumer.getResultOfForecast());
             }
         }
+        logger.trace("Summed needed consumption: " + summedNeededConsumption);
         return summedNeededConsumption;
     }
 

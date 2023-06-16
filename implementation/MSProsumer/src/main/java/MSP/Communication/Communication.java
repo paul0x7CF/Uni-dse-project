@@ -187,7 +187,7 @@ public class Communication {
             }
             countExchangeServices++;
         }
-        logger.debug("Sell Message was sent to {} Forecast services", countExchangeServices);
+        logger.debug("Sell Message was sent to {} Exchange services", countExchangeServices);
         if (countExchangeServices > 1) {
             logger.warn("More than one Exchange service was found; expected only one; Message was sent to the first one");
         }

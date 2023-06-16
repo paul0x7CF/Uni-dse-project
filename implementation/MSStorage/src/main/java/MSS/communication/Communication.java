@@ -58,6 +58,10 @@ public class Communication {
         }
     }
 
+    public MSData getMyMSData() {
+        return myMSData;
+    }
+
 }
 
 
