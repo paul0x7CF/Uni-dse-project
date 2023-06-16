@@ -197,12 +197,12 @@ public class ConsumptionBuilding implements Runnable {
             Thread.sleep(1000);
             while (true) {
                 reset();
-
+                logger.info("Waiting for new TimeSlot");
                 TimeSlot newTimeSlot = incomingMessages.take();
                 // TODO: check if new Day
                 logger.info("------------------Start executing Prosumer logic for new TimeSlot---------------------");
                 this.executeAccountingStrategy(newTimeSlot);
-                logger.debug("Waiting for forecast result");
+                logger.info("Waiting for forecast result");
                 do {
                     Thread.sleep(1000);
                 } while (!isForecastResultAvailable());
