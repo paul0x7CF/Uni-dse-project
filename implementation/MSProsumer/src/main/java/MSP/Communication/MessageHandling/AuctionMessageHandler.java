@@ -35,13 +35,13 @@ public class AuctionMessageHandler implements IMessageHandler {
     public void handleMessage(Message message) throws MessageProcessingException, RemoteException {
         try {
             switch (message.getSubCategory()) {
-                case "BidHigher" -> handleBidHigher(message);
-                case "SellLower" -> handleSellLower(message);
+                case "Bid" -> handleBidHigher(message); // BidHigher
+                case "Sell" -> handleSellLower(message); // SellLower
                 default -> throw new MessageNotSupportedException();
 
             }
         } catch (MessageNotSupportedException e) {
-            logger.warn(e.getMessage());
+            logger.warn(e.getMessage()+"Subcategory" + message.getSubCategory() + "not supported");
         }
     }
 
