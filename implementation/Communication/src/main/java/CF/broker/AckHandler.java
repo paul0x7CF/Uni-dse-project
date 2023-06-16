@@ -63,9 +63,11 @@ public class AckHandler {
         } else {
             log.trace("Removing pending ack for {}", ack.getMessageID());
             // TODO: remove this
-            log.debug("Removing pending ack for {}", ack.getMessageID().toString().substring(0, 4));
+            log.debug("{}: Removing ack from {} for {} message | {}", ack.getReceiverPort(),
+                    ack.getSenderPort(), ack.getCategory(), ack.getMessageID().toString().substring(0, 4));
             if (pendingAcks.remove(ack.getMessageID()) == null) {
-                log.warn("Unknown message {}", ack.getMessageID());
+                log.warn("{}: Unknown message from {} for {} message | {}", ack.getReceiverPort(),
+                        ack.getSenderPort(), ack.getCategory(), ack.getMessageID());
                 return;
             }
         }
