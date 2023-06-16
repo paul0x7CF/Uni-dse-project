@@ -1,19 +1,12 @@
 package MSS.main;
-
-import MSS.exceptions.StorageCellTerminatedException;
+;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.Timer;
-import java.util.UUID;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 public class StorageCell implements Runnable {
 
@@ -23,7 +16,7 @@ public class StorageCell implements Runnable {
     private final int storageCellID;
     private double currentVolume;
     private final double maxVolume;
-    private CallbackStorageCellTerminated callbackTermination;
+    private final CallbackStorageCellTerminated callbackTermination;
     private Instant lastUsed;
     private final Duration idleDuration;
 
@@ -57,6 +50,7 @@ public class StorageCell implements Runnable {
         isTerminated();
         return (this.currentVolume + volumeToAdd) <= this.maxVolume;
     }
+
     public boolean increaseVolume(double volumeToAdd) {
         isTerminated();
         if(isEnoughSpace(volumeToAdd)) {
@@ -66,6 +60,21 @@ public class StorageCell implements Runnable {
         }
         return false;
     }
+
+    public double decrementVolume(double volumeToDecrement) {
+        isTerminated();
+        if(this.currentVolume - volumeToDecrement >= 0) {
+            this.currentVolume -= volumeToDecrement;
+            logger.debug("StorageCell with ID {} volume decremented by {}; new Volume: {}", storageCellID,volumeToDecrement, this.currentVolume);
+            return 0;
+        } else {
+            double decrementedVolume = this.currentVolume;
+            this.currentVolume = 0;
+            logger.debug("StorageCell with ID {} volume decremented by {}; new Volume: {}", storageCellID,decrementedVolume, this.currentVolume);
+            return volumeToDecrement - decrementedVolume;
+        }
+    }
+
 
     @Override
     public void run() {
@@ -86,17 +95,4 @@ public class StorageCell implements Runnable {
         }
     }
 
-    public double decrementVolume(double volumeToDecrement) {
-        isTerminated();
-        if(this.currentVolume - volumeToDecrement >= 0) {
-            this.currentVolume -= volumeToDecrement;
-            logger.debug("StorageCell with ID {} volume decremented by {}; new Volume: {}", storageCellID,volumeToDecrement, this.currentVolume);
-            return 0;
-        } else {
-            double decrementedVolume = this.currentVolume;
-            this.currentVolume = 0;
-            logger.debug("StorageCell with ID {} volume decremented by {}; new Volume: {}", storageCellID,decrementedVolume, this.currentVolume);
-            return volumeToDecrement - decrementedVolume;
-        }
-    }
 }
