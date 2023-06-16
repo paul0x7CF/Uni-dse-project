@@ -31,7 +31,7 @@ public class Main {
             final int PORT = PROSUMER_START_PORT + (i * PORT_JUMP);
             Random random = new Random();
             int randomValue = random.nextInt(EProsumerType.values().length);
-            EProsumerType prosumerType = EProsumerType.values()[randomValue];
+            EProsumerType prosumerType = EProsumerType.valueOf(ConfigFileReader.getProperty("prosumer.type" + (i+1)));
             switch (prosumerType) {
                 case NETTO_ZERO_BUILDING ->{
                     amountOfNettoZeroBuilding++;

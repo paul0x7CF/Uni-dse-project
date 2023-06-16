@@ -14,6 +14,9 @@ public class Wallet {
 
     public Wallet(double cashBalance) {
         this.cashBalance = cashBalance;
+        this.sellPrice = 1.4;
+        this.bidPrice = 1.2;
+        // Todo @Paul set Wallet Price
     }
 
     public double getCashBalance() {
@@ -47,6 +50,8 @@ public class Wallet {
             } catch (WalletEmptyException e) {
                 logger.warn(e.getMessage());
             }
+        }else {
+            this.cashBalance += moneyToRemove;
         }
     }
 }

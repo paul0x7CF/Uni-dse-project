@@ -18,6 +18,8 @@ public class Scheduler {
 
     private static double[] lastPrices = new double[10];
 
+    // TODO: add last prices
+
     public Scheduler() {
     }
 

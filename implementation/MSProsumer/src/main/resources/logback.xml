@@ -33,7 +33,7 @@
     </appender>
 
     <!-- LOG everything at INFO level -->
-    <root level="trace">
+    <root level="debug">
         <appender-ref ref="RollingFile" />
         <appender-ref ref="Console" />
     </root>
@@ -43,5 +43,10 @@
         <appender-ref ref="RollingFile" />
         <appender-ref ref="Console" />
     </logger>
+    <logger name="CF" level="off" additivity="false">
+        <appender-ref ref="RollingFile" />
+        <appender-ref ref="Console" />
+    </logger>
+
 
 </configuration>
