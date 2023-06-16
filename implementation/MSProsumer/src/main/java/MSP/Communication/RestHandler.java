@@ -32,8 +32,12 @@ public class RestHandler {
     private static final Logger logger = LogManager.getLogger(RestHandler.class);
     private LinkedHashSet<Consumer> consumerList;
 
-    protected RestHandler(LinkedHashSet<Consumer> consumerList) {
+   /* protected RestHandler(LinkedHashSet<Consumer> consumerList) {
         this.consumerList = consumerList;
+    }*/
+
+    protected RestHandler() {
+
     }
 
     @CrossOrigin
