@@ -40,8 +40,8 @@ public class NetworkHandler {
         broadcastQueue = new LinkedBlockingQueue<>();
 
         inputSocket = new InputSocket(inputQueue, listeningPort);
-        outputSocket = new OutputSocket(outputQueue, listeningPort + 1); // TODO: This +1 will stay I think
-        broadcastSocket = new BroadcastSocket(broadcastQueue, listeningPort + 2); // TODO: This +2 will stay I think
+        outputSocket = new OutputSocket(outputQueue, listeningPort + 1);
+        broadcastSocket = new BroadcastSocket(broadcastQueue, listeningPort + 2);
 
         executor = Executors.newFixedThreadPool(3);
         scheduler = Executors.newScheduledThreadPool(20);

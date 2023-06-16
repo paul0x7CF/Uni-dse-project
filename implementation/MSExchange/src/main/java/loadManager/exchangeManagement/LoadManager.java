@@ -2,15 +2,14 @@ package loadManager.exchangeManagement;
 
 import CF.exceptions.MessageProcessingException;
 import MSP.Exceptions.AllExchangesAtCapacityException;
+import msExchange.MSExchange;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.maven.shared.invoker.*;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 public class LoadManager {
     private static final Logger logger = LogManager.getLogger(LoadManager.class);
@@ -66,7 +65,7 @@ public class LoadManager {
 
     public ExchangeServiceInformation getFreeExchange() throws AllExchangesAtCapacityException {
         // Returns the first ExchangeServiceInformation object in the list that is not at capacity.
-
+        logger.debug("Exchange Services: " + listExchangeServices.size());
         for (ExchangeServiceInformation exchangeServiceInformation : listExchangeServices) {
             if (!exchangeServiceInformation.isAtCapacity()) {
                 return exchangeServiceInformation;
@@ -95,7 +94,7 @@ public class LoadManager {
      */
     private void duplicateExchange() {
         // Executes the jar-File again using Maven.
-        try {
+        /*try {
             String projectPath = System.getProperty("C://temp//DSE_jars//MSExchange.jar"); //TODO: Replace with the actual path to your JAR file
             String pomPath = projectPath + "C://Universität//DSE//Gruppenprojekt//DSE_Team_202//implementation//MSExchange//pom.xml"; //TODO: Replace with the actual path to your pom.xml file
 
@@ -129,6 +128,9 @@ public class LoadManager {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
+
+        //alternative
+        MSExchange msExchange = new MSExchange(true, nextServiceID++);
     }
 }

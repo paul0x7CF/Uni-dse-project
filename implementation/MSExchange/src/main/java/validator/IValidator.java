@@ -1,13 +1,19 @@
 package validator;
 
-import MSP.Exceptions.IllegalSendableException;
 import CF.sendable.EServiceType;
 import CF.sendable.ISendable;
+import MSP.Exceptions.IllegalSendableException;
+import MSP.Exceptions.InvalidBidException;
+import MSP.Exceptions.InvalidSellException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
 import java.util.UUID;
 
 public interface IValidator {
+    static final Logger logger = LogManager.getLogger(IValidator.class);
+
     static void validateSendableNotNull(ISendable sendable) throws IllegalSendableException {
         if (sendable == null) {
             throw new IllegalSendableException("Sendable is null");
@@ -33,8 +39,10 @@ public interface IValidator {
     }
 
     static void validatePriceNotNegative(double price) throws IllegalSendableException {
+
         if (price <= 0) {
-            throw new IllegalSendableException("Price is smaller than zero");
+            logger.warn("Price is not larger than 0: " + price);
+            throw new IllegalSendableException("Price is <= 0");
         }
     }
 
@@ -62,6 +70,6 @@ public interface IValidator {
         }
     }
 
-    public void validateSendable(ISendable sendable) throws IllegalSendableException;
+    public void validateSendable(ISendable sendable) throws IllegalSendableException, InvalidBidException, InvalidSellException;
 
 }

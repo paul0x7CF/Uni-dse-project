@@ -19,9 +19,7 @@ import CF.sendable.MSData;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public class Broker implements IServiceBroker, IScheduleBroker {
     private static final Logger log = LogManager.getLogger(Broker.class);
@@ -100,6 +98,7 @@ public class Broker implements IServiceBroker, IScheduleBroker {
      * @throws MessageProcessingException if the message could not be processed
      */
     private void receiveMessage() throws MessageProcessingException {
+        MessageReceiver receiver = new MessageReceiver();
         // TODO: maybe catch exceptions and try again
         while (true) {
             byte[] receivedMessage = networkHandler.receiveMessage();
@@ -108,11 +107,8 @@ public class Broker implements IServiceBroker, IScheduleBroker {
             }
             Message message = Marshaller.unmarshal(receivedMessage);
             log.trace("{} received {}", getCurrentService().getType(), message.getSubCategory());
-            if (getCurrentService().getPort() == 11000) {
-                log.debug("######### 11000 received {} from {}", message.getSubCategory(), message.getSenderPort());
-                print(message,false);
-            }
 
+            receiver.receiveMessage(message);
             // Ack and Register messages should not be acknowledged as this would cause an infinite loop and register
             // has an answer in the form of "Ping" anyway.
             if (!Objects.equals(message.getSubCategory(), "Ack")
@@ -120,13 +116,15 @@ public class Broker implements IServiceBroker, IScheduleBroker {
                 sendMessage(InfoMessageBuilder.createAckMessage(message));
             }
 
-            messageHandler.handleMessage(message);
+            if (!receiver.isMessageAlreadyReceived(message)) {
+                messageHandler.handleMessage(message);
+            }
         }
     }
 
     private void print(Message message, boolean isSender) {
         int port = getCurrentService().getPort();
-        if (port == 11000) { // TODO: change to unused Port
+        if (port == 11001) {
             String sr = isSender ? "S" : "R ";
             String ackBind = isSender ? "sent for" : "received for";
             String messageBind = isSender ? "message sent to" : "message received from";

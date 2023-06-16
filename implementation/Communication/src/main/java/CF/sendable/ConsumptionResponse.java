@@ -12,8 +12,7 @@ public class ConsumptionResponse implements ISendable {
         this.consumptionMap = consumptionMap;
         this.requestTimeSlotId = requestTimeSlotId;
     }
-
-    //TODO: Change UUID to String
+    
     public HashMap<String, Double> getConsumptionMap() {
         return consumptionMap;
     }

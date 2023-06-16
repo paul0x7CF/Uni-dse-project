@@ -101,7 +101,6 @@ public class MainForTesting {
         List<Runnable> brokers = executor.shutdownNow();
         for (Runnable broker : brokers) {
             if (broker instanceof BrokerRunner b) {
-                // TODO: reimplement
                 b.stop();
             }
         }
@@ -111,7 +110,7 @@ public class MainForTesting {
                 log.info("All threads finished");
             }
         } catch (InterruptedException e) {
-            // TODO: handle exception
+            log.error("Thread interrupted", e);
         }
 
          */

@@ -1,4 +1,4 @@
-package mainPackage;
+package mainPackage.networkHelper;
 
 public enum ESubCategory {
     Bid,

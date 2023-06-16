@@ -22,10 +22,6 @@ public class MessageScheduler {
         observers.add(observer);
     }
 
-    public void removeObserver(IMessageSchedulerObserver observer) {
-        observers.remove(observer);
-    }
-
     public void startScheduling() {
         log.info("Starting message scheduling");
         for (IMessageSchedulerObserver observer : observers) {

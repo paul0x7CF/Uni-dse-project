@@ -1,6 +1,5 @@
 package loadManager;
 
-import CF.exceptions.MessageProcessingException;
 import CF.protocol.Message;
 import CF.sendable.EServiceType;
 import CF.sendable.MSData;
@@ -76,33 +75,41 @@ public class Controller implements Runnable {
     }
 
     private void addNewTimeSlotsPeriodically() {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         PropertyFileReader propertyFileReader = new PropertyFileReader();
         int slotDuration = Integer.parseInt(propertyFileReader.getDuration());
         int checkInterval = Integer.parseInt(propertyFileReader.getCheckInterval());
-
+        boolean first = true;
         while (true) {
-            if (timeSlotBuilder.getLastSlotsEndtime().isBefore(LocalDateTime.now())) {
+            if (!timeSlotBuilder.getLastSlotsEndtime().isAfter(LocalDateTime.now())) {
                 if (timeSlotBuilder.getLastTimeSlot().isPresent()) {
                     UUID endedTimeSlotID = timeSlotBuilder.getLastTimeSlot().get();
-
+                    logger.debug("----------------Time Slot " + endedTimeSlotID + " ended!----------------");
                     try {
                         messageHandler.endTimeSlot(endedTimeSlotID);
                     } catch (InvalidTimeSlotException e) {
                         throw new RuntimeException(e);
                     }
                 }
+                if (first) {
+                    try {
+                        TimeSlot newTimeSlot = timeSlotBuilder.addNewTimeSlot();
+                        logger.debug("----------------Timeslot " + newTimeSlot.getTimeSlotID() + " started! " + newTimeSlot.getStartTime() + "----------------");
+                        List<Message> messages = messageBuilder.buildTimeSlotMessages(newTimeSlot);
+                        for (Message message : messages) {
+                            communication.sendMessage(message);
+                        }
 
-                try {
-                    TimeSlot newTimeSlot = timeSlotBuilder.addNewTimeSlot();
-                    List<Message> messages = messageBuilder.buildTimeSlotMessages(newTimeSlot);
-
-                    for (Message message : messages) {
-                        communication.sendMessage(message);
+                    } catch (InvalidTimeSlotException e) {
+                        throw new RuntimeException(e);
                     }
-
-                } catch (InvalidTimeSlotException e) {
-                    throw new RuntimeException(e);
+                    first = false;
                 }
+
 
             }
             try {
@@ -118,11 +125,9 @@ public class Controller implements Runnable {
         Message message = (Message) incomingQueue.poll();
         if (message != null) {
             if (message.getReceiverID().equals(communication.getBroker().getCurrentService().getId())) {
-                try {
-                    messageHandler.handleMessage(message);
-                } catch (MessageProcessingException e) {
-                    throw new RuntimeException(e);
-                }
+
+                messageHandler.handleMessage(message);
+
             }
         }
     }
@@ -134,11 +139,10 @@ public class Controller implements Runnable {
             try {
                 List<Message> messages = messageBuilder.buildMessage(messageContent);
                 for (Message message : messages) {
+                    logger.debug("Sending messageContent " + messageContent.getBuildCategory().toString());
                     communication.sendMessage(message);
                 }
             } catch (IllegalSendableException e) {
-                //TODO: throw RuntimeException?
-                System.err.println("Failed to send message: " + e.getMessage());
                 logger.error("Failed to send message: " + e.getMessage());
                 e.printStackTrace();
             }
