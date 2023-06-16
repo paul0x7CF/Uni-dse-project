@@ -64,7 +64,7 @@ public class TestMessageBuilder {
             if (message.getReceiverID() == storageMSDataList.get(0).getId()) {
                 storageExists = true;
             }
-            Assertions.assertEquals(ECategory.Auction, message.getMainCategory());
+            Assertions.assertEquals(ECategory.Exchange, message.getMainCategory());
             Assertions.assertEquals("Transaction", message.getSubCategory());
             Transaction transactionFromMessage = (Transaction) message.getSendable(Transaction.class);
             Assertions.assertEquals(transaction.getTransactionID(), transactionFromMessage.getTransactionID());
