@@ -1,20 +1,18 @@
 package CF.communication;
 
+import CF.mainPackage.ConfigReader;
+import CF.sendable.EServiceType;
 import CF.sendable.MSData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import CF.sendable.EServiceType;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.UUID;
 import java.util.concurrent.*;
 
 /**
- * This class handles the network communication for a microservice and provides methods to send and receive messages.
- * It uses two threads to send and receive messages.
- * The input and output queues are blocking queues so that the threads are blocked when there is no message to send or
- * receive.
+ * This class handles the network communication for a microservice and provides methods to send and receive messages. It
+ * uses two threads to send and receive messages. The input and output queues are blocking queues so that the threads
+ * are blocked when there is no message to send or receive.
  */
 public class NetworkHandler {
     private static final Logger log = LogManager.getLogger(NetworkHandler.class);
@@ -87,13 +85,8 @@ public class NetworkHandler {
     }
 
 
-
     public MSData getMSData() {
-        try {
-            return new MSData(UUID.randomUUID(), serviceType, InetAddress.getLocalHost().getHostAddress(), listeningPort);
-        } catch (UnknownHostException e) {
-            log.error("Could not get current service, using \"localhost\" instead", e);
-            return new MSData(UUID.randomUUID(), serviceType, "localhost", listeningPort);
-        }
+        ConfigReader configReader = new ConfigReader();
+        return new MSData(UUID.randomUUID(), serviceType, configReader.getProperty("exchangeAddress"), listeningPort);
     }
 }
