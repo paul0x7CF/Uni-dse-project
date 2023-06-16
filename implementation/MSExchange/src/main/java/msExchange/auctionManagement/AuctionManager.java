@@ -120,10 +120,12 @@ public class AuctionManager implements Runnable {
                 throw new AuctionNotFoundException("The Auction ID is missing", Optional.empty(), Optional.empty(), Optional.of(bid));
             }
             if (!auctionExists(auctionID.get())) {
-                logger.error("Auction doesn't exist yet.");
-                //bidQueue.put(bid);
-                //TODO: rethink: throw new AuctionNotFoundException("The Auction ID is incorrect.", auctionID, Optional.empty(), Optional.of(bid));
-                throw new AuctionNotFoundException("The Auction ID doesn't exist", auctionID, Optional.empty(), Optional.of(bid));
+                logger.warn("Auction doesn't exist yet?");
+                try {
+                    bidQueue.put(bid);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
             if (!timeSlots.containsKey(bid.getTimeSlot())) {
                 throw new InvalidTimeSlotException("TimeSlot doesn't exist, therefore the UUID was invalid.", Optional.of(bid.getTimeSlot()));
