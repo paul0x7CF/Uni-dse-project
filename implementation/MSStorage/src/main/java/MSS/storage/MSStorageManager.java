@@ -1,5 +1,6 @@
 package MSS.storage;
 
+import CF.sendable.EServiceType;
 import CF.sendable.Transaction;
 import MSS.communication.Communication;
 import MSS.data.Wallet;
@@ -12,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * The MSStorageManager class represents a storage Building for an energy storage facility composed of storage cells.
@@ -25,20 +27,22 @@ public class MSStorageManager implements Runnable {
     private final LinkedHashMap<Integer, StorageCell> storageCells = new LinkedHashMap<>();
     private BlockingQueue<Transaction> incomingTransactionQueue;
     private Wallet wallet;
-    private Communication communication;
     private CallbackStorageCellTerminated callbackTermination;
+    private Communication communicator;
 
-    TransactionDAO transactionDAO;
+    private TransactionDAO transactionDAO;
 
 
     /**
      * Constructs an instance of the MSStorageManager class.
      * It initializes the callbackTermination object.
      */
-    public MSStorageManager() {
+    public MSStorageManager(final int port) {
         this.callbackTermination = actOnCallback();
         this.transactionDAO = new TransactionDAO();
         this.transactionDAO.deleteAll();
+        this.communicator = new Communication(this.incomingTransactionQueue, port, EServiceType.Storage);
+        this.incomingTransactionQueue = new LinkedBlockingQueue<>();
 
     }
 
@@ -144,6 +148,7 @@ public class MSStorageManager implements Runnable {
 
     @Override
     public void run() {
+        communicator.startBrokerRunner(Thread.currentThread().getName());
        while (true)
        {
            try {
