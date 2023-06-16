@@ -44,7 +44,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
     }
 
     @Override
-    public void handleMessage(Message message) throws MessageProcessingException {
+    public void handleMessage(Message message) {
         String subCategory = message.getSubCategory();
         if (subCategory.contains(";")) {
             throw new RuntimeException("Subcategory has another subcategory: " + subCategory);
@@ -61,8 +61,26 @@ public class LoadManagerMessageHandler implements IMessageHandler {
                 default ->
                         throw new MessageProcessingException("Unknown message subCategory: " + message.getSubCategory());
             }
-        } catch (InvalidBidException | InvalidSellException | IllegalSendableException | ProsumerUnknownException e) {
-            throw new MessageProcessingException(e.getMessage());
+        } catch (InvalidBidException e) {
+            logger.warn("Bid has to be sent back to prosumer");
+            MessageContent messageContent = new MessageContent(e.getBid(), EBuildCategory.BidToProsumer);
+            try {
+                outgoingQueue.put(messageContent);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+        } catch (InvalidSellException e) {
+            logger.warn("Sell has to be sent back to prosumer");
+            MessageContent messageContent = new MessageContent(e.getSell(), EBuildCategory.SellToProsumer);
+            try {
+                outgoingQueue.put(messageContent);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+        } catch (IllegalSendableException | ProsumerUnknownException e) {
+            logger.warn("Message processing exception: " + e);
+        } catch (MessageProcessingException e) {
+            throw new RuntimeException(e);
         }
 
         logger.trace("{} Message processed", message.getCategory());
@@ -75,19 +93,19 @@ public class LoadManagerMessageHandler implements IMessageHandler {
         bidValidator.validateSendable(message.getSendable(Bid.class));
         Bid bid = (Bid) message.getSendable(Bid.class);
         IValidator.validateAuctionID(bid.getAuctionID(), myMSData.getType());
-        logger.info("Bid is valid");
+        logger.debug("Bid is valid");
 
         prosumerManager.handleNewBid(bid);
     }
 
     private void handleSell(Message message) throws InvalidSellException, IllegalSendableException {
-        logger.trace("Handling sell");
+        logger.info("Handling sell");
         SellValidator sellValidator = new SellValidator();
         sellValidator.validateSendable(message.getSendable(Sell.class));
 
         Sell sell = (Sell) message.getSendable(Sell.class);
         IValidator.validateAuctionID(sell.getAuctionID(), myMSData.getType());
-        logger.trace("Sell is valid");
+        logger.debug("Sell is valid");
 
         AtomicReference<ExchangeServiceInformation> exchangeServiceInformation = null;
 
