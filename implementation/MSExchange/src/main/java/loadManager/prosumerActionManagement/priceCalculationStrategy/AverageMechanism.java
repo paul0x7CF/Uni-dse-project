@@ -1,6 +1,7 @@
-package loadManager.prosumerActionManagement;
+package loadManager.prosumerActionManagement.priceCalculationStrategy;
 
 import MSP.Exceptions.PriceNotOKException;
+import loadManager.prosumerActionManagement.EAction;
 import mainPackage.PropertyFileReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class AverageMechanism {
+public class AverageMechanism implements PriceMechanism {
     private static final Logger logger = LogManager.getLogger(AverageMechanism.class);
     private final int K_VALUES;
     private double averagePrice = 0.0;
@@ -95,6 +96,5 @@ public class AverageMechanism {
 
         calculateAveragePrice();
     }
-
 
 }

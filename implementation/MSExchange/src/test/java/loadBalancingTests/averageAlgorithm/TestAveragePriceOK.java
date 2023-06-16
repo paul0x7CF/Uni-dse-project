@@ -3,7 +3,7 @@ package loadBalancingTests.averageAlgorithm;
 import CF.sendable.Bid;
 import CF.sendable.Sell;
 import MSP.Exceptions.PriceNotOKException;
-import loadManager.prosumerActionManagement.AverageMechanism;
+import loadManager.prosumerActionManagement.priceCalculationStrategy.AverageMechanism;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 

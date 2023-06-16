@@ -13,6 +13,8 @@ import loadManager.auctionManagement.AuctionManager;
 import loadManager.networkManagment.EBuildCategory;
 import loadManager.networkManagment.MessageContent;
 import loadManager.prosumerActionManagement.bidManagement.Bidder;
+import loadManager.prosumerActionManagement.priceCalculationStrategy.AverageMechanism;
+import loadManager.prosumerActionManagement.priceCalculationStrategy.PriceMechanism;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,7 +27,7 @@ import java.util.concurrent.BlockingQueue;
 public class ProsumerManager {
     private static final Logger logger = LogManager.getLogger(ProsumerManager.class);
     private AuctionManager auctionManager;
-    private AverageMechanism averageMechanism;
+    private PriceMechanism priceMechanism;
     private AuctionProsumerTracker auctionProsumerTracker;
     private List<Bidder> bidders;
     private BlockingQueue<MessageContent> outgoingQueue;
@@ -33,14 +35,14 @@ public class ProsumerManager {
     public ProsumerManager(BlockingQueue<MessageContent> outgoingQueue) {
         this.outgoingQueue = outgoingQueue;
         this.auctionManager = new AuctionManager();
-        this.averageMechanism = new AverageMechanism();
+        this.priceMechanism = new AverageMechanism();
         this.auctionProsumerTracker = new AuctionProsumerTracker();
         this.bidders = new ArrayList<>();
     }
 
     public void handleNewBid(Bid bid) {
         try {
-            if (averageMechanism.isBidPriceHighEnough(bid.getPrice())) {
+            if (priceMechanism.isBidPriceHighEnough(bid.getPrice())) {
                 for (Bidder bidder : bidders) {
                     if (bidder.getBidderID().equals(bid.getBidderID())) {
                         bidder.handleBid(bid);
@@ -51,9 +53,9 @@ public class ProsumerManager {
                 bidders.add(newBidder);
                 newBidder.handleBid(bid);
             } else {
-                logger.debug("LOAD_MANAGER: Price did not match the average price {} ... sending Bid back to prosumer: original Price: {}", averageMechanism.getAveragePrice(), bid.getPrice());
-                if (averageMechanism.getAveragePrice() != 0.0) {
-                    bid.setPrice(averageMechanism.getAveragePrice());
+                logger.debug("LOAD_MANAGER: Price did not match the average price {} ... sending Bid back to prosumer: original Price: {}", priceMechanism.getAveragePrice(), bid.getPrice());
+                if (priceMechanism.getAveragePrice() != 0.0) {
+                    bid.setPrice(priceMechanism.getAveragePrice());
                 }
                 outgoingQueue.put(new MessageContent(bid, EBuildCategory.BidToProsumer));
             }
@@ -75,13 +77,13 @@ public class ProsumerManager {
 
     public void handleNewSell(SellInformation sell) {
         try {
-            if (averageMechanism.isAskPriceLowEnough(sell.getSell().getAskPrice())) {
+            if (priceMechanism.isAskPriceLowEnough(sell.getSell().getAskPrice())) {
                 startNewAuction(sell);
             } else {
-                logger.warn("LOAD_MANAGER: Price did not match the average price {} ... sending Sell back to prosumer: original Price: {}", averageMechanism.getAveragePrice(), sell.getSell().getAskPrice());
+                logger.warn("LOAD_MANAGER: Price did not match the average price {} ... sending Sell back to prosumer: original Price: {}", priceMechanism.getAveragePrice(), sell.getSell().getAskPrice());
 
                 Sell s = sell.getSell();
-                s.setAskPrice(averageMechanism.getAveragePrice());
+                s.setAskPrice(priceMechanism.getAveragePrice());
                 outgoingQueue.put(new MessageContent(s, EBuildCategory.SellToProsumer));
             }
         } catch (PriceNotOKException e) {
@@ -144,7 +146,7 @@ public class ProsumerManager {
         for (Map.Entry<UUID, Double> entry : unsatisfiedSellers.entrySet()) {
             UUID sellerID = entry.getKey();
             Double amount = entry.getValue();
-            MessageContent messageContent = new MessageContent(new Sell(amount, averageMechanism.getAveragePrice(), timeSlotID, sellerID), EBuildCategory.SellToStorage);
+            MessageContent messageContent = new MessageContent(new Sell(amount, priceMechanism.getAveragePrice(), timeSlotID, sellerID), EBuildCategory.SellToStorage);
             try {
                 outgoingQueue.put(messageContent);
             } catch (InterruptedException e) {
