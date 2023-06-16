@@ -1,20 +1,23 @@
 package msExchange.messageHandling;
 
 import CF.exceptions.MessageProcessingException;
-import mainPackage.ESubCategory;
-import mainPackage.IMessageBuilder;
-import msExchange.networkCommunication.CommunicationExchange;
 import CF.protocol.ECategory;
 import CF.protocol.Message;
 import CF.protocol.MessageFactory;
 import CF.sendable.EServiceType;
 import CF.sendable.MSData;
 import CF.sendable.Transaction;
+import mainPackage.ESubCategory;
+import mainPackage.IMessageBuilder;
+import msExchange.networkCommunication.CommunicationExchange;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MessageBuilder {
+    private static final Logger logger = LogManager.getLogger(MessageBuilder.class);
     private CommunicationExchange communicationExchange;
 
     public MessageBuilder(CommunicationExchange communication) {
@@ -31,6 +34,7 @@ public class MessageBuilder {
     }
 
     public List<Message> buildMessage(Transaction transaction) {
+        logger.debug("Exchange: sending Transaction, seller: " + transaction.getSellerID() + ", buyer: " + transaction.getBuyerID() + ", price: " + transaction.getPrice() + ", volume: " + transaction.getAmount());
         List<Message> messages = new ArrayList<>();
         List<MSData> receiverMS = new ArrayList<>();
 
@@ -49,7 +53,7 @@ public class MessageBuilder {
     }
 
     private Message buildTransactionMessage(MessageFactory messageFactory, Transaction transaction) {
-        messageFactory.setCategory(ECategory.Auction, String.valueOf(ESubCategory.Transaction)).setPayload(transaction);
+        messageFactory.setCategory(ECategory.Exchange, String.valueOf(ESubCategory.Transaction)).setPayload(transaction);
         return messageFactory.build();
     }
 }
