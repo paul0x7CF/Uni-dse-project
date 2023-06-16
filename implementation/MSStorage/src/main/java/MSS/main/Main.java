@@ -1,5 +1,6 @@
 package MSS.main;
 
+import MSS.configuration.ConfigFileReader;
 import MSS.dataBase.DbTransaction;
 import MSS.dataBase.TransactionDAO;
 import MSS.storage.MSStorageManager;
@@ -43,8 +44,9 @@ public class Main {
         //int count = transactionDAO.deleteAll();
         //logger.warn("Deleting all transactions{}" + count);
 
+        final int STORAGE_START_PORT = Integer.parseInt(ConfigFileReader.getCommunicationProperty("storagePort"));
 
-        new Thread(new MSStorageManager(),"Storage").start();
+        new Thread(new MSStorageManager(STORAGE_START_PORT),"Storage").start();
         System.out.println("----------------MAIN Thread Ended----------------");
 
     }
