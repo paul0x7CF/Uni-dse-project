@@ -21,6 +21,20 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.*;
 
+/**
+ * Broker class which handles the communication between the different components. It is the central point of the
+ * communication and is responsible for sending and receiving messages.
+ * <p>
+ * It also handles the registration of services and the discovery of other services.
+ * <p>
+ * It is also responsible for sending and receiving acknowledgements.
+ * <p>
+ * In addition to that it is also responsible for the scheduling of register and sync messages.
+ * <p>
+ * Before sending or receiving messages the user has to add a message handler for every category a message can have.
+ *
+ * @see MessageHandler
+ */
 public class Broker implements IServiceBroker, IScheduleBroker {
     private static final Logger log = LogManager.getLogger(Broker.class);
     private final AckHandler ackHandler;
@@ -31,6 +45,13 @@ public class Broker implements IServiceBroker, IScheduleBroker {
     private final ServiceRegistry serviceRegistry;
 
 
+    /**
+     * Constructor for the Broker. It initializes the networkHandler, the serviceRegistry, the ackHandler and the
+     * messageHandler.
+     *
+     * @param serviceType   The type of the service.
+     * @param listeningPort The port the broker should listen on. The sending port is always the listening port + 1.
+     */
     protected Broker(EServiceType serviceType, int listeningPort) {
         // listeningPort is the currentMSData port so others can send messages to this broker.
         networkHandler = new NetworkHandler(serviceType, listeningPort);
@@ -66,6 +87,12 @@ public class Broker implements IServiceBroker, IScheduleBroker {
         }
     }
 
+    /**
+     * Stops the broker and sends unregister messages for all services. This is called in the {@link BrokerRunner} when
+     * the process is terminated.
+     *
+     * @throws InterruptedException
+     */
     protected void stop() throws InterruptedException {
         for (MSData service : getServices()) {
             sendMessage(InfoMessageBuilder.createUnregisterMessage(serviceRegistry.getCurrentService(), service));
@@ -74,6 +101,13 @@ public class Broker implements IServiceBroker, IScheduleBroker {
         networkHandler.stop();
     }
 
+    /**
+     * This method sends a message to the given address and port. These are defined in the message itself.
+     * <p>
+     * It also adds the message to the ackHandler so that it can be tracked and acknowledged.
+     *
+     * @param message   The {@link Message} to be sent.
+     */
     @Override
     public void sendMessage(Message message) {
         log.trace("{} sending message: {}", getCurrentService().getType(), message.getCategory());
