@@ -69,7 +69,13 @@ public class ProductionForecast implements Runnable {
 
     private void predictProduction(ProsumerSolarRequest prosumerSolarRequest) throws UnknownForecastTypeException {
 
-        //TODO: CHECK TimeSlotID
+        //TODO: REMOVE THIS
+
+        if (true)
+        {
+            SolarResponse solarResponse = new SolarResponse(prosumerSolarRequest.getCurrentTimeSlotID(), 100);
+            this.forecastCommunicationHandler.sendProductionResponseMessage(solarResponse, prosumerSolarRequest.getSenderAddress(), prosumerSolarRequest.getSenderPort(), prosumerSolarRequest.getSenderID());
+        }
 
         double production = 0;
         double irradiation = getHistoricMeasurements();
