@@ -53,14 +53,16 @@ public class Communication {
         createBroker(port);
         this.messageBuilder = new MessageBuilder(this.myMSData);
 
-        ConfigurableApplicationContext context = new SpringApplicationBuilder()
+       /* ConfigurableApplicationContext context = new SpringApplicationBuilder()
                 .sources(RestHandler.class)
-                .properties(Collections.singletonMap("rest.port", String.valueOf(port)))
+                .properties(Collections.singletonMap("rest.port", port + 2))
                 .initializers((ApplicationContextInitializer<GenericApplicationContext>) ctx -> {
                     // Set the port value in the RestHandler bean
                     ctx.getBeanFactory().registerSingleton("restHandler", new RestHandler(consumers));
                 })
-                .run();
+                .run();*/
+
+        ConfigurableApplicationContext context = new SpringApplicationBuilder(RestHandler.class).properties(Collections.singletonMap("server.port", port + 2)).run();
 
         logger.info("BrokerRunner initialized with Ip: {} Port: {}", this.myMSData.getAddress(), this.myMSData.getPort());
     }
