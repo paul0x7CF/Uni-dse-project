@@ -108,7 +108,6 @@ public class Broker implements IServiceBroker, IScheduleBroker {
             Message message = Marshaller.unmarshal(receivedMessage);
             log.trace("{} received {}", getCurrentService().getType(), message.getSubCategory());
 
-            receiver.receiveMessage(message);
             // Ack and Register messages should not be acknowledged as this would cause an infinite loop and register
             // has an answer in the form of "Ping" anyway.
             if (!Objects.equals(message.getSubCategory(), "Ack")
@@ -119,6 +118,8 @@ public class Broker implements IServiceBroker, IScheduleBroker {
             if (!receiver.isMessageAlreadyReceived(message)) {
                 messageHandler.handleMessage(message);
             }
+
+            receiver.receiveMessage(message);
         }
     }
 

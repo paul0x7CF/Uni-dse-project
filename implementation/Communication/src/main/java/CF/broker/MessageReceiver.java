@@ -19,7 +19,7 @@ public class MessageReceiver {
     private final Map<UUID, Instant> messageTimestamps;
     private final Duration messageRetentionDuration;
 
-    private MessageReceiver() {
+    public MessageReceiver() {
         receivedMessages = new HashMap<>();
         messageTimestamps = new HashMap<>();
 
