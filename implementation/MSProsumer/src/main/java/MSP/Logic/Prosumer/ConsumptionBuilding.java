@@ -190,32 +190,33 @@ public class ConsumptionBuilding implements Runnable {
         communicator.setCallbackOnTransaction(this.actOnTransactionFinished());
         communicator.setCallbackOnSellLower(this.actSellLowerQuestion());
         communicator.setCallbackOnBidHigher(this.actBidHigherQuestion());
-        TimeSlot newTimeSlot = new TimeSlot(LocalDateTime.now(), LocalDateTime.now().plusHours(1));
 
 
         try {
-            reset();
+            while (true) {
+                reset();
 
-            //TimeSlot newTimeSlot = incomingMessages.take();
-            // TODO: check if new Day
-            logger.info("------------------Start executing Prosumer logic for new TimeSlot---------------------");
-            this.executeAccountingStrategy(newTimeSlot);
-            logger.debug("Waiting for forecast result");
-            do {
-                Thread.sleep(1000);
-            } while (!isForecastResultAvailable());
-            logger.info("Forecast result is available continue with execution");
+                TimeSlot newTimeSlot = incomingMessages.take();
+                // TODO: check if new Day
+                logger.info("------------------Start executing Prosumer logic for new TimeSlot---------------------");
+                this.executeAccountingStrategy(newTimeSlot);
+                logger.debug("Waiting for forecast result");
+                do {
+                    Thread.sleep(1000);
+                } while (!isForecastResultAvailable());
+                logger.info("Forecast result is available continue with execution");
 
-            double energyAmount = 0;
-            energyAmount = scheduleEnergyAmount(newTimeSlot);
-            if (energyAmount > 0) {
-                logger.info("Prosumer {} need {} kWh", prosumerType, energyAmount);
-                this.communicator.sendBid(energyAmount, this.wallet.getSellPrice(), newTimeSlot);
-            } else if (energyAmount < 0) {
-                logger.info("Prosumer {} has {} kWh more as needed", prosumerType, energyAmount);
-                this.communicator.sendBid(energyAmount, this.wallet.getBidPrice(), newTimeSlot);
-            } else {
-                logger.info("-------------0--------------");
+                double energyAmount = 0;
+                energyAmount = scheduleEnergyAmount(newTimeSlot);
+                if (energyAmount > 0) {
+                    logger.info("Prosumer {} need {} kWh", prosumerType, energyAmount);
+                    this.communicator.sendBid(energyAmount, this.wallet.getSellPrice(), newTimeSlot);
+                } else if (energyAmount < 0) {
+                    logger.info("Prosumer {} has {} kWh more as needed", prosumerType, energyAmount);
+                    this.communicator.sendBid(energyAmount, this.wallet.getBidPrice(), newTimeSlot);
+                } else {
+                    logger.info("-------------0--------------");
+                }
             }
 
         } catch (InterruptedException e) {
