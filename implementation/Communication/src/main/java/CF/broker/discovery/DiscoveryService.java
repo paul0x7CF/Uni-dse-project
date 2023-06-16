@@ -97,4 +97,5 @@ public class DiscoveryService implements IMessageSchedulerObserver {
     private void addMessageToSchedule(String address, int port) {
         messagesToSchedule.put(port, InfoMessageBuilder.createRegisterMessage(currentService, address, port));
     }
+
 }

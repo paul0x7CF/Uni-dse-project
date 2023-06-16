@@ -93,5 +93,6 @@ public class NetworkHandler {
             ConfigReader configReader = new ConfigReader();
             String ipAddresss = configReader.getProperty(serviceType+ ".Address");
             return new MSData(UUID.randomUUID(), serviceType, ipAddresss, listeningPort);
+
     }
 }
