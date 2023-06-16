@@ -10,10 +10,12 @@ import MSF.data.ProsumerConsumptionRequest;
 import MSF.data.ProsumerSolarRequest;
 import MSF.exceptions.UnknownForecastTypeException;
 import MSF.historicData.HistoricDataReader;
+import MSF.propertyHandler.PropertiesReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import CF.sendable.EServiceType;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -31,6 +33,7 @@ public class MSForecast implements Runnable {
     public MSForecast(int port, EForecastType forecastType) {
         this.forecastCommunicationHandler = new ForecastCommunicationHandler(incomingConsumptionRequest, incomingSolarRequest, inputQueueTimeSlots, port, EServiceType.Forecast);
         this.forecastType = forecastType;
+        this.currentTimeSlot = new TimeSlot(LocalDateTime.now(), LocalDateTime.now().plusSeconds(30));
     }
 
     public EForecastType getForecastType() {
