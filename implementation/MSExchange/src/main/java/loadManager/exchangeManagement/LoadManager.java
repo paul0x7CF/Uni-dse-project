@@ -16,14 +16,25 @@ public class LoadManager {
     private List<ExchangeServiceInformation> listExchangeServices = Collections.synchronizedList(new ArrayList<>());
 
     public void addExchangeServiceInformation(ExchangeServiceInformation exchangeServiceInformation) {
-        checkExchangeServiceInformation(exchangeServiceInformation);
+        if (exchangeServiceInformation == null) {
+            throw new IllegalArgumentException("LOAD_MANAGER: ExchangeServiceInformation is null");
+        }
 
-        listExchangeServices.add(exchangeServiceInformation);
-        logger.info("LOAD_MANAGER: Added ExchangeServiceInformation with ID: {}", exchangeServiceInformation.getExchangeID());
+        if (!listExchangeServices.contains(exchangeServiceInformation)) {
+            listExchangeServices.add(exchangeServiceInformation);
+            logger.info("LOAD_MANAGER: Added ExchangeServiceInformation with ID: {}", exchangeServiceInformation.getExchangeID());
+
+        }
     }
 
     public void removeExchangeServiceInformation(ExchangeServiceInformation exchangeServiceInformation) {
-        checkExchangeServiceInformation(exchangeServiceInformation);
+        if (exchangeServiceInformation == null) {
+            throw new IllegalArgumentException("LOAD_MANAGER: ExchangeServiceInformation is null");
+        }
+
+        if (!listExchangeServices.contains(exchangeServiceInformation)) {
+            throw new IllegalArgumentException("LOAD_MANAGER: ExchangeServiceInformation does not exist");
+        }
 
         listExchangeServices.remove(exchangeServiceInformation);
         logger.info("LOAD_MANAGER: Removed ExchangeServiceInformation with ID: " + exchangeServiceInformation.getExchangeID());
@@ -123,15 +134,5 @@ public class LoadManager {
 
         //alternative
         MSExchange msExchange = new MSExchange(true, nextServiceID++);
-    }
-
-    private void checkExchangeServiceInformation(ExchangeServiceInformation exchangeServiceInformation) {
-        if (exchangeServiceInformation == null) {
-            throw new IllegalArgumentException("LOAD_MANAGER: ExchangeServiceInformation is null");
-        }
-
-        if (!listExchangeServices.contains(exchangeServiceInformation)) {
-            throw new IllegalArgumentException("LOAD_MANAGER: ExchangeServiceInformation does not exist");
-        }
     }
 }
