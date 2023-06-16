@@ -24,6 +24,16 @@ public class BrokerRunner implements Runnable {
     public void run() {
         try {
             log.info("Starting {} instance on port {}", broker.getCurrentService().getType(), broker.getCurrentService().getPort());
+
+            // Shutdown Hook so the broker unregisters when the program is stopped.
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    broker.stop();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }));
+
             broker.startBroker();
         } catch (UnknownHostException e) {
             log.error("Error while starting broker: ", e);
