@@ -71,7 +71,6 @@ public class TimeSlotBuilder {
 
     public LocalDateTime getLastSlotsEndtime() {
         if (timeSlots == null || timeSlots.size() == 0) {
-            log.info("in getLastSlot -> is empty");
             return LocalDateTime.now();
         }
 
