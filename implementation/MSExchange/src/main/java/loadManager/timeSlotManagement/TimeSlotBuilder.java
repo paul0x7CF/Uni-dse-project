@@ -32,7 +32,7 @@ public class TimeSlotBuilder {
         TimeSlot resultTimeSlot;
         if (timeSlots == null) {
             timeSlots = new ArrayList<>();
-            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime now =LocalDateTime.now();// LocalDateTime.of(2023, 06, 16, 15, 00, 00);//
             resultTimeSlot = addNewTimeSlot(now);
         } else {
             if (timeSlots.get(timeSlots.size() - 1).getEndTime().isAfter(LocalDateTime.now())) {

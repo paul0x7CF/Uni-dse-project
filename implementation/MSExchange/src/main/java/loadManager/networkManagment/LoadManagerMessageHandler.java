@@ -12,7 +12,7 @@ import loadManager.SellInformation;
 import loadManager.exchangeManagement.ExchangeServiceInformation;
 import loadManager.exchangeManagement.LoadManager;
 import loadManager.prosumerActionManagement.ProsumerManager;
-import mainPackage.ESubCategory;
+import mainPackage.networkHelper.ESubCategory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import validator.BidValidator;
@@ -90,7 +90,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
         Bid bid = (Bid) message.getSendable(Bid.class);
         IValidator.validateAuctionID(bid.getAuctionID(), myMSData.getType());
         logger.debug("Bid is valid");
-
+        logger.debug("Bid: price: " + bid.getPrice() + ", volume: " + bid.getVolume() + " for TimeSlot: " + bid.getTimeSlot());
         prosumerManager.handleNewBid(bid);
     }
 
@@ -102,7 +102,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
         Sell sell = (Sell) message.getSendable(Sell.class);
         IValidator.validateAuctionID(sell.getAuctionID(), myMSData.getType());
         logger.debug("Sell is valid");
-
+        logger.debug("Sell: price: " + sell.getAskPrice() + ", volume: " + sell.getVolume() + " for TimeSlot: " + sell.getTimeSlot());
         ExchangeServiceInformation exchangeServiceInformation = null;
 
         while (true) {

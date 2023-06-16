@@ -1,7 +1,7 @@
 package msExchange.networkCommunication;
 
 import mainPackage.BaseCommunication;
-import mainPackage.IncomingMessageHandler;
+import mainPackage.networkHelper.IncomingMessageHandler;
 import CF.protocol.ECategory;
 import CF.protocol.Message;
 import CF.sendable.EServiceType;

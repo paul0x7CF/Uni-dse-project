@@ -2,12 +2,15 @@ package loadManager.prosumerActionManagement;
 
 import MSP.Exceptions.PriceNotOKException;
 import mainPackage.PropertyFileReader;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class AverageMechanism {
+    private static final Logger logger = LogManager.getLogger(AverageMechanism.class);
     private final int K_VALUES;
     private double averagePrice = 0.0;
     private List<Double> bidPrices = new ArrayList<Double>();
@@ -72,6 +75,8 @@ public class AverageMechanism {
         double bidPriceK = sortedBidPrices.get(k - 1);
         double askPriceK = sortedAskPrices.get(k - 1);
         averagePrice = (bidPriceK + askPriceK) / 2.0;
+
+        logger.debug("Average Price is " + averagePrice);
     }
 
 

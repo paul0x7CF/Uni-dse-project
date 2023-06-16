@@ -1,4 +1,4 @@
-package mainPackage;
+package mainPackage.networkHelper;
 
 import CF.exceptions.MessageProcessingException;
 import CF.exceptions.RemoteException;

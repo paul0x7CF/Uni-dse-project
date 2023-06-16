@@ -7,7 +7,7 @@ import MSP.Exceptions.IllegalSendableException;
 import MSP.Exceptions.InvalidBidException;
 import MSP.Exceptions.InvalidSellException;
 import MSP.Exceptions.InvalidTimeSlotException;
-import mainPackage.ESubCategory;
+import mainPackage.networkHelper.ESubCategory;
 import msExchange.auctionManagement.AuctionManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

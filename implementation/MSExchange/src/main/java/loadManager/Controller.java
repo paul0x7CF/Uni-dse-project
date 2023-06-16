@@ -83,29 +83,33 @@ public class Controller implements Runnable {
         PropertyFileReader propertyFileReader = new PropertyFileReader();
         int slotDuration = Integer.parseInt(propertyFileReader.getDuration());
         int checkInterval = Integer.parseInt(propertyFileReader.getCheckInterval());
-
+        boolean first = true;
         while (true) {
             if (!timeSlotBuilder.getLastSlotsEndtime().isAfter(LocalDateTime.now())) {
                 if (timeSlotBuilder.getLastTimeSlot().isPresent()) {
                     UUID endedTimeSlotID = timeSlotBuilder.getLastTimeSlot().get();
-                    logger.debug("TimeSlot has ended: " + endedTimeSlotID);
+                    logger.debug("----------------Time Slot " + endedTimeSlotID + " ended!----------------");
                     try {
                         messageHandler.endTimeSlot(endedTimeSlotID);
                     } catch (InvalidTimeSlotException e) {
                         throw new RuntimeException(e);
                     }
                 }
-                try {
-                    TimeSlot newTimeSlot = timeSlotBuilder.addNewTimeSlot();
-                    logger.debug("Timeslot adding: " + newTimeSlot.getTimeSlotID());
-                    List<Message> messages = messageBuilder.buildTimeSlotMessages(newTimeSlot);
-                    for (Message message : messages) {
-                        communication.sendMessage(message);
-                    }
+                if (first) {
+                    try {
+                        TimeSlot newTimeSlot = timeSlotBuilder.addNewTimeSlot();
+                        logger.debug("----------------Timeslot " + newTimeSlot.getTimeSlotID() + " started! " + newTimeSlot.getStartTime() + "----------------");
+                        List<Message> messages = messageBuilder.buildTimeSlotMessages(newTimeSlot);
+                        for (Message message : messages) {
+                            communication.sendMessage(message);
+                        }
 
-                } catch (InvalidTimeSlotException e) {
-                    throw new RuntimeException(e);
+                    } catch (InvalidTimeSlotException e) {
+                        throw new RuntimeException(e);
+                    }
+                    first = false;
                 }
+
 
             }
             try {
