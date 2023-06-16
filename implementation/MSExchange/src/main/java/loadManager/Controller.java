@@ -135,11 +135,10 @@ public class Controller implements Runnable {
             try {
                 List<Message> messages = messageBuilder.buildMessage(messageContent);
                 for (Message message : messages) {
+                    logger.debug("Sending messageContent " + messageContent.getBuildCategory().toString());
                     communication.sendMessage(message);
                 }
             } catch (IllegalSendableException e) {
-                //TODO: throw RuntimeException?
-                System.err.println("Failed to send message: " + e.getMessage());
                 logger.error("Failed to send message: " + e.getMessage());
                 e.printStackTrace();
             }

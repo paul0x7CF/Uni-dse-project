@@ -8,12 +8,15 @@ import MSP.Exceptions.IllegalSendableException;
 import mainPackage.ESubCategory;
 import mainPackage.IMessageBuilder;
 import mainPackage.PropertyFileReader;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 public class MessageBuilder {
+    private static final Logger logger = LogManager.getLogger(MessageBuilder.class);
     private final int DURATION;
     CommunicationLoadManager communication;
     private TimeSlot lastSentTimeSlot;
@@ -50,9 +53,16 @@ public class MessageBuilder {
         Sell sell = (Sell) content;
         List<Message> messages = new ArrayList<>();
         List<MSData> receiverMS = new ArrayList<>();
-        //TODO: Stoarage ID - wait till Stoarge is there -> 
-        MSData storage = communication.getBroker().getServicesByType(EServiceType.Storage).get(0);
-        Transaction transaction = new Transaction(sell.getSellerID(), storage.getId(), sell.getVolume(), sell.getAskPrice(), UUID.randomUUID());
+        //TODO: Stoarage ID - wait till Stoarge is there ->
+
+        Transaction transaction;
+        UUID buyerID = UUID.randomUUID();
+        if (!communication.getBroker().getServicesByType(EServiceType.Storage).isEmpty()) {
+            MSData storage = communication.getBroker().getServicesByType(EServiceType.Storage).get(0);
+            buyerID = storage.getId();
+        }
+
+        transaction = new Transaction(sell.getSellerID(), buyerID, sell.getVolume(), sell.getAskPrice(), UUID.randomUUID());
 
         receiverMS.add(communication.getBroker().findService(transaction.getSellerID()));
 
@@ -71,8 +81,14 @@ public class MessageBuilder {
         List<MSData> receiverMS = new ArrayList<>();
         Bid bid = (Bid) content;
 
-        MSData stoarageData = communication.getBroker().getServicesByType(EServiceType.Storage).get(0);
-        Transaction transaction = new Transaction(stoarageData.getId(), bid.getBidderID(), bid.getVolume(), bid.getPrice(), UUID.randomUUID());
+        Transaction transaction;
+        UUID sellerID = UUID.randomUUID();
+        if (!communication.getBroker().getServicesByType(EServiceType.Storage).isEmpty()) {
+            MSData storage = communication.getBroker().getServicesByType(EServiceType.Storage).get(0);
+            sellerID = storage.getId();
+        }
+
+        transaction = new Transaction(sellerID, bid.getBidderID(), bid.getVolume(), bid.getPrice(), UUID.randomUUID());
 
         receiverMS.add(communication.getBroker().findService(transaction.getBuyerID()));
 
@@ -83,12 +99,13 @@ public class MessageBuilder {
         for (MSData msData : receiverMS) {
             messages.add(buildTransactionMessage(IMessageBuilder.senderAndReceiverTemplate(msData, communication.getBroker().getCurrentService()), transaction));
         }
-        
+
         return messages;
     }
 
 
     private List<Message> buildTransactionMessages(ISendable content) {
+
         List<Message> messages = new ArrayList<>();
         List<MSData> receiverMS = new ArrayList<>();
         Transaction transaction = (Transaction) content;
@@ -107,7 +124,7 @@ public class MessageBuilder {
     }
 
     private Message buildTransactionMessage(MessageFactory messageFactory, Transaction transaction) {
-        messageFactory.setCategory(ECategory.Auction, String.valueOf(ESubCategory.Transaction)).setPayload(transaction);
+        messageFactory.setCategory(ECategory.Exchange, String.valueOf(ESubCategory.Transaction)).setPayload(transaction);
         return messageFactory.build();
     }
 
@@ -144,6 +161,7 @@ public class MessageBuilder {
     }
 
     private Message buildSellToProsumerMessage(ISendable content) {
+        logger.debug("Building sell to prosumer message");
         Sell sell = (Sell) content;
         MSData receiverMS = communication.getBroker().findService(sell.getSellerID());
         MessageFactory messageFactory = IMessageBuilder.senderAndReceiverTemplate(receiverMS, communication.getBroker().getCurrentService());
@@ -152,6 +170,7 @@ public class MessageBuilder {
     }
 
     private Message buildSellToExchangeMessage(ISendable content, EBuildCategory buildCategory) {
+        logger.debug("building sell to exchange message");
         Sell sell = (Sell) content;
         MSData receiverMS = communication.getBroker().findService(buildCategory.getUuid());
         MessageFactory messageFactory = IMessageBuilder.senderAndReceiverTemplate(receiverMS, communication.getBroker().getCurrentService());
