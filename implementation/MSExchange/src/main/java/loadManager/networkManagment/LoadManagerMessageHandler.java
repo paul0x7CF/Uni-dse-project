@@ -69,10 +69,10 @@ public class LoadManagerMessageHandler implements IMessageHandler {
         logger.info("Handling bid");
 
         BidValidator bidValidator = new BidValidator();
-        bidValidator.validateSendable(message.getSendable(ISendable.class));
+        //bidValidator.validateSendable(message.getSendable(ISendable.class));
         Bid bid = (Bid) message.getSendable(Bid.class);
-        IValidator.validateAuctionID(bid.getAuctionID(), myMSData.getType());
-        logger.trace("Bid is valid");
+        //IValidator.validateAuctionID(bid.getAuctionID(), myMSData.getType());
+        logger.info("Bid is valid");
 
         prosumerManager.handleNewBid(bid);
     }
