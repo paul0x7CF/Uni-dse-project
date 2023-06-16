@@ -1,7 +1,7 @@
 package MSS.communication;
 
 import CF.broker.Broker;
-import MSS.main.MSStorageManager;
+import MSS.storage.MSStorageManager;
 import CF.protocol.Message;
 import CF.sendable.MSData;
 import CF.sendable.Transaction;

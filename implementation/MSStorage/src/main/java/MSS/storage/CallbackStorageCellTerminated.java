@@ -1,4 +1,4 @@
-package MSS.main;
+package MSS.storage;
 
 import java.util.UUID;
 

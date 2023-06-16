@@ -1,7 +1,8 @@
-package MSS.main;
+package MSS.storage;
 
 import CF.sendable.Transaction;
 import MSS.communication.Communication;
+import MSS.data.Wallet;
 import MSS.exceptions.StorageEmptyException;
 import MSS.exceptions.StorageExiredException;
 import org.apache.logging.log4j.LogManager;

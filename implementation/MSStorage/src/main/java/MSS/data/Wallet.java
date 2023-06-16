@@ -1,4 +1,4 @@
-package MSS.main;
+package MSS.data;
 
 public class Wallet {
     private double cashBalance;
