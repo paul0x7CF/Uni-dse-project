@@ -7,6 +7,7 @@ import MSP.Communication.callback.CallbackSellLower;
 import MSP.Communication.callback.CallbackTransaction;
 import MSP.Communication.polling.PollConsumptionForecast;
 import MSP.Communication.polling.PollProductionForecast;
+import MSP.Data.Consumer;
 import MSP.Exceptions.ServiceNotFoundException;
 import MSP.Exceptions.UnknownMessageException;
 import MSP.Communication.MessageHandling.AuctionMessageHandler;
@@ -17,10 +18,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import CF.protocol.ECategory;
 import CF.protocol.Message;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 
 public class Communication {
@@ -44,11 +47,20 @@ public class Communication {
 
     // Define the constructor
 
-    public Communication(BlockingQueue<TimeSlot> availableTimeSlot, final int port, EServiceType serviceType) {
+    public Communication(BlockingQueue<TimeSlot> availableTimeSlot, final int port, EServiceType serviceType, LinkedHashSet<Consumer> consumers) {
         this.inputQueueTimeSlot = availableTimeSlot;
         this.serviceType = serviceType;
         createBroker(port);
         this.messageBuilder = new MessageBuilder(this.myMSData);
+
+        ConfigurableApplicationContext context = new SpringApplicationBuilder()
+                .sources(RestHandler.class)
+                .properties(Collections.singletonMap("rest.port", String.valueOf(port)))
+                .initializers((ApplicationContextInitializer<GenericApplicationContext>) ctx -> {
+                    // Set the port value in the RestHandler bean
+                    ctx.getBeanFactory().registerSingleton("restHandler", new RestHandler(consumers));
+                })
+                .run();
 
         logger.info("BrokerRunner initialized with Ip: {} Port: {}", this.myMSData.getAddress(), this.myMSData.getPort());
     }
