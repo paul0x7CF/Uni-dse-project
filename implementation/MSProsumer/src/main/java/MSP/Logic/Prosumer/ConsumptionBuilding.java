@@ -33,7 +33,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.random.RandomGenerator;
 
-public class ConsumptionBuilding implements Runnable {
+public class ConsumptionBuilding implements RESTData, Runnable {
 
     // Define the logger
 
@@ -73,12 +73,44 @@ public class ConsumptionBuilding implements Runnable {
 
     // Define the CRUD methods
 
-    private void createConsumer(EConsumerType type) {
-        Consumer newConsumer = new Consumer(type);
-        consumerList.add(newConsumer);
+    // Create
+    @Override
+    public boolean createConsumer(EConsumerType type) {
+        Consumer consumer = new Consumer(type);
+        consumerList.add(consumer);
+        logger.info("Created Consumer from type {}", type);
+        return true;
     }
 
-    private boolean deleteConsumer(EConsumerType type) {
+    // Read
+    @Override
+    public HashSet<Consumer> getConsumers() {
+        return consumerList;
+    }
+
+    // Update
+    @Override
+    public boolean updateConsumer(EConsumerType consumerType, int averageConsumption) {
+        AtomicInteger countUpdated = new AtomicInteger();
+        this.consumerList.forEach(consumer -> {
+            if (consumer.getConsumerType().equals(consumerType)) {
+                consumer.setAverageConsumption(averageConsumption);
+                countUpdated.getAndIncrement();
+            }
+        });
+        if (countUpdated.get() > 0) {
+            logger.info("Updated {} Consumer from type {}", countUpdated.get(), consumerType);
+            return true;
+        } else {
+            logger.info("No Producer Consumer from type {}", consumerType);
+            return false;
+        }
+
+    }
+
+    // Delete
+    @Override
+    public boolean deleteConsumer(EConsumerType type) {
         AtomicInteger countDeleted = new AtomicInteger();
         this.consumerList.removeIf(consumer -> {
             countDeleted.getAndIncrement();
@@ -111,11 +143,12 @@ public class ConsumptionBuilding implements Runnable {
 
     private CallbackSellLower actSellLowerQuestion() {
         CallbackSellLower callbackOnSellLower = sellToChange -> {
-            logger.info("SellLower callback received with price {}", sellToChange.getAskPrice());
+            logger.info("SellLower callback received with min sell price from Exchange {}", sellToChange.getAskPrice());
             double priceToChange = sellToChange.getAskPrice();
             priceToChange = this.wallet.getLowerSellPrice(priceToChange);
             sellToChange.setAskPrice(priceToChange);
             try {
+                logger.debug("SellLower Response with price {}", sellToChange.getAskPrice());
                 this.communicator.sendLowerSell(sellToChange);
             } catch (ServiceNotFoundException e) {
                 logger.error(e.getMessage());
@@ -128,11 +161,12 @@ public class ConsumptionBuilding implements Runnable {
 
     public CallbackBidHigher actBidHigherQuestion() {
         return bidToChange -> {
-            logger.info("BidHigher callback received with price {}", bidToChange.getPrice());
+            logger.info("BidHigher callback received with min Bid price from Exchange {}", bidToChange.getPrice());
             double priceToChange = bidToChange.getPrice();
             priceToChange = this.wallet.getHigherBidPrice(priceToChange);
             bidToChange.setPrice(priceToChange);
             try {
+                logger.debug("BidHigher Response with price {}", bidToChange.getPrice());
                 this.communicator.sendHigherBid(bidToChange);
             } catch (ServiceNotFoundException e) {
                 logger.error(e.getMessage());

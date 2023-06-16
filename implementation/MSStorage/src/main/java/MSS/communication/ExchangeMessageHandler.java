@@ -36,13 +36,13 @@ public class ExchangeMessageHandler implements IMessageHandler {
                 default -> throw new MessageNotSupportedException();
             }
         } catch (MessageNotSupportedException e) {
-            logger.warn(e.getMessage());
+            logger.warn(e.getMessage() + " because Subcategory: " + message.getSubCategory() + " not supported");
         }
 
     }
 
     private void handleTransaction(Message message) {
-        logger.debug("Transaction message received");
+        logger.trace("Transaction message received");
         Transaction newTransaction = (Transaction) message.getSendable(TimeSlot.class);
         try {
             this.incomingTransactionQueue.put(newTransaction);

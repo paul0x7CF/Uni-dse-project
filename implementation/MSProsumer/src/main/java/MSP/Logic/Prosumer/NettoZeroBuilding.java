@@ -48,12 +48,37 @@ public class NettoZeroBuilding extends ConsumptionBuilding {
 
     // Define the CRUD methods
 
-    private void createProducer(EProducerType panelType) {
+    // Create
+    @Override
+    public boolean createProducer(EProducerType panelType) {
         Producer producer = new Producer(panelType);
         producerList.add(producer);
+        logger.info("Created Producer from type {}", panelType);
+        return true;
     }
 
-    private boolean deleteProducer(EProducerType panelType) {
+    // Read
+    @Override
+    public LinkedHashSet<Producer> getProducers() {
+        return producerList;
+    }
+
+    // Update
+    @Override
+    public boolean updateProducer(EProducerType panelType, int efficiency) {
+        boolean result = false;
+        for (Producer producer : producerList) {
+            if (producer.getProducerType().equals(panelType)) {
+                producer.setEfficiency(efficiency);
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    // Delete
+    @Override
+    public boolean deleteProducer(EProducerType panelType) {
         AtomicInteger countDeleted = new AtomicInteger();
         this.producerList.removeIf(producer -> {
             countDeleted.getAndIncrement();

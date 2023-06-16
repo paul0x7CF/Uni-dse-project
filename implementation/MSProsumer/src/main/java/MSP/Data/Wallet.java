@@ -28,11 +28,11 @@ public class Wallet {
     }
 
     public double getLowerSellPrice(double minPrice) {
-        return minPrice * 0.90;
+        return minPrice * 0.85;
     }
 
     public double getHigherBidPrice(double maxPrice) {
-        return maxPrice * 1.10;
+        return maxPrice * 1.15;
     }
 
     public double getBidPrice() {

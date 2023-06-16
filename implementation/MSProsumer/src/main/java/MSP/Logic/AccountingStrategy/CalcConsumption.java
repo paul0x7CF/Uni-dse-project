@@ -5,7 +5,6 @@ import MSP.Communication.Communication;
 import MSP.Communication.polling.PollForecast;
 import MSP.Data.Consumer;
 import MSP.Data.EConsumerType;
-import MSP.Data.EProducerType;
 import MSP.Data.IProsumerDevice;
 import MSP.Exceptions.DeviceNotSupportedException;
 import CF.sendable.ConsumptionRequest;
@@ -46,7 +45,7 @@ public class CalcConsumption implements ICalAcctStrategy {
             deviceCount++;
             if (device.getDevice() instanceof Consumer consumer) {
                 if(consumer.isAllowedToConsume(timeSlot.getStartTime().toLocalTime())) {
-                    consumptionMap.put(consumer.getConsumerType().toString(), consumer.getAverageConsumptionpH());
+                    consumptionMap.put(consumer.getConsumerType().toString(), consumer.getAverageConsumption());
                     deviceAdded++;
                     addedConsumers.add(consumer.getConsumerType());
                     logger.trace("Consumer " + consumer.getConsumerType() + " was put into the consumptionMap");
