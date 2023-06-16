@@ -160,6 +160,7 @@ public class Broker implements IServiceBroker, IScheduleBroker {
     }
 
     public void unregisterService(MSData msData) {
+        log.debug("Unregistering service: {}", msData.getPort());
         serviceRegistry.unregisterService(msData);
     }
 
