@@ -15,11 +15,11 @@
         </File>
     </Appenders>
     <Loggers>
-        <!-- Logger for the specific package -->
+        <!-- Logger for the specific package
         <Logger name="CF" level="OFF" additivity="false">
             <AppenderRef ref="ConsoleAppender" />
             <AppenderRef ref="FileAppender" />
-        </Logger>
+        </Logger>-->
         <!-- Here you can define the log level up to which logging is done -->
         <Root level="debug">
             <!-- Each logger can reference one or more appenders -->

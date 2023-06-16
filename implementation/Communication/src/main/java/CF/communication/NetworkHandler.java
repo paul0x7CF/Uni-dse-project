@@ -1,5 +1,6 @@
 package CF.communication;
 
+import CF.mainPackage.ConfigReader;
 import CF.sendable.MSData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -89,11 +90,8 @@ public class NetworkHandler {
 
 
     public MSData getMSData() {
-        try {
-            return new MSData(UUID.randomUUID(), serviceType, InetAddress.getLocalHost().getHostAddress(), listeningPort);
-        } catch (UnknownHostException e) {
-            log.error("Could not get current service, using \"localhost\" instead", e);
-            return new MSData(UUID.randomUUID(), serviceType, "localhost", listeningPort);
-        }
+            ConfigReader configReader = new ConfigReader();
+            String ipAddresss = configReader.getProperty(serviceType+ ".Address");
+            return new MSData(UUID.randomUUID(), serviceType, ipAddresss, listeningPort);
     }
 }
