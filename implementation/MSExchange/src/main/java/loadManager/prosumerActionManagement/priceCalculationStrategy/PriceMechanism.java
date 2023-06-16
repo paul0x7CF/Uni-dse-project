@@ -7,5 +7,5 @@ public interface PriceMechanism {
 
     boolean isAskPriceLowEnough(double price) throws PriceNotOKException;
 
-    double getAveragePrice();
+    double getKWPrice();
 }

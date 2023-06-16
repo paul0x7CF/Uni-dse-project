@@ -10,14 +10,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class AverageMechanism implements PriceMechanism {
-    private static final Logger logger = LogManager.getLogger(AverageMechanism.class);
+public class WeightedMechanism implements PriceMechanism {
+    private static final Logger logger = LogManager.getLogger(WeightedMechanism.class);
     private final int K_VALUES;
     private double averagePrice = 0.0;
-    private List<Double> bidPrices = new ArrayList<Double>();
-    private List<Double> askPrices = new ArrayList<Double>();
+    private List<Double> bidPrices = new ArrayList<>();
+    private List<Double> askPrices = new ArrayList<>();
 
-    public AverageMechanism() {
+    public WeightedMechanism() {
         PropertyFileReader propertyFileReader = new PropertyFileReader();
         K_VALUES = Integer.parseInt(propertyFileReader.getK());
     }
@@ -62,7 +62,7 @@ public class AverageMechanism implements PriceMechanism {
         return averagePrice;
     }
 
-    private void calculateAveragePrice() {
+    private void calculatePrice() {
         int k = Math.min(bidPrices.size(), askPrices.size());
         if (k == 0) {
             return;
@@ -73,13 +73,20 @@ public class AverageMechanism implements PriceMechanism {
         Collections.sort(sortedBidPrices);
         Collections.sort(sortedAskPrices);
 
-        double bidPriceK = sortedBidPrices.get(k - 1);
-        double askPriceK = sortedAskPrices.get(k - 1);
-        averagePrice = (bidPriceK + askPriceK) / 2.0;
+        // Weigh the bid and ask prices based on their positions in the sorted lists
+        double bidSum = 0.0;
+        double askSum = 0.0;
+        for (int i = 0; i < k; i++) {
+            double bidWeight = (i + 1) / (double) k;
+            double askWeight = (k - i) / (double) k;
+            bidSum += sortedBidPrices.get(i) * bidWeight;
+            askSum += sortedAskPrices.get(i) * askWeight;
+        }
+
+        averagePrice = (bidSum + askSum) / 2.0;
 
         logger.debug("Average Price is " + averagePrice);
     }
-
 
     private void updateList(double price, EAction action) {
         switch (action) {
@@ -94,7 +101,6 @@ public class AverageMechanism implements PriceMechanism {
             askPrices.remove(0);
         }
 
-        calculateAveragePrice();
+        calculatePrice();
     }
-
 }

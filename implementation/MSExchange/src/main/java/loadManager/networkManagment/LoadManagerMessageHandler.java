@@ -26,10 +26,10 @@ import java.util.concurrent.BlockingQueue;
 
 public class LoadManagerMessageHandler implements IMessageHandler {
     private static final Logger logger = LogManager.getLogger(LoadManagerMessageHandler.class);
-    private BlockingQueue<MessageContent> outgoingQueue;
-    private MSData myMSData;
-    private ProsumerManager prosumerManager;
-    private LoadManager loadManager;
+    private final BlockingQueue<MessageContent> outgoingQueue;
+    private final MSData myMSData;
+    private final ProsumerManager prosumerManager;
+    private final LoadManager loadManager;
 
 
     public LoadManagerMessageHandler(BlockingQueue<MessageContent> outgoingQueue, MSData msData) {
