@@ -6,6 +6,7 @@ import MSF.communication.ForecastCommunicationHandler;
 import MSF.data.ProsumerConsumptionRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import MSF.exceptions.InvalidTimeSlotException;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -30,16 +31,20 @@ public class ConsumptionForecast implements Runnable {
             try {
                 ProsumerConsumptionRequest prosumerConsumptionRequest = incomingConsumptionRequest.take();
                 predictConsumption(prosumerConsumptionRequest);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | InvalidTimeSlotException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private void predictConsumption(ProsumerConsumptionRequest prosumerConsumptionRequest) {
+    private void predictConsumption(ProsumerConsumptionRequest prosumerConsumptionRequest) throws InvalidTimeSlotException {
         HashMap<String, Double> consumption = new HashMap<>();
 
         //TODO: CHECK TimeSlotID
+
+        if (!prosumerConsumptionRequest.getCurrentTimeSlotID().equals(currentTimeSlot.getTimeSlotID())) {
+            logger.warn("Received consumption request for timeslot " + prosumerConsumptionRequest.getCurrentTimeSlotID() + " but current timeslot is " + currentTimeSlot.getTimeSlotID());
+        }
 
         logger.trace("Predicting consumption for prosumer " + prosumerConsumptionRequest.getSenderID() + " for timeslot " + prosumerConsumptionRequest.getCurrentTimeSlotID());
 
