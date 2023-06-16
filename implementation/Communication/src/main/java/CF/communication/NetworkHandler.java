@@ -6,6 +6,10 @@ import CF.sendable.MSData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
 import java.util.UUID;
 import java.util.concurrent.*;
 
@@ -87,6 +91,37 @@ public class NetworkHandler {
 
     public MSData getMSData() {
         ConfigReader configReader = new ConfigReader();
+        String ipAddress = null;
+
+        switch (serviceType) {
+            case ExchangeWorker -> ipAddress = configReader.getProperty("exchangeAddress");
+            case Prosumer -> ipAddress = configReader.getProperty("prosumerAddress");
+            case Exchange -> ipAddress = configReader.getProperty("exchangeAddress");
+            case Storage -> ipAddress = configReader.getProperty("prosumerAddress");
+            case Forecast -> ipAddress = configReader.getProperty("forecastAddress");
+            default -> {
+            }
+            // Handle unknown serviceType, if needed
+        }
+
+        try {
+            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+            while (networkInterfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = networkInterfaces.nextElement();
+                if (networkInterface.isUp() && !networkInterface.isLoopback()) {
+                    Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+                    while (addresses.hasMoreElements()) {
+                        InetAddress address = addresses.nextElement();
+                        if (!address.isLoopbackAddress() && address.getHostAddress().indexOf(':') == -1) {
+                            log.warn("OpenVPN IP-Adresse: " + address.getHostAddress());
+                        }
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+
         return new MSData(UUID.randomUUID(), serviceType, configReader.getProperty("exchangeAddress"), listeningPort);
     }
 }
