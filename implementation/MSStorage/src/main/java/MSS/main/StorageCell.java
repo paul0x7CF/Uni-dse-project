@@ -51,18 +51,25 @@ public class StorageCell implements Runnable {
         return (this.currentVolume + volumeToAdd) <= this.maxVolume;
     }
 
-    public boolean increaseVolume(double volumeToAdd) {
+    public double increaseVolume(double volumeToAdd) {
         isTerminated();
+        if(this.currentVolume == this.maxVolume) return volumeToAdd;
         if(isEnoughSpace(volumeToAdd)) {
             this.currentVolume += volumeToAdd;
             logger.debug("StorageCell with ID {} volume increased by {}; new Volume: {}", storageCellID,volumeToAdd, this.currentVolume);
-            return true;
+            return 0;
         }
-        return false;
+        else {
+            double addedVolume = this.maxVolume - this.currentVolume;
+            this.currentVolume = this.maxVolume;
+            logger.debug("StorageCell with ID {} volume increased by {}; new Volume: {}", storageCellID,addedVolume, this.currentVolume);
+            return volumeToAdd - addedVolume;
+        }
     }
 
     public double decrementVolume(double volumeToDecrement) {
         isTerminated();
+        if(this.currentVolume == 0) return volumeToDecrement;
         if(this.currentVolume - volumeToDecrement >= 0) {
             this.currentVolume -= volumeToDecrement;
             logger.debug("StorageCell with ID {} volume decremented by {}; new Volume: {}", storageCellID,volumeToDecrement, this.currentVolume);
