@@ -89,6 +89,7 @@ public class MessageBuilder {
         }
 
         transaction = new Transaction(sellerID, bid.getBidderID(), bid.getVolume(), bid.getPrice(), UUID.randomUUID());
+        logger.debug("Sending Transaction: " + bid.getBidderID() + ", Price: " + transaction.getPrice() + ", Volume: " + bid.getVolume());
 
         receiverMS.add(communication.getBroker().findService(transaction.getBuyerID()));
 

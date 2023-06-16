@@ -125,6 +125,8 @@ public class ProsumerManager {
     }
 
     public void handleIncomingTransaction(Transaction transaction) throws ProsumerUnknownException {
+        logger.info("Incoming Transaction: " + transaction.getTransactionID());
+
         //TODO: set Bidders / Sellers as satisfied
         UUID timeSlotID = auctionManager.getAuctionByID(transaction.getAuctionID()).getTimeSlotID();
         Bid bid = new Bid(transaction.getAmount(), transaction.getPrice(), timeSlotID, transaction.getBuyerID());
@@ -135,9 +137,6 @@ public class ProsumerManager {
         }
 
         auctionProsumerTracker.checkWithTransactions(transaction);
-
-        //TODO: end the auctions
-
     }
 
     public AuctionManager getAuctionManager() {
