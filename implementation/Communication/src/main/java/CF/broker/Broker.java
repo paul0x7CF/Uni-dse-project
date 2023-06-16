@@ -97,7 +97,7 @@ public class Broker implements IServiceBroker, IScheduleBroker {
      * @throws ClassNotFoundException     if the class of a serialized object could not be found
      * @throws MessageProcessingException if the message could not be processed
      */
-    private void receiveMessage() throws MessageProcessingException {
+    protected void receiveMessage() throws MessageProcessingException {
         MessageReceiver receiver = new MessageReceiver();
         // TODO: maybe catch exceptions and try again
         while (true) {

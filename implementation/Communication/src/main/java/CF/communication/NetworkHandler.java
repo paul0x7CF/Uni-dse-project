@@ -21,10 +21,8 @@ public class NetworkHandler {
     private static final Logger log = LogManager.getLogger(NetworkHandler.class);
     private final BlockingQueue<byte[]> inputQueue;
     private final BlockingQueue<LocalMessage> outputQueue;
-    private final BlockingQueue<LocalMessage> broadcastQueue;
     private final InputSocket inputSocket;
     private final OutputSocket outputSocket;
-    private final BroadcastSocket broadcastSocket;
     private final EServiceType serviceType;
     private final int listeningPort;
     private final ExecutorService executor;
@@ -37,24 +35,17 @@ public class NetworkHandler {
 
         inputQueue = new LinkedBlockingQueue<>();
         outputQueue = new LinkedBlockingQueue<>();
-        broadcastQueue = new LinkedBlockingQueue<>();
 
         inputSocket = new InputSocket(inputQueue, listeningPort);
         outputSocket = new OutputSocket(outputQueue, listeningPort + 1);
-        broadcastSocket = new BroadcastSocket(broadcastQueue, listeningPort + 2);
 
         executor = Executors.newFixedThreadPool(3);
         scheduler = Executors.newScheduledThreadPool(20);
     }
 
-    public void createSockets() {
-
-    }
-
     public void startSockets() {
         executor.execute(inputSocket);
         executor.execute(outputSocket);
-        scheduler.execute(broadcastSocket);
     }
 
     public void stop() {
@@ -74,20 +65,6 @@ public class NetworkHandler {
             return null;
         }
     }
-
-    public ScheduledFuture<?> scheduleMessage(LocalMessage localMessage, UUID senderID, int delay, boolean repeating) {
-        log.debug("Scheduled repeating: {} message to {}", repeating, localMessage.getReceiverPort());
-        ScheduledFuture<?> scheduledTask;
-        if (repeating) {
-            // 1 is just the initial delay, it is not 0 because not everything may be initialized.
-            scheduledTask = scheduler.scheduleAtFixedRate(() -> broadcastQueue.add(localMessage), 1, delay, TimeUnit.SECONDS);
-        } else {
-            scheduledTask = scheduler.schedule(() -> broadcastQueue.add(localMessage), delay, TimeUnit.SECONDS);
-        }
-        return scheduledTask;
-    }
-
-
 
     public MSData getMSData() {
             ConfigReader configReader = new ConfigReader();
