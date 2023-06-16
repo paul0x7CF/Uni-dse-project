@@ -54,6 +54,12 @@ public class ConsumptionBuilding implements Runnable {
         this.wallet = new Wallet(cashBalance);
         this.incomingMessages = new LinkedBlockingQueue<>();
         this.communicator = new Communication(this.incomingMessages, port, EServiceType.Prosumer);
+
+        // Set Callbacks
+        communicator.setCallbackOnTransaction(this.actOnTransactionFinished());
+        communicator.setCallbackOnSellLower(this.actSellLowerQuestion());
+        communicator.setCallbackOnBidHigher(this.actBidHigherQuestion());
+
         final int INITIALIZED_CONSUMER_AMOUNT = Integer.parseInt(ConfigFileReader.getProperty("consumer.amount"));
         for (int i = 1; i <= INITIALIZED_CONSUMER_AMOUNT; i++) {
             createConsumer(EConsumerType.valueOf(ConfigFileReader.getProperty("consumer.type" + i)));
@@ -179,11 +185,6 @@ public class ConsumptionBuilding implements Runnable {
 
     @Override
     public void run() {
-
-        // Set Callbacks
-        communicator.setCallbackOnTransaction(this.actOnTransactionFinished());
-        communicator.setCallbackOnSellLower(this.actSellLowerQuestion());
-        communicator.setCallbackOnBidHigher(this.actBidHigherQuestion());
 
         // Initialize the Broker
         communicator.startBrokerRunner(Thread.currentThread().getName());
