@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class AuctionManager implements Runnable {
     private static final Logger logger = LogManager.getLogger(AuctionManager.class);
@@ -38,7 +39,7 @@ public class AuctionManager implements Runnable {
 
     @Override
     public void run() {
-        logger.info("AuctionManager started");
+        logger.info("EXCHANGE: AuctionManager started");
         long lastCheckTime = System.currentTimeMillis();
         while (true) {
             try {
@@ -66,14 +67,33 @@ public class AuctionManager implements Runnable {
      * it has exceeded the specified minutes to live after expiring.
      */
     private void checkTimeSlots() {
+
         Iterator<Map.Entry<UUID, TimeSlot>> iterator = timeSlots.entrySet().iterator();
+        TimeSlot openTimeSlot = null;
 
         while (iterator.hasNext()) {
             Map.Entry<UUID, TimeSlot> entry = iterator.next();
-            if (entry.getValue().getStartTime().isBefore(LocalDateTime.now())) {
+
+            if (entry.getValue().getEndTime().isBefore(LocalDateTime.now())) {
                 if (entry.getValue().getEndTime().isAfter(LocalDateTime.now())) {
-                    entry.getValue().openTimeSlot();
+                    if (openTimeSlot != null) {
+                        if (openTimeSlot != entry.getValue()) {
+                            entry.getValue().openTimeSlot();
+                            openTimeSlot = entry.getValue();
+                        }
+                    } else {
+                        entry.getValue().openTimeSlot();
+                        openTimeSlot = entry.getValue();
+                    }
                 } else {
+                    if (entry.getValue().getEndTime() == openTimeSlot.getStartTime()) {
+                        logger.debug("EXCHANGE: Close TimeSlot: " + entry.getValue().getTimeSlotId());
+                        List<Auction> filteredAuctions = auctions.values().stream()
+                                .filter(auction -> auction.getTimeSlotID().equals(entry.getValue()))
+                                .collect(Collectors.toList());
+                        filteredAuctions.forEach(auction -> auction.endAuction());
+
+                    }
                     if (entry.getValue().getEndTime().plusMinutes(MINUTES_TO_LIVE_AFTER_EXPIRING).isAfter(LocalDateTime.now())) {
                         iterator.remove(); // Remove the entry
                     }
@@ -117,18 +137,20 @@ public class AuctionManager implements Runnable {
         if (bid != null) {
             Optional<UUID> auctionID = bid.getAuctionID();
             if (auctionID.isEmpty()) {
-                throw new AuctionNotFoundException("The Auction ID is missing", Optional.empty(), Optional.empty(), Optional.of(bid));
+                throw new AuctionNotFoundException("EXCHANGE: The Auction ID is missing", Optional.empty(), Optional.empty(), Optional.of(bid));
             }
             if (!auctionExists(auctionID.get())) {
-                logger.error("Auction doesn't exist yet.");
-                //bidQueue.put(bid);
-                //TODO: rethink: throw new AuctionNotFoundException("The Auction ID is incorrect.", auctionID, Optional.empty(), Optional.of(bid));
-                throw new AuctionNotFoundException("The Auction ID doesn't exist", auctionID, Optional.empty(), Optional.of(bid));
+                logger.warn("EXCHANGE: Auction doesn't exist yet?");
+                try {
+                    bidQueue.put(bid);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
             if (!timeSlots.containsKey(bid.getTimeSlot())) {
-                throw new InvalidTimeSlotException("TimeSlot doesn't exist, therefore the UUID was invalid.", Optional.of(bid.getTimeSlot()));
+                throw new InvalidTimeSlotException("EXCHANGE: TimeSlot doesn't exist, therefore the UUID was invalid.", Optional.of(bid.getTimeSlot()));
             }
-            logger.debug("Add Bid to Auction");
+            logger.debug("EXCHANGE: Add Bid " + bid.getBidderID() + "to Auction" + bid.getAuctionID());
             addBidToAuction(auctionID.get(), bid);
         }
     }
@@ -143,10 +165,10 @@ public class AuctionManager implements Runnable {
         Sell sell = sellQueue.poll(); // Non-blocking call, retrieves the next sell or null if empty
         if (sell != null) {
             if (timeSlots.containsKey(sell.getTimeSlot())) {
-                logger.info("Creating new Auction...");
+                logger.info("EXCHANGE: Creating new Auction...");
                 addNewAuction(sell);
             } else {
-                throw new InvalidTimeSlotException("TimeSlot doesn't exist, therefore the UUID was invalid.", Optional.of(sell.getTimeSlot()));
+                throw new InvalidTimeSlotException("EXCHANGE: TimeSlot doesn't exist, therefore the UUID was invalid.", Optional.of(sell.getTimeSlot()));
             }
         }
     }
@@ -164,7 +186,7 @@ public class AuctionManager implements Runnable {
     private void addNewAuction(Sell sell) throws AuctionNotFoundException {
         Auction auction = new Auction(sell.getAuctionID().get(), sell, transactionQueue);
         auctions.put(sell.getAuctionID().get(), auction);
-        logger.info("Auction has been added: " + auctions.get(sell.getAuctionID().get()));
+        logger.info("EXCHANGE: Auction has been added: " + auctions.get(sell.getAuctionID().get()));
     }
 
     /**
@@ -180,7 +202,7 @@ public class AuctionManager implements Runnable {
         auction.setBid(bid);
 
         // Log the successful addition of the bid
-        logger.info("Bid has been set");
+        logger.info("EXCHANGE: Bid has been set");
     }
 
     public Map<UUID, Auction> getAuctions() {
@@ -195,7 +217,7 @@ public class AuctionManager implements Runnable {
     public void addTimeSlots(CF.sendable.TimeSlot newTimeSlot) {
         if (timeSlots.get(newTimeSlot.getTimeSlotID()) == null) {
             timeSlots.put(newTimeSlot.getTimeSlotID(), new TimeSlot(newTimeSlot.getTimeSlotID(), newTimeSlot.getStartTime(), newTimeSlot.getEndTime()));
-            logger.info("TimeSlot has been added: " + timeSlots.get(newTimeSlot.getTimeSlotID()));
+            logger.info("EXCHANGE: TimeSlot has been added: " + timeSlots.get(newTimeSlot.getTimeSlotID()));
         }
     }
 }

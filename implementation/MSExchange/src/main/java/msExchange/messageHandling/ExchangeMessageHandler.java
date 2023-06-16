@@ -40,7 +40,7 @@ public class ExchangeMessageHandler {
     public void handleMessage(Message message) throws MessageProcessingException {
         String subcategory = message.getSubCategory();
         if (subcategory.contains(";")) {
-            throw new MessageProcessingException("Subcategory has another subcategory: " + subcategory);
+            throw new MessageProcessingException("EXCHANGE: Subcategory has another subcategory: " + subcategory);
         }
 
         ESubCategory subCategory = ESubCategory.valueOf(subcategory);
@@ -50,13 +50,13 @@ public class ExchangeMessageHandler {
                 case Sell -> handleSell(message);
                 case TimeSlot -> handleTimeSlot(message);
                 default ->
-                        throw new MessageProcessingException("Unknown message subCategory: " + message.getSubCategory());
+                        throw new MessageProcessingException("EXCHANGE: Unknown message subCategory: " + message.getSubCategory());
             }
         } catch (InvalidBidException | InvalidSellException | InvalidTimeSlotException | IllegalSendableException e) {
             throw new MessageProcessingException(e.getMessage());
         }
 
-        logger.trace("{} Message processed", message.getCategory());
+        logger.debug("{} Message processed", message.getCategory());
     }
 
     /**
@@ -66,14 +66,14 @@ public class ExchangeMessageHandler {
      * @throws InvalidTimeSlotException if the TimeSlot is invalid
      */
     private void handleTimeSlot(Message message) throws InvalidTimeSlotException {
-        logger.debug("Handling TimeSlot message");
+        logger.debug("EXCHANGE: Handling TimeSlot message");
         TimeSlot timeSlot = (TimeSlot) message.getSendable(TimeSlot.class);
         TimeSlotValidator timeSlotValidator = new TimeSlotValidator();
         timeSlotValidator.validateTimeSlot(timeSlot, auctionManager.getTimeSlots());
 
         //add timeSlot to auctionManager
         auctionManager.addTimeSlots(timeSlot);
-        logger.debug("Added TimeSlot: " + timeSlot);
+        logger.debug("EXCHANGE: Added TimeSlot: " + timeSlot);
     }
 
     /**
@@ -83,13 +83,13 @@ public class ExchangeMessageHandler {
      * @throws InvalidSellException if the Sell is invalid
      */
     private void handleSell(Message message) throws InvalidSellException, IllegalSendableException {
-        logger.info("Exchange: Received Sell");
+        logger.info("EXCHANGE: Received Sell");
         SellValidator sellValidator = new SellValidator();
         sellValidator.validateSendable(message.getSendable(Sell.class));
 
         Sell sell = (Sell) message.getSendable(Sell.class);
         IValidator.validateAuctionID(sell.getAuctionID(), EServiceType.ExchangeWorker);
-
+        logger.debug("EXCHANGE: sell is valid");
         //add sell to queue
         try {
             sellQueue.put(sell);
@@ -97,7 +97,7 @@ public class ExchangeMessageHandler {
             throw new RuntimeException(e);
         }
 
-        logger.debug("Exchange: Added Sell for " + sell.getSellerID());
+        logger.debug("EXCHANGE: Added Sell for " + sell.getSellerID());
     }
 
     /**
@@ -107,11 +107,11 @@ public class ExchangeMessageHandler {
      * @throws InvalidBidException if the Bid is invalid
      */
     private void handleBid(Message message) throws InvalidBidException, IllegalSendableException {
-        logger.info("Exchange: Received Bid");
+        logger.info("EXCHANGE: Received Bid");
         BidValidator bidValidator = new BidValidator();
         bidValidator.validateSendable(message.getSendable(Bid.class));
 
-        logger.debug("Exchange: Bid is valid");
+        logger.debug("EXCHANGE: Bid is valid");
         Bid bid = (Bid) message.getSendable(Bid.class);
         IValidator.validateAuctionID(bid.getAuctionID(), EServiceType.ExchangeWorker);
 
@@ -121,7 +121,7 @@ public class ExchangeMessageHandler {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        logger.debug("Exchange: Added Bid for bidder " + bid.getBidderID());
+        logger.debug("EXCHANGE: Added Bid for bidder " + bid.getBidderID());
     }
 
     /**

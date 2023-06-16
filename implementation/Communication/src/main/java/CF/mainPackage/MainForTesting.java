@@ -30,7 +30,6 @@ public class MainForTesting {
         Bid fromJson2 = PayloadConverter.fromJSON(json2, Bid.class);
         log.warn("from " + fromJson2.getAuctionID());
 
-
         if (false) {
             createTestInstances();
         }

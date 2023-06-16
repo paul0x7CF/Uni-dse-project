@@ -56,7 +56,7 @@ public class ConsumptionBuilding implements Runnable {
         this.prosumerType = prosumerType;
         this.wallet = new Wallet(cashBalance);
         this.incomingMessages = new LinkedBlockingQueue<>();
-        this.communicator = new Communication(this.incomingMessages, port, EServiceType.Prosumer);
+        this.communicator = new Communication(this.incomingMessages, port, EServiceType.Prosumer, consumerList);
 
         // Set Callbacks
         communicator.setCallbackOnTransaction(this.actOnTransactionFinished());
