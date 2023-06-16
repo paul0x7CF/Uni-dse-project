@@ -57,9 +57,10 @@ public class PollProductionForecast implements PollForecast {
 
     private void setIsAvailableTrueAfterTime() {
         try {
-            Thread.sleep(5000);
+            int pollingTimeout = 7000;
+            Thread.sleep(pollingTimeout);
             if (!isAvailable){
-                logger.warn("Polling for ProductionForecast timed out and is now available because at least one response was received");
+                logger.warn("Polling for ProductionForecast timed out after {}sec and is now available because at least one response was received", pollingTimeout/1000);
                 this.isAvailable = true;
             }
         } catch (InterruptedException e) {

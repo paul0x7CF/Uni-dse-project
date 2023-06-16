@@ -100,6 +100,12 @@ public class NettoZeroBuilding extends ConsumptionBuilding {
         super.reset();
         this.pollOnProduction = null;
     }
+    @Override
+    protected boolean isForecastResultAvailable() {
+        boolean resultForConsumption = super.isForecastResultAvailable();
+        boolean resultForProduction = this.pollOnProduction.isAvailable();
+        return resultForConsumption && resultForProduction;
+    }
 
 
 }

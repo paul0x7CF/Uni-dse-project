@@ -4,6 +4,7 @@ import CF.sendable.ConsumptionResponse;
 import CF.sendable.SolarResponse;
 import MSP.Communication.polling.PollConsumptionForecast;
 import MSP.Communication.polling.PollProductionForecast;
+import MSP.Configuration.ConfigFileReader;
 import MSP.Data.EConsumerType;
 import MSP.Exceptions.MessageNotSupportedException;
 import CF.exceptions.MessageProcessingException;
@@ -52,7 +53,7 @@ public class ForecastMessageHandler implements IMessageHandler {
         PollConsumptionForecast pollForecastForTimeSlotID = this.pollForecastConsumptionMap.get(consumptionResponse.getRequestTimeSlotId());
 
         // Check if the PollForecast is already available because request was broadcasted to all Forecasts
-        if(!pollForecastForTimeSlotID.isAvailable()) {
+        if (!pollForecastForTimeSlotID.isAvailable()) {
             // Convert the HashMap<String, Double> to HashMap<EConsumerType, Double> for the PollingObject
             HashMap<String, Double> consumptionForecastMap = consumptionResponse.getConsumptionMap();
             HashMap<EConsumerType, Double> pollingResult = new HashMap<>();
@@ -63,8 +64,7 @@ public class ForecastMessageHandler implements IMessageHandler {
             pollForecastForTimeSlotID.setPollResult(pollingResult);
             pollForecastForTimeSlotID.setAvailable(true);
             logger.debug("Consumption Forecast Response was set on Poll Object");
-        }
-        else {
+        } else {
             logger.trace("Received a consumption forecast response for a time slot that is already available");
         }
 
@@ -74,13 +74,20 @@ public class ForecastMessageHandler implements IMessageHandler {
     private void handleProduction(Message message) throws UnknownForecastResponseException {
         logger.debug("Production message received");
         SolarResponse solarResponse = (SolarResponse) message.getSendable(SolarResponse.class);
-        if(!this.pollForecastProductionMap.containsKey(solarResponse.getResponseTimeSlotId())) {
+        if (!this.pollForecastProductionMap.containsKey(solarResponse.getResponseTimeSlotId())) {
             throw new UnknownForecastResponseException();
         }
 
+        final int MAX_RESPONSES_FORECAST = Integer.parseInt(ConfigFileReader.getCommunicationProperty("forecastAmount"));
         PollProductionForecast pollForecastForTimeSlotID = this.pollForecastProductionMap.get(solarResponse.getResponseTimeSlotId());
         logger.debug("Until now {} Production Forecast Results were received for the TimeSlot", pollForecastForTimeSlotID.getResponseSize());
-        pollForecastForTimeSlotID.setPollResult(solarResponse.getSolarProduction());
+        if (pollForecastForTimeSlotID.getResponseSize() < MAX_RESPONSES_FORECAST) {
+            logger.debug("Adding Production Forecast Response to Poll Object");
+            pollForecastForTimeSlotID.setPollResult(solarResponse.getSolarProduction());
+        } else if (pollForecastForTimeSlotID.getResponseSize() == MAX_RESPONSES_FORECAST) {
+            pollForecastForTimeSlotID.setAvailable(true);
+            logger.debug("Production Forecast Response was set on Poll Object because all 3 responses were received");
+        }
 
     }
 }

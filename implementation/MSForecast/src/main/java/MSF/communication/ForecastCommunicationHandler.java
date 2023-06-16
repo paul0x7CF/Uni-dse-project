@@ -45,6 +45,7 @@ public class ForecastCommunicationHandler {
     }
 
     public void sendProductionResponseMessage(SolarResponse solarResponse, String senderAddress, int senderPort, UUID senderID) {
+        logger.debug("Sending SolarResponse to {} with production: {}", senderPort, solarResponse.getSolarProduction());
         communicationBroker.sendMessage(this.forecastMessageBuilder.buildSolarResponseMessage(solarResponse, senderAddress, senderPort, senderID));
     }
 

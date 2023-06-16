@@ -37,7 +37,7 @@ public class ExchangeMessageHandler implements IMessageHandler {
                 default -> throw new MessageNotSupportedException();
             }
         } catch (MessageNotSupportedException e) {
-            logger.warn(e.getMessage()+"Subcategory" + message.getSubCategory() + "not supported");
+            logger.warn(e.getMessage() + " because Subcategory: " + message.getSubCategory() + " not supported");
         }
 
     }
@@ -58,10 +58,9 @@ public class ExchangeMessageHandler implements IMessageHandler {
         Transaction newTransaction = (Transaction) message.getSendable(Transaction.class);
         if (validateTransaction(newTransaction)) {
             double transactionPrice = calculateTransactionPrice(newTransaction);
-            logger.debug("Call callbackOnTransaction with price: {}", transactionPrice);
+            logger.debug("Call callbackOnTransaction with price: {}", newTransaction.getPrice());
             this.callbackOnTransaction.callback(transactionPrice);
-        }
-        else {
+        } else {
             logger.warn("Transaction was Ignored");
         }
 
@@ -84,9 +83,9 @@ public class ExchangeMessageHandler implements IMessageHandler {
     private double calculateTransactionPrice(Transaction transactionToCalculate) {
         double resultPrice = 0;
         if (transactionToCalculate.getBuyerID().equals(this.myMSData.getId())) {
-            resultPrice = transactionToCalculate.getPrice() * transactionToCalculate.getAmount();
-        } else {
             resultPrice = transactionToCalculate.getPrice() * transactionToCalculate.getAmount() * -1;
+        } else {
+            resultPrice = transactionToCalculate.getPrice() * transactionToCalculate.getAmount();
         }
         return resultPrice;
     }
