@@ -13,11 +13,7 @@ public class TestDuplicate {
     public void testDuplicate() {
         LoadManager loadManager = new LoadManager();
         UUID exchangeID = UUID.randomUUID();
-        try {
-            loadManager.addExchangeServiceInformation(new ExchangeServiceInformation(exchangeID));
-        } catch (InvalidMessageException e) {
-            throw new RuntimeException(e);
-        }
+        loadManager.addExchangeServiceInformation(new ExchangeServiceInformation(exchangeID));
 
         Assertions.assertDoesNotThrow(() -> loadManager.setExchangeCapacity(exchangeID));
 
