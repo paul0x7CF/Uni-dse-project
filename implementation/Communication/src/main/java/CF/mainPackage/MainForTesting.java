@@ -25,10 +25,8 @@ public class MainForTesting {
         int storageAmount = Integer.parseInt(configReader.getProperty("storageAmount"));
         int exchangePort = Integer.parseInt(configReader.getProperty("exchangePort"));
         int exchangeAmount = Integer.parseInt(configReader.getProperty("exchangeAmount"));
-        int forecastPort = Integer.parseInt(configReader.getProperty("solarPort"));
-        int forecastAmount = Integer.parseInt(configReader.getProperty("solarAmount"));
-        int consumptionPort = Integer.parseInt(configReader.getProperty("consumptionPort"));
-        int consumptionAmount = Integer.parseInt(configReader.getProperty("consumptionAmount"));
+        int forecastPort = Integer.parseInt(configReader.getProperty("forecastPort"));
+        int forecastAmount = Integer.parseInt(configReader.getProperty("forecastAmount"));
 
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(100);
 

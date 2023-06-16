@@ -38,8 +38,8 @@ public class DiscoveryService implements IMessageSchedulerObserver {
         int exchangePort = Integer.parseInt(configReader.getProperty("exchangePort"));
         int exchangeAmount = Integer.parseInt(configReader.getProperty("exchangeAmount"));
         String forecastAddress = configReader.getProperty("forecastAddress");
-        int forecastPort = Integer.parseInt(configReader.getProperty("solarPort"));
-        int forecastAmount = Integer.parseInt(configReader.getProperty("solarAmount"));
+        int forecastPort = Integer.parseInt(configReader.getProperty("forecastPort"));
+        int forecastAmount = Integer.parseInt(configReader.getProperty("forecastAmount"));
 
         // ExchangeWorker does not need to register itself to the other services because
         // they will only talk through the LoadManager.
