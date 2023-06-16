@@ -116,7 +116,7 @@ public class ConsumptionBuilding implements Runnable {
     }
 
     public CallbackBidHigher actBidHigherQuestion() {
-        CallbackBidHigher callbackOnBidHigher = bidToChange -> {
+        return bidToChange -> {
             logger.info("BidHigher callback received with price {}", bidToChange.getPrice());
             double priceToChange = bidToChange.getPrice();
             priceToChange = this.wallet.getHigherBidPrice(priceToChange);
@@ -128,7 +128,6 @@ public class ConsumptionBuilding implements Runnable {
             }
 
         };
-        return callbackOnBidHigher;
 
     }
 
@@ -180,19 +179,21 @@ public class ConsumptionBuilding implements Runnable {
 
     @Override
     public void run() {
-        // Initialize the Broker
-        communicator.startBrokerRunner(Thread.currentThread().getName());
-        communicator.addMessageHandler(ECategory.Exchange);
-        communicator.addMessageHandler(ECategory.Auction);
-        communicator.addMessageHandler(ECategory.Forecast);
 
         // Set Callbacks
         communicator.setCallbackOnTransaction(this.actOnTransactionFinished());
         communicator.setCallbackOnSellLower(this.actSellLowerQuestion());
         communicator.setCallbackOnBidHigher(this.actBidHigherQuestion());
 
+        // Initialize the Broker
+        communicator.startBrokerRunner(Thread.currentThread().getName());
+        communicator.addMessageHandler(ECategory.Exchange);
+        communicator.addMessageHandler(ECategory.Auction);
+        communicator.addMessageHandler(ECategory.Forecast);
+
 
         try {
+            Thread.sleep(1000);
             while (true) {
                 reset();
 
@@ -210,15 +211,16 @@ public class ConsumptionBuilding implements Runnable {
                 energyAmount = scheduleEnergyAmount(newTimeSlot);
                 if (energyAmount > 0) {
                     logger.info("Prosumer {} need {} kWh", prosumerType, energyAmount);
+                    logger.info("Send Bid");
                     this.communicator.sendBid(energyAmount, this.wallet.getSellPrice(), newTimeSlot);
                 } else if (energyAmount < 0) {
                     logger.info("Prosumer {} has {} kWh more as needed", prosumerType, energyAmount);
-                    this.communicator.sendBid(energyAmount, this.wallet.getBidPrice(), newTimeSlot);
+                    logger.info("Send Sell");
+                    this.communicator.sendSell(energyAmount, this.wallet.getBidPrice(), newTimeSlot);
                 } else {
                     logger.info("-------------0--------------");
                 }
             }
-
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ServiceNotFoundException | DeviceNotSupportedException | UndefinedStrategyException e) {
