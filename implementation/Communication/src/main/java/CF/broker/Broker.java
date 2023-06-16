@@ -48,19 +48,17 @@ public class Broker implements IServiceBroker, IScheduleBroker {
         messageHandler.addMessageHandler(ECategory.Info, new InfoMessageHandler(this));
 
         messageScheduler = new MessageScheduler();
-        messageScheduler.addObserver(new DiscoveryService(this));
-        messageScheduler.addObserver(new SyncService(this));
-        messageScheduler.startScheduling();
     }
 
     protected void startBroker() throws UnknownHostException {
+        messageScheduler.addObserver(new DiscoveryService(this));
+        messageScheduler.addObserver(new SyncService(this));
+        messageScheduler.startScheduling();
+
         networkHandler.startSockets();
 
         // register Microservice
         // TODO: should we add a Info;GetAllServices message which returns a list of MSData?
-        // TODO: Fixed IP addresses?
-        //  Its always 10.102.102.x (Prosumer(17), Exchange(13), Forecast(9)) but whats the port?
-
 
         // start receiving messages in new thread
         try {
