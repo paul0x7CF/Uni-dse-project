@@ -1,16 +1,22 @@
 package loadManager.prosumerActionManagement;
 
 import MSP.Exceptions.PriceNotOKException;
+import mainPackage.PropertyFileReader;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class AverageMechanism {
-    private final int K_VALUES = 100;
+    private final int K_VALUES;
     private double averagePrice = 0.0;
     private List<Double> bidPrices = new ArrayList<Double>();
     private List<Double> askPrices = new ArrayList<Double>();
+
+    public AverageMechanism() {
+        PropertyFileReader propertyFileReader = new PropertyFileReader();
+        K_VALUES = Integer.parseInt(propertyFileReader.getK());
+    }
 
     public boolean isBidPriceHighEnough(double price) throws PriceNotOKException {
         if (price <= 0.0) {
@@ -18,6 +24,7 @@ public class AverageMechanism {
         }
 
         if (averagePrice == 0.0) {
+            averagePrice = price;
             updateList(price, EAction.Bid);
             return true;
         }
@@ -35,6 +42,7 @@ public class AverageMechanism {
         }
 
         if (averagePrice == 0.0) {
+            averagePrice = price;
             updateList(price, EAction.Sell);
             return true;
         }
@@ -52,8 +60,7 @@ public class AverageMechanism {
 
     private void calculateAveragePrice() {
         int k = Math.min(bidPrices.size(), askPrices.size());
-        if (k < K_VALUES) {
-            averagePrice = 0.0;
+        if (k == 0) {
             return;
         }
 

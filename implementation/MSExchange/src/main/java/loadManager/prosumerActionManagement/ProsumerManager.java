@@ -49,7 +49,9 @@ public class ProsumerManager {
                 newBidder.handleBid(bid);
             } else {
                 logger.debug("Price did not match the average price... sending Bid back to prosumer");
-                bid.setPrice(averageMechanism.getAveragePrice());
+                if (averageMechanism.getAveragePrice() != 0.0) {
+                    bid.setPrice(averageMechanism.getAveragePrice());
+                }
                 outgoingQueue.put(new MessageContent(bid, EBuildCategory.BidToProsumer));
             }
         } catch (PriceNotOKException e) {

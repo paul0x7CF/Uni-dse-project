@@ -64,7 +64,7 @@ public class AuctionFindingAlgorithm implements Runnable {
         double volumeInAuctions = getVolumeInAuctions();
         logger.info("The volume in auctions is " + volumeInAuctions);
         double notCoveredVolume = bidForTimeSlot.getIncomingBid().getVolume() - volumeInAuctions;
-        if (notCoveredVolume != 0) {
+        if (notCoveredVolume != 0.0) {
             createMessageContent(new Bid(notCoveredVolume, bidForTimeSlot.getIncomingBid().getPrice(), bidForTimeSlot.getIncomingBid().getTimeSlot(), bidForTimeSlot.getIncomingBid().getBidderID()), EBuildCategory.BidToStorage);
             logger.info("Part of the bid with volume " + notCoveredVolume + " was sent to storage");
 
@@ -117,6 +117,8 @@ public class AuctionFindingAlgorithm implements Runnable {
 
     private void findAuctionsToCoverVolume(double remainingVolume, List<Auction> winningAuctions) throws CommandNotPossibleException, InvalidTimeSlotException {
         List<Auction> allAuctions = auctionManager.getAllAuctionsForSlot(bidForTimeSlot.getIncomingBid().getTimeSlot());
+        logger.debug("Auctions in TimeSlot: " + allAuctions.size());
+
         for (Auction auction : allAuctions) {
 
             if (!winningAuctions.contains(auction)) {

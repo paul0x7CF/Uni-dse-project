@@ -53,6 +53,7 @@ public class MessageBuilder {
     }
 
     private Message buildTransactionMessage(MessageFactory messageFactory, Transaction transaction) {
+        logger.debug("Exchange: in transaction Message");
         messageFactory.setCategory(ECategory.Exchange, String.valueOf(ESubCategory.Transaction)).setPayload(transaction);
         return messageFactory.build();
     }

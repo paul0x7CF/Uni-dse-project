@@ -50,6 +50,7 @@ public class MessageBuilder {
     }
 
     private List<Message> buildSellToStorageMessage(ISendable content) {
+        logger.debug("LoadManager: in building sell to stoarage message");
         Sell sell = (Sell) content;
         List<Message> messages = new ArrayList<>();
         List<MSData> receiverMS = new ArrayList<>();
@@ -61,7 +62,7 @@ public class MessageBuilder {
             MSData storage = communication.getBroker().getServicesByType(EServiceType.Storage).get(0);
             buyerID = storage.getId();
         }
-
+        logger.debug("LoadManager: Sell to Storage: price: " + sell.getAskPrice());
         transaction = new Transaction(sell.getSellerID(), buyerID, sell.getVolume(), sell.getAskPrice(), UUID.randomUUID());
 
         receiverMS.add(communication.getBroker().findService(transaction.getSellerID()));
@@ -77,6 +78,7 @@ public class MessageBuilder {
     }
 
     private List<Message> buildBidToStorageMessage(ISendable content) {
+        logger.debug("LoadManager: in building bid to storage Message");
         List<Message> messages = new ArrayList<>();
         List<MSData> receiverMS = new ArrayList<>();
         Bid bid = (Bid) content;
@@ -106,10 +108,12 @@ public class MessageBuilder {
 
 
     private List<Message> buildTransactionMessages(ISendable content) {
-
+        logger.debug("LoadManager: in build Transaction Message");
         List<Message> messages = new ArrayList<>();
         List<MSData> receiverMS = new ArrayList<>();
         Transaction transaction = (Transaction) content;
+
+        logger.debug("LoadManager: Building Transaction Message: price: " + transaction.getPrice() + ", volume: " + transaction.getAmount());
 
         receiverMS.add(communication.getBroker().findService(transaction.getSellerID()));
         receiverMS.add(communication.getBroker().findService(transaction.getBuyerID()));
@@ -125,6 +129,8 @@ public class MessageBuilder {
     }
 
     private Message buildTransactionMessage(MessageFactory messageFactory, Transaction transaction) {
+        logger.debug("LoadManager: Building Transaction Message private: price: " + transaction.getPrice() + ", volume: " + transaction.getAmount());
+
         messageFactory.setCategory(ECategory.Exchange, String.valueOf(ESubCategory.Transaction)).setPayload(transaction);
         return messageFactory.build();
     }
