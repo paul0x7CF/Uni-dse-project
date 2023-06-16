@@ -1,6 +1,5 @@
 package loadManager;
 
-import CF.exceptions.MessageProcessingException;
 import CF.protocol.Message;
 import CF.sendable.EServiceType;
 import CF.sendable.MSData;
@@ -76,26 +75,28 @@ public class Controller implements Runnable {
     }
 
     private void addNewTimeSlotsPeriodically() {
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         PropertyFileReader propertyFileReader = new PropertyFileReader();
         int slotDuration = Integer.parseInt(propertyFileReader.getDuration());
         int checkInterval = Integer.parseInt(propertyFileReader.getCheckInterval());
 
         while (true) {
-            if (timeSlotBuilder.getLastSlotsEndtime().isBefore(LocalDateTime.now())) {
+            if (!timeSlotBuilder.getLastSlotsEndtime().isAfter(LocalDateTime.now())) {
                 if (timeSlotBuilder.getLastTimeSlot().isPresent()) {
                     UUID endedTimeSlotID = timeSlotBuilder.getLastTimeSlot().get();
-
                     try {
                         messageHandler.endTimeSlot(endedTimeSlotID);
                     } catch (InvalidTimeSlotException e) {
                         throw new RuntimeException(e);
                     }
                 }
-
                 try {
                     TimeSlot newTimeSlot = timeSlotBuilder.addNewTimeSlot();
                     List<Message> messages = messageBuilder.buildTimeSlotMessages(newTimeSlot);
-
                     for (Message message : messages) {
                         communication.sendMessage(message);
                     }
@@ -118,11 +119,9 @@ public class Controller implements Runnable {
         Message message = (Message) incomingQueue.poll();
         if (message != null) {
             if (message.getReceiverID().equals(communication.getBroker().getCurrentService().getId())) {
-                try {
-                    messageHandler.handleMessage(message);
-                } catch (MessageProcessingException e) {
-                    throw new RuntimeException(e);
-                }
+
+                messageHandler.handleMessage(message);
+
             }
         }
     }
