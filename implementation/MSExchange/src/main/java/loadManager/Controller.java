@@ -128,6 +128,7 @@ public class Controller implements Runnable {
     }
 
     private void processOutgoingQueue() {
+        //TODO: test if bid/sell works properply in exchange - mocking
         MessageContent messageContent = (MessageContent) outgoingQueue.poll();
         if (messageContent != null) {
             try {
