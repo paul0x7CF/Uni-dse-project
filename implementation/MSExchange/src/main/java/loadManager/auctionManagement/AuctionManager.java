@@ -73,7 +73,9 @@ public class AuctionManager {
         if (auctionsPerSlot.containsKey(slotId)) {
             return auctionsPerSlot.get(slotId);
         }
-        throw new InvalidTimeSlotException("Slot not found", Optional.of(slotId));
+        return Collections.emptyList();
+        //TODO: maybe insert TimeSlot before...
+        //throw new InvalidTimeSlotException("Slot not found", Optional.of(slotId));
     }
 
     public List<Transaction> getTransactionsForSlot(UUID slotId) throws InvalidTimeSlotException {
