@@ -17,10 +17,9 @@ public class MSExchange implements Runnable {
     private static final Logger logger = LogManager.getLogger(MSExchange.class);
     private final int INSTANCE_NUMBER;
     private final boolean DUPLICATED;
-
+    private boolean atCapacity = false;
     private BlockingQueue<Message> incomingMessages = new LinkedBlockingQueue<>();
     private BlockingQueue<Transaction> outgoingTransactions = new LinkedBlockingQueue<>();
-
     private CommunicationExchange communication;
     private ExchangeMessageHandler messageHandler;
     private MessageBuilder messageBuilder;
@@ -40,16 +39,12 @@ public class MSExchange implements Runnable {
 
     }
 
-    //TODO: think about deleting a service
     @Override
     public void run() {
         startCommunication();
 
         messageBuilder = new MessageBuilder(communication);
-        logger.trace("Message builder initialized");
         messageHandler = new ExchangeMessageHandler(outgoingTransactions);
-        logger.trace("message Handler initialized");
-
 
         while (true) {
             processIncomingMessages();
@@ -62,11 +57,10 @@ public class MSExchange implements Runnable {
         Message message = incomingMessages.poll();
         if (message != null) {
             if (message.getReceiverID().equals(communication.getBroker().getCurrentService().getId())) {
-                logger.debug("Received message: " + message);
                 try {
                     messageHandler.handleMessage(message);
                 } catch (MessageProcessingException e) {
-                    logger.error("Message wasn't correct " + message.getSubCategory() + ", problem: " + e.getMessage());
+                    logger.error("EXCHANGE: Message wasn't correct " + message.getSubCategory() + ", problem: " + e.getMessage());
                 }
             }
         }
@@ -75,18 +69,26 @@ public class MSExchange implements Runnable {
     private void checkCapacity() {
         PropertyFileReader propertyFileReader = new PropertyFileReader();
         int CAPACITY = Integer.parseInt(propertyFileReader.getCapacity());
-        if (incomingMessages.size() >= CAPACITY) {
-            logger.warn("BidQueue is full!");
-            communication.sendMessage(messageBuilder.buildCapacityMessage());
+
+        if (!atCapacity) {
+            if (incomingMessages.size() >= CAPACITY) {
+                logger.warn("EXCHANGE: BidQueue is full!");
+                communication.sendMessage(messageBuilder.buildCapacityMessage());
+            }
+        } else {
+            if (incomingMessages.size() < CAPACITY / 2) {
+                communication.sendMessage(messageBuilder.buildCapacityMessage());
+            }
         }
+
     }
 
     private void processOutgoingTransactions() {
         Transaction transaction = outgoingTransactions.poll();
         if (transaction != null) {
-            logger.debug("Exchange: taking outgoing transaction: " + transaction);
+            logger.debug("EXCHANGE: taking outgoing transaction: " + transaction);
             for (Message message : messageBuilder.buildMessage(transaction)) {
-                logger.info("Exchange: Sending Transaction to: " + transaction.getBuyerID() + " and " + transaction.getSellerID() + " for volume: " + transaction.getAmount() + " with price/kwh: " + transaction.getPrice());
+                logger.info("EXCHANGE: Sending Transaction to: " + transaction.getBuyerID() + " and " + transaction.getSellerID() + " for volume: " + transaction.getAmount() + " with price/kwh: " + transaction.getPrice());
                 communication.sendMessage(message);
             }
         }
