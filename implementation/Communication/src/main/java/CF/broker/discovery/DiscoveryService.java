@@ -46,8 +46,9 @@ public class DiscoveryService implements IMessageSchedulerObserver {
         if (currentService.getType() != EServiceType.ExchangeWorker) {
             // register prosumer
             for (int i = 0; i < prosumerAmount * portJumpSize; i += portJumpSize) {
-                if (currentService.getType() != EServiceType.Prosumer || currentService.getPort() != prosumerPort + i)
+                if (currentService.getType() != EServiceType.Prosumer || currentService.getPort() != prosumerPort + i) {
                     addMessageToSchedule(prosumerAddress, prosumerPort + i);
+                }
             }
 
             // register storage
@@ -66,6 +67,7 @@ public class DiscoveryService implements IMessageSchedulerObserver {
         }
 
         // register exchange
+        // ExchangeWorker only registers to the Exchange
         for (int i = 0; i < exchangeAmount * portJumpSize; i += portJumpSize) {
             if (currentService.getType() != EServiceType.Exchange || currentService.getPort() != exchangePort + i) {
                 addMessageToSchedule(forecastAddress, exchangePort + i);
@@ -97,5 +99,4 @@ public class DiscoveryService implements IMessageSchedulerObserver {
     private void addMessageToSchedule(String address, int port) {
         messagesToSchedule.put(port, InfoMessageBuilder.createRegisterMessage(currentService, address, port));
     }
-
 }

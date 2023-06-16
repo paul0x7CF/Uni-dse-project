@@ -1,12 +1,15 @@
 package CF.mainPackage;
 
-import CF.protocol.Message;
 import CF.broker.BrokerRunner;
 import CF.broker.InfoMessageBuilder;
+import CF.protocol.Message;
+import CF.protocol.PayloadConverter;
+import CF.sendable.Bid;
+import CF.sendable.EServiceType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import CF.sendable.EServiceType;
 
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -14,6 +17,26 @@ public class MainForTesting {
     private static final Logger log = LogManager.getLogger(MainForTesting.class);
 
     public static void main(String[] args) {
+        Bid bid = new Bid(1.1, 2, UUID.randomUUID(), UUID.randomUUID());
+        String json = PayloadConverter.toJSON(bid);
+        log.warn("json " + json);
+        Bid fromJson = PayloadConverter.fromJSON(json, Bid.class);
+        log.warn("from " + fromJson.toString());
+
+        Bid bid2 = new Bid(1.1, 2, UUID.randomUUID(), UUID.randomUUID());
+        bid2.setAuctionID(UUID.randomUUID());
+        String json2 = PayloadConverter.toJSON(bid2);
+        log.warn("json " + json2);
+        Bid fromJson2 = PayloadConverter.fromJSON(json2, Bid.class);
+        log.warn("from " + fromJson2.getAuctionID());
+
+
+        if (false) {
+            createTestInstances();
+        }
+    }
+
+    private static void createTestInstances() {
         ConfigReader configReader = new ConfigReader();
         int testErrorIterations = Integer.parseInt(configReader.getProperty("testErrorIterations"));
         int testErrorAmount = Integer.parseInt(configReader.getProperty("testErrorAmount"));

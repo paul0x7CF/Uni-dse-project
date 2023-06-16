@@ -114,7 +114,6 @@ public class Broker implements IServiceBroker, IScheduleBroker {
                 log.debug("######### 11000 received {} from {}", message.getSubCategory(), message.getSenderPort());
                 print(message,false);
             }
-            messageHandler.handleMessage(message);
 
             // Ack and Register messages should not be acknowledged as this would cause an infinite loop and register
             // has an answer in the form of "Ping" anyway.
@@ -122,6 +121,8 @@ public class Broker implements IServiceBroker, IScheduleBroker {
                     && !Objects.equals(message.getSubCategory(), "Register")) {
                 sendMessage(InfoMessageBuilder.createAckMessage(message));
             }
+
+            messageHandler.handleMessage(message);
         }
     }
 
