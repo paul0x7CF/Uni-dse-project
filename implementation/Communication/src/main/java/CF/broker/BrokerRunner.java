@@ -12,6 +12,12 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * BrokerRunner class that is the Runnable for the Broker. It is used to start the broker in a new thread, otherwise
+ * the program would block.
+ *
+ * @see Broker
+ */
 public class BrokerRunner implements Runnable {
     private static final Logger log = LogManager.getLogger(BrokerRunner.class);
     private final Broker broker;

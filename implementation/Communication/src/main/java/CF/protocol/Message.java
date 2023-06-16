@@ -10,6 +10,12 @@ import org.apache.logging.log4j.Logger;
 import java.io.Serializable;
 import java.util.UUID;
 
+/**
+ * Message class that represents a message that is sent between components. It is used to send messages between
+ * components. The message has a category, a sender and a receiver. The payload is optional and should not be null.
+ * <p>
+ * The Message class has a protected constructor so it can only be created by the {@link MessageFactory}.
+ */
 public class Message implements Serializable {
     private static final Logger log = LogManager.getLogger(Message.class);
 
