@@ -49,7 +49,9 @@ public class ProsumerManager {
                 newBidder.handleBid(bid);
             } else {
                 logger.debug("Price did not match the average price... sending Bid back to prosumer");
-                bid.setPrice(averageMechanism.getAveragePrice());
+                if (averageMechanism.getAveragePrice() != 0.0) {
+                    bid.setPrice(averageMechanism.getAveragePrice());
+                }
                 outgoingQueue.put(new MessageContent(bid, EBuildCategory.BidToProsumer));
             }
         } catch (PriceNotOKException e) {
@@ -89,8 +91,9 @@ public class ProsumerManager {
     }
 
     private void startNewAuction(SellInformation sell) {
-        auctionProsumerTracker.addAuction(sell.getSell().getTimeSlot(), sell.getSell().getSellerID());
         UUID auctionID = UUID.randomUUID();
+        logger.debug("Starting new Auction with ID: " + auctionID);
+        auctionProsumerTracker.addAuction(sell.getSell().getTimeSlot(), auctionID);
         auctionManager.addAuction(new Auction(auctionID, sell));
 
         //build message to exchange
@@ -124,6 +127,8 @@ public class ProsumerManager {
     }
 
     public void handleIncomingTransaction(Transaction transaction) throws ProsumerUnknownException {
+        logger.info("Incoming Transaction: " + transaction.getTransactionID());
+
         //TODO: set Bidders / Sellers as satisfied
         UUID timeSlotID = auctionManager.getAuctionByID(transaction.getAuctionID()).getTimeSlotID();
         Bid bid = new Bid(transaction.getAmount(), transaction.getPrice(), timeSlotID, transaction.getBuyerID());
@@ -134,9 +139,6 @@ public class ProsumerManager {
         }
 
         auctionProsumerTracker.checkWithTransactions(transaction);
-
-        //TODO: end the auctions
-
     }
 
     public AuctionManager getAuctionManager() {

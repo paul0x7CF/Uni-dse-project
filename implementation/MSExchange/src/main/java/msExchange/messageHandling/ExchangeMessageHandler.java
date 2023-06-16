@@ -1,16 +1,16 @@
 package msExchange.messageHandling;
 
+import CF.exceptions.MessageProcessingException;
+import CF.protocol.Message;
 import CF.sendable.*;
 import MSP.Exceptions.IllegalSendableException;
 import MSP.Exceptions.InvalidBidException;
 import MSP.Exceptions.InvalidSellException;
 import MSP.Exceptions.InvalidTimeSlotException;
-import CF.exceptions.MessageProcessingException;
-import mainPackage.ESubCategory;
+import mainPackage.networkHelper.ESubCategory;
 import msExchange.auctionManagement.AuctionManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import CF.protocol.Message;
 import validator.BidValidator;
 import validator.IValidator;
 import validator.SellValidator;
@@ -83,6 +83,7 @@ public class ExchangeMessageHandler {
      * @throws InvalidSellException if the Sell is invalid
      */
     private void handleSell(Message message) throws InvalidSellException, IllegalSendableException {
+        logger.info("Exchange: Received Sell");
         SellValidator sellValidator = new SellValidator();
         sellValidator.validateSendable(message.getSendable(Sell.class));
 
@@ -90,8 +91,13 @@ public class ExchangeMessageHandler {
         IValidator.validateAuctionID(sell.getAuctionID(), EServiceType.ExchangeWorker);
 
         //add sell to queue
-        sellQueue.add(sell);
-        logger.trace("Added Sell: " + sell);
+        try {
+            sellQueue.put(sell);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        logger.debug("Exchange: Added Sell for " + sell.getSellerID());
     }
 
     /**
@@ -101,15 +107,21 @@ public class ExchangeMessageHandler {
      * @throws InvalidBidException if the Bid is invalid
      */
     private void handleBid(Message message) throws InvalidBidException, IllegalSendableException {
+        logger.info("Exchange: Received Bid");
         BidValidator bidValidator = new BidValidator();
         bidValidator.validateSendable(message.getSendable(Bid.class));
 
+        logger.debug("Exchange: Bid is valid");
         Bid bid = (Bid) message.getSendable(Bid.class);
         IValidator.validateAuctionID(bid.getAuctionID(), EServiceType.ExchangeWorker);
 
         //add bid to queue
-        bidQueue.add(bid);
-        logger.trace("Added Bid: " + bid);
+        try {
+            bidQueue.put(bid);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        logger.debug("Exchange: Added Bid for bidder " + bid.getBidderID());
     }
 
     /**

@@ -3,10 +3,13 @@ package loadManager.prosumerActionManagement;
 import CF.sendable.Transaction;
 import MSP.Exceptions.IllegalAuctionException;
 import MSP.Exceptions.ProsumerUnknownException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.*;
 
 public class AuctionProsumerTracker {
+    private static final Logger logger = LogManager.getLogger(AuctionProsumerTracker.class);
     //Map<TimeSlotID, Map<AuctionID, List<BidderID>>>
     private Map<UUID, Map<UUID, List<UUID>>> auctionsPerTimeSlot = new HashMap<>();
 
@@ -42,6 +45,7 @@ public class AuctionProsumerTracker {
     }
 
     public synchronized void addAuction(UUID timeSlotId, UUID auctionID) {
+        logger.debug("Adding new Auction to prosumerTracker: " + auctionID);
         auctionsPerTimeSlot.computeIfAbsent(timeSlotId, k -> new HashMap<>()).put(auctionID, new ArrayList<>());
     }
 
@@ -67,7 +71,7 @@ public class AuctionProsumerTracker {
 
             for (Map.Entry<UUID, List<UUID>> entry : auctions.entrySet()) {
                 if (!entry.getValue().isEmpty()) {
-                    if(entry.getValue().size()==1){
+                    if (entry.getValue().size() == 1) {
                         wonAuctions.put(entry.getKey(), entry.getValue().get(0));
                     }
                 }

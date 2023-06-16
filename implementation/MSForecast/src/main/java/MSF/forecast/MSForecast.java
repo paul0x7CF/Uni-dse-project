@@ -33,7 +33,6 @@ public class MSForecast implements Runnable {
     public MSForecast(int port, EForecastType forecastType) {
         this.forecastCommunicationHandler = new ForecastCommunicationHandler(incomingConsumptionRequest, incomingSolarRequest, inputQueueTimeSlots, port, EServiceType.Forecast);
         this.forecastType = forecastType;
-        this.currentTimeSlot = new TimeSlot(LocalDateTime.now(), LocalDateTime.now().plusSeconds(30));
     }
 
     public EForecastType getForecastType() {
@@ -51,6 +50,15 @@ public class MSForecast implements Runnable {
         this.forecastCommunicationHandler.addMessageHandler(ECategory.Forecast);
 
         logger.info("MSForecast started");
+
+        logger.info("Waiting for TimeSlot");
+
+        try {
+            TimeSlot currentTimeSlot = this.inputQueueTimeSlots.take();
+            updateTimeSlots(currentTimeSlot);
+        } catch (InterruptedException e) {
+            logger.error("Error while taking from inputQueueTimeSlot: {}", e.getMessage());
+        }
 
         for (int i = 0; i < 5; i++) {
             new Thread(new ConsumptionForecast(this.incomingConsumptionRequest, this.forecastCommunicationHandler, this.currentTimeSlot), "ConsumptionForecast-" + i).start();

@@ -1,16 +1,17 @@
 package MSP.Exceptions;
 
-import java.util.UUID;
+import CF.sendable.Bid;
 
 public class InvalidBidException extends Exception {
-    private UUID bidderID;
+    private Bid bid;
 
-    public InvalidBidException(String message, UUID bidderID) {
+    public InvalidBidException(String message, Bid bid) {
         super(message);
-        this.bidderID = bidderID;
+        this.bid = bid;
     }
 
-    public UUID getBidderID() {
-        return bidderID;
+    public Bid getBid() {
+        return this.bid;
     }
+
 }

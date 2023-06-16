@@ -12,7 +12,7 @@ import loadManager.SellInformation;
 import loadManager.exchangeManagement.ExchangeServiceInformation;
 import loadManager.exchangeManagement.LoadManager;
 import loadManager.prosumerActionManagement.ProsumerManager;
-import mainPackage.ESubCategory;
+import mainPackage.networkHelper.ESubCategory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import validator.BidValidator;
@@ -22,10 +22,6 @@ import validator.TransactionValidator;
 
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicReference;
 
 
 public class LoadManagerMessageHandler implements IMessageHandler {
@@ -44,7 +40,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
     }
 
     @Override
-    public void handleMessage(Message message) throws MessageProcessingException {
+    public void handleMessage(Message message) {
         String subCategory = message.getSubCategory();
         if (subCategory.contains(";")) {
             throw new RuntimeException("Subcategory has another subcategory: " + subCategory);
@@ -61,8 +57,26 @@ public class LoadManagerMessageHandler implements IMessageHandler {
                 default ->
                         throw new MessageProcessingException("Unknown message subCategory: " + message.getSubCategory());
             }
-        } catch (InvalidBidException | InvalidSellException | IllegalSendableException | ProsumerUnknownException e) {
-            throw new MessageProcessingException(e.getMessage());
+        } catch (InvalidBidException e) {
+            logger.warn("Bid has to be sent back to prosumer");
+            MessageContent messageContent = new MessageContent(e.getBid(), EBuildCategory.BidToProsumer);
+            try {
+                outgoingQueue.put(messageContent);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+        } catch (InvalidSellException e) {
+            logger.warn("Sell has to be sent back to prosumer");
+            MessageContent messageContent = new MessageContent(e.getSell(), EBuildCategory.SellToProsumer);
+            try {
+                outgoingQueue.put(messageContent);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+        } catch (IllegalSendableException | ProsumerUnknownException e) {
+            logger.warn("Message processing exception: " + e);
+        } catch (MessageProcessingException e) {
+            throw new RuntimeException(e);
         }
 
         logger.trace("{} Message processed", message.getCategory());
@@ -75,46 +89,37 @@ public class LoadManagerMessageHandler implements IMessageHandler {
         bidValidator.validateSendable(message.getSendable(Bid.class));
         Bid bid = (Bid) message.getSendable(Bid.class);
         IValidator.validateAuctionID(bid.getAuctionID(), myMSData.getType());
-        logger.info("Bid is valid");
-
+        logger.debug("Bid is valid");
+        logger.debug("Bid: price: " + bid.getPrice() + ", volume: " + bid.getVolume() + " for TimeSlot: " + bid.getTimeSlot());
         prosumerManager.handleNewBid(bid);
     }
 
     private void handleSell(Message message) throws InvalidSellException, IllegalSendableException {
-        logger.trace("Handling sell");
+        logger.info("Handling sell");
         SellValidator sellValidator = new SellValidator();
         sellValidator.validateSendable(message.getSendable(Sell.class));
 
         Sell sell = (Sell) message.getSendable(Sell.class);
         IValidator.validateAuctionID(sell.getAuctionID(), myMSData.getType());
-        logger.trace("Sell is valid");
+        logger.debug("Sell is valid");
+        logger.debug("Sell: price: " + sell.getAskPrice() + ", volume: " + sell.getVolume() + " for TimeSlot: " + sell.getTimeSlot());
+        ExchangeServiceInformation exchangeServiceInformation = null;
 
-        AtomicReference<ExchangeServiceInformation> exchangeServiceInformation = null;
-
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        Future<?> future = executorService.submit(() -> {
+        while (true) {
             try {
-                while (true) {
-                    try {
-                        exchangeServiceInformation.set(loadManager.getFreeExchange());
-                        break; //Exits the loop, if no exception 
-                    } catch (AllExchangesAtCapacityException e) {
-                        logger.debug("All exchanges at capacity, waiting for free exchange");
-                        Thread.sleep(1000); //wait 1 sec, then retry
-                    }
+                exchangeServiceInformation = loadManager.getFreeExchange();
+                break; //Exits the loop, if no exception
+            } catch (AllExchangesAtCapacityException e) {
+                logger.debug("All exchanges at capacity, waiting for free exchange");
+                try {
+                    Thread.sleep(1000); //wait 1 sec, then retry
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
                 }
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
             }
-
-        });
-        try {
-            future.get();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
 
-        SellInformation sellInformation = new SellInformation(sell, exchangeServiceInformation.get().getExchangeId());
+        SellInformation sellInformation = new SellInformation(sell, exchangeServiceInformation.getExchangeId());
         prosumerManager.handleNewSell(sellInformation);
     }
 

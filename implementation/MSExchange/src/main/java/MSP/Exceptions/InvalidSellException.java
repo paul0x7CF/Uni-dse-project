@@ -1,16 +1,16 @@
 package MSP.Exceptions;
 
-import java.util.UUID;
+import CF.sendable.Sell;
 
 public class InvalidSellException extends Exception {
-    private UUID sellerID;
+    private Sell sell;
 
-    public InvalidSellException(String message, UUID sellerID) {
+    public InvalidSellException(String message, Sell sell) {
         super(message);
-        this.sellerID = sellerID;
+        this.sell = sell;
     }
 
-    public UUID getSellerID() {
-        return sellerID;
+    public Sell getSell() {
+        return this.sell;
     }
 }

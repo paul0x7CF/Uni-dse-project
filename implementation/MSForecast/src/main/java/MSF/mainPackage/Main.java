@@ -18,6 +18,5 @@ public class Main {
         new Thread(new MSForecast(FORECAST_START_PORT + (2 * PORT_JUMP), EForecastType.INCA_L), "Forecast-INCA_L").start();
 
         logger.info("{} Forecasts created", FORECAST_AMOUNT);
-        logger.debug("DEEEEEEEEEEEEEB");
     }
 }

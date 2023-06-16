@@ -59,4 +59,8 @@ public class PropertyFileReader {
     public String getCheckInterval() {
         return getProperty("timeSlot.checkInterval");
     }
+
+    public String getK(){
+        return getProperty("loadManager.averagePriceK");
+    }
 }

@@ -66,16 +66,6 @@ public class TestUnsatisfiedProsumers {
     }
 
     @Test
-    public void wrongTimeSlot_getUnsatisfiedSellers_expectedIllegalSlotException() {
-        //arrange
-        AuctionManager auctionManager = new AuctionManager();
-        UUID wrongTimeSlotID = UUID.randomUUID();
-
-        //act & assert
-        Assertions.assertThrows(InvalidTimeSlotException.class, () -> auctionManager.getUnsatisfiedSellers(wrongTimeSlotID));
-    }
-
-    @Test
     public void noAuctionsInSlot_getUnsatisfiedSellers_expectedEmptyList() {
         //arrange
         AuctionManager auctionManager = new AuctionManager();

@@ -1,4 +1,4 @@
-package mainPackage;
+package mainPackage.networkHelper;
 
 import CF.protocol.MessageFactory;
 import CF.sendable.MSData;
