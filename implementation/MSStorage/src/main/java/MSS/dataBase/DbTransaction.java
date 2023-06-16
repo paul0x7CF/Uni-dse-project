@@ -23,6 +23,9 @@ public class DbTransaction {
     @Column(name = "price")
     private double price;
 
+    @Column(name = "auction_id")
+    private UUID auctionID;
+
     public DbTransaction() {
     }
     public DbTransaction(UUID sellerID, UUID buyerID, double amount, double price) {
@@ -34,9 +37,16 @@ public class DbTransaction {
 
     }
 
-
     public UUID getTransactionID() {
         return transactionID;
+    }
+
+    public UUID getSellerId() {
+        return sellerId;
+    }
+
+    public UUID getBuyerId() {
+        return buyerId;
     }
 
     public double getAmount() {
@@ -46,5 +56,4 @@ public class DbTransaction {
     public double getPrice() {
         return price;
     }
-
 }

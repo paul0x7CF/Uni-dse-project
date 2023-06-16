@@ -12,7 +12,7 @@ public class Main {
     private static final Logger log = LogManager.getLogger(Main.class);
     public static void main(String[] args) {
         // Create a new transaction
-        TransactionDAO transactionDAO = new TransactionDAO();
+        /*TransactionDAO transactionDAO = new TransactionDAO();
         UUID buyerID = UUID.randomUUID();
         UUID sellerID = UUID.randomUUID();
 
@@ -32,6 +32,9 @@ public class Main {
 
         // Delete the transaction
         transactionDAO.delete(retrievedTransaction.getTransactionID());
-        System.out.println("Deleted transaction");
+        System.out.println("Deleted transaction");*/
+
+        new Thread(new MSStorageManager(),"Storage").start();
+
     }
 }
