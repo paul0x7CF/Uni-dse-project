@@ -76,7 +76,7 @@ public class Controller implements Runnable {
 
     private void addNewTimeSlotsPeriodically() {
         try {
-            Thread.sleep(5000);
+            Thread.sleep(10000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
