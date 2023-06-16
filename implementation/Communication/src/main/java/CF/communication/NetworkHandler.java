@@ -122,6 +122,6 @@ public class NetworkHandler {
             e.printStackTrace();
         }
 
-        return new MSData(UUID.randomUUID(), serviceType, configReader.getProperty("exchangeAddress"), listeningPort);
+        return new MSData(UUID.randomUUID(), serviceType, ipAddress, listeningPort);
     }
 }
