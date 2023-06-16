@@ -25,10 +25,8 @@ public class MainForTesting {
         int storageAmount = Integer.parseInt(configReader.getProperty("storageAmount"));
         int exchangePort = Integer.parseInt(configReader.getProperty("exchangePort"));
         int exchangeAmount = Integer.parseInt(configReader.getProperty("exchangeAmount"));
-        int solarPort = Integer.parseInt(configReader.getProperty("solarPort"));
-        int solarAmount = Integer.parseInt(configReader.getProperty("solarAmount"));
-        int consumptionPort = Integer.parseInt(configReader.getProperty("consumptionPort"));
-        int consumptionAmount = Integer.parseInt(configReader.getProperty("consumptionAmount"));
+        int forecastPort = Integer.parseInt(configReader.getProperty("forecastPort"));
+        int forecastAmount = Integer.parseInt(configReader.getProperty("forecastAmount"));
 
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(100);
 
@@ -43,25 +41,20 @@ public class MainForTesting {
         }
 
         // create exchange
+        BrokerRunner exchange = null;
         for (int i = 0; i < exchangeAmount * portJumpSize; i += portJumpSize) {
-            executor.execute(new BrokerRunner(EServiceType.Exchange, exchangePort + i));
+            exchange = new BrokerRunner(EServiceType.Exchange, exchangePort + i);
+            executor.execute(exchange);
         }
 
-        // create solar forecast
-        BrokerRunner solar = null;
-        for (int i = 0; i < solarAmount * portJumpSize; i += portJumpSize) {
-            solar = new BrokerRunner(EServiceType.Solar, solarPort + i);
-            executor.execute(solar);
+        // create forecast
+        BrokerRunner forecast = null;
+        for (int i = 0; i < forecastAmount * portJumpSize; i += portJumpSize) {
+            forecast = new BrokerRunner(EServiceType.Forecast, forecastPort + i);
+            executor.execute(forecast);
         }
 
         sleep(15);
-
-        // create consumption forecast
-        BrokerRunner consumption = null;
-        for (int i = 0; i < consumptionAmount * portJumpSize; i += portJumpSize) {
-            consumption = new BrokerRunner(EServiceType.Consumption, consumptionPort + i);
-            executor.execute(consumption);
-        }
 
         sleep(2);
         log.info("All brokers started");
@@ -69,14 +62,14 @@ public class MainForTesting {
         for (int i = 0; i < testErrorIterations; ++i) {
             sleep(testErrorTimeout);
             if (i == 1) testErrorTimeout /= 2;
-            if (solar != null && consumption != null) {
+            if (forecast != null && exchange != null) {
                 for (int j = 0; j < testErrorAmount; ++j) {
-                    Message message = InfoMessageBuilder.createErrorMessage(solar.getCurrentService(), consumption.getCurrentService(), "test", "test");
+                    Message message = InfoMessageBuilder.createErrorMessage(forecast.getCurrentService(), exchange.getCurrentService(), "test", "test");
                     log.info("Sending error message {}", message.getMessageID());
-                    solar.sendMessage(message);
+                    forecast.sendMessage(message);
                 }
             } else {
-                log.error("solar or consumption is null");
+                log.error("forecast or consumption is null");
             }
         }
 
@@ -100,10 +93,10 @@ public class MainForTesting {
 
          */
         log.fatal("All brokers stopped");
-        printServiceSize(solar);
-        consumption.stop();
+        printServiceSize(forecast);
+        exchange.stop();
         sleep(1);
-        printServiceSize(solar);
+        printServiceSize(forecast);
     }
 
     private static void sleep(long duration) {
