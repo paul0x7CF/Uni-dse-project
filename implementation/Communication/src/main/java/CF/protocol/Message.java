@@ -1,12 +1,18 @@
 package CF.protocol;
 
 
+import CF.exceptions.InvalidMessageException;
+import CF.messageHandling.InfoMessageHandler;
 import CF.sendable.ISendable;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.UUID;
 
 public class Message implements Serializable {
+    private static final Logger log = LogManager.getLogger(Message.class);
+
     private final UUID messageID = UUID.randomUUID();
     private final String senderAddress;
     /**
@@ -113,12 +119,18 @@ public class Message implements Serializable {
     }
 
     public ECategory getMainCategory() {
-        //TODO: check if category is valid
-        return ECategory.valueOf(category.split(";")[0]);
+        String mainCat = category.split(";")[0];
+        if (mainCat.contains(";")) {
+            log.error("Invalid message category: " + category);
+        }
+        return ECategory.valueOf(mainCat);
     }
 
     public String getSubCategory() {
-        //TODO: check if category is valid
-        return category.split(";")[1];
+        String subCat = category.split(";")[1];
+        if (subCat.contains(";")) {
+            log.error("Invalid message category: " + category);
+        }
+        return subCat;
     }
 }

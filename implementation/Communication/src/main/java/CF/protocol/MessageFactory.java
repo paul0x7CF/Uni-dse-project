@@ -1,6 +1,10 @@
 package CF.protocol;
 
+import CF.exceptions.InvalidMessageException;
+import CF.messageHandling.InfoMessageHandler;
 import CF.sendable.ISendable;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.UUID;
 
@@ -9,6 +13,8 @@ import java.util.UUID;
  * MessageFactory object, so that the builder can be used in a fluent way.
  */
 public class MessageFactory {
+    private static final Logger log = LogManager.getLogger(MessageFactory.class);
+
     private String category;
     private UUID senderID;
     private String senderAddress;
@@ -79,7 +85,7 @@ public class MessageFactory {
         if (validateMessage(message)) {
             return message;
         } else {
-            // TODO: throw exception
+            log.error("Message is not valid, returning null");
             return null;
         }
     }
