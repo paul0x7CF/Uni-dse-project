@@ -25,8 +25,8 @@ public class TimeSlot {
     }
 
     private void closeTimeSlot() {
-        if(openTimeSlot == this){
-            openTimeSlot=null;
+        if (openTimeSlot == this) {
+            openTimeSlot = null;
         }
         isOpen = false;
     }

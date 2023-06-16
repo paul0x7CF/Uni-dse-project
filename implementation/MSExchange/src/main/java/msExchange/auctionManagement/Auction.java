@@ -3,11 +3,14 @@ package msExchange.auctionManagement;
 import CF.sendable.Bid;
 import CF.sendable.Sell;
 import CF.sendable.Transaction;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
 public class Auction {
+    private static final Logger logger = LogManager.getLogger(Auction.class);
     private UUID auctionID;
     private UUID bidderID;
     private UUID sellerID;
@@ -42,6 +45,7 @@ public class Auction {
 
     public void endAuction() {
         //Create a transaction and add it to blockingQueue
+        logger.info("EXCHANGE: Auction " + auctionID + " has ended for timeSlot " + timeSlotID);
         auctionEnded = true;
         Transaction transaction = new Transaction(sellerID, bidderID, volume, pricePerKWh, auctionID);
 
@@ -70,5 +74,9 @@ public class Auction {
 
     public double getVolume() {
         return this.volume;
+    }
+
+    public UUID getTimeSlotID() {
+        return this.timeSlotID;
     }
 }

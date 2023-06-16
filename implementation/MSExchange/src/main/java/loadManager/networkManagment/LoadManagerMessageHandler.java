@@ -58,7 +58,8 @@ public class LoadManagerMessageHandler implements IMessageHandler {
                         throw new MessageProcessingException("Unknown message subCategory: " + message.getSubCategory());
             }
         } catch (InvalidBidException e) {
-            logger.warn("Bid has to be sent back to prosumer");
+            logger.error("Bid has to be sent back to prosumer " + e.getBid().getPrice());
+            logger.debug("Bid has to be sent back to prosumer " + e.getBid().getPrice());
             MessageContent messageContent = new MessageContent(e.getBid(), EBuildCategory.BidToProsumer);
             try {
                 outgoingQueue.put(messageContent);
@@ -66,7 +67,8 @@ public class LoadManagerMessageHandler implements IMessageHandler {
                 throw new RuntimeException(ex);
             }
         } catch (InvalidSellException e) {
-            logger.warn("Sell has to be sent back to prosumer");
+            logger.error("Sell has to be sent back to prosumer" + e.getSell().getAskPrice());
+            logger.debug("Sell has to be sent back to prosumer" + e.getSell().getAskPrice());
             MessageContent messageContent = new MessageContent(e.getSell(), EBuildCategory.SellToProsumer);
             try {
                 outgoingQueue.put(messageContent);

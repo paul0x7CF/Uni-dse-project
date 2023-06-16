@@ -48,7 +48,7 @@ public class ProsumerManager {
                 bidders.add(newBidder);
                 newBidder.handleBid(bid);
             } else {
-                logger.debug("Price did not match the average price... sending Bid back to prosumer");
+                logger.debug("Price did not match the average price " + averageMechanism.getAveragePrice() + "... sending Bid back to prosumer: original Price: "+ bid.getPrice());
                 if (averageMechanism.getAveragePrice() != 0.0) {
                     bid.setPrice(averageMechanism.getAveragePrice());
                 }
@@ -75,6 +75,9 @@ public class ProsumerManager {
             if (averageMechanism.isAskPriceLowEnough(sell.getSell().getAskPrice())) {
                 startNewAuction(sell);
             } else {
+                logger.warn("Price did not match the average price " + averageMechanism.getAveragePrice() + "... sending Sell back to prosumer: original Price: "+ sell.getSell().getAskPrice());
+                logger.debug("Price did not match the average price " + averageMechanism.getAveragePrice() + "... sending Sell back to prosumer: original Price: "+ sell.getSell().getAskPrice());
+
                 Sell s = sell.getSell();
                 s.setAskPrice(averageMechanism.getAveragePrice());
                 outgoingQueue.put(new MessageContent(s, EBuildCategory.SellToProsumer));
@@ -129,7 +132,6 @@ public class ProsumerManager {
     public void handleIncomingTransaction(Transaction transaction) throws ProsumerUnknownException {
         logger.info("Incoming Transaction: " + transaction.getTransactionID());
 
-        //TODO: set Bidders / Sellers as satisfied
         UUID timeSlotID = auctionManager.getAuctionByID(transaction.getAuctionID()).getTimeSlotID();
         Bid bid = new Bid(transaction.getAmount(), transaction.getPrice(), timeSlotID, transaction.getBuyerID());
         try {

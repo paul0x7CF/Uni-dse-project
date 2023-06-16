@@ -66,7 +66,7 @@ public class AuctionFindingAlgorithm implements Runnable {
         double notCoveredVolume = bidForTimeSlot.getIncomingBid().getVolume() - volumeInAuctions;
         if (notCoveredVolume != 0.0) {
             createMessageContent(new Bid(notCoveredVolume, bidForTimeSlot.getIncomingBid().getPrice(), bidForTimeSlot.getIncomingBid().getTimeSlot(), bidForTimeSlot.getIncomingBid().getBidderID()), EBuildCategory.BidToStorage);
-            logger.info("Part of the bid with volume " + notCoveredVolume + " was sent to storage");
+            logger.info("Part " + notCoveredVolume + " of the bid with volume " + bidForTimeSlot.getIncomingBid().getVolume() + " was sent to storage");
 
             while (!timeSlotIsOpen && shouldContinue) {
                 synchronized (lock) {
@@ -117,9 +117,6 @@ public class AuctionFindingAlgorithm implements Runnable {
 
     private void findAuctionsToCoverVolume(double remainingVolume, List<Auction> winningAuctions) throws CommandNotPossibleException, InvalidTimeSlotException {
         List<Auction> allAuctions = auctionManager.getAllAuctionsForSlot(bidForTimeSlot.getIncomingBid().getTimeSlot());
-        if(!allAuctions.isEmpty()){
-            logger.debug("Auctions in TimeSlot: " + allAuctions.size());
-        }
 
         for (Auction auction : allAuctions) {
 
@@ -127,7 +124,7 @@ public class AuctionFindingAlgorithm implements Runnable {
                 double volume = auction.getTotalVolume() < remainingVolume ? auction.getTotalVolume() : remainingVolume;
 
                 if (auction.getPrice() * auction.getCoveredVolume() < bidForTimeSlot.getIncomingBid().getPrice() * volume) {
-                    logger.trace("in Auction finder, found auction to cover volume: " + volume);
+                    logger.debug("in Auction finder, found auction to cover volume: " + volume + " for Bidder " + bidForTimeSlot.getIncomingBid().getBidderID());
                     Bid newBid = new Bid(volume, bidForTimeSlot.getIncomingBid().getPrice(), bidForTimeSlot.getIncomingBid().getTimeSlot(), bidForTimeSlot.getIncomingBid().getBidderID());
                     newBid.setAuctionID(auction.getAuctionId());
                     try {
