@@ -73,7 +73,13 @@ public class ProductionForecast implements Runnable {
             double compassAngleRad = prosumerSolarRequest.getCompassAngle()[i] * (Math.PI / 180);
             double efficiency = (double) prosumerSolarRequest.getEfficiency()[i] / 100;
 
-            production += irradiation * prosumerSolarRequest.getArea()[i] * efficiency * Math.cos(compassAngleRad) * Math.cos(standingAngleRad);
+            double panelProduction = irradiation * prosumerSolarRequest.getArea()[i] * efficiency * Math.cos(compassAngleRad) * Math.cos(standingAngleRad);
+
+            if (panelProduction < 0) {
+                panelProduction = panelProduction * -1;
+            }
+
+            production += panelProduction;
         }
 
         for (Double lastForecast : lastForecasts) {
