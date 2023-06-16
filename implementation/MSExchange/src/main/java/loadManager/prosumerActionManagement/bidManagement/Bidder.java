@@ -67,6 +67,8 @@ public class Bidder {
     public void endTimeSlot(UUID timeSlotID) {
         logger.debug("timeSlotID to end: " + timeSlotID);
         logger.debug("auctionFinderPerSlot size to end: " + auctionFinderPerSlot.size());
-        auctionFinderPerSlot.get(timeSlotID).endAuctionFinder();
+        if (auctionFinderPerSlot.get(timeSlotID) != null) {
+            auctionFinderPerSlot.get(timeSlotID).endAuctionFinder();
+        }
     }
 }

@@ -147,6 +147,7 @@ public class AuctionFindingAlgorithm implements Runnable {
     }
 
     public void endAuctionFinder() {
+        logger.debug("Auction Finder is ending");
         synchronized (lock) {
             timeSlotIsOpen = false;
             lock.notify();
