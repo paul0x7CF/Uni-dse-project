@@ -1,6 +1,8 @@
 package MSS.dataBase;
 
 
+import CF.sendable.Transaction;
+
 import javax.persistence.*;
 import java.util.UUID;
 
@@ -28,12 +30,14 @@ public class DbTransaction {
 
     public DbTransaction() {
     }
-    public DbTransaction(UUID sellerID, UUID buyerID, double amount, double price) {
+
+    public DbTransaction(UUID sellerID, UUID buyerID, double amount, double price, UUID auctionID) {
         this.transactionID = UUID.randomUUID();
         this.sellerId = sellerID;
         this.buyerId = buyerID;
         this.amount = amount;
         this.price = price;
+        this.auctionID = auctionID;
 
     }
 
@@ -55,5 +59,9 @@ public class DbTransaction {
 
     public double getPrice() {
         return price;
+    }
+
+    public UUID getAuctionID() {
+        return auctionID;
     }
 }

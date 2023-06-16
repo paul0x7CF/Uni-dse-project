@@ -23,7 +23,6 @@ public class MSStorageManager implements Runnable {
 
     private final LinkedHashMap<Integer, StorageCell> storageCells = new LinkedHashMap<>();
     private BlockingQueue<Transaction> incomingTransactionQueue;
-    private BlockingQueue<Double> incomingEnergyRequestQueue;
     private Wallet wallet;
     private Communication communication;
     private CallbackStorageCellTerminated callbackTermination;
@@ -140,21 +139,18 @@ public class MSStorageManager implements Runnable {
 
     @Override
     public void run() {
-        for (int i = 0; i < 10; i++) {
-            createStorageCell();
-        }
-        decrementStorageCellVolume(213);
+       while (true)
+       {
+           try {
+               Transaction newTransaction = this.incomingTransactionQueue.take();
 
-        /*while (true) {
-            try {
-                Thread.sleep(2000);
+           } catch (InterruptedException e) {
+               throw new RuntimeException(e);
+           }
 
 
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }*/
-        System.out.println("---------------END-----------------");
+       }
+
 
     }
 
