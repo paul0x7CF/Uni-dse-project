@@ -24,7 +24,7 @@ public class TransactionDAOTest {
         transactionDAO = new TransactionDAO();
         buyerID = UUID.randomUUID();
         sellerID = UUID.randomUUID();
-        transaction = new DbTransaction(sellerID, buyerID, 100.0, 10.0);
+        transaction = new DbTransaction(sellerID, buyerID, 100.0, 10.0, UUID.randomUUID());
     }
 
     @After
