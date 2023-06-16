@@ -25,7 +25,7 @@ public final class BidValidator implements IValidator {
             }
 
         } else {
-            throw new IllegalSendableException("The ISendable object was not an instance of Bid");
+            throw new IllegalSendableException("VALIDATOR: The ISendable object was not an instance of Bid");
         }
     }
 

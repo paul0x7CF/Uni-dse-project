@@ -16,7 +16,7 @@ public interface IValidator {
 
     static void validateSendableNotNull(ISendable sendable) throws IllegalSendableException {
         if (sendable == null) {
-            throw new IllegalSendableException("Sendable is null");
+            throw new IllegalSendableException("VALIDATOR: Sendable is null");
         }
     }
 
@@ -28,45 +28,39 @@ public interface IValidator {
 
     static void validateSenderIDNotNull(UUID senderID) throws IllegalSendableException {
         if (senderID == null) {
-            throw new IllegalSendableException("SenderID is null");
+            throw new IllegalSendableException("VALIDATOR: SenderID is null");
         }
     }
 
     static void validateReceiverIDNotNull(UUID receiverID) throws IllegalSendableException {
         if (receiverID == null) {
-            throw new IllegalSendableException("ReceiverID is null");
+            throw new IllegalSendableException("VALIDATOR: ReceiverID is null");
         }
     }
 
     static void validatePriceNotNegative(double price) throws IllegalSendableException {
 
         if (price <= 0) {
-            logger.warn("Price is not larger than 0: " + price);
-            throw new IllegalSendableException("Price is <= 0");
+            logger.warn("VALIDATOR: Price is not larger than 0: {}", price);
+            throw new IllegalSendableException("VALIDATOR: Price is <= 0");
         }
     }
 
     static void validateVolumeNotNegative(double volume) throws IllegalSendableException {
         if (volume <= 0) {
-            throw new IllegalSendableException("Volume is smaller than zero");
+            throw new IllegalSendableException("VALIDATOR: Volume is smaller than zero");
         }
     }
 
     static void validateAuctionIDExists(Optional<UUID> auctionID) throws IllegalSendableException {
         if (auctionID.isEmpty()) {
-            throw new IllegalSendableException("AuctionID is null");
+            throw new IllegalSendableException("VALIDATOR: AuctionID is null");
         }
     }
 
     static void validateTimeSlotNotNull(Optional<UUID> timeSlot) throws IllegalSendableException {
         if (timeSlot.isEmpty()) {
-            throw new IllegalSendableException("TimeSlot is null");
-        }
-    }
-
-    static void validateServiceTypeNotNull(EServiceType serviceType) throws IllegalSendableException {
-        if (serviceType == null) {
-            throw new IllegalSendableException("ServiceType is null");
+            throw new IllegalSendableException("VALIDATOR: TimeSlot is null");
         }
     }
 

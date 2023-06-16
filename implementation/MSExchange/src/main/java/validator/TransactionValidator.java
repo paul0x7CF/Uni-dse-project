@@ -22,13 +22,13 @@ public class TransactionValidator implements IValidator {
             IValidator.validateAuctionIDExists(Optional.ofNullable(transaction.getAuctionID()));
             //TODO: check TimeSlot
         } else {
-            throw new IllegalSendableException("The ISendable object was not an instance of Transaction");
+            throw new IllegalSendableException("TRANSACTION_VALIDATOR: The ISendable object was not an instance of Transaction");
         }
     }
 
     private void validateIDNotNULL(Transaction transaction) throws IllegalSendableException {
         if (transaction.getTransactionID() == null) {
-            throw new IllegalSendableException("Transaction ID shouldn't be null");
+            throw new IllegalSendableException("TRANSACTION_VALIDATOR: Transaction ID shouldn't be null");
         }
     }
 }

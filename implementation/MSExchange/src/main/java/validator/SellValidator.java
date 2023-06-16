@@ -23,7 +23,7 @@ public final class SellValidator implements IValidator {
                 throw new InvalidSellException(e.getMessage(), sell);
             }
         } else {
-            throw new IllegalSendableException("Sendable was not an instance of Sell.");
+            throw new IllegalSendableException("SELL_VALIDATOR: Sendable was not an instance of Sell.");
         }
     }
 
