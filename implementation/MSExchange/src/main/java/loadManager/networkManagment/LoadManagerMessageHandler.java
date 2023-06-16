@@ -3,7 +3,10 @@ package loadManager.networkManagment;
 import CF.exceptions.MessageProcessingException;
 import CF.messageHandling.IMessageHandler;
 import CF.protocol.Message;
-import CF.sendable.*;
+import CF.sendable.Bid;
+import CF.sendable.MSData;
+import CF.sendable.Sell;
+import CF.sendable.Transaction;
 import MSP.Exceptions.*;
 import loadManager.SellInformation;
 import loadManager.exchangeManagement.ExchangeServiceInformation;
@@ -69,9 +72,9 @@ public class LoadManagerMessageHandler implements IMessageHandler {
         logger.info("Handling bid");
 
         BidValidator bidValidator = new BidValidator();
-        //bidValidator.validateSendable(message.getSendable(ISendable.class));
+        bidValidator.validateSendable(message.getSendable(Bid.class));
         Bid bid = (Bid) message.getSendable(Bid.class);
-        //IValidator.validateAuctionID(bid.getAuctionID(), myMSData.getType());
+        IValidator.validateAuctionID(bid.getAuctionID(), myMSData.getType());
         logger.info("Bid is valid");
 
         prosumerManager.handleNewBid(bid);
@@ -80,7 +83,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
     private void handleSell(Message message) throws InvalidSellException, IllegalSendableException {
         logger.trace("Handling sell");
         SellValidator sellValidator = new SellValidator();
-        sellValidator.validateSendable(message.getSendable(ISendable.class));
+        sellValidator.validateSendable(message.getSendable(Sell.class));
 
         Sell sell = (Sell) message.getSendable(Sell.class);
         IValidator.validateAuctionID(sell.getAuctionID(), myMSData.getType());
