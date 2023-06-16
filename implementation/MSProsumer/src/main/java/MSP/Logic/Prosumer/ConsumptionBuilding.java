@@ -30,6 +30,7 @@ import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.random.RandomGenerator;
 
 public class ConsumptionBuilding implements Runnable {
 
@@ -65,7 +66,7 @@ public class ConsumptionBuilding implements Runnable {
             createConsumer(EConsumerType.valueOf(ConfigFileReader.getProperty("consumer.type" + i)));
         }
 
-        logger.info("Prosumer created from type {} with: {} Consumer from type {}, cash balance {}", prosumerType, consumerList.size(), cashBalance);
+        logger.info("Prosumer created from type {} with: {} Consumer from type, cash balance {}", prosumerType, consumerList.size(), cashBalance);
     }
 
     // Define the CRUD methods
@@ -94,12 +95,14 @@ public class ConsumptionBuilding implements Runnable {
 
     private CallbackTransaction actOnTransactionFinished() {
         CallbackTransaction callbackOnTransaction = price -> {
-            logger.info("Transaction callback received with price {}", price);
+            logger.debug("Transaction callback received with price {}", price);
             if (price > 0) {
                 wallet.incrementCashBalance(price);
             } else {
                 wallet.decrementCashBalance(price);
             }
+            logger.debug("New cash balance {}", wallet.getCashBalance());
+            logger.info("---------------------TimeSlot finished---------------------------");
         };
         return callbackOnTransaction;
     }
@@ -210,14 +213,17 @@ public class ConsumptionBuilding implements Runnable {
 
                 double energyAmount = 0;
                 energyAmount = scheduleEnergyAmount(newTimeSlot);
+                Random random = new Random();
+                double randomValue = 1 + (random.nextDouble() * 2);
                 if (energyAmount > 0) {
-                    logger.info("Prosumer {} need {} kWh", prosumerType, energyAmount);
+                    logger.info("Prosumer {} need {} Wh", prosumerType, energyAmount);
                     logger.info("Send Bid");
-                    this.communicator.sendBid(energyAmount, this.wallet.getSellPrice(), newTimeSlot);
+                    this.communicator.sendBid(energyAmount, this.wallet.getSellPrice()*randomValue, newTimeSlot);
                 } else if (energyAmount < 0) {
-                    logger.info("Prosumer {} has {} kWh more as needed", prosumerType, energyAmount);
+                    energyAmount = energyAmount * (-1);
+                    logger.info("Prosumer {} has {} Wh more as needed", prosumerType, energyAmount);
                     logger.info("Send Sell");
-                    this.communicator.sendSell(energyAmount, this.wallet.getBidPrice(), newTimeSlot);
+                    this.communicator.sendSell(energyAmount, this.wallet.getBidPrice()*randomValue, newTimeSlot);
                 } else {
                     logger.info("-------------0--------------");
                 }
@@ -225,7 +231,7 @@ public class ConsumptionBuilding implements Runnable {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ServiceNotFoundException | DeviceNotSupportedException | UndefinedStrategyException e) {
-            logger.error(e.getMessage());
+            logger.fatal(e.getMessage()+";--------------Prosumer stopped-----------------");
         }
 
 

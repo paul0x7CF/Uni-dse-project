@@ -117,7 +117,7 @@ public class Communication {
             logger.trace("ConsumptionRequestMessage sent to: Ip:{}, Port: {}", receiverService.getAddress(), receiverService.getPort());
             countSending++;
         }
-        logger.debug("ConsumptionRequestMessage was sent to {} Forecast services", countSending);
+        logger.debug("Consumption RequestMessage was sent to {} Forecast services", countSending);
 
         if (messageToSend.isEmpty()) {
             throw new ServiceNotFoundException("Forecast Service was not found to send Consumption Request");
@@ -139,7 +139,7 @@ public class Communication {
             logger.trace("ProductionRequestMessage sent to: Ip:{}, Port: {}", receiverService.getAddress(), receiverService.getPort());
             countSending++;
         }
-        logger.debug("ConsumptionRequestMessage was sent to {} Forecast services", countSending);
+        logger.debug("Production RequestMessage was sent to {} Forecast services", countSending);
         if (messageToSend.isEmpty()) {
             throw new ServiceNotFoundException("Forecast Service was not found to send Production Request");
         }

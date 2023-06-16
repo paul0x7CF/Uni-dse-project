@@ -60,16 +60,12 @@ public class MSForecast implements Runnable {
             logger.error("Error while taking from inputQueueTimeSlot: {}", e.getMessage());
         }
 
-        for (int i = 0; i < 5; i++) {
-            new Thread(new ConsumptionForecast(this.incomingConsumptionRequest, this.forecastCommunicationHandler, this.currentTimeSlot), "ConsumptionForecast-" + i).start();
-        }
+        new Thread(new ConsumptionForecast(this.incomingConsumptionRequest, this.forecastCommunicationHandler, this.currentTimeSlot), "ConsumptionForecast").start();
 
-        for (int i = 0; i < 5; i++) {
-            try {
-                new Thread(new ProductionForecast(this.incomingSolarRequest, this.forecastCommunicationHandler, this.currentTimeSlot, this.forecastType), "ProductionForecast-" + i).start();
-            } catch (UnknownForecastTypeException e) {
-                throw new RuntimeException(e);
-            }
+        try {
+            new Thread(new ProductionForecast(this.incomingSolarRequest, this.forecastCommunicationHandler, this.currentTimeSlot, this.forecastType), "ProductionForecast").start();
+        } catch (UnknownForecastTypeException e) {
+            throw new RuntimeException(e);
         }
 
         while (true)
