@@ -4,12 +4,16 @@ import CF.sendable.ConsumptionResponse;
 import CF.sendable.TimeSlot;
 import MSF.communication.ForecastCommunicationHandler;
 import MSF.data.ProsumerConsumptionRequest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import MSF.exceptions.InvalidTimeSlotException;
 
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;
 
 public class ConsumptionForecast implements Runnable {
+    private static final Logger logger = LogManager.getLogger(ConsumptionForecast.class);
     private BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest;
     private ForecastCommunicationHandler forecastCommunicationHandler;
     private TimeSlot currentTimeSlot;
@@ -21,20 +25,28 @@ public class ConsumptionForecast implements Runnable {
     }
     @Override
     public void run() {
+        logger.info("ConsumptionForecast started");
+
         while (true) {
             try {
                 ProsumerConsumptionRequest prosumerConsumptionRequest = incomingConsumptionRequest.take();
                 predictConsumption(prosumerConsumptionRequest);
-            } catch (InterruptedException e) {
+            } catch (InterruptedException | InvalidTimeSlotException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private void predictConsumption(ProsumerConsumptionRequest prosumerConsumptionRequest) {
+    private void predictConsumption(ProsumerConsumptionRequest prosumerConsumptionRequest) throws InvalidTimeSlotException {
         HashMap<String, Double> consumption = new HashMap<>();
 
         //TODO: CHECK TimeSlotID
+
+        if (!prosumerConsumptionRequest.getCurrentTimeSlotID().equals(currentTimeSlot.getTimeSlotID())) {
+            logger.warn("Received consumption request for timeslot " + prosumerConsumptionRequest.getCurrentTimeSlotID() + " but current timeslot is " + currentTimeSlot.getTimeSlotID());
+        }
+
+        logger.trace("Predicting consumption for prosumer " + prosumerConsumptionRequest.getSenderID() + " for timeslot " + prosumerConsumptionRequest.getCurrentTimeSlotID());
 
         Duration duration = Duration.between(currentTimeSlot.getStartTime(), currentTimeSlot.getEndTime());
 
@@ -43,6 +55,8 @@ public class ConsumptionForecast implements Runnable {
 
             consumption.put(key, consumptionValue / (3600 / duration.getSeconds()));
         }
+
+        logger.info("Predicted consumption: " + consumption + " for prosumer " + prosumerConsumptionRequest.getSenderID());
 
         ConsumptionResponse consumptionResponse = new ConsumptionResponse(consumption, prosumerConsumptionRequest.getCurrentTimeSlotID());
         this.forecastCommunicationHandler.sendConsumptionResponseMessage(consumptionResponse, prosumerConsumptionRequest.getSenderAddress(), prosumerConsumptionRequest.getSenderPort(), prosumerConsumptionRequest.getSenderID());

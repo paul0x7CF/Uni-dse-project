@@ -28,8 +28,7 @@ public class SyncService implements IMessageSchedulerObserver {
     @Override
     public void scheduleMessages(ScheduledExecutorService scheduler) {
         int messageFrequency = Integer.parseInt(configReader.getProperty("syncMessageFrequency"));
-        // TODO: add messageFrequency to this delay (currently only 1-3 seconds)
-        int delay = (int) (Math.random() * 2) + 1; // delay between 1 and 3 seconds + messageFrequency
+        int delay = (int) (Math.random() * 2) + 1 + messageFrequency; // delay between 1 and 3 seconds + messageFrequency
         scheduler.scheduleAtFixedRate(this::sendSyncMessages, delay, messageFrequency, TimeUnit.SECONDS);
     }
 
@@ -43,7 +42,7 @@ public class SyncService implements IMessageSchedulerObserver {
 //                log.warn("Sending sync message with size() {}", servicesArray.getMsDataList().size());
                 Message message = InfoMessageBuilder.createSyncMessage(currentService, service, servicesArray);
                 // TODO: This does not get unmarshalled correctly. It is the List<MSData> that is the problem.
-                // TODO: There is a memory leak somewhere. About 1GB every 10 minutes.
+                //  There is a memory leak somewhere. About 1GB every 10 minutes.
                 // broker.sendMessage(message);
 
 /*

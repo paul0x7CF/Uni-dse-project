@@ -11,8 +11,9 @@ public class MSData implements ISendable, Serializable {
     private final EServiceType type;
     private final String address;
     private final int port;
-    // private LocalDateTime lastSeen = LocalDateTime.now(); TODO: gson can't handle LocalDateTime
-    // private LocalDateTime lastUpdated = LocalDateTime.now(); TODO: gson can't handle LocalDateTime
+    // TODO: Add lastSeen and lastUpdated, broker can use this to remove dead microservices using the Scheduler
+    // private LocalDateTime lastSeen = LocalDateTime.now();
+    // private LocalDateTime lastUpdated = LocalDateTime.now();
 
     public MSData(UUID id, EServiceType type, String address, int port) {
         this.id = id;

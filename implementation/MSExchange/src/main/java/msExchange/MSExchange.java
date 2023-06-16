@@ -1,14 +1,14 @@
 package msExchange;
 
 import CF.exceptions.MessageProcessingException;
+import CF.protocol.Message;
+import CF.sendable.Transaction;
 import mainPackage.PropertyFileReader;
 import msExchange.messageHandling.ExchangeMessageHandler;
 import msExchange.messageHandling.MessageBuilder;
 import msExchange.networkCommunication.CommunicationExchange;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import CF.protocol.Message;
-import CF.sendable.Transaction;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -85,8 +85,9 @@ public class MSExchange implements Runnable {
     private void processOutgoingTransactions() {
         Transaction transaction = outgoingTransactions.poll();
         if (transaction != null) {
-            logger.trace("Sending transaction: " + transaction);
+            logger.debug("Exchange: taking outgoing transaction: " + transaction);
             for (Message message : messageBuilder.buildMessage(transaction)) {
+                logger.info("Exchange: Sending Transaction to: " + transaction.getBuyerID() + " and " + transaction.getSellerID() + " for volume: " + transaction.getAmount() + " with price/kwh: " + transaction.getPrice());
                 communication.sendMessage(message);
             }
         }

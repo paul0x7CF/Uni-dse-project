@@ -7,12 +7,16 @@ import MSF.data.EForecastType;
 import MSF.data.ProsumerSolarRequest;
 import MSF.exceptions.UnknownForecastTypeException;
 import MSF.historicData.HistoricDataReader;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
 public class ProductionForecast implements Runnable {
+    private static final Logger logger = LogManager.getLogger(ProductionForecast.class);
     private BlockingQueue<ProsumerSolarRequest> incomingSolarRequest;
     private ForecastCommunicationHandler forecastCommunicationHandler;
     private EForecastType forecastType;
@@ -30,6 +34,8 @@ public class ProductionForecast implements Runnable {
     }
     @Override
     public void run() {
+        logger.info("ProductionForecast started");
+
         while (true) {
             try {
                 ProsumerSolarRequest prosumerSolarRequest = incomingSolarRequest.take();
@@ -68,6 +74,8 @@ public class ProductionForecast implements Runnable {
         double production = 0;
         double irradiation = getHistoricMeasurements();
 
+        Duration duration = Duration.between(currentTimeSlot.getStartTime(), currentTimeSlot.getEndTime());
+
         for (int i = 0; i < prosumerSolarRequest.getAmountOfPanels(); i++) {
             double standingAngleRad = prosumerSolarRequest.getStandingAngle()[i] * (Math.PI / 180);
             double compassAngleRad = prosumerSolarRequest.getCompassAngle()[i] * (Math.PI / 180);
@@ -85,6 +93,8 @@ public class ProductionForecast implements Runnable {
         for (Double lastForecast : lastForecasts) {
             production = smoothingFactor * production + (1 - smoothingFactor) * lastForecast;
         }
+
+        production = production / ((double) 3600 / duration.getSeconds());
 
         lastForecasts.add(production);
 
