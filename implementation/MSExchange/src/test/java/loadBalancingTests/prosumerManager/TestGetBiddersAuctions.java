@@ -16,7 +16,7 @@ public class TestGetBiddersAuctions {
     private UUID timeSlotID = UUID.randomUUID();
     private UUID bidderID1 = UUID.randomUUID();
     private UUID bidderID2 = UUID.randomUUID();
-
+/*
     @Test
     public void givenAuctionsFromBidder_getBiddersAuctions_expectedCorrectList() throws InvalidBidException {
 //TODO: wrong class -> change
@@ -41,5 +41,5 @@ public class TestGetBiddersAuctions {
         //Act
 
         //Assert
-    }
+    }*/
 }

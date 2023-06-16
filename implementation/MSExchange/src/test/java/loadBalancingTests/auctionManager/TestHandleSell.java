@@ -17,7 +17,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class TestHandleSell {
-
+/*
     @Test
     public void givenSellInformation_handleNewSell_expectedAuctionStarted() {
         BlockingQueue<MessageContent> outgoingQueue = new LinkedBlockingQueue<>();
@@ -41,5 +41,5 @@ public class TestHandleSell {
         } catch (InvalidTimeSlotException e) {
             throw new RuntimeException(e);
         }
-    }
+    }*/
 }

@@ -1,7 +1,26 @@
 package loadBalancingTests.prosumerManager;
 
+import CF.protocol.ECategory;
+import CF.protocol.Message;
+import CF.protocol.MessageFactory;
+import CF.sendable.Bid;
+import CF.sendable.EServiceType;
+import CF.sendable.MSData;
+import loadManager.Controller;
+import mainPackage.networkHelper.ESubCategory;
+import mainPackage.networkHelper.IMessageBuilder;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+
+import java.lang.reflect.Field;
+import java.util.UUID;
+import java.util.concurrent.BlockingQueue;
+
 public class TestIncomingBid {
-  /*  @Mock
+    /*
+    @Mock
     private BlockingQueue<Message> incomingQueue;
 
     @Test
@@ -54,7 +73,7 @@ public class TestIncomingBid {
 
     private Message buildMessage(Bid bid) {
         MSData recieverMS = new MSData(UUID.randomUUID(), EServiceType.Exchange, "78.104.161.104", 9000);
-        MSData senderMS = new MSData(UUID.randomUUID(), EServiceType.Prosumer, "localhost", 9000);
+        MSData senderMS = new MSData(UUID.randomUUID(), EServiceType.Prosumer, "localhost", 8000);
         MessageFactory messageFactory = IMessageBuilder.senderAndReceiverTemplate(recieverMS, senderMS);
         messageFactory.setCategory(ECategory.Auction, String.valueOf(ESubCategory.Bid)).setPayload(bid);
         return messageFactory.build();

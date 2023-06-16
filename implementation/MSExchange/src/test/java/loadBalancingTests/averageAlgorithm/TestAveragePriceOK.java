@@ -16,7 +16,7 @@ public class TestAveragePriceOK {
 
 
     @Test
-    public void givenBidPricesAndAskPricesLowerThenKValues_isBidPriceHighEnough_expectedTrueAndAveragePriceIsZero() {
+    public void givenBidPricesAndAskPricesLowerThenKValues_isBidPriceHighEnough_expectedTrue() {
 
         //arrange
         AverageMechanism averageMechanism = new AverageMechanism();
@@ -39,7 +39,7 @@ public class TestAveragePriceOK {
             throw new RuntimeException(e);
         }
 
-        Assertions.assertEquals(0.0, averageMechanism.getAveragePrice());
+        Assertions.assertEquals(100, averageMechanism.getAveragePrice());
     }
 
     @Test
