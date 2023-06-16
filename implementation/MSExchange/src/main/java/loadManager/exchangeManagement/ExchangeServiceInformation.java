@@ -20,8 +20,9 @@ public class ExchangeServiceInformation {
         return atCapacity;
     }
 
-    public void setAtCapacity(boolean isAtCapacity) {
-        atCapacity = isAtCapacity;
+    public boolean flipAtCapacity() {
+        atCapacity = !atCapacity;
+        return atCapacity;
     }
 
     public Object getExchangeID() {

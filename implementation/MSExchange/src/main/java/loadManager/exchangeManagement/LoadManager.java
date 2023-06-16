@@ -1,6 +1,5 @@
 package loadManager.exchangeManagement;
 
-import CF.exceptions.MessageProcessingException;
 import MSP.Exceptions.AllExchangesAtCapacityException;
 import msExchange.MSExchange;
 import org.apache.logging.log4j.LogManager;
@@ -17,55 +16,47 @@ public class LoadManager {
     private List<ExchangeServiceInformation> listExchangeServices = Collections.synchronizedList(new ArrayList<>());
 
     public void addExchangeServiceInformation(ExchangeServiceInformation exchangeServiceInformation) {
-        // Adds a new MicroserviceInformation object to the list.
-        if (exchangeServiceInformation != null) {
-            if (!listExchangeServices.contains(exchangeServiceInformation)) {
-                listExchangeServices.add(exchangeServiceInformation);
-                logger.info("Added ExchangeServiceInformation with ID: " + exchangeServiceInformation.getExchangeID());
-            } else {
-                throw new IllegalArgumentException("ExchangeServiceInformation already exists");
-            }
-        } else {
-            throw new IllegalArgumentException("ExchangeServiceInformation is null");
-        }
+        checkExchangeServiceInformation(exchangeServiceInformation);
+
+        listExchangeServices.add(exchangeServiceInformation);
+        logger.info("LOAD_MANAGER: Added ExchangeServiceInformation with ID: {}", exchangeServiceInformation.getExchangeID());
     }
 
     public void removeExchangeServiceInformation(ExchangeServiceInformation exchangeServiceInformation) {
-        // Removes the MicroserviceInformation object with the given ID from the list.
-        if (exchangeServiceInformation != null) {
-            if (listExchangeServices.contains(exchangeServiceInformation)) {
-                listExchangeServices.remove(exchangeServiceInformation);
-                logger.info("Removed ExchangeServiceInformation with ID: " + exchangeServiceInformation.getExchangeID());
-            } else {
-                throw new IllegalArgumentException("ExchangeServiceInformation does not exist");
-            }
-        } else {
-            throw new IllegalArgumentException("ExchangeServiceInformation is null");
-        }
+        checkExchangeServiceInformation(exchangeServiceInformation);
+
+        listExchangeServices.remove(exchangeServiceInformation);
+        logger.info("LOAD_MANAGER: Removed ExchangeServiceInformation with ID: " + exchangeServiceInformation.getExchangeID());
     }
 
-    public void setExchangeAtCapacity(UUID exchangeID) throws MessageProcessingException {
-        // Sets the ExchangeServiceInformation object with the given ID to at capacity.
+    public void setExchangeCapacity(UUID exchangeID) {
+        if (exchangeID == null) {
+            throw new IllegalArgumentException("LOAD_MANAGER: ExchangeID is null");
+        }
+
         boolean exchangeExists = false;
-        if (exchangeID != null) {
-            for (ExchangeServiceInformation exchangeServiceInformation : listExchangeServices) {
-                if (exchangeServiceInformation.getExchangeID().equals(exchangeID)) {
-                    exchangeServiceInformation.setAtCapacity(true);
-                    exchangeExists = true;
-                }
+        boolean atCapacity = false;
+
+        for (ExchangeServiceInformation exchangeServiceInformation : listExchangeServices) {
+            if (exchangeServiceInformation.getExchangeID().equals(exchangeID)) {
+                atCapacity = exchangeServiceInformation.flipAtCapacity();
+                exchangeExists = true;
+                break;
             }
-        } else {
-            throw new MessageProcessingException("ExchangeID is null");
         }
+
         if (!exchangeExists) {
-            throw new MessageProcessingException("Exchange does not exist");
+            throw new IllegalArgumentException("LOAD_MANAGER: Exchange does not exist");
         }
-        duplicateExchange();
+
+        if (atCapacity) {
+            duplicateExchange();
+        }
     }
 
     public ExchangeServiceInformation getFreeExchange() throws AllExchangesAtCapacityException {
         // Returns the first ExchangeServiceInformation object in the list that is not at capacity.
-        logger.debug("Exchange Services: " + listExchangeServices.size());
+        logger.trace("LOAD_MANAGER: Exchange Services: {}", listExchangeServices.size());
         for (ExchangeServiceInformation exchangeServiceInformation : listExchangeServices) {
             if (!exchangeServiceInformation.isAtCapacity()) {
                 return exchangeServiceInformation;
@@ -132,5 +123,15 @@ public class LoadManager {
 
         //alternative
         MSExchange msExchange = new MSExchange(true, nextServiceID++);
+    }
+
+    private void checkExchangeServiceInformation(ExchangeServiceInformation exchangeServiceInformation) {
+        if (exchangeServiceInformation == null) {
+            throw new IllegalArgumentException("LOAD_MANAGER: ExchangeServiceInformation is null");
+        }
+
+        if (!listExchangeServices.contains(exchangeServiceInformation)) {
+            throw new IllegalArgumentException("LOAD_MANAGER: ExchangeServiceInformation does not exist");
+        }
     }
 }

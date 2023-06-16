@@ -25,12 +25,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class Controller implements Runnable {
     private static final Logger logger = LogManager.getLogger(Controller.class);
-    private LoadManagerMessageHandler messageHandler;
     private BlockingQueue<Message> incomingQueue = new LinkedBlockingQueue<>();
     private BlockingQueue<MessageContent> outgoingQueue = new LinkedBlockingQueue<>();
     private List<UUID> exchangeServiceIds = new ArrayList<>();
-    private CommunicationLoadManager communication;
     private TimeSlotBuilder timeSlotBuilder = new TimeSlotBuilder();
+    private CommunicationLoadManager communication;
+    private LoadManagerMessageHandler messageHandler;
     private MessageBuilder messageBuilder;
 
     @Override
@@ -38,10 +38,7 @@ public class Controller implements Runnable {
         startCommunication();
 
         messageHandler = new LoadManagerMessageHandler(outgoingQueue, communication.getBroker().getCurrentService());
-        logger.trace("message Handler initialized");
         messageBuilder = new MessageBuilder(communication);
-        logger.trace("Message builder initialized");
-
 
         // Continue with the remaining logic
         Thread timeSlotThread = new Thread(this::addNewTimeSlotsPeriodically);
@@ -66,29 +63,33 @@ public class Controller implements Runnable {
     }
 
     private void startCommunication() {
-        logger.debug("Starting communication");
+        logger.debug("LOAD_MANAGER: Starting communication");
         communication = new CommunicationLoadManager(incomingQueue);
         Thread communicationThread = new Thread(() -> {
             communication.startBrokerRunner();
-        }, "LoadManagerCommunicationThread");
+        }, "LoadManagerCommunication");
         communicationThread.start();
     }
 
     private void addNewTimeSlotsPeriodically() {
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         PropertyFileReader propertyFileReader = new PropertyFileReader();
-        int slotDuration = Integer.parseInt(propertyFileReader.getDuration());
-        int checkInterval = Integer.parseInt(propertyFileReader.getCheckInterval());
+        int SLOT_DURATION = Integer.parseInt(propertyFileReader.getDuration());
+        int CHECK_INTERVAL = Integer.parseInt(propertyFileReader.getCheckInterval());
         boolean first = true;
+
         while (true) {
-            if (!timeSlotBuilder.getLastSlotsEndtime().isAfter(LocalDateTime.now())) {
+            try {
+                Thread.sleep(SLOT_DURATION * 1000 / CHECK_INTERVAL);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new RuntimeException(e);
+            }
+
+            LocalDateTime currentTime = LocalDateTime.now();
+            if (!timeSlotBuilder.getLastSlotsEndtime().isAfter(currentTime)) {
                 if (timeSlotBuilder.getLastTimeSlot().isPresent()) {
                     UUID endedTimeSlotID = timeSlotBuilder.getLastTimeSlot().get();
-                    logger.debug("----------------Time Slot " + endedTimeSlotID + " ended!----------------");
+                    logger.debug("----------------Time Slot {} ended!----------------", endedTimeSlotID);
                     try {
                         messageHandler.endTimeSlot(endedTimeSlotID);
                     } catch (InvalidTimeSlotException e) {
@@ -98,25 +99,16 @@ public class Controller implements Runnable {
                 if (first) {
                     try {
                         TimeSlot newTimeSlot = timeSlotBuilder.addNewTimeSlot();
-                        logger.debug("----------------Timeslot " + newTimeSlot.getTimeSlotID() + " started! " + newTimeSlot.getStartTime() + "----------------");
+                        logger.debug("----------------Timeslot {} started!----------------", newTimeSlot.getTimeSlotID());
                         List<Message> messages = messageBuilder.buildTimeSlotMessages(newTimeSlot);
                         for (Message message : messages) {
                             communication.sendMessage(message);
                         }
-
                     } catch (InvalidTimeSlotException e) {
                         throw new RuntimeException(e);
                     }
                     first = false;
                 }
-
-
-            }
-            try {
-                //Wait for the specified duration in secs
-                Thread.sleep(slotDuration / checkInterval * 1000); //*1000 to convert to ms
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
     }
@@ -125,25 +117,22 @@ public class Controller implements Runnable {
         Message message = (Message) incomingQueue.poll();
         if (message != null) {
             if (message.getReceiverID().equals(communication.getBroker().getCurrentService().getId())) {
-
                 messageHandler.handleMessage(message);
-
             }
         }
     }
 
     private void processOutgoingQueue() {
-        //TODO: test if bid/sell works properply in exchange - mocking
         MessageContent messageContent = (MessageContent) outgoingQueue.poll();
         if (messageContent != null) {
             try {
                 List<Message> messages = messageBuilder.buildMessage(messageContent);
                 for (Message message : messages) {
-                    logger.debug("Sending messageContent " + messageContent.getBuildCategory().toString());
+                    logger.debug("LOAD_MANAGER: Sending messageContent {} ", messageContent.getBuildCategory().toString());
                     communication.sendMessage(message);
                 }
             } catch (IllegalSendableException e) {
-                logger.error("Failed to send message: " + e.getMessage());
+                logger.error("LOAD_MANAGER: Failed to send message: {}", e.getMessage());
                 e.printStackTrace();
             }
         }

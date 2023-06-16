@@ -1,5 +1,6 @@
 package loadBalancingTests.exchange;
 
+import CF.exceptions.InvalidMessageException;
 import loadManager.exchangeManagement.ExchangeServiceInformation;
 import loadManager.exchangeManagement.LoadManager;
 import org.junit.Test;
@@ -12,9 +13,13 @@ public class TestDuplicate {
     public void testDuplicate() {
         LoadManager loadManager = new LoadManager();
         UUID exchangeID = UUID.randomUUID();
-        loadManager.addExchangeServiceInformation(new ExchangeServiceInformation(exchangeID));
+        try {
+            loadManager.addExchangeServiceInformation(new ExchangeServiceInformation(exchangeID));
+        } catch (InvalidMessageException e) {
+            throw new RuntimeException(e);
+        }
 
-        Assertions.assertDoesNotThrow(() -> loadManager.setExchangeAtCapacity(exchangeID));
+        Assertions.assertDoesNotThrow(() -> loadManager.setExchangeCapacity(exchangeID));
 
     }
 }

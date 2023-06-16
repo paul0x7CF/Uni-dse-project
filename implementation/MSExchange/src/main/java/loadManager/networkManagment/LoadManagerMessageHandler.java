@@ -43,7 +43,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
     public void handleMessage(Message message) {
         String subCategory = message.getSubCategory();
         if (subCategory.contains(";")) {
-            throw new RuntimeException("Subcategory has another subcategory: " + subCategory);
+            throw new RuntimeException("LOAD_MANAGER: Subcategory has another subcategory: " + subCategory);
         }
 
         ESubCategory subCategoryEnum = ESubCategory.valueOf(subCategory);
@@ -55,11 +55,10 @@ public class LoadManagerMessageHandler implements IMessageHandler {
                 case Transaction -> handleTransaction(message);
                 case Capacity -> handleCapacity(message);
                 default ->
-                        throw new MessageProcessingException("Unknown message subCategory: " + message.getSubCategory());
+                        throw new MessageProcessingException("LOAD_MANAGER: Unknown message subCategory: {}" + message.getSubCategory());
             }
         } catch (InvalidBidException e) {
-            logger.error("Bid has to be sent back to prosumer " + e.getBid().getPrice());
-            logger.debug("Bid has to be sent back to prosumer " + e.getBid().getPrice());
+            logger.error("LOAD_MANAGER: Bid has to be sent back to prosumer {}", e.getBid().getPrice());
             MessageContent messageContent = new MessageContent(e.getBid(), EBuildCategory.BidToProsumer);
             try {
                 outgoingQueue.put(messageContent);
@@ -67,8 +66,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
                 throw new RuntimeException(ex);
             }
         } catch (InvalidSellException e) {
-            logger.error("Sell has to be sent back to prosumer" + e.getSell().getAskPrice());
-            logger.debug("Sell has to be sent back to prosumer" + e.getSell().getAskPrice());
+            logger.error("LOAD_MANAGER: Sell has to be sent back to prosumer {}", e.getSell().getAskPrice());
             MessageContent messageContent = new MessageContent(e.getSell(), EBuildCategory.SellToProsumer);
             try {
                 outgoingQueue.put(messageContent);
@@ -76,35 +74,33 @@ public class LoadManagerMessageHandler implements IMessageHandler {
                 throw new RuntimeException(ex);
             }
         } catch (IllegalSendableException | ProsumerUnknownException e) {
-            logger.warn("Message processing exception: " + e);
+            logger.warn("LOAD_MANAGER: Message processing exception: {}", e.getMessage());
         } catch (MessageProcessingException e) {
             throw new RuntimeException(e);
         }
 
-        logger.trace("{} Message processed", message.getCategory());
+        logger.trace("LOAD_MANAGER: {} Message processed", message.getCategory());
     }
 
     private void handleBid(Message message) throws InvalidBidException, IllegalSendableException {
-        logger.info("Handling bid");
+        logger.info("LOAD_MANAGER: Handling bid");
 
         BidValidator bidValidator = new BidValidator();
         bidValidator.validateSendable(message.getSendable(Bid.class));
         Bid bid = (Bid) message.getSendable(Bid.class);
         IValidator.validateAuctionID(bid.getAuctionID(), myMSData.getType());
-        logger.debug("Bid is valid");
-        logger.debug("Bid: price: " + bid.getPrice() + ", volume: " + bid.getVolume() + " for TimeSlot: " + bid.getTimeSlot());
+        logger.debug("LOAD_MANAGER: Bid is valid: price: {}, volume: {} for TimeSlot: {}", bid.getPrice(), bid.getVolume(), bid.getTimeSlot());
         prosumerManager.handleNewBid(bid);
     }
 
     private void handleSell(Message message) throws InvalidSellException, IllegalSendableException {
-        logger.info("Handling sell");
+        logger.info("LOAD_MANAGER: Handling sell");
         SellValidator sellValidator = new SellValidator();
         sellValidator.validateSendable(message.getSendable(Sell.class));
 
         Sell sell = (Sell) message.getSendable(Sell.class);
         IValidator.validateAuctionID(sell.getAuctionID(), myMSData.getType());
-        logger.debug("Sell is valid");
-        logger.debug("Sell: price: " + sell.getAskPrice() + ", volume: " + sell.getVolume() + " for TimeSlot: " + sell.getTimeSlot());
+        logger.debug("LOAD_MANAGER: Sell is valid: price: {}, volume: {} for TimeSlot: {} ", sell.getAskPrice(), sell.getVolume(), sell.getTimeSlot());
         ExchangeServiceInformation exchangeServiceInformation = null;
 
         while (true) {
@@ -112,7 +108,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
                 exchangeServiceInformation = loadManager.getFreeExchange();
                 break; //Exits the loop, if no exception
             } catch (AllExchangesAtCapacityException e) {
-                logger.debug("All exchanges at capacity, waiting for free exchange");
+                logger.debug("LOAD_MANAGER: All exchanges at capacity, waiting for free exchange");
                 try {
                     Thread.sleep(1000); //wait 1 sec, then retry
                 } catch (InterruptedException ex) {
@@ -125,13 +121,13 @@ public class LoadManagerMessageHandler implements IMessageHandler {
         prosumerManager.handleNewSell(sellInformation);
     }
 
-    private void handleCapacity(Message message) throws MessageProcessingException {
-        logger.info("Handling capacity");
-        loadManager.setExchangeAtCapacity(message.getSenderID());
+    private void handleCapacity(Message message) {
+        logger.info("LOAD_MANAGER: Handling capacity");
+        loadManager.setExchangeCapacity(message.getSenderID());
     }
 
     private void handleTransaction(Message message) throws IllegalSendableException, ProsumerUnknownException {
-        logger.info("Handling transaction");
+        logger.info("LOAD_MANAGER: Handling transaction");
         TransactionValidator transactionValidator = new TransactionValidator();
         transactionValidator.validateSendable(message.getSendable(Transaction.class));
 

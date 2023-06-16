@@ -24,18 +24,21 @@ import java.util.concurrent.BlockingQueue;
 
 public class ProsumerManager {
     private static final Logger logger = LogManager.getLogger(ProsumerManager.class);
-    AuctionManager auctionManager = new AuctionManager();
-    AverageMechanism averageMechanism = new AverageMechanism();
-    AuctionProsumerTracker auctionProsumerTracker = new AuctionProsumerTracker();
-    List<Bidder> bidders = new ArrayList<>();
-    BlockingQueue<MessageContent> outgoingQueue;
+    private AuctionManager auctionManager;
+    private AverageMechanism averageMechanism;
+    private AuctionProsumerTracker auctionProsumerTracker;
+    private List<Bidder> bidders;
+    private BlockingQueue<MessageContent> outgoingQueue;
 
     public ProsumerManager(BlockingQueue<MessageContent> outgoingQueue) {
         this.outgoingQueue = outgoingQueue;
+        this.auctionManager = new AuctionManager();
+        this.averageMechanism = new AverageMechanism();
+        this.auctionProsumerTracker = new AuctionProsumerTracker();
+        this.bidders = new ArrayList<>();
     }
 
     public void handleNewBid(Bid bid) {
-        logger.trace("In Prosumer Manager... handling bid");
         try {
             if (averageMechanism.isBidPriceHighEnough(bid.getPrice())) {
                 for (Bidder bidder : bidders) {
@@ -48,14 +51,14 @@ public class ProsumerManager {
                 bidders.add(newBidder);
                 newBidder.handleBid(bid);
             } else {
-                logger.debug("Price did not match the average price " + averageMechanism.getAveragePrice() + "... sending Bid back to prosumer: original Price: "+ bid.getPrice());
+                logger.debug("LOAD_MANAGER: Price did not match the average price {} ... sending Bid back to prosumer: original Price: {}", averageMechanism.getAveragePrice(), bid.getPrice());
                 if (averageMechanism.getAveragePrice() != 0.0) {
                     bid.setPrice(averageMechanism.getAveragePrice());
                 }
                 outgoingQueue.put(new MessageContent(bid, EBuildCategory.BidToProsumer));
             }
         } catch (PriceNotOKException e) {
-            logger.warn("Prosumer's price was not okay. Sending Bid back to prosumer");
+            logger.warn("LOAD_MANAGER: Prosumer's price was not okay. Sending Bid back to prosumer");
             bid.setPrice(0);
             MessageContent messageContent = new MessageContent(bid, EBuildCategory.BidToProsumer);
             try {
@@ -75,8 +78,7 @@ public class ProsumerManager {
             if (averageMechanism.isAskPriceLowEnough(sell.getSell().getAskPrice())) {
                 startNewAuction(sell);
             } else {
-                logger.warn("Price did not match the average price " + averageMechanism.getAveragePrice() + "... sending Sell back to prosumer: original Price: "+ sell.getSell().getAskPrice());
-                logger.debug("Price did not match the average price " + averageMechanism.getAveragePrice() + "... sending Sell back to prosumer: original Price: "+ sell.getSell().getAskPrice());
+                logger.warn("LOAD_MANAGER: Price did not match the average price {} ... sending Sell back to prosumer: original Price: {}", averageMechanism.getAveragePrice(), sell.getSell().getAskPrice());
 
                 Sell s = sell.getSell();
                 s.setAskPrice(averageMechanism.getAveragePrice());
@@ -95,11 +97,11 @@ public class ProsumerManager {
 
     private void startNewAuction(SellInformation sell) {
         UUID auctionID = UUID.randomUUID();
-        logger.debug("Starting new Auction with ID: " + auctionID);
+        logger.debug("LOAD_MANAGER: Starting new Auction with ID: {}", auctionID);
         auctionProsumerTracker.addAuction(sell.getSell().getTimeSlot(), auctionID);
         auctionManager.addAuction(new Auction(auctionID, sell));
 
-        //build message to exchange
+        //Build message to exchange
         EBuildCategory category = EBuildCategory.SellToExchange;
         category.setUUID(sell.getExchangeID());
         Sell s = sell.getSell();
@@ -110,6 +112,29 @@ public class ProsumerManager {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void handleIncomingTransaction(Transaction transaction) throws ProsumerUnknownException {
+        logger.info("LOAD_MANAGER: Incoming Transaction: {} ", transaction.getTransactionID());
+
+        UUID timeSlotID = auctionManager.getAuctionByID(transaction.getAuctionID()).getTimeSlotID();
+        Bid bid = new Bid(transaction.getAmount(), transaction.getPrice(), timeSlotID, transaction.getBuyerID());
+        try {
+            auctionManager.setBidder(transaction.getAuctionID(), bid);
+        } catch (InvalidBidException e) {
+            throw new RuntimeException(e);
+        }
+
+        auctionProsumerTracker.checkWithTransactions(transaction);
+    }
+
+    public void endTimeSlot(UUID endedTimeSlotID) throws InvalidTimeSlotException {
+        auctionManager.endTimeSlot(endedTimeSlotID);
+        for (Bidder bidder : bidders) {
+            bidder.endTimeSlot(endedTimeSlotID);
+        }
+
+        handleUnsatisfiedSellers(endedTimeSlotID);
     }
 
     public void handleUnsatisfiedSellers(UUID timeSlotID) throws InvalidTimeSlotException {
@@ -127,36 +152,5 @@ public class ProsumerManager {
             }
         }
 
-    }
-
-    public void handleIncomingTransaction(Transaction transaction) throws ProsumerUnknownException {
-        logger.info("Incoming Transaction: " + transaction.getTransactionID());
-
-        UUID timeSlotID = auctionManager.getAuctionByID(transaction.getAuctionID()).getTimeSlotID();
-        Bid bid = new Bid(transaction.getAmount(), transaction.getPrice(), timeSlotID, transaction.getBuyerID());
-        try {
-            auctionManager.setBidder(transaction.getAuctionID(), bid);
-        } catch (InvalidBidException e) {
-            throw new RuntimeException(e);
-        }
-
-        auctionProsumerTracker.checkWithTransactions(transaction);
-    }
-
-    public AuctionManager getAuctionManager() {
-        return auctionManager;
-    }
-
-    public AuctionProsumerTracker getAuctionProsumerTracker() {
-        return auctionProsumerTracker;
-    }
-
-    public void endTimeSlot(UUID endedTimeSlotID) throws InvalidTimeSlotException {
-        auctionManager.endTimeSlot(endedTimeSlotID);
-        for (Bidder bidder : bidders) {
-            bidder.endTimeSlot(endedTimeSlotID);
-        }
-
-        handleUnsatisfiedSellers(endedTimeSlotID);
     }
 }
