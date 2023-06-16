@@ -35,7 +35,7 @@ public class Auction {
                     if (bidPosition.getVolume() <= this.totalVolume) {
                         this.coveredVolume = bidPosition.getVolume();
                     } else {
-                        throw new InvalidBidException("Bid volume is higher than sell volume", bidPosition.getBidderID());
+                        throw new InvalidBidException("Bid volume is higher than sell volume", bidPosition);
                     }
                     this.pricePerKWh = bidPosition.getPrice();
                     this.bidderID = bidPosition.getBidderID();
@@ -44,7 +44,7 @@ public class Auction {
                 if (bidPosition.getVolume() <= this.totalVolume) {
                     this.coveredVolume = bidPosition.getVolume();
                 } else {
-                    throw new InvalidBidException("Bid volume is higher than sell volume", bidPosition.getBidderID());
+                    throw new InvalidBidException("Bid volume is higher than sell volume", bidPosition);
                 }
                 this.pricePerKWh = bidPosition.getPrice();
                 this.bidderID = bidPosition.getBidderID();
