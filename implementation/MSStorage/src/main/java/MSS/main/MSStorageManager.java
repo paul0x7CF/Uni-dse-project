@@ -31,7 +31,7 @@ public class MSStorageManager implements Runnable {
         int nextStorageCellID = this.storageCells.size() + 1;
         StorageCell storageCellToStart = new StorageCell(period,maxVolume, this.callbackTermination, nextStorageCellID);
         this.storageCells.put(nextStorageCellID, storageCellToStart);
-        new Thread(storageCellToStart,"Storage-Cell").start();
+        new Thread(storageCellToStart,"Storage-Cell-"+nextStorageCellID).start();
     }
     private void createStorageCell() {
         createStorageCell(Duration.ofSeconds(30), 10);
