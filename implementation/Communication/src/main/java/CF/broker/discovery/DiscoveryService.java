@@ -61,7 +61,7 @@ public class DiscoveryService implements IMessageSchedulerObserver {
             // register forecast
             for (int i = 0; i < forecastAmount * portJumpSize; i += portJumpSize) {
                 if (currentService.getType() != EServiceType.Forecast || currentService.getPort() != forecastPort + i) {
-                    addMessageToSchedule(exchangeAddress, forecastPort + i);
+                    addMessageToSchedule(forecastAddress, forecastPort + i);
                 }
             }
         }
@@ -70,7 +70,7 @@ public class DiscoveryService implements IMessageSchedulerObserver {
         // ExchangeWorker only registers to the Exchange
         for (int i = 0; i < exchangeAmount * portJumpSize; i += portJumpSize) {
             if (currentService.getType() != EServiceType.Exchange || currentService.getPort() != exchangePort + i) {
-                addMessageToSchedule(forecastAddress, exchangePort + i);
+                addMessageToSchedule(exchangeAddress, exchangePort + i);
             }
         }
     }
@@ -82,6 +82,8 @@ public class DiscoveryService implements IMessageSchedulerObserver {
     }
 
     private void checkAndSendMessages() {
+        //
+
         // Go through all the messages in the map
         for (int port : messagesToSchedule.keySet()) {
             // If the service is already registered, no need to send the message
