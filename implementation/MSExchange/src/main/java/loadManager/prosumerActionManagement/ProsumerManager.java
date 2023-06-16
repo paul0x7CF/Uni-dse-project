@@ -35,7 +35,7 @@ public class ProsumerManager {
     }
 
     public void handleNewBid(Bid bid) {
-
+        logger.trace("In Prosumer Manager... handling bid");
         try {
             if (averageMechanism.isBidPriceHighEnough(bid.getPrice())) {
                 for (Bidder bidder : bidders) {
@@ -48,10 +48,12 @@ public class ProsumerManager {
                 bidders.add(newBidder);
                 newBidder.handleBid(bid);
             } else {
+                logger.debug("Price did not match the average price... sending Bid back to prosumer");
                 bid.setPrice(averageMechanism.getAveragePrice());
                 outgoingQueue.put(new MessageContent(bid, EBuildCategory.BidToProsumer));
             }
         } catch (PriceNotOKException e) {
+            logger.warn("Prosumer's price was not okay. Sending Bid back to prosumer");
             bid.setPrice(0);
             MessageContent messageContent = new MessageContent(bid, EBuildCategory.BidToProsumer);
             try {
