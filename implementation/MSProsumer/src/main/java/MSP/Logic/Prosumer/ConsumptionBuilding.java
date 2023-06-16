@@ -12,6 +12,7 @@ import MSP.Data.EProsumerType;
 import MSP.Data.Wallet;
 import MSP.Exceptions.DeviceNotSupportedException;
 import MSP.Exceptions.ServiceNotFoundException;
+import MSP.Exceptions.TimeOutWaitingRuntimeException;
 import MSP.Exceptions.UndefinedStrategyException;
 import MSP.Logic.AccountingStrategy.CalcConsumption;
 import MSP.Logic.AccountingStrategy.ContextCalcAcct;
@@ -47,6 +48,7 @@ public class ConsumptionBuilding implements Runnable {
     private BlockingQueue<TimeSlot> incomingMessages;
     protected PollConsumptionForecast pollOnConsumption;
     protected Scheduler scheduler = new Scheduler();
+
 
     // Define the constructor
 
@@ -182,6 +184,7 @@ public class ConsumptionBuilding implements Runnable {
         return resultNeededEnergyAmount;
     }
 
+
     protected void reset() {
         this.pollOnConsumption = null;
     }
@@ -206,9 +209,15 @@ public class ConsumptionBuilding implements Runnable {
                 logger.info("------------------Start executing Prosumer logic for new TimeSlot---------------------");
                 this.executeAccountingStrategy(newTimeSlot);
                 logger.info("Waiting for forecast result");
+                int timeoutcounter = 0;
                 do {
+                    timeoutcounter++;
                     Thread.sleep(1000);
+                    if(timeoutcounter > 15){
+                        throw new TimeOutWaitingRuntimeException("Timeout waiting for forecast result");
+                    }
                 } while (!isForecastResultAvailable());
+
                 logger.info("Forecast result is available continue with execution");
 
                 double energyAmount = 0;
@@ -217,12 +226,10 @@ public class ConsumptionBuilding implements Runnable {
                 double randomValue = 1 + (random.nextDouble() * 2);
                 if (energyAmount > 0) {
                     logger.info("Prosumer {} need {} Wh", prosumerType, energyAmount);
-                    logger.info("Send Bid");
                     this.communicator.sendBid(energyAmount, this.wallet.getSellPrice()*randomValue, newTimeSlot);
                 } else if (energyAmount < 0) {
                     energyAmount = energyAmount * (-1);
                     logger.info("Prosumer {} has {} Wh more as needed", prosumerType, energyAmount);
-                    logger.info("Send Sell");
                     this.communicator.sendSell(energyAmount, this.wallet.getBidPrice()*randomValue, newTimeSlot);
                 } else {
                     logger.info("-------------0--------------");
@@ -231,7 +238,7 @@ public class ConsumptionBuilding implements Runnable {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ServiceNotFoundException | DeviceNotSupportedException | UndefinedStrategyException e) {
-            logger.fatal(e.getMessage()+";--------------Prosumer stopped-----------------");
+            logger.fatal(e.getMessage() + ";--------------Prosumer stopped-----------------");
         }
 
 
