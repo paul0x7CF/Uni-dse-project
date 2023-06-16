@@ -65,14 +65,14 @@ public class ForecastMessageHandler implements IMessageHandler {
             logger.debug("Consumption Forecast Response was set on Poll Object");
         }
         else {
-            logger.warn("Received a forecast response for a time slot that is already available");
+            logger.trace("Received a consumption forecast response for a time slot that is already available");
         }
 
 
     }
 
     private void handleProduction(Message message) throws UnknownForecastResponseException {
-        logger.trace("Production message received");
+        logger.debug("Production message received");
         SolarResponse solarResponse = (SolarResponse) message.getSendable(SolarResponse.class);
         if(!this.pollForecastProductionMap.containsKey(solarResponse.getResponseTimeSlotId())) {
             throw new UnknownForecastResponseException();

@@ -37,7 +37,7 @@ public class ExchangeMessageHandler implements IMessageHandler {
                 default -> throw new MessageNotSupportedException();
             }
         } catch (MessageNotSupportedException e) {
-            logger.warn(e.getMessage());
+            logger.warn(e.getMessage()+"Subcategory" + message.getSubCategory() + "not supported");
         }
 
     }
