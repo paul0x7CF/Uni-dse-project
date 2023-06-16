@@ -13,8 +13,16 @@ public class SellInformation {
         this.exchangeID = exchangeID;
     }
 
+    public SellInformation(UUID exchangeID) {
+        this.exchangeID = exchangeID;
+    }
+
     public Sell getSell() {
         return sell;
+    }
+
+    public void setSell(Sell sell) {
+        this.sell = sell;
     }
 
     public UUID getExchangeID() {

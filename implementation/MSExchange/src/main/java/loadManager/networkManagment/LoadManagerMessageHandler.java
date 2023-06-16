@@ -101,12 +101,21 @@ public class LoadManagerMessageHandler implements IMessageHandler {
         Sell sell = (Sell) message.getSendable(Sell.class);
         IValidator.validateAuctionID(sell.getAuctionID(), myMSData.getType());
         logger.debug("LOAD_MANAGER: Sell is valid: price: {}, volume: {} for TimeSlot: {} ", sell.getAskPrice(), sell.getVolume(), sell.getTimeSlot());
-        ExchangeServiceInformation exchangeServiceInformation = null;
 
-        while (true) {
+        SellInformation sellInformation = waitForFreeExchange();
+        sellInformation.setSell(sell);
+        prosumerManager.handleNewSell(sellInformation);
+    }
+
+    private SellInformation waitForFreeExchange() {
+        SellInformation sellInformation = null;
+        boolean exchangeFound = false;
+
+        while (!exchangeFound) {
             try {
-                exchangeServiceInformation = loadManager.getFreeExchange();
-                break; //Exits the loop, if no exception
+                ExchangeServiceInformation exchangeServiceInformation = loadManager.getFreeExchange();
+                sellInformation = new SellInformation(exchangeServiceInformation.getExchangeId());
+                exchangeFound = true;
             } catch (AllExchangesAtCapacityException e) {
                 logger.debug("LOAD_MANAGER: All exchanges at capacity, waiting for free exchange");
                 try {
@@ -117,8 +126,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
             }
         }
 
-        SellInformation sellInformation = new SellInformation(sell, exchangeServiceInformation.getExchangeId());
-        prosumerManager.handleNewSell(sellInformation);
+        return sellInformation;
     }
 
     private void handleCapacity(Message message) {
