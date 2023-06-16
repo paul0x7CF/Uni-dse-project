@@ -74,8 +74,6 @@ public class AuctionManager {
             return auctionsPerSlot.get(slotId);
         }
         return Collections.emptyList();
-        //TODO: maybe insert TimeSlot before...
-        //throw new InvalidTimeSlotException("Slot not found", Optional.of(slotId));
     }
 
     public List<Transaction> getTransactionsForSlot(UUID slotId) throws InvalidTimeSlotException {
