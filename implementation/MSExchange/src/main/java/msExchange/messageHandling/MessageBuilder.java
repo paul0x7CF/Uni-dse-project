@@ -1,6 +1,5 @@
 package msExchange.messageHandling;
 
-import CF.exceptions.MessageProcessingException;
 import CF.protocol.ECategory;
 import CF.protocol.Message;
 import CF.protocol.MessageFactory;
@@ -22,10 +21,6 @@ public class MessageBuilder {
 
     public MessageBuilder(CommunicationExchange communication) {
         this.communicationExchange = communication;
-    }
-
-    public void sendErrorMessage(Message message, MessageProcessingException e) {
-        //TODO: implement
     }
 
     public Message buildCapacityMessage() {

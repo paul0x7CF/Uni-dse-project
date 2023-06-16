@@ -66,7 +66,6 @@ public class MSExchange implements Runnable {
                 try {
                     messageHandler.handleMessage(message);
                 } catch (MessageProcessingException e) {
-                    messageBuilder.sendErrorMessage(message, e);
                     logger.error("Message wasn't correct " + message.getSubCategory() + ", problem: " + e.getMessage());
                 }
             }
