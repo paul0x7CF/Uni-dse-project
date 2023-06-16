@@ -22,10 +22,6 @@ import validator.TransactionValidator;
 
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicReference;
 
 
 public class LoadManagerMessageHandler implements IMessageHandler {
@@ -107,32 +103,23 @@ public class LoadManagerMessageHandler implements IMessageHandler {
         IValidator.validateAuctionID(sell.getAuctionID(), myMSData.getType());
         logger.debug("Sell is valid");
 
-        AtomicReference<ExchangeServiceInformation> exchangeServiceInformation = null;
+        ExchangeServiceInformation exchangeServiceInformation = null;
 
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        Future<?> future = executorService.submit(() -> {
+        while (true) {
             try {
-                while (true) {
-                    try {
-                        exchangeServiceInformation.set(loadManager.getFreeExchange());
-                        break; //Exits the loop, if no exception 
-                    } catch (AllExchangesAtCapacityException e) {
-                        logger.debug("All exchanges at capacity, waiting for free exchange");
-                        Thread.sleep(1000); //wait 1 sec, then retry
-                    }
+                exchangeServiceInformation = loadManager.getFreeExchange();
+                break; //Exits the loop, if no exception
+            } catch (AllExchangesAtCapacityException e) {
+                logger.debug("All exchanges at capacity, waiting for free exchange");
+                try {
+                    Thread.sleep(1000); //wait 1 sec, then retry
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
                 }
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
             }
-
-        });
-        try {
-            future.get();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
 
-        SellInformation sellInformation = new SellInformation(sell, exchangeServiceInformation.get().getExchangeId());
+        SellInformation sellInformation = new SellInformation(sell, exchangeServiceInformation.getExchangeId());
         prosumerManager.handleNewSell(sellInformation);
     }
 

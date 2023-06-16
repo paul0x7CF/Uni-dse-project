@@ -89,8 +89,9 @@ public class ProsumerManager {
     }
 
     private void startNewAuction(SellInformation sell) {
-        auctionProsumerTracker.addAuction(sell.getSell().getTimeSlot(), sell.getSell().getSellerID());
         UUID auctionID = UUID.randomUUID();
+        logger.debug("Starting new Auction with ID: " + auctionID);
+        auctionProsumerTracker.addAuction(sell.getSell().getTimeSlot(), auctionID);
         auctionManager.addAuction(new Auction(auctionID, sell));
 
         //build message to exchange

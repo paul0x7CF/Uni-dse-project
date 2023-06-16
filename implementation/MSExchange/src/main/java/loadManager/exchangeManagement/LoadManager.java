@@ -66,7 +66,7 @@ public class LoadManager {
 
     public ExchangeServiceInformation getFreeExchange() throws AllExchangesAtCapacityException {
         // Returns the first ExchangeServiceInformation object in the list that is not at capacity.
-
+        logger.debug("Exchange Services: " + listExchangeServices.size());
         for (ExchangeServiceInformation exchangeServiceInformation : listExchangeServices) {
             if (!exchangeServiceInformation.isAtCapacity()) {
                 return exchangeServiceInformation;

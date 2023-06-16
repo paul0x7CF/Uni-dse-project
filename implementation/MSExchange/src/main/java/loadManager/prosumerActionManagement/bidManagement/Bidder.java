@@ -54,7 +54,7 @@ public class Bidder {
             //if there is no auction finding algorithm for this slot, create one
             AuctionFindingAlgorithm auctionFindingAlgorithm = new AuctionFindingAlgorithm(bid, auctionManager, outgoingQueue, auctionProsumerTracker);
             auctionFinderPerSlot.put(bid.getTimeSlot(), auctionFindingAlgorithm);
-
+            logger.debug("auction Finder: " + auctionFinderPerSlot.size() + ", TimeSlot: " + bid.getTimeSlot());
             //Create and execute a new thread for the algorithm
             executorService.execute(auctionFindingAlgorithm);
         }
@@ -65,6 +65,8 @@ public class Bidder {
     }
 
     public void endTimeSlot(UUID timeSlotID) {
+        logger.debug("timeSlotID to end: " + timeSlotID);
+        logger.debug("auctionFinderPerSlot size to end: " + auctionFinderPerSlot.size());
         auctionFinderPerSlot.get(timeSlotID).endAuctionFinder();
     }
 }

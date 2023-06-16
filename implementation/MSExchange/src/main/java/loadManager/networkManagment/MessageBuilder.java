@@ -50,7 +50,7 @@ public class MessageBuilder {
         Sell sell = (Sell) content;
         List<Message> messages = new ArrayList<>();
         List<MSData> receiverMS = new ArrayList<>();
-        //TODO: Stoarage ID
+        //TODO: Stoarage ID - wait till Stoarge is there -> 
         MSData storage = communication.getBroker().getServicesByType(EServiceType.Storage).get(0);
         Transaction transaction = new Transaction(sell.getSellerID(), storage.getId(), sell.getVolume(), sell.getAskPrice(), UUID.randomUUID());
 
