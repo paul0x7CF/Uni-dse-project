@@ -7,8 +7,7 @@ import java.time.LocalTime;
 public class Consumer implements IProsumerDevice {
     private final EConsumerType consumerType;
     private final boolean isHeavyConsumer;
-    private final double averageConsumptionpH;
-    private final int averageUsageInMinutes;
+    private double averageConsumption;
     private final LocalTime allowedStartConsume;
     private final LocalTime allowedEndConsume;
     private double resultOfForecast;
@@ -17,15 +16,22 @@ public class Consumer implements IProsumerDevice {
     public Consumer(EConsumerType consumerType) {
         this.consumerType = consumerType;
         this.isHeavyConsumer = Boolean.parseBoolean(ConfigFileReader.getProperty("consumer." + consumerType + ".isHeavyConsumer"));
-        this.averageConsumptionpH = Integer.parseInt(ConfigFileReader.getProperty("consumer." + consumerType + ".averageConsumption"));
-        this.averageUsageInMinutes = Integer.parseInt(ConfigFileReader.getProperty("consumer." + consumerType + ".usageTime"));
+        this.averageConsumption = Integer.parseInt(ConfigFileReader.getProperty("consumer." + consumerType + ".averageConsumption"));
         this.allowedStartConsume = LocalTime.parse(ConfigFileReader.getProperty("consumer." + consumerType + ".allowedStartConsume"));
         this.allowedEndConsume = LocalTime.parse(ConfigFileReader.getProperty("consumer." + consumerType + ".allowedEndConsume"));
-        this.stillNeededEnergy = averageUsageInMinutes;
+        this.stillNeededEnergy = Integer.parseInt(ConfigFileReader.getProperty("consumer." + consumerType + ".usageTime"));
     }
 
-    public double getAverageConsumptionpH() {
-        return this.averageConsumptionpH;
+    public double getAverageConsumption() {
+        return this.averageConsumption;
+    }
+
+    public boolean setAverageConsumption(double averageConsumption) {
+        if (averageConsumption < 0) {
+            return false;
+        }
+        this.averageConsumption = averageConsumption;
+        return true;
     }
 
     public boolean isHeavyConsumer() {

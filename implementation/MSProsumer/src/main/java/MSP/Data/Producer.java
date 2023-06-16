@@ -6,7 +6,7 @@ public class Producer implements IProsumerDevice {
 
     private final EProducerType producerType;
     private final double area;
-    private final int efficiency;
+    private int efficiency;
     private final int compassAngle;
     private final int standingAngle;
 
@@ -27,6 +27,10 @@ public class Producer implements IProsumerDevice {
 
     public int getEfficiency() {
         return efficiency;
+    }
+
+    public void setEfficiency(int efficiency) {
+        this.efficiency = efficiency;
     }
 
     public int getCompassAngle() {
