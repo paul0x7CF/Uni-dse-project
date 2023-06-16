@@ -3,6 +3,7 @@ package MSS.storage;
 import CF.sendable.Transaction;
 import MSS.communication.Communication;
 import MSS.data.Wallet;
+import MSS.dataBase.TransactionDAO;
 import MSS.exceptions.StorageEmptyException;
 import MSS.exceptions.StorageExiredException;
 import org.apache.logging.log4j.LogManager;
@@ -27,6 +28,8 @@ public class MSStorageManager implements Runnable {
     private Communication communication;
     private CallbackStorageCellTerminated callbackTermination;
 
+    TransactionDAO transactionDAO;
+
 
     /**
      * Constructs an instance of the MSStorageManager class.
@@ -34,6 +37,8 @@ public class MSStorageManager implements Runnable {
      */
     public MSStorageManager() {
         this.callbackTermination = actOnCallback();
+        this.transactionDAO = new TransactionDAO();
+        this.transactionDAO.deleteAll();
 
     }
 

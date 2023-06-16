@@ -53,5 +53,13 @@ public class TransactionDAO {
         session.getTransaction().commit();
     }
 
+    public int deleteAll() {
+        Session session = sessionFactory.getCurrentSession();
+        session.beginTransaction();
+        int deletedCount = session.createQuery("DELETE FROM DbTransaction").executeUpdate();
+        session.getTransaction().commit();
+        return deletedCount;
+    }
+
 }
 

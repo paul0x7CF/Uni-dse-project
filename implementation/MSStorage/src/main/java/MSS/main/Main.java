@@ -1,19 +1,25 @@
 package MSS.main;
 
-import MSS.storage.MSStorageManager;
+import MSS.dataBase.DbTransaction;
+import MSS.dataBase.TransactionDAO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.UUID;
+
 public class Main {
+
+    private static final Logger logger = LogManager.getLogger(Main.class);
+
 
     private static final Logger log = LogManager.getLogger(Main.class);
     public static void main(String[] args) {
         // Create a new transaction
-        /*TransactionDAO transactionDAO = new TransactionDAO();
+        TransactionDAO transactionDAO = new TransactionDAO();
         UUID buyerID = UUID.randomUUID();
         UUID sellerID = UUID.randomUUID();
 
-        DbTransaction transaction = new DbTransaction(sellerID, buyerID, 100.0, 10.0);
+        DbTransaction transaction = new DbTransaction(sellerID, buyerID, 100.0, 10.0, UUID.randomUUID());
         transactionDAO.create(transaction);
         log.info("Created transactionID: " + transaction.getTransactionID());
         log.info("Created transaction amount: " + transaction.getAmount());
@@ -27,11 +33,17 @@ public class Main {
 
 
 
-        // Delete the transaction
+       /* // Delete the transaction
         transactionDAO.delete(retrievedTransaction.getTransactionID());
         System.out.println("Deleted transaction");*/
 
-        new Thread(new MSStorageManager(),"Storage").start();
+
+
+        int count = transactionDAO.deleteAll();
+        logger.warn("Deleting all transactions{}" + count);
+
+
+        //new Thread(new MSStorageManager(),"Storage").start();
 
     }
 }
