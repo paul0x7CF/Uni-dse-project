@@ -117,7 +117,9 @@ public class AuctionFindingAlgorithm implements Runnable {
 
     private void findAuctionsToCoverVolume(double remainingVolume, List<Auction> winningAuctions) throws CommandNotPossibleException, InvalidTimeSlotException {
         List<Auction> allAuctions = auctionManager.getAllAuctionsForSlot(bidForTimeSlot.getIncomingBid().getTimeSlot());
-        logger.debug("Auctions in TimeSlot: " + allAuctions.size());
+        if(!allAuctions.isEmpty()){
+            logger.debug("Auctions in TimeSlot: " + allAuctions.size());
+        }
 
         for (Auction auction : allAuctions) {
 
