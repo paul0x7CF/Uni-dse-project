@@ -48,7 +48,7 @@ public class Auction {
 
     public void endAuction() {
         //Create a transaction and add it to blockingQueue
-        logger.debug("EXCHANGE: Auction " + auctionID + " has ended for timeSlot " + timeSlotID);
+        logger.info("EXCHANGE: Auction " + auctionID + " has ended for timeSlot " + timeSlotID);
         auctionEnded = true;
         Transaction transaction = new Transaction(sellerID, bidderID, soldVolume, pricePerWh, auctionID);
 

@@ -27,15 +27,11 @@ public class MessageBuilder {
 
         switch (messageContent.getBuildCategory()) {
             case BidToProsumer -> messages.add(buildBidToProsumerMessage(messageContent.getContent()));
-
             case BidToExchange ->
                     messages.add(buildBidToExchangeMessage(messageContent.getContent(), messageContent.getBuildCategory()));
-
             case SellToProsumer -> messages.add(buildSellToProsumerMessage(messageContent.getContent()));
-
             case SellToExchange ->
                     messages.add(buildSellToExchangeMessage(messageContent.getContent(), messageContent.getBuildCategory()));
-            //case Transaction -> messages.addAll(buildTransactionMessages(messageContent.getContent()));
             case BidToStorage -> messages.addAll(buildBidToStorageMessage(messageContent.getContent()));
             case SellToStorage -> messages.addAll(buildSellToStorageMessage(messageContent.getContent()));
             default ->

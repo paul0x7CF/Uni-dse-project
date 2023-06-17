@@ -115,7 +115,7 @@ public class Controller implements Runnable {
                     } catch (InvalidTimeSlotException e) {
                         throw new RuntimeException(e);
                     }
-                    first = false;
+                    //first = false;
                 }
             }
         }

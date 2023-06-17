@@ -44,8 +44,10 @@ public class MessageBuilder {
         receiverMS.add(communicationExchange.getBroker().findService(transaction.getSellerID()));
         receiverMS.add(communicationExchange.getBroker().findService(transaction.getBuyerID()));
 
-        for (MSData msData : communicationExchange.getBroker().getServicesByType(EServiceType.Storage)) {
-            receiverMS.add(msData);
+        if (communicationExchange.getBroker().getServicesByType(EServiceType.Storage) != null) {
+            for (MSData msData : communicationExchange.getBroker().getServicesByType(EServiceType.Storage)) {
+                receiverMS.add(msData);
+            }
         }
 
         for (MSData msData : receiverMS) {

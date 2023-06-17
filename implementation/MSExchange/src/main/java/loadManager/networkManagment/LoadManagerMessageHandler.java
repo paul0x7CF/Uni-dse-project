@@ -134,7 +134,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
     }
 
     private void handleTransaction(Message message) throws IllegalSendableException, ProsumerUnknownException {
-        logger.trace("LOAD_MANAGER: Handling transaction");
+        logger.info("LOAD_MANAGER: Handling transaction");
         TransactionValidator transactionValidator = new TransactionValidator();
         transactionValidator.validateSendable(message.getSendable(Transaction.class));
 
