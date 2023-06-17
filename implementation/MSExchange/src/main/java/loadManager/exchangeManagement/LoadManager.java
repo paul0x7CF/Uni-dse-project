@@ -73,7 +73,7 @@ public class LoadManager {
                 return exchangeServiceInformation;
             }
         }
-        throw new AllExchangesAtCapacityException("All exchanges are at capacity");
+        throw new AllExchangesAtCapacityException("LOAD_MANAGER: All exchanges are at capacity");
     }
 
     /**

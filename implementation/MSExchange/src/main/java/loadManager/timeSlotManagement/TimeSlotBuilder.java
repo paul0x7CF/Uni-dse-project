@@ -36,8 +36,8 @@ public class TimeSlotBuilder {
             resultTimeSlot = addNewTimeSlot(now);
         } else {
             if (timeSlots.get(timeSlots.size() - 1).getEndTime().isAfter(LocalDateTime.now())) {
-                log.error("TimeSlotBuilder: addNewTimeSlot: last timeSlot is not finished yet");
-                throw new InvalidTimeSlotException("TimeSlotBuilder: addNewTimeSlot: last timeSlot is not finished yet", Optional.ofNullable(timeSlots.get(timeSlots.size() - 1).getTimeSlotID()));
+                log.error("LOAD_MANAGER: TimeSlotBuilder: addNewTimeSlot: last timeSlot is not finished yet");
+                throw new InvalidTimeSlotException("LOAD_MANAGER: TimeSlotBuilder: addNewTimeSlot: last timeSlot is not finished yet", Optional.ofNullable(timeSlots.get(timeSlots.size() - 1).getTimeSlotID()));
             }
 
             LocalDateTime start = timeSlots.get(timeSlots.size() - 1).getEndTime();

@@ -11,24 +11,7 @@ import java.util.*;
 public class AuctionProsumerTracker {
     private static final Logger logger = LogManager.getLogger(AuctionProsumerTracker.class);
     //Map<TimeSlotID, Map<AuctionID, List<BidderID>>>
-    private Map<UUID, Map<UUID, List<UUID>>> auctionsPerTimeSlot = new HashMap<>();
-
-    public List<UUID> getBiddersNotSatisfied(UUID auctionID) {
-        //returns a List of all Bidders, except for the winner's ID
-        List<UUID> originalList = new ArrayList<>();
-        for (Map.Entry<UUID, Map<UUID, List<UUID>>> entry : auctionsPerTimeSlot.entrySet()) {
-            if (entry.getValue().containsKey(auctionID)) {
-                originalList = entry.getValue().get(auctionID);
-            }
-        }
-
-        if (originalList == null) {
-            throw new IllegalAuctionException("Auction with ID " + auctionID + " not found");
-        }
-
-        List<UUID> resultList = new ArrayList<>(originalList.subList(0, originalList.size() - 1));
-        return resultList;
-    }
+    private final Map<UUID, Map<UUID, List<UUID>>> auctionsPerTimeSlot = new HashMap<>();
 
     public synchronized void addBidderToAuction(UUID auctionId, UUID bidderId) {
         boolean auctionFound = false;
@@ -40,12 +23,12 @@ public class AuctionProsumerTracker {
         }
 
         if (!auctionFound) {
-            throw new IllegalAuctionException("Auction with ID " + auctionId + " not found");
+            throw new IllegalAuctionException("LOAD_MANAGER: Auction with ID " + auctionId + " not found");
         }
     }
 
     public synchronized void addAuction(UUID timeSlotId, UUID auctionID) {
-        logger.debug("Adding new Auction to prosumerTracker: " + auctionID);
+        logger.debug("LOAD_MANAGER: Adding new Auction to prosumerTracker: {}", auctionID);
         auctionsPerTimeSlot.computeIfAbsent(timeSlotId, k -> new HashMap<>()).put(auctionID, new ArrayList<>());
     }
 
@@ -81,26 +64,10 @@ public class AuctionProsumerTracker {
         return wonAuctions;
     }
 
-    /*
-    public List<UUID> getAuctionsWithoutBidders(UUID timeSlotID) {
-        List<UUID> auctionsWithoutBidders = new ArrayList<>();
-        if (auctionsPerTimeSlot.containsKey(timeSlotID)) {
-            Map<UUID, List<UUID>> auctions = auctionsPerTimeSlot.get(timeSlotID);
-
-            for (Map.Entry<UUID, List<UUID>> entry : auctions.entrySet()) {
-                if (entry.getValue().isEmpty()) {
-                    auctionsWithoutBidders.add(entry.getKey());
-                }
-            }
-        }
-
-        return auctionsWithoutBidders;
-    }
-*/
     //set the winning bidder and delets every other one
     public void checkWithTransactions(Transaction transaction) throws ProsumerUnknownException {
         if (transaction == null) {
-            throw new IllegalArgumentException("Transaction cannot be null");
+            throw new IllegalArgumentException("LOAD_MANAGER: Transaction cannot be null");
         }
 
         UUID bidderID = transaction.getBuyerID();
@@ -110,27 +77,12 @@ public class AuctionProsumerTracker {
             if (entry.getValue().containsKey(auctionID)) {
                 List<UUID> bidders = entry.getValue().get(auctionID);
                 if (!bidders.contains(bidderID)) {
-                    throw new ProsumerUnknownException("Prosumer seems to be unknown to the auction", Optional.ofNullable(bidderID));
+                    throw new ProsumerUnknownException("LOAD_MANAGER: Prosumer seems to be unknown to the auction", Optional.ofNullable(bidderID));
                 }
 
                 //Remove all UUIDs except the winning bidder ID from the list
                 bidders.removeIf(uuid -> !uuid.equals(bidderID));
             }
         }
-    }
-
-    public List<UUID> getBiddersAuctions(UUID bidderID) {
-        List<UUID> biddersAuctions = new ArrayList<>();
-
-        for (Map<UUID, List<UUID>> auctionMap : auctionsPerTimeSlot.values()) {
-            for (UUID auctionId : auctionMap.keySet()) {
-                List<UUID> bidderIds = auctionMap.get(auctionId);
-                if (bidderIds.contains(biddersAuctions)) {
-                    biddersAuctions.add(auctionId);
-                }
-            }
-        }
-
-        return biddersAuctions;
     }
 }
