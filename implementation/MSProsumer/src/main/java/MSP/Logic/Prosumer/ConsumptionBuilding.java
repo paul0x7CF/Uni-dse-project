@@ -64,12 +64,9 @@ public class ConsumptionBuilding implements RESTData, Runnable {
         communicator.setCallbackOnSellLower(this.actSellLowerQuestion());
         communicator.setCallbackOnBidHigher(this.actBidHigherQuestion());
 
-        final int INITIALIZED_CONSUMER_AMOUNT = Integer.parseInt(ConfigFileReader.getProperty("consumer.amount"));
-        for (int i = 1; i <= INITIALIZED_CONSUMER_AMOUNT; i++) {
-            createConsumer(EConsumerType.valueOf(ConfigFileReader.getProperty("consumer.type" + i)));
-        }
+        createConsumer();
 
-        logger.info("Prosumer created from type {} with: {} Consumer from type, cash balance {}", prosumerType, consumerList.size(), cashBalance);
+        logger.info("Prosumer created from type {} with: {} Consumer from type, cash balance {}", prosumerType.toString(), consumerList.size(), cashBalance);
     }
 
     protected void createConsumer() {
@@ -156,8 +153,10 @@ public class ConsumptionBuilding implements RESTData, Runnable {
         CallbackTransaction callbackOnTransaction = (totalPrice, singlePrice) -> {
             logger.debug("Transaction callback received with price {}", totalPrice);
             if (totalPrice > 0) {
+                logger.debug("Prosumer is Seller");
                 wallet.incrementCashBalance(totalPrice);
             } else {
+                logger.debug("Prosumer is Buyer");
                 wallet.decrementCashBalance(totalPrice);
             }
             this.scheduler.insertValue(singlePrice);

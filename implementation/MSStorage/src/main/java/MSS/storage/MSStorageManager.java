@@ -175,10 +175,8 @@ public class MSStorageManager implements Runnable {
         communicator.startBrokerRunner(Thread.currentThread().getName());
         communicator.addMessageHandler(ECategory.Exchange);
 
-        increaseStorageCellVolume(15.929329755711777);
-
-        /*while (true) {
-            logger.info("Waiting for new transaction");
+        while (true) {
+            logger.debug("Waiting for new transaction");
             try {
                 Transaction newTransaction = this.incomingTransactionQueue.take();
 
@@ -206,6 +204,6 @@ public class MSStorageManager implements Runnable {
             }
 
 
-        }*/
+        }
     }
 }
