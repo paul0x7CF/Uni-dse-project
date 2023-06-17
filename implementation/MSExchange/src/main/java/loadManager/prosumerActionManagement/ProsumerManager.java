@@ -54,7 +54,7 @@ public class ProsumerManager {
                 bidders.add(newBidder);
                 newBidder.handleBid(bid);
             } else {
-                logger.debug("LOAD_MANAGER: Price did not match the average price {} ... sending Bid back to prosumer: original Price: {}", priceMechanism.getWPrice(), bid.getPrice());
+                logger.warn("LOAD_MANAGER: Price did not match the average price {} ... sending Bid back to prosumer: original Price: {}", priceMechanism.getWPrice(), bid.getPrice());
                 if (priceMechanism.getWPrice() != 0.0) {
                     bid.setPrice(priceMechanism.getWPrice());
                 }

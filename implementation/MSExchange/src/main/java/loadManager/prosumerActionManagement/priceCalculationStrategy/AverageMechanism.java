@@ -78,7 +78,7 @@ public class AverageMechanism implements IPriceMechanism {
         double askPriceK = sortedAskPrices.get(k - 1);
         averagePrice = (bidPriceK + askPriceK) / 2.0;
 
-        logger.warn("LOAD_MANAGER: Average Price is {}", averagePrice);
+        logger.debug("LOAD_MANAGER: Average Price is {}", averagePrice);
     }
 
 

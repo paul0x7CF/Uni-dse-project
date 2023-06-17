@@ -96,8 +96,6 @@ public class MessageBuilder {
         return messages;
     }
 
-
-
     private List<Message> buildTransactionMessages(ISendable content) {
         logger.trace("LOAD_MANAGER:  in build Transaction Message");
         List<Message> messages = new ArrayList<>();
