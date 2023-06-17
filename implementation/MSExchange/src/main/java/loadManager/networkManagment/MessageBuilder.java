@@ -91,7 +91,7 @@ public class MessageBuilder {
         receiverMS.addAll(communication.getBroker().getServicesByType(EServiceType.Storage));
 
         for (MSData msData : receiverMS) {
-            if (msData == null || msData.getId() != null) {
+            if (msData != null && msData.getId() != null) {
                 messages.add(buildTransactionMessage(IMessageBuilder.senderAndReceiverTemplate(msData, communication.getBroker().getCurrentService()), transaction));
             } else {
                 logger.warn("LOAD_MANAGER: build Bid to Storage: receiver not found");
@@ -153,7 +153,7 @@ public class MessageBuilder {
     }
 
     private Message buildBidToExchangeMessage(ISendable content, EBuildCategory buildCategory) {
-        logger.trace("LOAD_MANAGER: building bid to exchange message");
+        logger.trace("LOAD_MANAGER: building bid to exchange message {}", buildCategory.getUuid());
         Bid bid = (Bid) content;
         MSData receiverMS = communication.getBroker().findService(buildCategory.getUuid());
         MessageFactory messageFactory = IMessageBuilder.senderAndReceiverTemplate(receiverMS, communication.getBroker().getCurrentService());
@@ -171,7 +171,7 @@ public class MessageBuilder {
     }
 
     private Message buildSellToExchangeMessage(ISendable content, EBuildCategory buildCategory) {
-        logger.trace("LOAD_MANAGER: building sell to exchange message");
+        logger.trace("LOAD_MANAGER: building sell to exchange {}", buildCategory.getUuid());
         Sell sell = (Sell) content;
         MSData receiverMS = communication.getBroker().findService(buildCategory.getUuid());
         MessageFactory messageFactory = IMessageBuilder.senderAndReceiverTemplate(receiverMS, communication.getBroker().getCurrentService());

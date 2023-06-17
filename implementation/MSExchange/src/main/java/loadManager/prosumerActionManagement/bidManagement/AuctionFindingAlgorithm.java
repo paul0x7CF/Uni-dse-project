@@ -84,7 +84,7 @@ public class AuctionFindingAlgorithm implements Runnable {
                     }
 
                     if (volumeInAuctions == 0) {
-                        logger.info("LOAD_MANAGER: The bid with volume {} has been fully covered.", bidForTimeSlot.getIncomingBid().getVolume());
+                        logger.info("LOAD_MANAGER: The bid from {} with volume {} has been fully covered.", bidForTimeSlot.getIncomingBid().getBidderID(), bidForTimeSlot.getIncomingBid().getVolume());
                         shouldContinue = false;
                     }
 
