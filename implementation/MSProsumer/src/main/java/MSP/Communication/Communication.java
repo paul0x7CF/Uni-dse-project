@@ -54,15 +54,6 @@ public class Communication {
         createBroker(port);
         this.messageBuilder = new MessageBuilder(this.myMSData);
 
-       /* ConfigurableApplicationContext context = new SpringApplicationBuilder()
-                .sources(RestHandler.class)
-                .properties(Collections.singletonMap("rest.port", port + 2))
-                .initializers((ApplicationContextInitializer<GenericApplicationContext>) ctx -> {
-                    // Set the port value in the RestHandler bean
-                    ctx.getBeanFactory().registerSingleton("restHandler", new RestHandler(consumers));
-                })
-                .run();*/
-
         ConfigurableApplicationContext context = new SpringApplicationBuilder(RestHandler.class).properties(Collections.singletonMap("server.port", port + 2)).run();
 
         logger.info("BrokerRunner initialized with Ip: {} Port: {}", this.myMSData.getAddress(), this.myMSData.getPort());
@@ -129,7 +120,7 @@ public class Communication {
         for (MSData receiverService : communicationBroker.getServicesByType(EServiceType.Forecast)) {
             messageToSend = Optional.of(this.messageBuilder.buildConsumptionForecastMessage(consumptionRequest, receiverService));
             communicationBroker.sendMessage(messageToSend.get());
-            logger.trace("ConsumptionRequestMessage sent to: Ip:{}, Port: {}", receiverService.getAddress(), receiverService.getPort());
+            logger.trace("ConsumptionRequestMessage sent to: Ip:{}, Port: {}, with message ID {}", receiverService.getAddress(), receiverService.getPort(), messageToSend.get().getMessageID());
             countSending++;
         }
         logger.debug("Consumption RequestMessage was sent to {} Forecast services", countSending);
@@ -151,7 +142,7 @@ public class Communication {
         for (MSData receiverService : communicationBroker.getServicesByType(EServiceType.Forecast)) {
             messageToSend = Optional.of(this.messageBuilder.buildProductionForecastMessage(solarRequest, receiverService));
             communicationBroker.sendMessage(messageToSend.get());
-            logger.trace("ProductionRequestMessage sent to: Ip:{}, Port: {}", receiverService.getAddress(), receiverService.getPort());
+            logger.trace("ProductionRequestMessage sent to: to: Ip:{}, Port: {}, with message ID {}", receiverService.getAddress(), receiverService.getPort(), messageToSend.get().getMessageID());
             countSending++;
         }
         logger.debug("Production RequestMessage was sent to {} Forecast services", countSending);

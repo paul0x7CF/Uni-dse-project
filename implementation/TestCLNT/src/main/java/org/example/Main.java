@@ -1,19 +1,24 @@
 package org.example;
 
-// Press Shift twice to open the Search Everywhere dialog and type `show whitespaces`,
-// then press Enter. You can now see whitespace characters in your code.
 public class Main {
     public static void main(String[] args) {
-        // Press Alt+Eingabe with your caret at the highlighted text to see how
-        // IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        String address = "http://localhost";
 
-        // Press Umschalt+F10 or click the green arrow button in the gutter to run the code.
-        for (int i = 1; i <= 5; i++) {
+        int prosumerPort = 6000;    // Port of the Prosumer you want to test
+        int portRestJump = 2;
 
-            // Press Umschalt+F9 to start debugging your code. We have set one breakpoint
-            // for you, but you can always add more by pressing Strg+F8.
-            System.out.println("i = " + i);
-        }
+        ProsumerTest prosumerTest = new ProsumerTest(address, prosumerPort + portRestJump);
+
+        prosumerTest.createConsumer("TV");
+        prosumerTest.getConsumers();
+        prosumerTest.updateConsumer("TV", "100");
+        prosumerTest.deleteConsumer("TV");
+        prosumerTest.getConsumers();
+
+        prosumerTest.createProducer("MONOCRYSTALLINE_TYPE_x1");
+        prosumerTest.getProducers();
+        prosumerTest.updateProducer("MONOCRYSTALLINE_TYPE_x1", "100");
+        prosumerTest.deleteProducer("MONOCRYSTALLINE_TYPE_x1");
+        prosumerTest.getProducers();
     }
 }
