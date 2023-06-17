@@ -1,5 +1,6 @@
 package MSS.storage;
 
+import CF.protocol.ECategory;
 import CF.sendable.EServiceType;
 import CF.sendable.Transaction;
 import MSS.communication.Communication;
@@ -75,7 +76,7 @@ public class MSStorageManager implements Runnable {
     private void createStorageCell() {
         final double DEFAULT_MAX_VOLUME = Double.parseDouble(ConfigFileReader.getProperty("storageCell.capacityInWh"));
         final int DEFAULT_PERIOD = Integer.parseInt(ConfigFileReader.getProperty("storageCell.unusedTimeInSec"));
-        createStorageCell(Duration.ofSeconds(10), 10);
+        createStorageCell(Duration.ofSeconds(DEFAULT_PERIOD), DEFAULT_MAX_VOLUME);
     }
 
 
@@ -161,6 +162,7 @@ public class MSStorageManager implements Runnable {
     @Override
     public void run() {
         communicator.startBrokerRunner(Thread.currentThread().getName());
+        communicator.addMessageHandler(ECategory.Exchange);
 
         while (true) {
             logger.info("Waiting for new transaction");

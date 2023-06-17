@@ -7,16 +7,15 @@ import MSP.Logic.Prosumer.ConsumptionBuilding;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
+import java.util.*;
 
 public class Scheduler {
 
     private static final Logger logger = LogManager.getLogger(Scheduler.class);
 
-    private static double[] lastPrices = new double[10];
+    private LinkedList<Double> lastPrices = new LinkedList<>();
+    private static final int maxSize = 5;
+
 
     // TODO: add last prices
 
@@ -44,14 +43,27 @@ public class Scheduler {
         return summedNeededConsumption;
     }
 
+    public void insertValue(double value) {
+        logger.debug("inserting value: {}",value);
+        if (lastPrices.size() >= maxSize) {
+            lastPrices.removeFirst();
+        }
+        lastPrices.addLast(value);
+    }
+
 
 
     private boolean isPriceDescending() {
-        double threshold = 0.1;
+        double threshold = 1.5;
+        if(lastPrices.size() == 0){
+            return true;
+        }
 
-        for (int i = 1; i < lastPrices.length; i++) {
-            double currentPrice = lastPrices[i];
-            double previousPrice = lastPrices[i - 1];
+        Iterator<Double> iterator = lastPrices.iterator();
+        double previousPrice = iterator.next();
+
+        while (iterator.hasNext()) {
+            double currentPrice = iterator.next();
             double priceDifference = currentPrice - previousPrice;
 
             if (priceDifference > threshold) {
@@ -62,6 +74,8 @@ public class Scheduler {
                 // Non-descending trend
                 return false;
             }
+
+            previousPrice = currentPrice;
         }
         // Descending trend
         return true;

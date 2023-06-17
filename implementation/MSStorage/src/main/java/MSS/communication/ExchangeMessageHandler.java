@@ -43,7 +43,7 @@ public class ExchangeMessageHandler implements IMessageHandler {
 
     private void handleTransaction(Message message) {
         logger.trace("Transaction message received");
-        Transaction newTransaction = (Transaction) message.getSendable(TimeSlot.class);
+        Transaction newTransaction = (Transaction) message.getSendable(Transaction.class);
         try {
             this.incomingTransactionQueue.put(newTransaction);
         } catch (InterruptedException e) {

@@ -16,10 +16,15 @@
     </Appenders>
     <Loggers>
         <!-- Logger for the specific package -->
+        <Logger name="org.hibernate" level="WARN" additivity="false">
+            <AppenderRef ref="ConsoleAppender" />
+            <AppenderRef ref="FileAppender" />
+        </Logger>
         <Logger name="CF" level="OFF" additivity="false">
             <AppenderRef ref="ConsoleAppender" />
             <AppenderRef ref="FileAppender" />
         </Logger>
+
         <!-- Here you can define the log level up to which logging is done -->
         <Root level="trace">
             <!-- Each logger can reference one or more appenders -->
