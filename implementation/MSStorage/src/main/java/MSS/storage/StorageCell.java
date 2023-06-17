@@ -1,5 +1,6 @@
 package MSS.storage;
 ;
+import MSS.exceptions.StorageIsNotRunnigException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,30 +31,30 @@ public class StorageCell implements Runnable {
         logger.debug("New Storage Cell ID:{} Cell created with maxVolume: {} and currentVolume: {}", storageCellID, maxVolumeInWh, currentVolume);
     }
 
-    public void setLastUsed() {
-        if(!isRunning) throw new IllegalStateException("StorageCell is not running");
+    public void setLastUsed() throws StorageIsNotRunnigException {
+        if(!isRunning) throw new StorageIsNotRunnigException();
         this.lastUsed = Instant.now();
         String formattedTime = DateTimeFormatter.ofPattern("HH:mm:ss")
                 .withZone(ZoneId.systemDefault())
                 .format(lastUsed);
         logger.trace("StorageCell lastUsed set to: " + formattedTime);
     }
-    private void isTerminated() {
-        if(!isRunning) throw new IllegalStateException("StorageCell is not running");
+    private void isTerminated() throws StorageIsNotRunnigException {
+        if(!isRunning) throw new StorageIsNotRunnigException();
     }
 
-    public int getStorageCellID() {
+    public int getStorageCellID() throws StorageIsNotRunnigException {
         isTerminated();
         return storageCellID;
     }
 
-    private boolean isEnoughSpace(double volumeToAdd) {
+    private boolean isEnoughSpace(double volumeToAdd) throws StorageIsNotRunnigException {
         isTerminated();
         if(this.currentVolume + volumeToAdd <= this.maxVolumeInWh) return true;
         else return false;
     }
 
-    public double increaseVolume(double volumeToAdd) {
+    public double increaseVolume(double volumeToAdd) throws StorageIsNotRunnigException {
         isTerminated();
         if(this.currentVolume == this.maxVolumeInWh) return volumeToAdd;
         if(isEnoughSpace(volumeToAdd)) {
@@ -69,7 +70,7 @@ public class StorageCell implements Runnable {
         }
     }
 
-    public double decrementVolume(double volumeToDecrement) {
+    public double decrementVolume(double volumeToDecrement) throws StorageIsNotRunnigException {
         isTerminated();
         if(this.currentVolume == 0) return volumeToDecrement;
         if(this.currentVolume - volumeToDecrement >= 0) {

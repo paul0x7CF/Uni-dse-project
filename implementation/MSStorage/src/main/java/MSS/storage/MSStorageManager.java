@@ -11,6 +11,7 @@ import MSS.dataBase.TransactionConverter;
 import MSS.dataBase.TransactionDAO;
 import MSS.exceptions.StorageEmptyException;
 import MSS.exceptions.StorageExiredException;
+import MSS.exceptions.StorageIsNotRunnigException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -112,7 +113,7 @@ public class MSStorageManager implements Runnable {
      * @param volumeToAdd The volume to add to the storage cells.
      * @throws StorageExiredException If there is not enough capacity in the storage cells to add the specified volume.
      */
-    private void increaseStorageCellVolume(double volumeToAdd) {
+    private void increaseStorageCellVolume(double volumeToAdd) throws StorageIsNotRunnigException {
         double addedResult = 0;
         for (var entry : this.storageCells.entrySet()) {
             StorageCell currStorageCell = entry.getValue();
@@ -142,7 +143,7 @@ public class MSStorageManager implements Runnable {
      * @throws StorageEmptyException If there is not enough volume in the storage cells to decrement the specified
      *                               amount.
      */
-    private void decrementStorageCellVolume(double volumeToDecrement) {
+    private void decrementStorageCellVolume(double volumeToDecrement) throws StorageIsNotRunnigException {
         double result = volumeToDecrement;
 
         ListIterator<Map.Entry<Integer, StorageCell>> iterator = new ArrayList<>(this.storageCells.entrySet()).listIterator(this.storageCells.size());
@@ -184,11 +185,21 @@ public class MSStorageManager implements Runnable {
 
                 if (newTransaction.getBuyerID().equals(communicator.getMyMSData().getId())) {
                     logger.info("Storage is buyer of the transaction");
-                    increaseStorageCellVolume(newTransaction.getAmount());
+                    try {
+                        increaseStorageCellVolume(newTransaction.getAmount());
+                    } catch (StorageIsNotRunnigException e) {
+                        logger.warn("tried to increase storage cell volume but storage Cell is shuted down; trying again");
+                        increaseStorageCellVolume(newTransaction.getAmount());
+                    }
                     this.wallet.decrementCashBalance(newTransaction.getPrice() * newTransaction.getAmount());
                 } else if (newTransaction.getSellerID().equals(communicator.getMyMSData().getId())) {
                     logger.info("Storage is seller of the transaction");
-                    decrementStorageCellVolume(newTransaction.getAmount());
+                    try {
+                        decrementStorageCellVolume(newTransaction.getAmount());
+                    } catch (StorageIsNotRunnigException e) {
+                        logger.warn("tried to decrement storage cell volume but storage Cell is shuted down; trying again");
+                        decrementStorageCellVolume(newTransaction.getAmount());
+                    }
                     this.wallet.incrementCashBalance(newTransaction.getPrice() * newTransaction.getAmount());
                 } else {
                     logger.info("Storage is not involved in the transaction and will only save it in the DB");
@@ -199,8 +210,8 @@ public class MSStorageManager implements Runnable {
                 logger.info("Transaction saved in DB");
 
 
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+            } catch (InterruptedException | StorageIsNotRunnigException e) {
+                logger.error(e.getMessage());
             }
 
 

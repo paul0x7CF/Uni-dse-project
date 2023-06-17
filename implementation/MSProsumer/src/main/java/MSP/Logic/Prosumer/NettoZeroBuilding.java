@@ -48,12 +48,12 @@ public class NettoZeroBuilding extends ConsumptionBuilding {
 
     private CallbackSellLower actSellLowerQuestion() {
         CallbackSellLower callbackOnSellLower = sellToChange -> {
-            logger.info("SellLower callback received with min sell price from Exchange {}", sellToChange.getAskPrice());
+            logger.debug("SellLower callback received with min sell price from Exchange {}", sellToChange.getAskPrice());
             double priceToChange = sellToChange.getAskPrice();
             priceToChange = this.wallet.getLowerSellPrice(priceToChange);
             sellToChange.setAskPrice(priceToChange);
             try {
-                logger.debug("SellLower Response with price {}", sellToChange.getAskPrice());
+                logger.info("SellLower Response with price {}", sellToChange.getAskPrice());
                 this.communicator.sendLowerSell(sellToChange);
             } catch (ServiceNotFoundException e) {
                 logger.error(e.getMessage());

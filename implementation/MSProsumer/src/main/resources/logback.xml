@@ -33,17 +33,21 @@
     </appender>
 
     <!-- LOG everything at INFO level -->
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="RollingFile" />
         <appender-ref ref="Console" />
     </root>
 
     <!-- LOG "com.baeldung*" at TRACE level -->
-    <logger name="com.baeldung" level="trace" additivity="false">
+    <logger name="com.baeldung" level="warn" additivity="false">
         <appender-ref ref="RollingFile" />
         <appender-ref ref="Console" />
     </logger>
     <logger name="CF" level="off" additivity="false">
+        <appender-ref ref="RollingFile" />
+        <appender-ref ref="Console" />
+    </logger>
+    <logger name="org.springframework" level="off" additivity="false">
         <appender-ref ref="RollingFile" />
         <appender-ref ref="Console" />
     </logger>

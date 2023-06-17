@@ -4,6 +4,7 @@ package MSS.dataBase;
 import CF.sendable.Transaction;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -28,6 +29,10 @@ public class DbTransaction {
     @Column(name = "auction_id")
     private UUID auctionID;
 
+    @Column(name = "timestamp")
+    @Convert(converter = LocalDateTimeConverter.class)
+    private LocalDateTime timestamp;
+
     public DbTransaction() {
     }
 
@@ -38,6 +43,7 @@ public class DbTransaction {
         this.amount = amount;
         this.price = price;
         this.auctionID = auctionID;
+        this.timestamp = LocalDateTime.now();
 
     }
 

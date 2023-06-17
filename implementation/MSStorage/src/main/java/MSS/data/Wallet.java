@@ -20,7 +20,7 @@ public class Wallet {
 
     public void incrementCashBalance(double moneyToAdd) {
         this.cashBalance += moneyToAdd;
-        logger.debug("Wallet cashBalance increased by {}; new cashBalance: {}", moneyToAdd, this.cashBalance);
+        logger.info("Wallet cashBalance increased by {}; new cashBalance: {}", moneyToAdd, this.cashBalance);
     }
 
     public void decrementCashBalance(double moneyToRemove) {
@@ -35,7 +35,7 @@ public class Wallet {
             }
         }else {
             this.cashBalance -= moneyToRemove;
-            logger.debug("Wallet cashBalance decreased by {}; new cashBalance: {}", moneyToRemove, this.cashBalance);
+            logger.info("Wallet cashBalance decreased by {}; new cashBalance: {}", moneyToRemove, this.cashBalance);
         }
     }
 }

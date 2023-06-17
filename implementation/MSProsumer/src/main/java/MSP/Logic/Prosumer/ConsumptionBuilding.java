@@ -66,8 +66,10 @@ public class ConsumptionBuilding implements RESTData, Runnable {
     }
 
     protected void initializeConsumer() {
-        final int INITIALIZED_CONSUMER_AMOUNT = Integer.parseInt(ConfigFileReader.getProperty("consumer.amount"));
-        for (int i = 1; i <= INITIALIZED_CONSUMER_AMOUNT; i++) {
+        final int INITIALIZED_MAX_CONSUMER_AMOUNT = Integer.parseInt(ConfigFileReader.getProperty("consumer.amount"));
+        Random random = new Random();
+        int randomConsumerAmount = random.nextInt(INITIALIZED_MAX_CONSUMER_AMOUNT) + 1;
+        for (int i = 1; i <= randomConsumerAmount; i++) {
             createConsumer(EConsumerType.valueOf(ConfigFileReader.getProperty("consumer.type" + i)));
         }
     }
@@ -82,16 +84,16 @@ public class ConsumptionBuilding implements RESTData, Runnable {
 
     private CallbackTransaction actOnTransactionFinished() {
         CallbackTransaction callbackOnTransaction = (totalPrice, singlePrice) -> {
-            logger.debug("Transaction callback received with Total price {}", totalPrice);
+            logger.info("Transaction callback received with Total price {}", totalPrice);
             if (totalPrice > 0) {
-                logger.debug("Prosumer is Seller");
+                logger.info("Prosumer is Seller");
                 wallet.incrementCashBalance(totalPrice);
             } else {
-                logger.debug("Prosumer is Buyer");
+                logger.info("Prosumer is Buyer");
                 wallet.decrementCashBalance(totalPrice);
             }
             this.scheduler.insertValue(singlePrice);
-            logger.debug("New cash balance {}", wallet.getCashBalance());
+            logger.info("New cash balance {}", wallet.getCashBalance());
             logger.info("---------------------TimeSlot finished---------------------------");
         };
         return callbackOnTransaction;
@@ -100,12 +102,12 @@ public class ConsumptionBuilding implements RESTData, Runnable {
 
     public CallbackBidHigher actBidHigherQuestion() {
         return bidToChange -> {
-            logger.info("BidHigher callback received with min Bid price from Exchange {}", bidToChange.getPrice());
+            logger.debug("BidHigher callback received with min Bid price from Exchange {}", bidToChange.getPrice());
             double priceToChange = bidToChange.getPrice();
             priceToChange = this.wallet.getHigherBidPrice(priceToChange);
             bidToChange.setPrice(priceToChange);
             try {
-                logger.debug("BidHigher Response with price {}", bidToChange.getPrice());
+                logger.info("BidHigher Response with price {}", bidToChange.getPrice());
                 this.communicator.sendHigherBid(bidToChange);
             } catch (ServiceNotFoundException e) {
                 logger.error(e.getMessage());
@@ -174,7 +176,7 @@ public class ConsumptionBuilding implements RESTData, Runnable {
 
 
         try {
-            Thread.sleep(1000);
+            Thread.sleep(10000);
             while (true) {
                 reset();
                 logger.info("Waiting for new TimeSlot");
