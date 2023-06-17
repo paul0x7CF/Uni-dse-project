@@ -10,6 +10,8 @@ import msExchange.networkCommunication.CommunicationExchange;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -17,13 +19,14 @@ public class MSExchange implements Runnable {
     private static final Logger logger = LogManager.getLogger(MSExchange.class);
     private final int INSTANCE_NUMBER;
     private final boolean DUPLICATED;
-    private boolean atCapacity = false;
-    private boolean first = true; //TODO: remove after testing
-    private BlockingQueue<Message> incomingMessages = new LinkedBlockingQueue<>();
-    private BlockingQueue<Transaction> outgoingTransactions = new LinkedBlockingQueue<>();
+    private final double TERMINATE_MINUTES;
+    private final BlockingQueue<Message> incomingMessages = new LinkedBlockingQueue<>();
+    private final BlockingQueue<Transaction> outgoingTransactions = new LinkedBlockingQueue<>();
     private CommunicationExchange communication;
     private ExchangeMessageHandler messageHandler;
     private MessageBuilder messageBuilder;
+    private Timer timer = null;
+    private boolean atCapacity = false;
 
 
     public MSExchange(boolean duplicated, int instanceNumber) {
@@ -36,6 +39,7 @@ public class MSExchange implements Runnable {
         logger.info("EXCHANGE: Starting Exchange as {}, instance. Number {}", loggingMessage, instanceNumber);
         this.DUPLICATED = duplicated;
         this.INSTANCE_NUMBER = instanceNumber;
+        this.TERMINATE_MINUTES = new PropertyFileReader().getTerminateMinutes();
     }
 
     private void startCommunication() {
@@ -45,6 +49,17 @@ public class MSExchange implements Runnable {
         }, "ExchangeCommunicationThread");
         communicationThread.start();
 
+    }
+
+    private void scheduleTermination(long delayInMilliseconds) {
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                logger.info("EXCHANGE: Terminating MSExchange after {} milliseconds", delayInMilliseconds);
+                System.exit(0);  // Alternativ können Sie anstelle von System.exit(0) eine andere Methode zum Beenden des Programms aufrufen.
+            }
+        }, delayInMilliseconds);
     }
 
     @Override
@@ -75,26 +90,29 @@ public class MSExchange implements Runnable {
     }
 
     private void checkCapacity() {
+        if (incomingMessages.size() == 0 && isDuplicated()) {
+            if (timer == null) {
+                scheduleTermination((long) (TERMINATE_MINUTES * 60));
+                return;
+            }
+        }
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
         PropertyFileReader propertyFileReader = new PropertyFileReader();
         int CAPACITY = Integer.parseInt(propertyFileReader.getCapacity());
 
+
         if (!atCapacity) {
             if (incomingMessages.size() >= CAPACITY) {
-                logger.warn("EXCHANGE: BidQueue is full!");
-                communication.sendMessage(messageBuilder.buildCapacityMessage());
-            }
-            //TODO: remove this if statement after testing
-            if (!isDuplicated() && first) {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                first = false;
+                logger.warn("EXCHANGE: Queue is full!");
+                atCapacity = true;
                 communication.sendMessage(messageBuilder.buildCapacityMessage());
             }
         } else {
             if (incomingMessages.size() < CAPACITY / 2) {
+                atCapacity = false;
                 communication.sendMessage(messageBuilder.buildCapacityMessage());
             }
         }

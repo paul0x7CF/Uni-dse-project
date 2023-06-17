@@ -6,7 +6,9 @@
         <!-- This appender defines stdout as its target -->
         <Console name="ConsoleAppender" target="SYSTEM_OUT">
             <PatternLayout disableAnsi="false">
-                <pattern>%d{HH:mm:ss.SSS} [%t] %highlight{%level}{FATAL=bg_red, ERROR=red, WARN=yellow, INFO=green, DEBUG=blue, TRACE=magenta} - %msg%n%throwable</pattern>
+                <pattern>%d{HH:mm:ss.SSS} [%t] %highlight{%level}{FATAL=bg_red, ERROR=red, WARN=yellow, INFO=green,
+                    DEBUG=blue, TRACE=magenta} - %msg%n%throwable
+                </pattern>
             </PatternLayout>
         </Console>
         <!-- This appender defines a pattern for a file name to log to a file -->
@@ -15,19 +17,19 @@
         </File>
     </Appenders>
     <Loggers>
-        <Logger name="CF" level="OFF" additivity="false">
-            <AppenderRef ref="ConsoleAppender" />
-            <AppenderRef ref="FileAppender" />
-        </Logger>-->
+        <Logger name="CF" level="ON" additivity="false">
+            <AppenderRef ref="ConsoleAppender"/>
+            <AppenderRef ref="FileAppender"/>
+        </Logger>
+        -->
         <!-- Here you can define the log level up to which logging is done -->
         <Root level="debug">
             <!-- Each logger can reference one or more appenders -->
-            <AppenderRef ref="ConsoleAppender" />
+            <AppenderRef ref="ConsoleAppender"/>
             <AppenderRef ref="FileAppender"/>
         </Root>
     </Loggers>
 </Configuration>
-
 
 
         <!--

@@ -1,6 +1,6 @@
 package mainPackage;
 
-import loadManager.prosumerActionManagement.priceCalculationStrategy.*;
+import loadManager.prosumerActionManagement.priceCalculationStrategy.IPriceMechanism;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -22,10 +22,6 @@ public class PropertyFileReader {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public String getNumNewTimeSlots() {
-        return getProperty("timeslot.numNewTimeSlots");
     }
 
     public String getMaxNumTimeSlotSaved() {
@@ -79,5 +75,9 @@ public class PropertyFileReader {
                  InvocationTargetException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public double getTerminateMinutes() {
+        return Double.parseDouble(getProperty("exchange.terminateMinutes"));
     }
 }
