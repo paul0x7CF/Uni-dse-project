@@ -104,19 +104,18 @@ public class Controller implements Runnable {
                         throw new RuntimeException(e);
                     }
                 }
-                if (first) {
-                    try {
-                        TimeSlot newTimeSlot = timeSlotBuilder.addNewTimeSlot();
-                        logger.info("----------------Timeslot {} started!----------------", newTimeSlot.getTimeSlotID());
-                        List<Message> messages = messageBuilder.buildTimeSlotMessages(newTimeSlot);
-                        for (Message message : messages) {
-                            communication.sendMessage(message);
-                        }
-                    } catch (InvalidTimeSlotException e) {
-                        throw new RuntimeException(e);
+
+                try {
+                    TimeSlot newTimeSlot = timeSlotBuilder.addNewTimeSlot();
+                    logger.info("----------------Timeslot {} started!----------------", newTimeSlot.getTimeSlotID());
+                    List<Message> messages = messageBuilder.buildTimeSlotMessages(newTimeSlot);
+                    for (Message message : messages) {
+                        communication.sendMessage(message);
                     }
-                    //first = false;
+                } catch (InvalidTimeSlotException e) {
+                    throw new RuntimeException(e);
                 }
+
             }
         }
     }
