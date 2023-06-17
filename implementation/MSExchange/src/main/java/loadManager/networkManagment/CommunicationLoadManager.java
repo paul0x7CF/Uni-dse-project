@@ -1,10 +1,10 @@
 package loadManager.networkManagment;
 
-import mainPackage.BaseCommunication;
-import mainPackage.networkHelper.IncomingMessageHandler;
 import CF.protocol.ECategory;
 import CF.protocol.Message;
 import CF.sendable.EServiceType;
+import mainPackage.networkHelper.BaseCommunication;
+import mainPackage.networkHelper.IncomingMessageHandler;
 
 import java.util.concurrent.BlockingQueue;
 
