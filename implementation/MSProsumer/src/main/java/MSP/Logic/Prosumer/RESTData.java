@@ -6,6 +6,8 @@ import MSP.Data.EProducerType;
 import MSP.Data.Producer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 
@@ -18,6 +20,7 @@ import java.util.HashSet;
  *
  * @see MSP.Communication.Communication
  */
+
 public interface RESTData {
     final Logger logger = LogManager.getLogger(RESTData.class);
 

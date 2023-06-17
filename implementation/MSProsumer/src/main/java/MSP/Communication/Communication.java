@@ -14,6 +14,7 @@ import MSP.Communication.MessageHandling.AuctionMessageHandler;
 import MSP.Communication.MessageHandling.ExchangeMessageHandler;
 import MSP.Communication.MessageHandling.ForecastMessageHandler;
 import CF.broker.BrokerRunner;
+import MSP.Logic.Prosumer.RESTData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import CF.protocol.ECategory;
@@ -47,23 +48,22 @@ public class Communication {
 
     // Define the constructor
 
-    public Communication(BlockingQueue<TimeSlot> availableTimeSlot, final int port, EServiceType serviceType, LinkedHashSet<Consumer> consumers) {
+    public Communication(BlockingQueue<TimeSlot> availableTimeSlot, final int port, EServiceType serviceType, RESTData restData) {
         this.inputQueueTimeSlot = availableTimeSlot;
         this.serviceType = serviceType;
         createBroker(port);
         this.messageBuilder = new MessageBuilder(this.myMSData);
 
-       /* ConfigurableApplicationContext context = new SpringApplicationBuilder()
+       /*ConfigurableApplicationContext context = new SpringApplicationBuilder()
                 .sources(RestHandler.class)
                 .properties(Collections.singletonMap("rest.port", port + 2))
                 .initializers((ApplicationContextInitializer<GenericApplicationContext>) ctx -> {
                     // Set the port value in the RestHandler bean
-                    ctx.getBeanFactory().registerSingleton("restHandler", new RestHandler(consumers));
+                    ctx.getBeanFactory().registerSingleton("restHandler", new RestHandler(restData));
                 })
                 .run();*/
 
         ConfigurableApplicationContext context = new SpringApplicationBuilder(RestHandler.class).properties(Collections.singletonMap("server.port", port + 2)).run();
-
         logger.info("BrokerRunner initialized with Ip: {} Port: {}", this.myMSData.getAddress(), this.myMSData.getPort());
     }
 
