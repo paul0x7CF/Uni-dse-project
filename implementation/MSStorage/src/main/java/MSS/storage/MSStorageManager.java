@@ -36,6 +36,8 @@ public class MSStorageManager implements Runnable {
 
     private TransactionDAO transactionDAO;
 
+    private boolean first = true;
+
 
     /**
      * Constructs an instance of the MSStorageManager class. It initializes the callbackTermination object.
@@ -62,9 +64,9 @@ public class MSStorageManager implements Runnable {
      * @param period    The period for the storage cell.
      * @param maxVolume The maximum volume for the storage cell.
      */
-    private void createStorageCell(Duration period, double maxVolume) {
+    private void createStorageCell(Duration period, double maxVolume, double currentVolume) {
         int nextStorageCellID = this.storageCells.size();
-        StorageCell storageCellToStart = new StorageCell(period, maxVolume, this.callbackTermination, nextStorageCellID);
+        StorageCell storageCellToStart = new StorageCell(period, maxVolume, currentVolume, this.callbackTermination, nextStorageCellID);
         this.storageCells.put(nextStorageCellID, storageCellToStart);
         new Thread(storageCellToStart, "Storage-Cell-" + nextStorageCellID).start();
     }
@@ -76,7 +78,15 @@ public class MSStorageManager implements Runnable {
     private void createStorageCell() {
         final double DEFAULT_MAX_VOLUME = Double.parseDouble(ConfigFileReader.getProperty("storageCell.capacityInWh"));
         final int DEFAULT_PERIOD = Integer.parseInt(ConfigFileReader.getProperty("storageCell.unusedTimeInSec"));
-        createStorageCell(Duration.ofSeconds(DEFAULT_PERIOD), DEFAULT_MAX_VOLUME);
+        double currentVolume;
+        if (first) {
+            currentVolume = Double.parseDouble(ConfigFileReader.getProperty("storageCell.currentVolumeInWh"));
+            first = false;
+        } else {
+            currentVolume = 0;
+        }
+        createStorageCell(Duration.ofSeconds(DEFAULT_PERIOD), DEFAULT_MAX_VOLUME, currentVolume);
+        logger.debug("Storage Cell created with default values available Storage Cells: {}", this.storageCells.size());
     }
 
 
@@ -116,6 +126,7 @@ public class MSStorageManager implements Runnable {
                 throw new StorageExiredException("Not enough StorageCell available to adding the asked volume of " + volumeToAdd);
             } catch (StorageExiredException e) {
                 logger.warn(e.getMessage() + "; creating new one");
+                createStorageCell();
                 increaseStorageCellVolume(volumeToAdd);
             }
         }
@@ -165,7 +176,7 @@ public class MSStorageManager implements Runnable {
         communicator.addMessageHandler(ECategory.Exchange);
 
         while (true) {
-            logger.info("Waiting for new transaction");
+            logger.debug("Waiting for new transaction");
             try {
                 Transaction newTransaction = this.incomingTransactionQueue.take();
 

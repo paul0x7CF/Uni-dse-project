@@ -4,6 +4,7 @@ import MSP.Configuration.ConfigFileReader;
 import MSP.Data.EProsumerType;
 import MSP.Logic.Prosumer.ConsumptionBuilding;
 import MSP.Logic.Prosumer.NettoZeroBuilding;
+import MSP.Logic.Prosumer.PublicBuilding;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,9 +36,13 @@ public class Main {
                     amountOfNettoZeroBuilding++;
                     new Thread(new NettoZeroBuilding(prosumerType, CASH_BALANCE, PORT),"Prosumer-"+i).start();
                 }
-                case CONSUMPTION_BUILDING, PUBLIC_BUILDING -> {
+                case CONSUMPTION_BUILDING -> {
                     amountOfConsumptionBuilding++;
                     new Thread(new ConsumptionBuilding(prosumerType, CASH_BALANCE, PORT),"Prosumer-"+i).start();
+                }
+                case PUBLIC_BUILDING -> {
+                    amountOfPublicBuilding++;
+                    new Thread(new PublicBuilding(prosumerType, CASH_BALANCE, PORT),"Prosumer-"+i).start();
                 }
             }
         }
