@@ -12,21 +12,33 @@ import java.util.UUID;
 
 public class LoadManager {
     private static final Logger logger = LogManager.getLogger(LoadManager.class);
+    private final List<ExchangeServiceInformation> listExchangeServices = Collections.synchronizedList(new ArrayList<>());
     private int nextServiceID = 1;
-    private List<ExchangeServiceInformation> listExchangeServices = Collections.synchronizedList(new ArrayList<>());
 
     public void addExchangeServiceInformation(ExchangeServiceInformation exchangeServiceInformation) {
-        checkExchangeServiceInformation(exchangeServiceInformation);
+        if (exchangeServiceInformation == null) {
+            throw new IllegalArgumentException("LOAD_MANAGER: ExchangeServiceInformation is null");
+        }
 
-        listExchangeServices.add(exchangeServiceInformation);
-        logger.info("LOAD_MANAGER: Added ExchangeServiceInformation with ID: {}", exchangeServiceInformation.getExchangeID());
+        if (!listExchangeServices.contains(exchangeServiceInformation)) {
+            listExchangeServices.add(exchangeServiceInformation);
+            logger.info("LOAD_MANAGER: Added ExchangeServiceInformation with ID: {}", exchangeServiceInformation.getExchangeID());
+
+        }
     }
 
+    //TODO: remove Exchange Service
     public void removeExchangeServiceInformation(ExchangeServiceInformation exchangeServiceInformation) {
-        checkExchangeServiceInformation(exchangeServiceInformation);
+        if (exchangeServiceInformation == null) {
+            throw new IllegalArgumentException("LOAD_MANAGER: ExchangeServiceInformation is null");
+        }
+
+        if (!listExchangeServices.contains(exchangeServiceInformation)) {
+            throw new IllegalArgumentException("LOAD_MANAGER: ExchangeServiceInformation does not exist");
+        }
 
         listExchangeServices.remove(exchangeServiceInformation);
-        logger.info("LOAD_MANAGER: Removed ExchangeServiceInformation with ID: " + exchangeServiceInformation.getExchangeID());
+        logger.info("LOAD_MANAGER: Removed ExchangeServiceInformation with ID: {}", exchangeServiceInformation.getExchangeID());
     }
 
     public void setExchangeCapacity(UUID exchangeID) {
@@ -62,7 +74,7 @@ public class LoadManager {
                 return exchangeServiceInformation;
             }
         }
-        throw new AllExchangesAtCapacityException("All exchanges are at capacity");
+        throw new AllExchangesAtCapacityException("LOAD_MANAGER: All exchanges are at capacity");
     }
 
     /**
@@ -122,16 +134,6 @@ public class LoadManager {
         }*/
 
         //alternative
-        MSExchange msExchange = new MSExchange(true, nextServiceID++);
-    }
-
-    private void checkExchangeServiceInformation(ExchangeServiceInformation exchangeServiceInformation) {
-        if (exchangeServiceInformation == null) {
-            throw new IllegalArgumentException("LOAD_MANAGER: ExchangeServiceInformation is null");
-        }
-
-        if (!listExchangeServices.contains(exchangeServiceInformation)) {
-            throw new IllegalArgumentException("LOAD_MANAGER: ExchangeServiceInformation does not exist");
-        }
+        new MSExchange(true, nextServiceID++);
     }
 }

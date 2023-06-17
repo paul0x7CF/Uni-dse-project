@@ -17,14 +17,13 @@ import java.util.concurrent.Executors;
 
 public class Bidder {
     private static final Logger logger = LogManager.getLogger(Bidder.class);
-    private final int MAX_THREAD_POOLS;
-    //key -> slotID; each slot has its own auction finding algorithm
-    private Map<UUID, AuctionFindingAlgorithm> auctionFinderPerSlot = new HashMap<>();
-    private UUID bidderID;
-    private BlockingQueue<MessageContent> outgoingQueue;
-    private AuctionManager auctionManager;
-    private AuctionProsumerTracker auctionProsumerTracker;
-    private ExecutorService executorService;
+
+    private final Map<UUID, AuctionFindingAlgorithm> auctionFinderPerSlot = new HashMap<>();//key -> slotID; each slot has its own auction finding algorithm
+    private final UUID bidderID;
+    private final BlockingQueue<MessageContent> outgoingQueue;
+    private final AuctionManager auctionManager;
+    private final AuctionProsumerTracker auctionProsumerTracker;
+    private final ExecutorService executorService;
 
     public Bidder(AuctionManager auctionManager, UUID bidderID, BlockingQueue<MessageContent> outogingMessage, AuctionProsumerTracker auctionProsumerTracker) {
         this.auctionManager = auctionManager;
@@ -33,7 +32,7 @@ public class Bidder {
         this.auctionProsumerTracker = auctionProsumerTracker;
 
         PropertyFileReader propertyFileReader = new PropertyFileReader();
-        MAX_THREAD_POOLS = Integer.parseInt(propertyFileReader.getMaxAuctionFindingAlgorithm());
+        int MAX_THREAD_POOLS = Integer.parseInt(propertyFileReader.getMaxAuctionFindingAlgorithm());
 
         //Create a thread pool with a fixed number of threads
         executorService = Executors.newFixedThreadPool(MAX_THREAD_POOLS);
@@ -54,7 +53,7 @@ public class Bidder {
             //if there is no auction finding algorithm for this slot, create one
             AuctionFindingAlgorithm auctionFindingAlgorithm = new AuctionFindingAlgorithm(bid, auctionManager, outgoingQueue, auctionProsumerTracker);
             auctionFinderPerSlot.put(bid.getTimeSlot(), auctionFindingAlgorithm);
-            logger.debug("auction Finder: " + auctionFinderPerSlot.size() + ", TimeSlot: " + bid.getTimeSlot());
+            logger.debug("LOAD_MANAGER: auction Finder: {} , TimeSlot: {}", auctionFinderPerSlot.size(), bid.getTimeSlot());
             //Create and execute a new thread for the algorithm
             executorService.execute(auctionFindingAlgorithm);
         }
@@ -65,8 +64,8 @@ public class Bidder {
     }
 
     public void endTimeSlot(UUID timeSlotID) {
-        logger.debug("timeSlotID to end: " + timeSlotID);
-        logger.debug("auctionFinderPerSlot size to end: " + auctionFinderPerSlot.size());
+        logger.debug("LOAD_MANAGER: timeSlotID to end: {}", timeSlotID);
+        logger.debug("LOAD_MANAGER: auctionFinderPerSlot size to end: {}", auctionFinderPerSlot.size());
         if (auctionFinderPerSlot.get(timeSlotID) != null) {
             auctionFinderPerSlot.get(timeSlotID).endAuctionFinder();
         }

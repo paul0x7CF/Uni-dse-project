@@ -6,5 +6,4 @@ public enum ESubCategory {
     Transaction,
     TimeSlot,
     Capacity,
-    Error
 }

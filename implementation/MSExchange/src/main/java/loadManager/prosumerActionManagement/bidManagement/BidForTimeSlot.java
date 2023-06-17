@@ -39,7 +39,7 @@ public class BidForTimeSlot {
         for (Bid bid : bidsInAuctions) {
             if (!auctionsBidderIsCurrentWinner.contains(bid.getAuctionID().get())) {
                 bidsToRemove.add(bid);
-                logger.debug("Bidder has been outbid for auction " + bid.getAuctionID().get());
+                logger.debug("LOAD_MANAGER: Bidder has been outbid for auction {}", bid.getAuctionID().get());
             }
         }
         bidsInAuctions.removeAll(bidsToRemove);

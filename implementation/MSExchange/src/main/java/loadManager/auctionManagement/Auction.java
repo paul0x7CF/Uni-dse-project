@@ -9,42 +9,42 @@ import loadManager.SellInformation;
 import java.util.UUID;
 
 public class Auction {
-    private UUID auctionID;
+    private final UUID AUCTION_ID;
+    private final UUID SELLER_ID;
+    private final UUID TIMESLOT_ID;
+    private final double TOTAL_VOLUME;
+    private final UUID EXCHANGE_ID;
     private UUID bidderID;
-    private UUID sellerID;
-    private UUID timeSlotID;
     private double pricePerKWh;
-    private double totalVolume;
     private double coveredVolume = 0;
     private boolean auctionEnded = false;
-    private UUID exchangeID;
 
     public Auction(UUID auctionID, SellInformation sellPosition) {
-        this.auctionID = auctionID;
-        this.sellerID = sellPosition.getSell().getSellerID();
+        this.AUCTION_ID = auctionID;
+        this.SELLER_ID = sellPosition.getSell().getSellerID();
         this.pricePerKWh = sellPosition.getSell().getAskPrice();
-        this.totalVolume = sellPosition.getSell().getVolume();
-        this.timeSlotID = sellPosition.getSell().getTimeSlot();
-        this.exchangeID = sellPosition.getExchangeID();
+        this.TOTAL_VOLUME = sellPosition.getSell().getVolume();
+        this.TIMESLOT_ID = sellPosition.getSell().getTimeSlot();
+        this.EXCHANGE_ID = sellPosition.getExchangeID();
     }
 
     public void setBid(Bid bidPosition) throws InvalidBidException {
         if (!auctionEnded) {
             if (this.bidderID != null) {
                 if (bidPosition.getPrice() > pricePerKWh) {
-                    if (bidPosition.getVolume() <= this.totalVolume) {
+                    if (bidPosition.getVolume() <= this.TOTAL_VOLUME) {
                         this.coveredVolume = bidPosition.getVolume();
                     } else {
-                        throw new InvalidBidException("Bid volume is higher than sell volume", bidPosition);
+                        throw new InvalidBidException("LOAD_MANAGER: Bid volume is higher than sell volume", bidPosition);
                     }
                     this.pricePerKWh = bidPosition.getPrice();
                     this.bidderID = bidPosition.getBidderID();
                 }
             } else {
-                if (bidPosition.getVolume() <= this.totalVolume) {
+                if (bidPosition.getVolume() <= this.TOTAL_VOLUME) {
                     this.coveredVolume = bidPosition.getVolume();
                 } else {
-                    throw new InvalidBidException("Bid volume is higher than sell volume", bidPosition);
+                    throw new InvalidBidException("LOAD_MANAGER: Bid volume is higher than sell volume", bidPosition);
                 }
                 this.pricePerKWh = bidPosition.getPrice();
                 this.bidderID = bidPosition.getBidderID();
@@ -59,16 +59,10 @@ public class Auction {
 
     public Transaction getTransaction() throws CommandNotPossibleException {
         if (!auctionEnded) {
-            throw new CommandNotPossibleException("Auction has not ended yet");
+            throw new CommandNotPossibleException("LOAD_MANAGER: Auction has not ended yet");
         }
-        Transaction transaction = new Transaction(sellerID, bidderID, totalVolume, pricePerKWh, auctionID);
 
-        return transaction;
-
-    }
-
-    public boolean isAuctionEnded() {
-        return this.auctionEnded;
+        return new Transaction(SELLER_ID, bidderID, TOTAL_VOLUME, pricePerKWh, AUCTION_ID);
     }
 
     public double getPrice() {
@@ -80,26 +74,26 @@ public class Auction {
     }
 
     public UUID getAuctionId() {
-        return auctionID;
+        return AUCTION_ID;
     }
 
     public UUID getBidderID() {
         return bidderID;
     }
 
-    public double getTotalVolume() {
-        return this.totalVolume;
+    public double getTOTAL_VOLUME() {
+        return this.TOTAL_VOLUME;
     }
 
-    public UUID getSellerID() {
-        return this.sellerID;
+    public UUID getSELLER_ID() {
+        return this.SELLER_ID;
     }
 
-    public UUID getTimeSlotID() {
-        return this.timeSlotID;
+    public UUID getTIMESLOT_ID() {
+        return this.TIMESLOT_ID;
     }
 
-    public UUID getExchangeID() {
-        return this.exchangeID;
+    public UUID getEXCHANGE_ID() {
+        return this.EXCHANGE_ID;
     }
 }

@@ -1,14 +1,14 @@
 package mainPackage;
 
-import CF.mainPackage.ConfigReader;
 import CF.broker.BrokerRunner;
 import CF.communication.NetworkHandler;
+import CF.mainPackage.ConfigReader;
 import CF.messageHandling.IMessageHandler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import CF.protocol.ECategory;
 import CF.protocol.Message;
 import CF.sendable.EServiceType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -24,12 +24,12 @@ public abstract class BaseCommunication {
         ConfigReader configReader = new ConfigReader();
         PropertyFileReader properties = new PropertyFileReader();
 
-        int port = Integer.parseInt(configReader.getProperty("exchangePort"));
+        int PORT = Integer.parseInt(configReader.getProperty("exchangePort"));
         EServiceType serviceType;
 
         switch (exchangeType) {
             case ExchangeWorker -> {
-                port = port + Integer.parseInt(configReader.getProperty("portJumpSize")) * instanceNumber;
+                PORT = PORT + Integer.parseInt(configReader.getProperty("portJumpSize")) * instanceNumber;
                 serviceType = EServiceType.valueOf(properties.getExchangeServiceType());
             }
             case Exchange -> {
@@ -40,9 +40,9 @@ public abstract class BaseCommunication {
 
 
         this.incomingMessages = incomingMessages;
-        createBroker(port, serviceType);
+        createBroker(PORT, serviceType);
 
-        logger.info("MS registered with Id:" + this.communicationBroker.getCurrentService().getId() + ", Address: " + this.communicationBroker.getCurrentService().getAddress() + ", Port: " + this.communicationBroker.getCurrentService().getPort());
+        logger.info("COMMUNICATION: MS registered with Id: {}, Address: {}, Port: {}" + this.communicationBroker.getCurrentService().getId(), this.communicationBroker.getCurrentService().getAddress(), this.communicationBroker.getCurrentService().getPort());
     }
 
     private void createBroker(int port, EServiceType serviceType) {

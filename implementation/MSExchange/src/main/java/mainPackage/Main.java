@@ -16,14 +16,14 @@ public class Main {
         boolean duplicated = false;
         int instanceNumber = 1;
         if (args.length == 0) {
-            logger.info("No arguments passed, running as non-duplicated");
+            logger.info("MAIN: No arguments passed, running as non-duplicated");
         } else {
             if ("-d".equals(args[0])) {
                 duplicated = true;
             }
             if (args[1] == null) {
-                logger.error("No instance number passed");
-                throw new IllegalStateException("No instance number passed");
+                logger.error("MAIN: No instance number passed");
+                throw new IllegalStateException("MAIN: No instance number passed");
             } else {
                 instanceNumber = Integer.parseInt(args[1]);
             }

@@ -3,16 +3,16 @@ package loadManager.exchangeManagement;
 import java.util.UUID;
 
 public class ExchangeServiceInformation {
-    private UUID exchangeId;
+    private final UUID EXCHANGE_ID;
 
     private boolean atCapacity = false;
 
     public ExchangeServiceInformation(UUID exchangeId) {
-        this.exchangeId = exchangeId;
+        this.EXCHANGE_ID = exchangeId;
     }
 
     public UUID getExchangeId() {
-        return exchangeId;
+        return EXCHANGE_ID;
     }
 
 
@@ -26,6 +26,6 @@ public class ExchangeServiceInformation {
     }
 
     public Object getExchangeID() {
-        return exchangeId;
+        return EXCHANGE_ID;
     }
 }

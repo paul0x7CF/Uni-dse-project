@@ -12,7 +12,7 @@ public class MedianPriceMechanism implements PriceMechanism {
 
     public boolean isBidPriceHighEnough(double price) throws PriceNotOKException {
         if (price <= 0.0) {
-            throw new PriceNotOKException("Price can't be zero or lower");
+            throw new PriceNotOKException("LOAD_MANAGER: Price can't be zero or lower");
         }
 
         if (bidPrices.isEmpty()) {
@@ -29,7 +29,7 @@ public class MedianPriceMechanism implements PriceMechanism {
 
     public boolean isAskPriceLowEnough(double price) throws PriceNotOKException {
         if (price <= 0.0) {
-            throw new PriceNotOKException("Price can't be zero or lower");
+            throw new PriceNotOKException("LOAD_MANAGER: Price can't be zero or lower");
         }
 
         if (askPrices.isEmpty()) {

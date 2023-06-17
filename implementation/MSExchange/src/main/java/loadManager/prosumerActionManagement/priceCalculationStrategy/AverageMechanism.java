@@ -24,7 +24,7 @@ public class AverageMechanism implements PriceMechanism {
 
     public boolean isBidPriceHighEnough(double price) throws PriceNotOKException {
         if (price <= 0.0) {
-            throw new PriceNotOKException("Price can't be zero or lower");
+            throw new PriceNotOKException("LOAD_MANAGER: Price can't be zero or lower");
         }
 
         if (averagePrice == 0.0) {
@@ -42,7 +42,7 @@ public class AverageMechanism implements PriceMechanism {
 
     public boolean isAskPriceLowEnough(double price) throws PriceNotOKException {
         if (price <= 0.0) {
-            throw new PriceNotOKException("Price can't be zero or lower");
+            throw new PriceNotOKException("LOAD_MANAGER: Price can't be zero or lower");
         }
 
         if (averagePrice == 0.0) {
@@ -77,7 +77,7 @@ public class AverageMechanism implements PriceMechanism {
         double askPriceK = sortedAskPrices.get(k - 1);
         averagePrice = (bidPriceK + askPriceK) / 2.0;
 
-        logger.debug("Average Price is " + averagePrice);
+        logger.debug("LOAD_MANAGER: Average Price is {}", averagePrice);
     }
 
 

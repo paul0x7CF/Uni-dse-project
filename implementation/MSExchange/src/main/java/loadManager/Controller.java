@@ -25,10 +25,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class Controller implements Runnable {
     private static final Logger logger = LogManager.getLogger(Controller.class);
-    private BlockingQueue<Message> incomingQueue = new LinkedBlockingQueue<>();
-    private BlockingQueue<MessageContent> outgoingQueue = new LinkedBlockingQueue<>();
-    private List<UUID> exchangeServiceIds = new ArrayList<>();
-    private TimeSlotBuilder timeSlotBuilder = new TimeSlotBuilder();
+    private final BlockingQueue<Message> incomingQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<MessageContent> outgoingQueue = new LinkedBlockingQueue<>();
+    private final List<UUID> exchangeServiceIds = new ArrayList<>();
+    private final TimeSlotBuilder timeSlotBuilder = new TimeSlotBuilder();
     private CommunicationLoadManager communication;
     private LoadManagerMessageHandler messageHandler;
     private MessageBuilder messageBuilder;
