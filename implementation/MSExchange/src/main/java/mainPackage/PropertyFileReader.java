@@ -1,8 +1,13 @@
 package mainPackage;
 
+import loadManager.prosumerActionManagement.priceCalculationStrategy.*;
+
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
+
 
 public class PropertyFileReader {
 
@@ -60,7 +65,19 @@ public class PropertyFileReader {
         return getProperty("timeSlot.checkInterval");
     }
 
-    public String getK(){
+    public String getK() {
         return getProperty("loadManager.averagePriceK");
+    }
+
+    public IPriceMechanism getPriceMechanism() {
+        try {
+            Class<?> clazz = Class.forName(getProperty("loadManager.priceMechanism"));
+            Constructor<?> constructor = clazz.getDeclaredConstructor();
+
+            return (IPriceMechanism) constructor.newInstance();
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | NoSuchMethodException |
+                 InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

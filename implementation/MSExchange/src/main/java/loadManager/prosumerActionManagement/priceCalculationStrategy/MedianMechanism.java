@@ -1,14 +1,21 @@
 package loadManager.prosumerActionManagement.priceCalculationStrategy;
 
 import MSP.Exceptions.PriceNotOKException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class MedianPriceMechanism implements PriceMechanism {
+public class MedianMechanism implements IPriceMechanism {
+    private static final Logger logger = LogManager.getLogger(MedianMechanism.class);
     private List<Double> bidPrices = new ArrayList<>();
     private List<Double> askPrices = new ArrayList<>();
+
+    public MedianMechanism() {
+        logger.info("LOAD_MANAGER: Using the MedianMechanism");
+    }
 
     public boolean isBidPriceHighEnough(double price) throws PriceNotOKException {
         if (price <= 0.0) {
@@ -57,9 +64,13 @@ public class MedianPriceMechanism implements PriceMechanism {
         if (size % 2 == 0) {
             double middle1 = allPrices.get(size / 2 - 1);
             double middle2 = allPrices.get(size / 2);
-            return (middle1 + middle2) / 2.0;
+            double medianPrice = (middle1 + middle2) / 2.0;
+            logger.debug("LOAD_MANAGER: Median Price is {}", medianPrice);
+            return medianPrice;
         } else {
-            return allPrices.get(size / 2);
+            double medianPrice = allPrices.get(size / 2);
+            logger.debug("LOAD_MANAGER: Median Price is {}", medianPrice);
+            return medianPrice;
         }
     }
 }

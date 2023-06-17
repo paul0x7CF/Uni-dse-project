@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class WeightedMechanism implements PriceMechanism {
+public class WeightedMechanism implements IPriceMechanism {
     private static final Logger logger = LogManager.getLogger(WeightedMechanism.class);
     private final int K_VALUES;
     private double weightedPrice = 0.0;
@@ -18,6 +18,7 @@ public class WeightedMechanism implements PriceMechanism {
     private List<Double> askPrices = new ArrayList<>();
 
     public WeightedMechanism() {
+        logger.info("LOAD_MANAGER: Using the WeightedMechanism");
         PropertyFileReader propertyFileReader = new PropertyFileReader();
         K_VALUES = Integer.parseInt(propertyFileReader.getK());
     }
