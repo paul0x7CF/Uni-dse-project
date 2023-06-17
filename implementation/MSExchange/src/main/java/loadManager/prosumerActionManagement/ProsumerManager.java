@@ -54,9 +54,9 @@ public class ProsumerManager {
                 bidders.add(newBidder);
                 newBidder.handleBid(bid);
             } else {
-                logger.debug("LOAD_MANAGER: Price did not match the average price {} ... sending Bid back to prosumer: original Price: {}", priceMechanism.getKWPrice(), bid.getPrice());
-                if (priceMechanism.getKWPrice() != 0.0) {
-                    bid.setPrice(priceMechanism.getKWPrice());
+                logger.debug("LOAD_MANAGER: Price did not match the average price {} ... sending Bid back to prosumer: original Price: {}", priceMechanism.getWPrice(), bid.getPrice());
+                if (priceMechanism.getWPrice() != 0.0) {
+                    bid.setPrice(priceMechanism.getWPrice());
                 }
                 outgoingQueue.put(new MessageContent(bid, EBuildCategory.BidToProsumer));
             }
@@ -81,10 +81,10 @@ public class ProsumerManager {
             if (priceMechanism.isAskPriceLowEnough(sell.getSell().getAskPrice())) {
                 startNewAuction(sell);
             } else {
-                logger.warn("LOAD_MANAGER: Price did not match the average price {} ... sending Sell back to prosumer: original Price: {}", priceMechanism.getKWPrice(), sell.getSell().getAskPrice());
+                logger.warn("LOAD_MANAGER: Price did not match the average price {} ... sending Sell back to prosumer: original Price: {}", priceMechanism.getWPrice(), sell.getSell().getAskPrice());
 
                 Sell s = sell.getSell();
-                s.setAskPrice(priceMechanism.getKWPrice());
+                s.setAskPrice(priceMechanism.getWPrice());
                 outgoingQueue.put(new MessageContent(s, EBuildCategory.SellToProsumer));
             }
         } catch (PriceNotOKException e) {
@@ -147,7 +147,7 @@ public class ProsumerManager {
         for (Map.Entry<UUID, Double> entry : unsatisfiedSellers.entrySet()) {
             UUID sellerID = entry.getKey();
             Double amount = entry.getValue();
-            MessageContent messageContent = new MessageContent(new Sell(amount, priceMechanism.getKWPrice(), timeSlotID, sellerID), EBuildCategory.SellToStorage);
+            MessageContent messageContent = new MessageContent(new Sell(amount, priceMechanism.getWPrice(), timeSlotID, sellerID), EBuildCategory.SellToStorage);
             try {
                 outgoingQueue.put(messageContent);
             } catch (InterruptedException e) {

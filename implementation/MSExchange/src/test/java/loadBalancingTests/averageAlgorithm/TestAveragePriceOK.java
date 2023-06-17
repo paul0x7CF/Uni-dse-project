@@ -39,7 +39,7 @@ public class TestAveragePriceOK {
             throw new RuntimeException(e);
         }
 
-        Assertions.assertEquals(100, averageMechanism.getKWPrice());
+        Assertions.assertEquals(100, averageMechanism.getWPrice());
     }
 
     @Test
@@ -73,7 +73,7 @@ public class TestAveragePriceOK {
         } catch (PriceNotOKException e) {
             throw new RuntimeException(e);
         }
-        Assertions.assertEquals(price, averageMechanism.getKWPrice());
+        Assertions.assertEquals(price, averageMechanism.getWPrice());
     }
 
     @Test
@@ -102,7 +102,7 @@ public class TestAveragePriceOK {
         } catch (PriceNotOKException e) {
             throw new RuntimeException(e);
         }
-        Assertions.assertEquals(price, averageMechanism.getKWPrice());
+        Assertions.assertEquals(price, averageMechanism.getWPrice());
     }
 
     @Test

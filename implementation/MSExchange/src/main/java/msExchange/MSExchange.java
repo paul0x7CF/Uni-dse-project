@@ -124,7 +124,7 @@ public class MSExchange implements Runnable {
         if (transaction != null) {
             logger.debug("EXCHANGE: taking outgoing transaction: " + transaction);
             for (Message message : messageBuilder.buildMessage(transaction)) {
-                logger.info("EXCHANGE: Sending Transaction to: " + transaction.getBuyerID() + " and " + transaction.getSellerID() + " for volume: " + transaction.getAmount() + " with price/kwh: " + transaction.getPrice());
+                logger.info("EXCHANGE: Sending Transaction to: " + transaction.getBuyerID() + " and " + transaction.getSellerID() + " for volume: " + transaction.getAmount() + " with price/Wh: " + transaction.getPrice());
                 communication.sendMessage(message);
             }
         }

@@ -88,7 +88,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
         bidValidator.validateSendable(message.getSendable(Bid.class));
         Bid bid = (Bid) message.getSendable(Bid.class);
         IValidator.validateAuctionID(bid.getAuctionID(), myMSData.getType());
-        logger.info("LOAD_MANAGER: Bid is valid: price: {}, volume: {} for TimeSlot: {}", bid.getPrice(), bid.getVolume(), bid.getTimeSlot());
+        logger.info("LOAD_MANAGER: Bid from {} is valid: price: {}, volume: {} for TimeSlot: {}", bid.getBidderID(), bid.getPrice(), bid.getVolume(), bid.getTimeSlot());
         prosumerManager.handleNewBid(bid);
     }
 
@@ -99,7 +99,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
 
         Sell sell = (Sell) message.getSendable(Sell.class);
         IValidator.validateAuctionID(sell.getAuctionID(), myMSData.getType());
-        logger.info("LOAD_MANAGER: Sell is valid: price: {}, volume: {} for TimeSlot: {} ", sell.getAskPrice(), sell.getVolume(), sell.getTimeSlot());
+        logger.info("LOAD_MANAGER: Sell from {} is valid: price: {}, volume: {} for TimeSlot: {} ", sell.getSellerID(), sell.getAskPrice(), sell.getVolume(), sell.getTimeSlot());
 
         SellInformation sellInformation = waitForFreeExchange();
         sellInformation.setSell(sell);

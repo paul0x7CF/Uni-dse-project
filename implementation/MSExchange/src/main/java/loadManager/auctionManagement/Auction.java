@@ -15,14 +15,14 @@ public class Auction {
     private final double TOTAL_VOLUME;
     private final UUID EXCHANGE_ID;
     private UUID bidderID;
-    private double pricePerKWh;
+    private double pricePerWh;
     private double coveredVolume = 0;
     private boolean auctionEnded = false;
 
     public Auction(UUID auctionID, SellInformation sellPosition) {
         this.AUCTION_ID = auctionID;
         this.SELLER_ID = sellPosition.getSell().getSellerID();
-        this.pricePerKWh = sellPosition.getSell().getAskPrice();
+        this.pricePerWh = sellPosition.getSell().getAskPrice();
         this.TOTAL_VOLUME = sellPosition.getSell().getVolume();
         this.TIMESLOT_ID = sellPosition.getSell().getTimeSlot();
         this.EXCHANGE_ID = sellPosition.getExchangeID();
@@ -31,13 +31,13 @@ public class Auction {
     public void setBid(Bid bidPosition) throws InvalidBidException {
         if (!auctionEnded) {
             if (this.bidderID != null) {
-                if (bidPosition.getPrice() > pricePerKWh) {
+                if (bidPosition.getPrice() > pricePerWh) {
                     if (bidPosition.getVolume() <= this.TOTAL_VOLUME) {
                         this.coveredVolume = bidPosition.getVolume();
                     } else {
                         throw new InvalidBidException("LOAD_MANAGER: Bid volume is higher than sell volume", bidPosition);
                     }
-                    this.pricePerKWh = bidPosition.getPrice();
+                    this.pricePerWh = bidPosition.getPrice();
                     this.bidderID = bidPosition.getBidderID();
                 }
             } else {
@@ -46,7 +46,7 @@ public class Auction {
                 } else {
                     throw new InvalidBidException("LOAD_MANAGER: Bid volume is higher than sell volume", bidPosition);
                 }
-                this.pricePerKWh = bidPosition.getPrice();
+                this.pricePerWh = bidPosition.getPrice();
                 this.bidderID = bidPosition.getBidderID();
 
             }
@@ -62,11 +62,11 @@ public class Auction {
             throw new CommandNotPossibleException("LOAD_MANAGER: Auction has not ended yet");
         }
 
-        return new Transaction(SELLER_ID, bidderID, TOTAL_VOLUME, pricePerKWh, AUCTION_ID);
+        return new Transaction(SELLER_ID, bidderID, TOTAL_VOLUME, pricePerWh, AUCTION_ID);
     }
 
     public double getPrice() {
-        return pricePerKWh;
+        return pricePerWh;
     }
 
     public double getCoveredVolume() {

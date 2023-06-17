@@ -59,7 +59,7 @@ public class WeightedMechanism implements IPriceMechanism {
         return false;
     }
 
-    public double getKWPrice() {
+    public double getWPrice() {
         return weightedPrice;
     }
 

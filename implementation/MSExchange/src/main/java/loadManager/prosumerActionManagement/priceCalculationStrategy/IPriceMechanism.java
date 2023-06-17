@@ -7,5 +7,5 @@ public interface IPriceMechanism {
 
     boolean isAskPriceLowEnough(double price) throws PriceNotOKException;
 
-    double getKWPrice();
+    double getWPrice();
 }
