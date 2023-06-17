@@ -31,8 +31,6 @@ public class LoadManager {
             duplicateExchange();
         }*/
     }
-
-    //TODO: remove Exchange Service
     public void removeExchangeServiceInformation(ExchangeServiceInformation exchangeServiceInformation) {
         if (exchangeServiceInformation == null) {
             throw new IllegalArgumentException("LOAD_MANAGER: ExchangeServiceInformation is null");

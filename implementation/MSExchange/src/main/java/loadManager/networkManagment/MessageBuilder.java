@@ -46,7 +46,6 @@ public class MessageBuilder {
         Sell sell = (Sell) content;
         List<Message> messages = new ArrayList<>();
         List<MSData> receiverMS = new ArrayList<>();
-        //TODO: Stoarage ID - wait till Stoarge is there ->
 
         Transaction transaction;
         UUID buyerID = UUID.randomUUID();

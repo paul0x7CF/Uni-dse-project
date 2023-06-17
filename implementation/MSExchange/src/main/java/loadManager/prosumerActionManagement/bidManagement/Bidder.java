@@ -44,7 +44,6 @@ public class Bidder {
     }
 
     private void prepareAuctionFinder(Bid bid) {
-        //TODO: add logic to reuse thread space
 
         if (auctionFinderPerSlot.containsKey(bid.getTimeSlot())) {
             //if there is an auction finding algorithm for this slot, ignore the new bid
