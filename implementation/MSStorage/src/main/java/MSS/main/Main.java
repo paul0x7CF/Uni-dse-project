@@ -19,7 +19,7 @@ public class Main {
     private static final Logger log = LogManager.getLogger(Main.class);
     public static void main(String[] args) {
         // Create a new transaction
-        /*TransactionDAO transactionDAO = new TransactionDAO();
+        TransactionDAO transactionDAO = new TransactionDAO();
         UUID buyerID = UUID.randomUUID();
         UUID sellerID = UUID.randomUUID();
 
@@ -41,13 +41,12 @@ public class Main {
         // Delete the transaction
         transactionDAO.delete(retrievedTransaction.getTransactionID());
         System.out.println("Deleted transaction");
-*/
 
 
-        //int count = transactionDAO.deleteAll();
-        //logger.warn("Deleting all transactions{}" + count);
+        int count = transactionDAO.deleteAll();
+        logger.warn("Deleting all transactions{}" + count);
 
-        final int STORAGE_START_PORT = Integer.parseInt(ConfigFileReader.getCommunicationProperty("storagePort"));
+       final int STORAGE_START_PORT = Integer.parseInt(ConfigFileReader.getCommunicationProperty("storagePort"));
         final double WALLET_START_MONEY = Double.parseDouble(ConfigFileReader.getProperty("walletStartMoney"));
 
         new Thread(new MSStorageManager(STORAGE_START_PORT, WALLET_START_MONEY),"Storage").start();

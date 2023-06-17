@@ -2,8 +2,8 @@ package MSS.dataBase;
 
 
 import CF.sendable.Transaction;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 import java.util.UUID;
 
 @Entity
