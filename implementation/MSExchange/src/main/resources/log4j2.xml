@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="INFO">
+<Configuration status="DEBUG">
     <!-- An appender is the component that effectively writes the log protocol to its destination -->
     <Appenders>
         <!-- For highlighting on stdout I can recommend the Grep Console Plugin Open Plugins with strg+alt+s -->
@@ -17,15 +17,15 @@
         </File>
     </Appenders>
     <Loggers>
-        <Logger name="CF" level="ON" additivity="false">
-            <AppenderRef ref="ConsoleAppender"/>
-            <AppenderRef ref="FileAppender"/>
-        </Logger>
-        -->
+        <!-- Logger for the specific package -->
+        <Logger name="CF" level="info" additivity="false">
+            <AppenderRef ref="ConsoleAppender" />
+            <AppenderRef ref="FileAppender" />
+        </Logger>-->
         <!-- Here you can define the log level up to which logging is done -->
         <Root level="debug">
             <!-- Each logger can reference one or more appenders -->
-            <AppenderRef ref="ConsoleAppender"/>
+            <AppenderRef ref="ConsoleAppender" />
             <AppenderRef ref="FileAppender"/>
         </Root>
     </Loggers>

@@ -59,7 +59,7 @@ public class AverageMechanism implements IPriceMechanism {
         return false;
     }
 
-    public double getKWPrice() {
+    public double getWPrice() {
         return averagePrice;
     }
 
@@ -78,7 +78,7 @@ public class AverageMechanism implements IPriceMechanism {
         double askPriceK = sortedAskPrices.get(k - 1);
         averagePrice = (bidPriceK + askPriceK) / 2.0;
 
-        logger.debug("LOAD_MANAGER: Average Price is {}", averagePrice);
+        logger.warn("LOAD_MANAGER: Average Price is {}", averagePrice);
     }
 
 

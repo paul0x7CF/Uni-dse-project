@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class AuctionManager implements Runnable {
     private static final Logger logger = LogManager.getLogger(AuctionManager.class);
@@ -65,6 +66,8 @@ public class AuctionManager implements Runnable {
      * within its start and end time, it is opened. - If a time slot has already ended, it is removed from the list if
      * it has exceeded the specified minutes to live after expiring.
      */
+
+    /*
     private void checkTimeSlots() {
 
         Iterator<Map.Entry<UUID, TimeSlot>> iterator = timeSlots.entrySet().iterator();
@@ -73,33 +76,93 @@ public class AuctionManager implements Runnable {
         while (iterator.hasNext()) {
             Map.Entry<UUID, TimeSlot> entry = iterator.next();
 
-            if (entry.getValue().getEndTime().isBefore(LocalDateTime.now())) {
+            // Check if the start time of the time slot is before the current time
+            if (entry.getValue().getStartTime().isBefore(LocalDateTime.now())) {
+                // Check if the end time of the time slot is after the current time
                 if (entry.getValue().getEndTime().isAfter(LocalDateTime.now())) {
+                    // If there is an open time slot and it is different from the current time slot
                     if (openTimeSlot != null) {
-                        if (openTimeSlot != entry.getValue()) {
+                        if (openTimeSlot.getTimeSlotId() != entry.getKey()) {
+                            UUID oldTimeSlotID = openTimeSlot.getTimeSlotId();
+
                             entry.getValue().openTimeSlot();
                             openTimeSlot = entry.getValue();
+
+                            List<Auction> oldAuctions = new ArrayList<>();
+                            for (Auction auction : auctions.values()) {
+                                if (auction.getTimeSlotID().equals(oldTimeSlotID)) {
+                                    oldAuctions.add(auction);
+                                }
+                            }
+                            for (Auction auction : oldAuctions) {
+                                auction.endAuction();
+                            }
                         }
-                    } else {
-                        entry.getValue().openTimeSlot();
-                        openTimeSlot = entry.getValue();
                     }
                 } else {
-                    assert openTimeSlot != null;
-                    if (entry.getValue().getEndTime() == openTimeSlot.getStartTime()) {
-                        logger.debug("EXCHANGE: Close TimeSlot: " + entry.getValue().getTimeSlotId());
-                        List<Auction> filteredAuctions = auctions.values().stream()
-                                .filter(auction -> auction.getTimeSlotID().equals(entry.getValue().getTimeSlotId())).toList();
-                        filteredAuctions.forEach(Auction::endAuction);
-
-                    }
-                    if (entry.getValue().getEndTime().plusMinutes(MINUTES_TO_LIVE_AFTER_EXPIRING).isAfter(LocalDateTime.now())) {
-                        iterator.remove(); // Remove the entry
-                    }
+                    // If there is no open time slot
+                    entry.getValue().openTimeSlot();
+                    openTimeSlot = entry.getValue();
+                }
+            } else {
+                // Remove the time slot if it has exceeded the specified minutes to live after expiring
+                if (entry.getValue().getEndTime().plusMinutes(MINUTES_TO_LIVE_AFTER_EXPIRING).isAfter(LocalDateTime.now())) {
+                    iterator.remove(); // Remove the entry
                 }
             }
         }
+
+    }*/
+    private void checkTimeSlots() {
+        Iterator<Map.Entry<UUID, TimeSlot>> iterator = timeSlots.entrySet().iterator();
+        TimeSlot openTimeSlot = null;
+
+        while (iterator.hasNext()) {
+            Map.Entry<UUID, TimeSlot> entry = iterator.next();
+            TimeSlot currentSlot = entry.getValue();
+
+            // Check if the time slot is currently active
+            if (currentSlot.getStartTime().isBefore(LocalDateTime.now()) && currentSlot.getEndTime().isAfter(LocalDateTime.now())) {
+                // If there is no open time slot or the current time slot is different from the open time slot
+                if (openTimeSlot == null || openTimeSlot.getTimeSlotId() != entry.getKey()) {
+                    UUID oldTimeSlotID = openTimeSlot != null ? openTimeSlot.getTimeSlotId() : null;
+
+                    currentSlot.openTimeSlot();
+                    openTimeSlot = currentSlot;
+
+                    // End auctions associated with the previous open time slot
+                    if (oldTimeSlotID != null) {
+                        List<Auction> oldAuctions = filterAuctionsByTimeSlot(oldTimeSlotID);
+                        endAuctions(oldAuctions);
+                    }
+                }
+            } else {
+                // Remove the time slot if it has exceeded the specified minutes to live after expiring
+                if (currentSlot.getEndTime().plusMinutes(MINUTES_TO_LIVE_AFTER_EXPIRING).isBefore(LocalDateTime.now())) {
+                    iterator.remove(); // Remove the entry
+                }
+            }
+        }
+
+        // End auctions associated with the current open time slot (if any)
+        if (openTimeSlot != null) {
+            List<Auction> currentAuctions = filterAuctionsByTimeSlot(openTimeSlot.getTimeSlotId());
+            endAuctions(currentAuctions);
+        }
     }
+
+    private List<Auction> filterAuctionsByTimeSlot(UUID timeSlotID) {
+        return auctions.values().stream()
+                .filter(auction -> auction.getTimeSlotID().equals(timeSlotID))
+                .collect(Collectors.toList());
+    }
+
+    private void endAuctions(List<Auction> auctions) {
+        for (Auction auction : auctions) {
+            auction.endAuction();
+        }
+    }
+
 
     private void processQueues() throws AuctionNotFoundException, InterruptedException, InvalidTimeSlotException {
         //Process sellQueue
@@ -139,18 +202,20 @@ public class AuctionManager implements Runnable {
                 throw new AuctionNotFoundException("EXCHANGE: The Auction ID is missing", Optional.empty(), Optional.empty(), Optional.of(bid));
             }
             if (!auctionExists(auctionID.get())) {
-                logger.warn("EXCHANGE: Auction doesn't exist yet?");
+                //logger.warn("EXCHANGE: Auction doesn't exist yet?");
                 try {
                     bidQueue.put(bid);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
+            } else {
+                if (!timeSlots.containsKey(bid.getTimeSlot())) {
+                    throw new InvalidTimeSlotException("EXCHANGE: TimeSlot doesn't exist, therefore the UUID was invalid.", Optional.of(bid.getTimeSlot()));
+                }
+                logger.debug("EXCHANGE: Add Bid " + bid.getBidderID() + "to Auction" + bid.getAuctionID());
+                addBidToAuction(auctionID.get(), bid);
             }
-            if (!timeSlots.containsKey(bid.getTimeSlot())) {
-                throw new InvalidTimeSlotException("EXCHANGE: TimeSlot doesn't exist, therefore the UUID was invalid.", Optional.of(bid.getTimeSlot()));
-            }
-            logger.debug("EXCHANGE: Add Bid " + bid.getBidderID() + "to Auction" + bid.getAuctionID());
-            addBidToAuction(auctionID.get(), bid);
+
         }
     }
 
