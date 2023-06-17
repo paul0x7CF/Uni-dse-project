@@ -14,8 +14,8 @@ import java.util.concurrent.BlockingQueue;
 
 public class ConsumptionForecast implements Runnable {
     private static final Logger logger = LogManager.getLogger(ConsumptionForecast.class);
-    private BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest;
-    private ForecastCommunicationHandler forecastCommunicationHandler;
+    private final BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest;
+    private final ForecastCommunicationHandler forecastCommunicationHandler;
     private TimeSlot currentTimeSlot;
 
     public ConsumptionForecast(BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest, ForecastCommunicationHandler forecastCommunicationHandler, TimeSlot currentTimeSlot) {
@@ -40,13 +40,11 @@ public class ConsumptionForecast implements Runnable {
     private void predictConsumption(ProsumerConsumptionRequest prosumerConsumptionRequest) throws InvalidTimeSlotException {
         HashMap<String, Double> consumption = new HashMap<>();
 
-        //TODO: CHECK TimeSlotID
-
         if (!prosumerConsumptionRequest.getCurrentTimeSlotID().equals(currentTimeSlot.getTimeSlotID())) {
             logger.warn("Received consumption request for timeslot " + prosumerConsumptionRequest.getCurrentTimeSlotID() + " but current timeslot is " + currentTimeSlot.getTimeSlotID());
         }
 
-        logger.trace("Predicting consumption for prosumer " + prosumerConsumptionRequest.getSenderID() + " for timeslot " + prosumerConsumptionRequest.getCurrentTimeSlotID());
+        logger.trace("Forecasting consumption for prosumer " + prosumerConsumptionRequest.getSenderID() + " for timeslot " + prosumerConsumptionRequest.getCurrentTimeSlotID());
 
         Duration duration = Duration.between(currentTimeSlot.getStartTime(), currentTimeSlot.getEndTime());
 
@@ -56,7 +54,7 @@ public class ConsumptionForecast implements Runnable {
             consumption.put(key, consumptionValue / (3600 / duration.getSeconds()));
         }
 
-        logger.info("Predicted consumption: " + consumption + " for prosumer " + prosumerConsumptionRequest.getSenderID());
+        logger.trace("Forecasted consumption: " + consumption);
 
         ConsumptionResponse consumptionResponse = new ConsumptionResponse(consumption, prosumerConsumptionRequest.getCurrentTimeSlotID());
         this.forecastCommunicationHandler.sendConsumptionResponseMessage(consumptionResponse, prosumerConsumptionRequest.getSenderAddress(), prosumerConsumptionRequest.getSenderPort(), prosumerConsumptionRequest.getSenderID());

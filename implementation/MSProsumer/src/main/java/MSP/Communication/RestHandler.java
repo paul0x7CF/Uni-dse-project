@@ -1,11 +1,8 @@
 package MSP.Communication;
 
-import MSP.Data.Consumer;
-import MSP.Data.EConsumerType;
+import MSP.Data.*;
 import MSP.Logic.Prosumer.ConsumptionBuilding;
 import MSP.Logic.Prosumer.Singleton;
-import MSP.Data.EProducerType;
-import MSP.Data.Producer;
 import MSP.Logic.Prosumer.RESTData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,57 +41,68 @@ public class RestHandler {
     private RESTData restData;
 
 
-    protected RestHandler(RESTData restData) {
+    /*protected RestHandler(RESTData restData) {
         this.restData = restData;
-    }
+    }*/
 
     protected RestHandler() {
 
     }
 
+    @CrossOrigin
+    @RequestMapping(value = "/producers", method = RequestMethod.POST)
+    private ResponseEntity<String> createProducer(@RequestParam String type) {
+        if (!consumptionBuilding.getProsumerType().equals(EProsumerType.NETTO_ZERO_BUILDING))
+            return new ResponseEntity<>("Prosumer is no Net-Zero-Building!", HttpStatus.NOT_FOUND);
 
-/*
-    @GetMapping("/producers")
-    public ResponseEntity<Set<Producer>> getProducers() {
-        Set<Producer> producers = restData.getProducers();
-        return ResponseEntity.ok(producers);
-    }
+        EProducerType type1 = EProducerType.valueOf(type);
 
-    @GetMapping("/consumers")
-    public ResponseEntity<Set<Consumer>> getConsumers() {
-        Set<Consumer> consumers = restData.getConsumers();
-        return ResponseEntity.ok(consumers);
-    }
+        consumptionBuilding.createProducer(type1);
 
-    @PostMapping("/producers")
-    public ResponseEntity<Void> createProducer(@RequestBody EProducerType producerType) {
-        boolean success = restData.createProducer(producerType);
-        if (success) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
+        logger.info("Created new Consumer from type {}", type1);
+        return new ResponseEntity<>("Created new Consumer from type " + type1, HttpStatus.CREATED);
     }
-
-    @PostMapping("/consumers")
-    public ResponseEntity<Void> createConsumer(@RequestBody EConsumerType consumerType) {
-        boolean success = restData.createConsumer(consumerType);
-        if (success) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-*/
 
     @CrossOrigin
-    @RequestMapping(value = "/consumers", method = RequestMethod.POST,consumes={"application/json"})
-    private ResponseEntity<String> createConsumer(@RequestBody String type) {
-        /*Consumer newConsumer = new Consumer(type);
-        consumerList.add(newConsumer);*/
+    @RequestMapping(value = "/producers", method = RequestMethod.GET,produces={"application/json"})
+    private ResponseEntity<String> getProducers() {
+        if (consumptionBuilding.getProsumerType().equals(EProsumerType.CONSUMPTION_BUILDING))
+            return new ResponseEntity<>("Prosumer is no Net-Zero-Building!", HttpStatus.NOT_FOUND);
 
+        return new ResponseEntity<>("ProducerList: " + consumptionBuilding.getProducers().toString(), HttpStatus.OK);
+    }
 
+    @CrossOrigin
+    @RequestMapping(value = "/producers", method = RequestMethod.PUT)
+    private ResponseEntity<String> updateProsumer(@RequestParam String type, @RequestParam String efficiency) {
+        EProducerType type1 = EProducerType.valueOf(type);
+        int updatedConsumer = consumptionBuilding.updateProducer(type1, Integer.parseInt(efficiency));
 
+        if (updatedConsumer == 0) {
+            logger.warn("Update Failed!");
+            return new ResponseEntity<>("Update Failed! " + type1, HttpStatus.CONFLICT);
+        }
+
+        return new ResponseEntity<>("Updated " + updatedConsumer + " Producer(s) from type " + type1, HttpStatus.OK);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/producers", method = RequestMethod.DELETE)
+    private ResponseEntity<String> deleteProducer(@RequestParam String type) {
+        EProducerType type1 = EProducerType.valueOf(type);
+        boolean deletedConsumer = consumptionBuilding.deleteProducer(type1);
+
+        if (!deletedConsumer) {
+            logger.warn("Delete Failed!");
+            return new ResponseEntity<>("Delete Failed! " + type1, HttpStatus.CONFLICT);
+        }
+
+        return new ResponseEntity<>( "Producer(s) from type " + type1 + " deleted", HttpStatus.OK);
+    }
+
+    @CrossOrigin
+    @RequestMapping(value = "/consumers", method = RequestMethod.POST)
+    private ResponseEntity<String> createConsumer(@RequestParam String type) {
         EConsumerType type1 = EConsumerType.valueOf(type);
 
         consumptionBuilding.createConsumer(type1);
@@ -104,59 +112,58 @@ public class RestHandler {
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/consumers", method = RequestMethod.DELETE, consumes = {"application/json"})
-    private ResponseEntity<String> deleteConsumer(@RequestBody EConsumerType type) {
-        AtomicInteger countDeleted = new AtomicInteger();
-        this.consumerList.removeIf(consumer -> {
-            countDeleted.getAndIncrement();
-            return consumer.getConsumerType().equals(type);
-        });
-        if (countDeleted.get() > 0) {
-            logger.info("Deleted {} Consumer from type {}", countDeleted.get(), type);
-            return new ResponseEntity<>("Deleted " + countDeleted.get() + " Consumer from type " + type, HttpStatus.OK);
-        } else {
-            logger.info("No Producer Consumer from type {}", type);
-            return new ResponseEntity<>("No Producer Consumer from type " + type, HttpStatus.NOT_FOUND);
-        }
+    @RequestMapping(value = "/consumers", method = RequestMethod.GET,produces={"application/json"})
+    private ResponseEntity<String> getConsumers() {
+        return new ResponseEntity<>("ConsumerList: " + consumptionBuilding.getConsumers().toString(), HttpStatus.OK);
     }
 
-/*    @PutMapping("/producers")
-    public ResponseEntity<Void> updateProducer(@RequestBody EProducerType producerDTO) {
-        boolean success = restData.updateProducer(producerDTO.getProducerType(), producerDTO.getEfficiency());
-        if (success) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.badRequest().build();
+    @CrossOrigin
+    @RequestMapping(value = "/consumers", method = RequestMethod.PUT)
+    private ResponseEntity<String> updateConsumer(@RequestParam String type, @RequestParam String consumption) {
+        EConsumerType type1 = EConsumerType.valueOf(type);
+        int updatedConsumer = consumptionBuilding.updateConsumer(type1, Integer.parseInt(consumption));
+
+        if (updatedConsumer == 0) {
+            logger.warn("Update Failed!");
+            return new ResponseEntity<>("Update Failed! " + type1, HttpStatus.CONFLICT);
         }
+
+        return new ResponseEntity<>("Updated " + updatedConsumer + " Consumer(s) from type " + type1, HttpStatus.OK);
+
+        //Zivan CODE
+        /*EConsumerType type1 = EConsumerType.valueOf(type);
+
+        HashSet<Consumer> consumers = consumptionBuilding.getConsumerss();
+
+        int count = 0;
+
+        for (Consumer consumer : consumers) {
+            if (consumer.getConsumerType().equals(type1)) {
+                consumer.setAverageConsumption(Double.parseDouble(consumption));
+                logger.info("Updated Consumer from type {}", type1);
+                count++;
+            }
+        }
+
+        if (count == 0) {
+            logger.warn("Update Failed!");
+            return new ResponseEntity<>("Update Failed!" + type1, HttpStatus.CONFLICT);
+        }
+
+        return new ResponseEntity<>("Updated " + count + " Consumer(s) from type " + type1, HttpStatus.OK);*/
     }
 
-    @PutMapping("/consumers")
-    public ResponseEntity<Void> updateConsumer(@RequestBody EConsumerType consumerDTO) {
-        boolean success = restData.updateConsumer(consumerDTO.getConsumerType(), consumerDTO.getEfficiency());
-        if (success) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
-    }*/
+    @CrossOrigin
+    @RequestMapping(value = "/consumers", method = RequestMethod.DELETE)
+    private ResponseEntity<String> deleteConsumer(@RequestParam String type) {
+        EConsumerType type1 = EConsumerType.valueOf(type);
+        boolean deletedConsumer = consumptionBuilding.deleteConsumer(type1);
 
- /*   @DeleteMapping("/producers/{producerType}")
-    public ResponseEntity<Void> deleteProducer(@PathVariable EProducerType producerType) {
-        boolean success = restData.deleteProducer(producerType);
-        if (success) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.notFound().build();
+        if (!deletedConsumer) {
+            logger.warn("Delete Failed!");
+            return new ResponseEntity<>("Delete Failed! " + type1, HttpStatus.CONFLICT);
         }
+
+        return new ResponseEntity<>( "Consumer(s) from type " + type1 + " deleted", HttpStatus.OK);
     }
-
-    @DeleteMapping("/consumers/{consumerType}")
-    public ResponseEntity<Void> deleteConsumer(@PathVariable EConsumerType consumerType) {
-        boolean success = restData.deleteConsumer(consumerType);
-        if (success) {
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }*/
 }

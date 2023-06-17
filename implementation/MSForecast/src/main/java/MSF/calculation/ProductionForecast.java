@@ -17,12 +17,12 @@ import java.util.concurrent.BlockingQueue;
 
 public class ProductionForecast implements Runnable {
     private static final Logger logger = LogManager.getLogger(ProductionForecast.class);
-    private BlockingQueue<ProsumerSolarRequest> incomingSolarRequest;
-    private ForecastCommunicationHandler forecastCommunicationHandler;
-    private EForecastType forecastType;
+    private final BlockingQueue<ProsumerSolarRequest> incomingSolarRequest;
+    private final ForecastCommunicationHandler forecastCommunicationHandler;
+    private final EForecastType forecastType;
     private TimeSlot currentTimeSlot;
-    private double smoothingFactor;
-    private List<Double> lastForecasts;
+    private final double smoothingFactor;
+    private final List<Double> lastForecasts;
 
     public ProductionForecast(BlockingQueue<ProsumerSolarRequest> incomingSolarRequest, ForecastCommunicationHandler forecastCommunicationHandler, TimeSlot currentTimeSlot, EForecastType forecastType) throws UnknownForecastTypeException {
         this.incomingSolarRequest = incomingSolarRequest;
@@ -80,6 +80,9 @@ public class ProductionForecast implements Runnable {
         double production = 0;
         double irradiation = getHistoricMeasurements();
 
+        logger.trace("Historic Irradiation: " + irradiation);
+        logger.trace("Forecasting production for prosumer " + prosumerSolarRequest.getSenderID() + " for timeslot " + prosumerSolarRequest.getCurrentTimeSlotID());
+
         Duration duration = Duration.between(currentTimeSlot.getStartTime(), currentTimeSlot.getEndTime());
 
         for (int i = 0; i < prosumerSolarRequest.getAmountOfPanels(); i++) {
@@ -101,8 +104,9 @@ public class ProductionForecast implements Runnable {
         }
 
         production = production / ((double) 3600 / duration.getSeconds());
-
         lastForecasts.add(production);
+
+        logger.trace("Forecasted production: " + production);
 
         SolarResponse solarResponse = new SolarResponse(prosumerSolarRequest.getCurrentTimeSlotID(), production);
         this.forecastCommunicationHandler.sendProductionResponseMessage(solarResponse, prosumerSolarRequest.getSenderAddress(), prosumerSolarRequest.getSenderPort(), prosumerSolarRequest.getSenderID());

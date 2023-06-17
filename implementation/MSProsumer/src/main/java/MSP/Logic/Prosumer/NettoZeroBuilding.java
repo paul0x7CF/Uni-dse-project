@@ -3,10 +3,7 @@ package MSP.Logic.Prosumer;
 import CF.sendable.TimeSlot;
 import MSP.Communication.polling.PollProductionForecast;
 import MSP.Configuration.ConfigFileReader;
-import MSP.Data.EConsumerType;
-import MSP.Data.EProducerType;
-import MSP.Data.EProsumerType;
-import MSP.Data.Producer;
+import MSP.Data.*;
 import MSP.Exceptions.DeviceNotSupportedException;
 import MSP.Exceptions.ServiceNotFoundException;
 import MSP.Exceptions.UndefinedStrategyException;
@@ -59,21 +56,25 @@ public class NettoZeroBuilding extends ConsumptionBuilding {
 
     // Read
     @Override
-    public LinkedHashSet<Producer> getProducers() {
-        return producerList;
+    public ArrayList<EProducerType> getProducers() {
+        ArrayList<EProducerType> consumerList = new ArrayList<>();
+        for (Producer producer : this.producerList) {
+            consumerList.add(producer.getProducerType());
+        }
+        return consumerList;
     }
 
     // Update
     @Override
-    public boolean updateProducer(EProducerType panelType, int efficiency) {
-        boolean result = false;
+    public int updateProducer(EProducerType panelType, int efficiency) {
+        int countUpdated = 0;
         for (Producer producer : producerList) {
             if (producer.getProducerType().equals(panelType)) {
                 producer.setEfficiency(efficiency);
-                result = true;
+                countUpdated++;
             }
         }
-        return result;
+        return countUpdated;
     }
 
     // Delete
