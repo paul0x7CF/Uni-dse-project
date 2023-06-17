@@ -18,33 +18,7 @@ public class Main {
 
     private static final Logger log = LogManager.getLogger(Main.class);
     public static void main(String[] args) {
-        // Create a new transaction
-        TransactionDAO transactionDAO = new TransactionDAO();
-        UUID buyerID = UUID.randomUUID();
-        UUID sellerID = UUID.randomUUID();
 
-
-        DbTransaction transaction = new DbTransaction(sellerID, buyerID, 100.0, 10.0, UUID.randomUUID());
-        transactionDAO.create(transaction);
-        log.info("Created transactionID: " + transaction.getTransactionID());
-        log.info("Created transaction amount: " + transaction.getAmount());
-        log.info("Created transaction price: " + transaction.getPrice());
-
-        // Read the transaction
-        DbTransaction retrievedTransaction = transactionDAO.read(transaction.getTransactionID());
-        System.out.println("Retrieved transaction ID: " + retrievedTransaction.getTransactionID());
-        System.out.println("Retrieved amount: " + retrievedTransaction.getAmount());
-        System.out.println("Retrieved price: " + retrievedTransaction.getPrice());
-
-
-
-        // Delete the transaction
-        transactionDAO.delete(retrievedTransaction.getTransactionID());
-        System.out.println("Deleted transaction");
-
-
-        int count = transactionDAO.deleteAll();
-        logger.warn("Deleting all transactions{}" + count);
 
        final int STORAGE_START_PORT = Integer.parseInt(ConfigFileReader.getCommunicationProperty("storagePort"));
         final double WALLET_START_MONEY = Double.parseDouble(ConfigFileReader.getProperty("walletStartMoney"));
