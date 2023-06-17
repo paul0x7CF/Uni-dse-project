@@ -1,7 +1,5 @@
 package CF.protocol;
 
-import CF.exceptions.InvalidMessageException;
-import CF.messageHandling.InfoMessageHandler;
 import CF.sendable.ISendable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,16 +36,6 @@ public class MessageFactory {
         return new Message(message.getCategory(), message.getReceiverID(), message.getReceiverAddress(),
                 message.getReceiverPort(), message.getSenderID(), message.getSenderAddress(),
                 message.getSenderPort(), message.getPayload());
-    }
-
-    public static boolean validateMessage(Message message) {
-        // TODO: if payload is e.g. Ack, category should be Info;Ack
-        // TODO: category can only have 0 or 1 semicolons
-        if (message.getCategory() == null) {
-            log.error("Category is null");
-            return false;
-        }
-        return true;
     }
 
     public MessageFactory setCategory(ECategory mainCat, String subCat) {
@@ -93,7 +81,7 @@ public class MessageFactory {
     public Message build() {
         Message message = new Message(category, senderID, senderAddress, senderPort,
                 receiverID, receiverAddress, receiverPort, PayloadConverter.toJSON(payload));
-        if (validateMessage(message)) {
+        if (MessageValidator.validateMessage(message)) {
             return message;
         } else {
             log.error("Message is not valid, returning null");

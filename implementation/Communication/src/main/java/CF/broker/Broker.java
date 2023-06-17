@@ -153,7 +153,7 @@ public class Broker implements IServiceBroker, IScheduleBroker {
                 messageHandler.handleMessage(message);
             }
 
-            receiver.receiveMessage(message);
+            receiver.saveMessage(message);
         }
     }
 

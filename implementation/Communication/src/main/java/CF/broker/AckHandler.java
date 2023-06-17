@@ -46,7 +46,7 @@ public class AckHandler {
                             message.getSubCategory(), message.getSenderPort(), message.getReceiverPort(), message.getMessageID().toString().substring(0, 4));
                     throw new AckTimeoutException("Message could not be acknowledged within the given timeout");
                 } catch (AckTimeoutException e) {
-                    // TODO: don't send an infinite amount of messages
+                    // don't send an infinite amount of messages - scheduler only executes this once
                     broker.sendMessage(message);
                     throw new RuntimeException(e);
                 }
@@ -61,9 +61,7 @@ public class AckHandler {
                     ack.getSenderPort(), ack.getCategory(), ack.getMessageID().toString().substring(0, 4));
             return;
         } else {
-            log.trace("Removing pending ack for {}", ack.getMessageID());
-            // TODO: remove this
-            log.debug("{}: Removing ack from {} for {} message | {}", ack.getReceiverPort(),
+            log.trace("{}: Removing ack from {} for {} message | {}", ack.getReceiverPort(),
                     ack.getSenderPort(), ack.getCategory(), ack.getMessageID().toString().substring(0, 4));
             if (pendingAcks.remove(ack.getMessageID()) == null) {
                 log.warn("{}: Unknown message from {} for {} message | {}", ack.getReceiverPort(),

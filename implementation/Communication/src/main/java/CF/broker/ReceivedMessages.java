@@ -12,9 +12,9 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * This class is used to keep track of received messages and to check if a message has already been received.
- * This is necessary because the broker may receive the same message multiple times due to resending of messages
- * through the AckHandler. The MessageHandler should only process a message once.
+ * This class is used to keep track of received messages and to check if a message has already been received. This is
+ * necessary because the broker may receive the same message multiple times due to resending of messages through the
+ * AckHandler. The MessageHandler should only process a message once.
  */
 public class ReceivedMessages {
     private static final Logger log = LogManager.getLogger(ReceivedMessages.class);
@@ -32,7 +32,7 @@ public class ReceivedMessages {
         messageRetentionDuration = Duration.ofSeconds(duration);
     }
 
-    public void receiveMessage(Message message) {
+    public void saveMessage(Message message) {
         UUID messageID = message.getMessageID();
         if (!receivedMessages.containsKey(messageID)) {
             receivedMessages.put(messageID, message);
