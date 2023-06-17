@@ -36,23 +36,28 @@ public class MessageBuilder {
         return IMessageBuilder.senderAndReceiverTemplate(receiverMS, communicationExchange.getBroker().getCurrentService()).setCategory(ECategory.Exchange, String.valueOf(ESubCategory.Capacity)).build();
     }
 
-    public List<Message> buildMessage(Transaction transaction) {
+    public Message buildMessage(Transaction transaction) {
         logger.info("EXCHANGE: Transaction: seller: " + transaction.getSellerID() + ", buyer: " + transaction.getBuyerID() + ", price: " + transaction.getPrice() + ", volume: " + transaction.getAmount());
         List<Message> messages = new ArrayList<>();
-        List<MSData> receiverMS = new ArrayList<>();
+        MSData receiverMS = communicationExchange.getBroker().getServicesByType(EServiceType.Exchange).get(0);
 
-        receiverMS.add(communicationExchange.getBroker().findService(transaction.getSellerID()));
-        receiverMS.add(communicationExchange.getBroker().findService(transaction.getBuyerID()));
+        return buildTransactionMessage(IMessageBuilder.senderAndReceiverTemplate(receiverMS, communicationExchange.getBroker().getCurrentService()), transaction);
 
-        for (MSData msData : communicationExchange.getBroker().getServicesByType(EServiceType.Storage)) {
-            receiverMS.add(msData);
+        //receiverMS.add(communicationExchange.getBroker().findService(transaction.getSellerID()));
+        //receiverMS.add(communicationExchange.getBroker().findService(transaction.getBuyerID()));
+/*
+        if (communicationExchange.getBroker().getServicesByType(EServiceType.Storage) != null) {
+            for (MSData msData : communicationExchange.getBroker().getServicesByType(EServiceType.Storage)) {
+                receiverMS.add(msData);
+            }
         }
+
 
         for (MSData msData : receiverMS) {
             messages.add(buildTransactionMessage(IMessageBuilder.senderAndReceiverTemplate(msData, communicationExchange.getBroker().getCurrentService()), transaction));
         }
 
-        return messages;
+        return messages;*/
     }
 
     private Message buildTransactionMessage(MessageFactory messageFactory, Transaction transaction) {

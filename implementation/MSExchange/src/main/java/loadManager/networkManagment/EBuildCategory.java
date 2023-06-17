@@ -12,7 +12,6 @@ public enum EBuildCategory {
     BidToStorage,
     SellToStorage;
 
-
     private UUID uuid;
 
     public void setUUID(UUID uuid) {

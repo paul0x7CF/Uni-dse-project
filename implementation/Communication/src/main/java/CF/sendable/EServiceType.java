@@ -5,5 +5,5 @@ public enum EServiceType {
     Storage,
     Exchange,
     ExchangeWorker,
-    Forecast, //TODO: @Zivan: i added this, instead of Solar and Consumption
+    Forecast
 }

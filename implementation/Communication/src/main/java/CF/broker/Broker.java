@@ -70,16 +70,15 @@ public class Broker implements IServiceBroker, IScheduleBroker {
     }
 
     protected void startBroker() throws UnknownHostException {
+        // register Microservices
         messageScheduler.addObserver(new DiscoveryService(this));
         messageScheduler.addObserver(new SyncService(this));
         messageScheduler.startScheduling();
 
+        // start sockets to receive messages
         networkHandler.startSockets();
 
-        // register Microservice
-        // TODO: should we add a Info;GetAllServices message which returns a list of MSData?
-
-        // start receiving messages in new thread
+        // start receiving messages, this is blocking
         try {
             receiveMessage();
         } catch (MessageProcessingException e) {
@@ -153,7 +152,7 @@ public class Broker implements IServiceBroker, IScheduleBroker {
                 messageHandler.handleMessage(message);
             }
 
-            receiver.receiveMessage(message);
+            receiver.saveMessage(message);
         }
     }
 

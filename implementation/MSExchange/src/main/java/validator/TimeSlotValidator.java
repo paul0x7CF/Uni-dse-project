@@ -13,12 +13,12 @@ public class TimeSlotValidator {
     private static final Logger logger = LogManager.getLogger(ExchangeMessageHandler.class);
 
     public void validateTimeSlot(TimeSlot timeSlot, Map<UUID, msExchange.auctionManagement.TimeSlot> timeSlots) throws InvalidTimeSlotException {
-        logger.debug("TIMESLOT_VALIDATOR: Validating timeSlot");
+        logger.trace("TIMESLOT_VALIDATOR: Validating timeSlot");
         validateTimeSlotNotNull(timeSlot);
         validateTimeSlotIDNotNull(timeSlot);
         validateTimeSlotIDNotInUse(timeSlot.getTimeSlotID(), timeSlots);
         validateTimeSlotStartBeforeEnd(timeSlot);
-        logger.debug("TIMESLOT_VALIDATOR: Validated timeSlot successfully");
+        logger.trace("TIMESLOT_VALIDATOR: Validated timeSlot successfully");
     }
 
     private void validateTimeSlotNotNull(TimeSlot timeSlot) throws InvalidTimeSlotException {

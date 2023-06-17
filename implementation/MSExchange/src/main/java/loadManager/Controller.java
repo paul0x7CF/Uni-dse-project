@@ -97,7 +97,7 @@ public class Controller implements Runnable {
             if (!timeSlotBuilder.getLastSlotsEndtime().isAfter(currentTime)) {
                 if (timeSlotBuilder.getLastTimeSlot().isPresent()) {
                     UUID endedTimeSlotID = timeSlotBuilder.getLastTimeSlot().get();
-                    logger.debug("----------------Time Slot {} ended!----------------", endedTimeSlotID);
+                    logger.info("----------------Time Slot {} ended!----------------", endedTimeSlotID);
                     try {
                         messageHandler.endTimeSlot(endedTimeSlotID);
                     } catch (InvalidTimeSlotException e) {
@@ -107,7 +107,7 @@ public class Controller implements Runnable {
                 if (first) {
                     try {
                         TimeSlot newTimeSlot = timeSlotBuilder.addNewTimeSlot();
-                        logger.debug("----------------Timeslot {} started!----------------", newTimeSlot.getTimeSlotID());
+                        logger.info("----------------Timeslot {} started!----------------", newTimeSlot.getTimeSlotID());
                         List<Message> messages = messageBuilder.buildTimeSlotMessages(newTimeSlot);
                         for (Message message : messages) {
                             communication.sendMessage(message);
@@ -115,7 +115,7 @@ public class Controller implements Runnable {
                     } catch (InvalidTimeSlotException e) {
                         throw new RuntimeException(e);
                     }
-                    first = false;
+                    //first = false;
                 }
             }
         }
