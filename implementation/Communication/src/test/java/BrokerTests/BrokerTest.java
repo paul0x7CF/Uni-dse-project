@@ -2,7 +2,6 @@
 package BrokerTests;
 
 import CF.broker.*;
-import CF.broker.discovery.MessageScheduler;
 import CF.communication.NetworkHandler;
 import CF.exceptions.MessageProcessingException;
 import CF.messageHandling.MessageHandler;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.net.UnknownHostException;
 import java.util.List;
 import java.util.UUID;
 
@@ -71,7 +69,7 @@ public class BrokerTest extends Broker {
 
     @Test
     public void receiveMessage_WhenMessageIsNotAlreadyReceived_ShouldHandleMessage() throws MessageProcessingException {
-        MessageReceiver receiver = new MessageReceiver();
+        ReceivedMessages receiver = new ReceivedMessages();
         MSData msData = new MSData(UUID.randomUUID(), EServiceType.Exchange, "testAddress", 1234);
         Message message = InfoMessageBuilder.createErrorMessage(msData, msData, "error in test", "test");
 
@@ -88,7 +86,7 @@ public class BrokerTest extends Broker {
 
     @Test
     public void receiveMessage_WhenMessageIsAlreadyReceived_ShouldNotHandleMessage() throws MessageProcessingException {
-        MessageReceiver receiver = new MessageReceiver();
+        ReceivedMessages receiver = new ReceivedMessages();
         MSData msData = new MSData(UUID.randomUUID(), EServiceType.Exchange, "testAddress", 1234);
         Message message = InfoMessageBuilder.createErrorMessage(msData, msData, "error in test", "test");
 
