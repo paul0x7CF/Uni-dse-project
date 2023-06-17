@@ -27,7 +27,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  *  Rest manager which takes care of the Communication over the REST-Endpoints
  */
 
-// Example: http://localhost:8081/dserestapi/test
 @SpringBootApplication
 @RestController
 @RequestMapping(value = "/api")
