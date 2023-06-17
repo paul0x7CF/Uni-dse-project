@@ -119,7 +119,7 @@ public class ProsumerManager {
     public void handleIncomingTransaction(Transaction transaction) throws ProsumerUnknownException {
         logger.info("LOAD_MANAGER: Incoming Transaction: {} ", transaction.getTransactionID());
 
-        UUID timeSlotID = auctionManager.getAuctionByID(transaction.getAuctionID()).getTimeSlotID();
+        UUID timeSlotID = auctionManager.getAuctionByID(transaction.getAuctionID()).getTIMESLOT_ID();
         Bid bid = new Bid(transaction.getAmount(), transaction.getPrice(), timeSlotID, transaction.getBuyerID());
         try {
             auctionManager.setBidder(transaction.getAuctionID(), bid);
@@ -131,7 +131,6 @@ public class ProsumerManager {
     }
 
     public void endTimeSlot(UUID endedTimeSlotID) throws InvalidTimeSlotException {
-        auctionManager.endTimeSlot(endedTimeSlotID);
         for (Bidder bidder : bidders) {
             bidder.endTimeSlot(endedTimeSlotID);
         }

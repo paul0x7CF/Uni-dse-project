@@ -19,9 +19,9 @@ public class AuctionManager {
 
     public void addAuction(Auction auction) {
         // Adds an auction with the specified UUID
-        List<Auction> auctions = auctionsPerSlot.getOrDefault(auction.getTimeSlotID(), new ArrayList<>());
+        List<Auction> auctions = auctionsPerSlot.getOrDefault(auction.getTIMESLOT_ID(), new ArrayList<>());
         auctions.add(auction);
-        auctionsPerSlot.put(auction.getTimeSlotID(), auctions);
+        auctionsPerSlot.put(auction.getTIMESLOT_ID(), auctions);
     }
 
     //really needed? -> yes to be able to declare either the given timeSlot is incorrect, or just not used
@@ -112,14 +112,6 @@ public class AuctionManager {
         auction.setBid(bid);
     }
 
-    public void endTimeSlot(UUID slotId) {
-        if (auctionsPerSlot.containsKey(slotId)) {
-            for (Auction auction : auctionsPerSlot.get(slotId)) {
-                auction.endAuction();
-            }
-        }
-    }
-
     //Tested and is working
     public Map<UUID, Double> getUnsatisfiedSellers(UUID timeSlotID) throws InvalidTimeSlotException {
         if (!auctionsPerSlot.containsKey(timeSlotID)) {
@@ -130,8 +122,8 @@ public class AuctionManager {
         Map<UUID, Double> unsatisfiedSellers = new HashMap<>();
         if (auctions != null) {
             for (Auction auction : auctions) {
-                if (auction.getTotalVolume() - auction.getCoveredVolume() != 0) {
-                    unsatisfiedSellers.put(auction.getSellerID(), auction.getTotalVolume() - auction.getCoveredVolume());
+                if (auction.getTOTAL_VOLUME() - auction.getCoveredVolume() != 0) {
+                    unsatisfiedSellers.put(auction.getSELLER_ID(), auction.getTOTAL_VOLUME() - auction.getCoveredVolume());
                 }
             }
             return unsatisfiedSellers;

@@ -44,7 +44,7 @@ public class TestAuctionFindingAlgorithm {
             auctionManager.addAuction(newAuction);
             auctionProsumerTracker.addAuction(bid.getTimeSlot(), newAuction.getAuctionId());
 
-            Bid newBid = new Bid(nextVolume, 1.5, newAuction.getTimeSlotID(), UUID.randomUUID());
+            Bid newBid = new Bid(nextVolume, 1.5, newAuction.getTIMESLOT_ID(), UUID.randomUUID());
             auctionProsumerTracker.addBidderToAuction(newAuction.getAuctionId(), newBid.getBidderID());
             try {
                 auctionManager.setBidder(newAuction.getAuctionId(), newBid);
@@ -82,7 +82,7 @@ public class TestAuctionFindingAlgorithm {
             System.out.println("Auction " + i + " has covered volume: " + auction.getCoveredVolume());
 
             if (i != 2) {
-                Assertions.assertEquals(auction.getTotalVolume(), auction.getCoveredVolume());
+                Assertions.assertEquals(auction.getTOTAL_VOLUME(), auction.getCoveredVolume());
             } else {
                 Assertions.assertEquals(75, auction.getCoveredVolume());
             }
@@ -123,7 +123,7 @@ public class TestAuctionFindingAlgorithm {
             auctionManager.addAuction(newAuction);
             auctionProsumerTracker.addAuction(bid.getTimeSlot(), newAuction.getAuctionId());
 
-            Bid newBid = new Bid(nextVolume, 1.5, newAuction.getTimeSlotID(), UUID.randomUUID());
+            Bid newBid = new Bid(nextVolume, 1.5, newAuction.getTIMESLOT_ID(), UUID.randomUUID());
             auctionProsumerTracker.addBidderToAuction(newAuction.getAuctionId(), newBid.getBidderID());
             try {
                 auctionManager.setBidder(newAuction.getAuctionId(), newBid);
@@ -166,7 +166,7 @@ public class TestAuctionFindingAlgorithm {
                 Assertions.assertEquals(75, auction.getCoveredVolume());
 
             } else {
-                Assertions.assertEquals(auction.getTotalVolume(), auction.getCoveredVolume());
+                Assertions.assertEquals(auction.getTOTAL_VOLUME(), auction.getCoveredVolume());
             }
             boolean found = false;
 

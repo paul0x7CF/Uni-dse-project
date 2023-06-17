@@ -13,7 +13,7 @@ import java.util.List;
 public class WeightedMechanism implements PriceMechanism {
     private static final Logger logger = LogManager.getLogger(WeightedMechanism.class);
     private final int K_VALUES;
-    private double averagePrice = 0.0;
+    private double weightedPrice = 0.0;
     private List<Double> bidPrices = new ArrayList<>();
     private List<Double> askPrices = new ArrayList<>();
 
@@ -24,16 +24,16 @@ public class WeightedMechanism implements PriceMechanism {
 
     public boolean isBidPriceHighEnough(double price) throws PriceNotOKException {
         if (price <= 0.0) {
-            throw new PriceNotOKException("Price can't be zero or lower");
+            throw new PriceNotOKException("LOAD_MANAGER: Price can't be zero or lower");
         }
 
-        if (averagePrice == 0.0) {
-            averagePrice = price;
+        if (weightedPrice == 0.0) {
+            weightedPrice = price;
             updateList(price, EAction.Bid);
             return true;
         }
 
-        if (price >= averagePrice) {
+        if (price >= weightedPrice) {
             updateList(price, EAction.Bid);
             return true;
         }
@@ -42,16 +42,16 @@ public class WeightedMechanism implements PriceMechanism {
 
     public boolean isAskPriceLowEnough(double price) throws PriceNotOKException {
         if (price <= 0.0) {
-            throw new PriceNotOKException("Price can't be zero or lower");
+            throw new PriceNotOKException("LOAD_MANAGER: Price can't be zero or lower");
         }
 
-        if (averagePrice == 0.0) {
-            averagePrice = price;
+        if (weightedPrice == 0.0) {
+            weightedPrice = price;
             updateList(price, EAction.Sell);
             return true;
         }
 
-        if (price <= averagePrice) {
+        if (price <= weightedPrice) {
             updateList(price, EAction.Sell);
             return true;
         }
@@ -59,7 +59,7 @@ public class WeightedMechanism implements PriceMechanism {
     }
 
     public double getKWPrice() {
-        return averagePrice;
+        return weightedPrice;
     }
 
     private void calculatePrice() {
@@ -83,9 +83,9 @@ public class WeightedMechanism implements PriceMechanism {
             askSum += sortedAskPrices.get(i) * askWeight;
         }
 
-        averagePrice = (bidSum + askSum) / 2.0;
+        weightedPrice = (bidSum + askSum) / 2.0;
 
-        logger.debug("Average Price is " + averagePrice);
+        logger.debug("LOAD_MANAGER: Weighted price is {}", weightedPrice);
     }
 
     private void updateList(double price, EAction action) {

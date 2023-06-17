@@ -12,8 +12,8 @@ import java.util.UUID;
 
 public class LoadManager {
     private static final Logger logger = LogManager.getLogger(LoadManager.class);
+    private final List<ExchangeServiceInformation> listExchangeServices = Collections.synchronizedList(new ArrayList<>());
     private int nextServiceID = 1;
-    private List<ExchangeServiceInformation> listExchangeServices = Collections.synchronizedList(new ArrayList<>());
 
     public void addExchangeServiceInformation(ExchangeServiceInformation exchangeServiceInformation) {
         if (exchangeServiceInformation == null) {
@@ -27,6 +27,7 @@ public class LoadManager {
         }
     }
 
+    //TODO: remove Exchange Service
     public void removeExchangeServiceInformation(ExchangeServiceInformation exchangeServiceInformation) {
         if (exchangeServiceInformation == null) {
             throw new IllegalArgumentException("LOAD_MANAGER: ExchangeServiceInformation is null");
@@ -37,7 +38,7 @@ public class LoadManager {
         }
 
         listExchangeServices.remove(exchangeServiceInformation);
-        logger.info("LOAD_MANAGER: Removed ExchangeServiceInformation with ID: " + exchangeServiceInformation.getExchangeID());
+        logger.info("LOAD_MANAGER: Removed ExchangeServiceInformation with ID: {}", exchangeServiceInformation.getExchangeID());
     }
 
     public void setExchangeCapacity(UUID exchangeID) {
@@ -133,6 +134,6 @@ public class LoadManager {
         }*/
 
         //alternative
-        MSExchange msExchange = new MSExchange(true, nextServiceID++);
+        new MSExchange(true, nextServiceID++);
     }
 }

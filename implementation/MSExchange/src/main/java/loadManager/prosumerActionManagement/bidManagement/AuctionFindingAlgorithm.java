@@ -22,10 +22,10 @@ import java.util.concurrent.BlockingQueue;
 public class AuctionFindingAlgorithm implements Runnable {
     private static final Logger logger = LogManager.getLogger(AuctionFindingAlgorithm.class);
     private final Object lock = new Object(); //Create a lock object
-    private BidForTimeSlot bidForTimeSlot;
-    private BlockingQueue<MessageContent> outgoingQueue;
-    private AuctionManager auctionManager;
-    private AuctionProsumerTracker auctionProsumerTracker;
+    private final BidForTimeSlot bidForTimeSlot;
+    private final BlockingQueue<MessageContent> outgoingQueue;
+    private final AuctionManager auctionManager;
+    private final AuctionProsumerTracker auctionProsumerTracker;
     private boolean shouldContinue = true;
     private boolean timeSlotIsOpen = true;
 
@@ -62,11 +62,11 @@ public class AuctionFindingAlgorithm implements Runnable {
 
 
         double volumeInAuctions = getVolumeInAuctions();
-        logger.info("The volume in auctions is " + volumeInAuctions);
+        logger.info("LOAD_MANAGER: The volume in auctions is {}", volumeInAuctions);
         double notCoveredVolume = bidForTimeSlot.getIncomingBid().getVolume() - volumeInAuctions;
         if (notCoveredVolume != 0.0) {
-            createMessageContent(new Bid(notCoveredVolume, bidForTimeSlot.getIncomingBid().getPrice(), bidForTimeSlot.getIncomingBid().getTimeSlot(), bidForTimeSlot.getIncomingBid().getBidderID()), EBuildCategory.BidToStorage);
-            logger.info("Part " + notCoveredVolume + " of the bid with volume " + bidForTimeSlot.getIncomingBid().getVolume() + " was sent to storage");
+            createMessageContent(new Bid(notCoveredVolume, bidForTimeSlot.getIncomingBid().getPrice(), bidForTimeSlot.getIncomingBid().getTimeSlot(), bidForTimeSlot.getIncomingBid().getBidderID()));
+            logger.info("LOAD_MANAGER: Part {}  of the bid with volume {} was sent to storage", notCoveredVolume, bidForTimeSlot.getIncomingBid().getVolume());
 
             while (!timeSlotIsOpen && shouldContinue) {
                 synchronized (lock) {
@@ -75,11 +75,11 @@ public class AuctionFindingAlgorithm implements Runnable {
 
                     while (iterator.hasNext()) {
                         Bid bidInAuction = iterator.next();
-                        if (wonAuctions.containsKey(bidInAuction.getAuctionID()) && !wonAuctions.containsValue(bidInAuction.getBidderID())) {
+                        if (wonAuctions.containsKey(bidInAuction.getAuctionID().get()) && !wonAuctions.containsValue(bidInAuction.getBidderID())) {
                             volumeInAuctions -= bidInAuction.getVolume();
-                            createMessageContent(new Bid(bidInAuction.getVolume(), bidInAuction.getPrice(), bidInAuction.getTimeSlot(), bidInAuction.getBidderID()), EBuildCategory.BidToStorage);
+                            createMessageContent(new Bid(bidInAuction.getVolume(), bidInAuction.getPrice(), bidInAuction.getTimeSlot(), bidInAuction.getBidderID()));
                             iterator.remove(); // Remove the Bid from the list
-                            logger.info("Part of the bid with volume " + bidInAuction.getVolume() + " has been sent to storage");
+                            logger.info("LOAD_MANAGER: Part of the bid with volume {}  has been sent to storage.", bidInAuction.getVolume());
                         }
                     }
 
@@ -98,8 +98,8 @@ public class AuctionFindingAlgorithm implements Runnable {
 
     }
 
-    private void createMessageContent(ISendable sendable, EBuildCategory buildCategory) {
-        MessageContent messageContent = new MessageContent(sendable, buildCategory);
+    private void createMessageContent(ISendable sendable) {
+        MessageContent messageContent = new MessageContent(sendable, EBuildCategory.BidToStorage);
         try {
             outgoingQueue.put(messageContent);
         } catch (InterruptedException e) {
@@ -121,10 +121,10 @@ public class AuctionFindingAlgorithm implements Runnable {
         for (Auction auction : allAuctions) {
 
             if (!winningAuctions.contains(auction)) {
-                double volume = auction.getTotalVolume() < remainingVolume ? auction.getTotalVolume() : remainingVolume;
+                double volume = Math.min(auction.getTOTAL_VOLUME(), remainingVolume);
 
                 if (auction.getPrice() * auction.getCoveredVolume() < bidForTimeSlot.getIncomingBid().getPrice() * volume) {
-                    logger.debug("in Auction finder, found auction to cover volume: " + volume + " for Bidder " + bidForTimeSlot.getIncomingBid().getBidderID());
+                    logger.debug("LOAD_MANAGER: In Auction finder, found auction to cover volume: {}  for Bidder {}", volume, bidForTimeSlot.getIncomingBid().getBidderID());
                     Bid newBid = new Bid(volume, bidForTimeSlot.getIncomingBid().getPrice(), bidForTimeSlot.getIncomingBid().getTimeSlot(), bidForTimeSlot.getIncomingBid().getBidderID());
                     newBid.setAuctionID(auction.getAuctionId());
                     try {
@@ -134,11 +134,11 @@ public class AuctionFindingAlgorithm implements Runnable {
                     }
                     auctionProsumerTracker.addBidderToAuction(auction.getAuctionId(), bidForTimeSlot.getIncomingBid().getBidderID());
                     bidForTimeSlot.addBid(newBid);
-                    logger.info("Added bid to bidForTimeSlot: " + newBid.getVolume());
+                    logger.info("LOAD_MANAGER: Added bid to bidForTimeSlot: " + newBid.getVolume());
                     remainingVolume -= volume;
 
                     EBuildCategory bidToExchange = EBuildCategory.BidToExchange;
-                    bidToExchange.setUUID(auction.getExchangeID());
+                    bidToExchange.setUUID(auction.getEXCHANGE_ID());
                     MessageContent messageContent = new MessageContent(newBid, bidToExchange);
 
                     try {
@@ -152,7 +152,7 @@ public class AuctionFindingAlgorithm implements Runnable {
     }
 
     public void endAuctionFinder() {
-        logger.debug("Auction Finder is ending");
+        logger.debug("LOAD_MANAGER: Auction Finder is ending");
         synchronized (lock) {
             timeSlotIsOpen = false;
             lock.notify();
