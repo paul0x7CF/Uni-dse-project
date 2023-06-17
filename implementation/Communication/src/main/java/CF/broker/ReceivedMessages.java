@@ -2,6 +2,8 @@ package CF.broker;
 
 import CF.mainPackage.ConfigReader;
 import CF.protocol.Message;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -15,6 +17,8 @@ import java.util.UUID;
  * through the AckHandler. The MessageHandler should only process a message once.
  */
 public class ReceivedMessages {
+    private static final Logger log = LogManager.getLogger(ReceivedMessages.class);
+
     private final Map<UUID, Message> receivedMessages;
     private final Map<UUID, Instant> messageTimestamps;
     private final Duration messageRetentionDuration;
@@ -46,6 +50,8 @@ public class ReceivedMessages {
 
     public boolean isMessageAlreadyReceived(Message message) {
         UUID messageID = message.getMessageID();
-        return receivedMessages.containsKey(messageID);
+        boolean isPresent = receivedMessages.containsKey(messageID);
+        log.debug("{}: Message {} already received: {}", message.getReceiverPort(), messageID, isPresent);
+        return isPresent;
     }
 }
