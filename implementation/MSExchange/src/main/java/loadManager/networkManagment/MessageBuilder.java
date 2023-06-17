@@ -63,7 +63,9 @@ public class MessageBuilder {
         receiverMS.addAll(communication.getBroker().getServicesByType(EServiceType.Storage));
 
         for (MSData msData : receiverMS) {
-            messages.add(buildTransactionMessage(IMessageBuilder.senderAndReceiverTemplate(msData, communication.getBroker().getCurrentService()), transaction));
+            if (msData.getId() != null) {
+                messages.add(buildTransactionMessage(IMessageBuilder.senderAndReceiverTemplate(msData, communication.getBroker().getCurrentService()), transaction));
+            }
         }
         return messages;
     }
@@ -90,7 +92,11 @@ public class MessageBuilder {
         receiverMS.addAll(communication.getBroker().getServicesByType(EServiceType.Storage));
 
         for (MSData msData : receiverMS) {
-            messages.add(buildTransactionMessage(IMessageBuilder.senderAndReceiverTemplate(msData, communication.getBroker().getCurrentService()), transaction));
+            if (msData == null || msData.getId() != null) {
+                messages.add(buildTransactionMessage(IMessageBuilder.senderAndReceiverTemplate(msData, communication.getBroker().getCurrentService()), transaction));
+            } else {
+                logger.warn("LOAD_MANAGER: build Bid to Storage: receiver not found");
+            }
         }
 
         return messages;

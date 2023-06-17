@@ -53,7 +53,7 @@ public class MSForecast implements Runnable {
         logger.info("Waiting for TimeSlot");
 
         try {
-            TimeSlot currentTimeSlot = this.inputQueueTimeSlots.take();
+            currentTimeSlot = this.inputQueueTimeSlots.take();
             updateTimeSlots(currentTimeSlot);
         } catch (InterruptedException e) {
             logger.error("Error while taking from inputQueueTimeSlot: {}", e.getMessage());
@@ -70,7 +70,7 @@ public class MSForecast implements Runnable {
         while (true)
         {
             try {
-                TimeSlot currentTimeSlot = this.inputQueueTimeSlots.take();
+                currentTimeSlot = this.inputQueueTimeSlots.take();
                 updateTimeSlots(currentTimeSlot);
             } catch (InterruptedException e) {
                 logger.error("Error while taking from inputQueueTimeSlot: {}", e.getMessage());

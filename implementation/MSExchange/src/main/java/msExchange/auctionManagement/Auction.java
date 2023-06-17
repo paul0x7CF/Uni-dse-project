@@ -50,13 +50,17 @@ public class Auction {
         //Create a transaction and add it to blockingQueue
         logger.info("EXCHANGE: Auction " + auctionID + " has ended for timeSlot " + timeSlotID);
         auctionEnded = true;
-        Transaction transaction = new Transaction(sellerID, bidderID, soldVolume, pricePerWh, auctionID);
-
-        try {
-            transactionQueue.put(transaction);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        if (soldVolume != 0 && bidderID != null) {
+            logger.debug("EXCHANGE: Auction information: auctionID: {} bidderID: {} soldVolume: {} pricePerWh{}", auctionID, bidderID, soldVolume, pricePerWh);
+            Transaction transaction = new Transaction(sellerID, bidderID, soldVolume, pricePerWh, auctionID);
+            try {
+                transactionQueue.put(transaction);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
+
+
     }
 
     public boolean isAuctionEnded() {
