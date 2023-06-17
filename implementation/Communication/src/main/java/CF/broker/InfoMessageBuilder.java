@@ -10,6 +10,9 @@ import CF.sendable.ErrorInfo;
 import CF.sendable.MSData;
 import CF.sendable.MSDataList;
 
+/**
+ * Class for creating messages with main category Info.
+ */
 public class InfoMessageBuilder {
     private static final Logger log = LogManager.getLogger(InfoMessageBuilder.class);
 
@@ -43,6 +46,9 @@ public class InfoMessageBuilder {
         return messageFactory.build();
     }
 
+    /**
+     * Creates an error message with the given error name and error message.
+     */
     public static Message createErrorMessage(MSData sender, MSData receiver, String errorName, String errorMessage) {
         MessageFactory messageFactory = senderAndReceiverTemplate(sender, receiver);
         messageFactory.setCategory(ECategory.Info, "Error").setPayload(new ErrorInfo(errorName, errorMessage));
@@ -50,6 +56,9 @@ public class InfoMessageBuilder {
         return messageFactory.build();
     }
 
+    /**
+     * Creates an ack message for the given message.
+     */
     public static Message createAckMessage(Message message) {
         AckInfo ack = new AckInfo(message.getMessageID(), message.getCategory(), message.getSenderPort(), message.getReceiverPort());
         Message ackMessage = MessageFactory.reverse(message);

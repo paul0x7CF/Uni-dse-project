@@ -132,7 +132,7 @@ public class AuctionManager {
             for (Auction auction : auctions) {
                 if (auction.getTOTAL_VOLUME() - auction.getCoveredVolume() != 0) {
                     unsatisfiedSellers.put(auction.getSELLER_ID(), auction.getTOTAL_VOLUME() - auction.getCoveredVolume());
-                    logger.info("LOAD_MANAGER: The sell from {} with volume {} has been fully covered. {} kw are covered by auctions, {} are offset by storage.", auction.getSELLER_ID(), auction.getTOTAL_VOLUME(), auction.getCoveredVolume(), auction.getTOTAL_VOLUME() - auction.getCoveredVolume());
+                    logger.info("LOAD_MANAGER: The sell from {} with volume {} has been fully covered. {} w are covered by auctions, {} are offset by storage.", auction.getSELLER_ID(), auction.getTOTAL_VOLUME(), auction.getCoveredVolume(), auction.getTOTAL_VOLUME() - auction.getCoveredVolume());
                 }
             }
             return unsatisfiedSellers;

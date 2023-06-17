@@ -13,6 +13,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * This class is responsible for sending register messages to the other services. It uses the {@link ConfigReader} to
+ * get the central settings for the microservices that should be started. It also uses the {@link IScheduleBroker} to
+ * get the current service and the list of services.
+ */
 public class DiscoveryService implements IMessageSchedulerObserver {
     private static final Logger log = LogManager.getLogger(DiscoveryService.class);
     ConfigReader configReader = new ConfigReader();

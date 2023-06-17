@@ -3,6 +3,10 @@ package CF.sendable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * A time slot is a period of time with a start and end time. It is the central component of the auction and forecast
+ * system.
+ */
 public class TimeSlot implements ISendable {
     private final UUID timeSlotID;
     private LocalDateTime startTime;
