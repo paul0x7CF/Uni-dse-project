@@ -4,8 +4,12 @@ import MSP.Data.Consumer;
 import MSP.Data.EConsumerType;
 import MSP.Logic.Prosumer.ConsumptionBuilding;
 import MSP.Logic.Prosumer.Singleton;
+import MSP.Data.EProducerType;
+import MSP.Data.Producer;
+import MSP.Logic.Prosumer.RESTData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -36,12 +40,52 @@ public class RestHandler {
     private String test;
     private final ConsumptionBuilding consumptionBuilding = Singleton.getInstance().getConsumptionBuilding();
 
-    /*protected RestHandler(String asd) {
-        this.test = asd;
-    }*/
+
+    private RESTData restData;
+
+
+    protected RestHandler(RESTData restData) {
+        this.restData = restData;
+    }
 
     protected RestHandler() {
+
     }
+
+
+/*
+    @GetMapping("/producers")
+    public ResponseEntity<Set<Producer>> getProducers() {
+        Set<Producer> producers = restData.getProducers();
+        return ResponseEntity.ok(producers);
+    }
+
+    @GetMapping("/consumers")
+    public ResponseEntity<Set<Consumer>> getConsumers() {
+        Set<Consumer> consumers = restData.getConsumers();
+        return ResponseEntity.ok(consumers);
+    }
+
+    @PostMapping("/producers")
+    public ResponseEntity<Void> createProducer(@RequestBody EProducerType producerType) {
+        boolean success = restData.createProducer(producerType);
+        if (success) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PostMapping("/consumers")
+    public ResponseEntity<Void> createConsumer(@RequestBody EConsumerType consumerType) {
+        boolean success = restData.createConsumer(consumerType);
+        if (success) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+*/
 
     @CrossOrigin
     @RequestMapping(value = "/consumers", method = RequestMethod.POST,consumes={"application/json"})
@@ -60,7 +104,7 @@ public class RestHandler {
     }
 
     @CrossOrigin
-    @RequestMapping(value = "/consumers", method = RequestMethod.DELETE,consumes={"application/json"})
+    @RequestMapping(value = "/consumers", method = RequestMethod.DELETE, consumes = {"application/json"})
     private ResponseEntity<String> deleteConsumer(@RequestBody EConsumerType type) {
         AtomicInteger countDeleted = new AtomicInteger();
         this.consumerList.removeIf(consumer -> {
@@ -76,123 +120,43 @@ public class RestHandler {
         }
     }
 
-/*
-    *//**
-     * Endpoint order to subscribe, only takes sub Messages
-     * @param message which is recived by the endpoint
-     * @return String with decription of outcome of operation
-     *//*
-
-    @CrossOrigin
-    @RequestMapping(value = "/subscribe", method = RequestMethod.POST,consumes={"application/json"})
-    public ResponseEntity<String> subscribe(@RequestBody() Message message) {
-        try{
-            // for validating message
-            new MessageBuilder(message).build();
-        } catch (InvalidArgumentException e) {
-            return new ResponseEntity<>("Invalid Message provided", HttpStatus.NOT_ACCEPTABLE);
+/*    @PutMapping("/producers")
+    public ResponseEntity<Void> updateProducer(@RequestBody EProducerType producerDTO) {
+        boolean success = restData.updateProducer(producerDTO.getProducerType(), producerDTO.getEfficiency());
+        if (success) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.badRequest().build();
         }
-        if(!message.getMessageType().equals(EMessageType.SUBSCRIBE)){
-            return new ResponseEntity<>("only subscribe messages at this endpoint",HttpStatus.NOT_ACCEPTABLE);
-        }
-
-        pollStorage.putIfAbsent(message.getSenderAdress(), new HashSet<>());
-        try {
-            outputRest.put(message);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        return new ResponseEntity<>("Successfully Subscribe your polling id is" + message.getSenderAdress(), HttpStatus.ACCEPTED);
-    }
-    *//**
-     * Endpoint order to Unsubscribe, only takes Unsubscribe Messages
-     * @param message which is recived by the endpoint
-     * @return String with decription of outcome of operation
-     *//*
-
-    @CrossOrigin
-    @RequestMapping(value = "/unsubscribe", method = RequestMethod.POST,consumes={"application/json"})
-    public ResponseEntity<String> unsubscribe(@RequestBody Message message) {
-        try{
-            // for validating message
-            new MessageBuilder(message).build();
-        } catch (InvalidArgumentException e) {
-            return new ResponseEntity<>("Invalid Message provided", HttpStatus.NOT_ACCEPTABLE);
-        }
-        if(!message.getMessageType().equals(EMessageType.UNSUBSCRIBE)){
-            return new ResponseEntity<>("only subscribe messages at this endpoint",HttpStatus.NOT_ACCEPTABLE);
-        }
-        try {
-            outputRest.put(message);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        return new ResponseEntity<>("Unsubscribe recived", HttpStatus.ACCEPTED);
     }
 
-    *//**
-     * Endpoint order to Publish, only takes Publish Messages
-     * @param message which is recived by the endpoint
-     * @return String with decription of outcome of operation
-     *//*
-    @CrossOrigin
-    @RequestMapping(value = "/publish", method = RequestMethod.POST,consumes={"application/json"})
-    public ResponseEntity<String> post(@RequestBody Message message) {
-        try{
-            // for validating message
-            new MessageBuilder(message).build();
-        } catch (InvalidArgumentException e) {
-            return new ResponseEntity<>("Invalid Message provided", HttpStatus.NOT_ACCEPTABLE);
+    @PutMapping("/consumers")
+    public ResponseEntity<Void> updateConsumer(@RequestBody EConsumerType consumerDTO) {
+        boolean success = restData.updateConsumer(consumerDTO.getConsumerType(), consumerDTO.getEfficiency());
+        if (success) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.badRequest().build();
         }
-        if(!message.getMessageType().equals(EMessageType.PUBLISH)){
-            return new ResponseEntity<>("only subscribe messages at this endpoint",HttpStatus.NOT_ACCEPTABLE);
-        }
-        //pollStorage.putIfAbsent(message.getSenderAdress(), new HashSet<>());
-        try {
-            outputRest.put(message);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        return new ResponseEntity<>("Message Posted Successfully", HttpStatus.ACCEPTED);
-    }
-
-    *//**
-     * This method is used by the client to get the messages from the queue
-     * @param pollingID the polling id of the subscriber
-     * @return the messages
-     *//*
-    @CrossOrigin
-    @RequestMapping(value = "/polling/{pollingID}/{uuid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Set<Message>> subscribe(@PathVariable String pollingID,@PathVariable String uuid ) {
-        if(pollStorage.containsKey(pollingID)){
-            try {
-                Message pingMessage = new MessageBuilder("PING").messageType(EMessageType.PING).senderID(UUID.fromString(uuid)).technology(ETransferTechnology.REST).build();
-                outputRest.put(pingMessage);
-            }
-            catch(Exception e){
-                e.printStackTrace();
-                return new ResponseEntity<>(null, HttpStatus.SEE_OTHER);
-            }
-            Set<Message> messages = pollStorage.get(pollingID);
-            return new ResponseEntity<>(pollStorage.replace(pollingID, new HashSet<>()),HttpStatus.ACCEPTED);
-        }
-        else{
-            return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
-        }
-
-    }
-
-    *//**
-     * Test Message to test if it is working, returns the same thing every time
-     * @return
-     * @throws InvalidArgumentException
-     * @throws MarshallException
-     *//*
-    @CrossOrigin
-    @RequestMapping(value = "/testmessage", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Message testMessage() throws InvalidArgumentException, MarshallException {
-        Message test = new MessageBuilder("Test").messageType(EMessageType.PUBLISH).technology(ETransferTechnology.UDP).target("XOXO").xmlData(new TrashClass("Hello")).build();
-        return test;
     }*/
 
+ /*   @DeleteMapping("/producers/{producerType}")
+    public ResponseEntity<Void> deleteProducer(@PathVariable EProducerType producerType) {
+        boolean success = restData.deleteProducer(producerType);
+        if (success) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/consumers/{consumerType}")
+    public ResponseEntity<Void> deleteConsumer(@PathVariable EConsumerType consumerType) {
+        boolean success = restData.deleteConsumer(consumerType);
+        if (success) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }*/
 }
