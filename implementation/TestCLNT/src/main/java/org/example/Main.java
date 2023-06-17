@@ -1,10 +1,8 @@
 package org.example;
 
-import MSP.Configuration.ConfigFileReader;
-
 public class Main {
     public static void main(String[] args) {
-        final String ip = ConfigFileReader.getCommunicationProperty("prosumerAddress");
+        final String ip = "10.102.102.17";
         String address = "http://"+ip;
 
         int prosumerPort = 6000;    // Port of the Prosumer you want to test
