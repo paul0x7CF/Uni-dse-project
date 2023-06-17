@@ -20,10 +20,10 @@ import java.util.concurrent.BlockingQueue;
 public class ForecastCommunicationHandler {
     private static final Logger logger = LogManager.getLogger(ForecastCommunicationHandler.class);
     private BrokerRunner communicationBroker;
-    private BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest;
-    private BlockingQueue<ProsumerSolarRequest> incomingSolarRequest;
-    private BlockingQueue<TimeSlot> inputQueueTimeSlot;
-    private ForecastMessageBuilder forecastMessageBuilder;
+    private final BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest;
+    private final BlockingQueue<ProsumerSolarRequest> incomingSolarRequest;
+    private final BlockingQueue<TimeSlot> inputQueueTimeSlot;
+    private final ForecastMessageBuilder forecastMessageBuilder;
 
     public ForecastCommunicationHandler(BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest, BlockingQueue<ProsumerSolarRequest> incomingSolarRequest, BlockingQueue<TimeSlot> inputQueueTimeSlot, int port, EServiceType serviceType) {
         this.incomingConsumptionRequest = incomingConsumptionRequest;
@@ -41,11 +41,12 @@ public class ForecastCommunicationHandler {
     }
 
     public void sendConsumptionResponseMessage(ConsumptionResponse consumptionResponse, String senderAddress, int senderPort, UUID senderID) {
+        logger.trace("Sending ConsumptionResponse to {} with consumption: {}", senderPort, consumptionResponse.getConsumptionMap());
         communicationBroker.sendMessage(this.forecastMessageBuilder.buildConsumptionResponseMessage(consumptionResponse, senderAddress, senderPort, senderID));
     }
 
     public void sendProductionResponseMessage(SolarResponse solarResponse, String senderAddress, int senderPort, UUID senderID) {
-        logger.debug("Sending SolarResponse to {} with production: {}", senderPort, solarResponse.getSolarProduction());
+        logger.trace("Sending SolarResponse to {} with production: {}", senderPort, solarResponse.getSolarProduction());
         communicationBroker.sendMessage(this.forecastMessageBuilder.buildSolarResponseMessage(solarResponse, senderAddress, senderPort, senderID));
     }
 

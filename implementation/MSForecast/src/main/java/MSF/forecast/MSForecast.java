@@ -22,13 +22,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class MSForecast implements Runnable {
     private static final Logger logger = LogManager.getLogger(MSForecast.class);
-    private ForecastCommunicationHandler forecastCommunicationHandler;
-    private EForecastType forecastType;
+    private final ForecastCommunicationHandler forecastCommunicationHandler;
+    private final EForecastType forecastType;
     private UUID forecastId;
     private TimeSlot currentTimeSlot;
-    private BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest = new LinkedBlockingQueue<>();
-    private BlockingQueue<ProsumerSolarRequest> incomingSolarRequest = new LinkedBlockingQueue<>();
-    private BlockingQueue<TimeSlot> inputQueueTimeSlots = new LinkedBlockingQueue<>();
+    private final BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest = new LinkedBlockingQueue<>();
+    private final BlockingQueue<ProsumerSolarRequest> incomingSolarRequest = new LinkedBlockingQueue<>();
+    private final BlockingQueue<TimeSlot> inputQueueTimeSlots = new LinkedBlockingQueue<>();
 
     public MSForecast(int port, EForecastType forecastType) {
         this.forecastCommunicationHandler = new ForecastCommunicationHandler(incomingConsumptionRequest, incomingSolarRequest, inputQueueTimeSlots, port, EServiceType.Forecast);
@@ -50,7 +50,6 @@ public class MSForecast implements Runnable {
         this.forecastCommunicationHandler.addMessageHandler(ECategory.Forecast);
 
         logger.info("MSForecast started");
-
         logger.info("Waiting for TimeSlot");
 
         try {
@@ -81,5 +80,6 @@ public class MSForecast implements Runnable {
 
     private void updateTimeSlots(TimeSlot currentTimeSlot) {
         this.currentTimeSlot = currentTimeSlot;
+        logger.info("New TimeSlot received!");
     }
 }

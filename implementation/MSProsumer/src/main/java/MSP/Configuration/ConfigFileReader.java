@@ -14,7 +14,7 @@ public class ConfigFileReader {
 
     private static final Logger logger = LogManager.getLogger(ConfigFileReader.class);
 
-    private static final String CONFIG_FILE_PATH = "C:\\Users\\paulf\\OneDrive\\Uni\\23_SS\\DSE\\DSE_Team_202\\implementation\\MSProsumer\\src\\main\\resources\\prosumerConfig.properties";
+    private static final String CONFIG_FILE_PATH = "implementation/MSProsumer/src/main/resources/prosumerConfig.properties";
     private static final String CONFIG_FILE_PATH_FROM_COMMUNICATION = "implementation/Communication/src/main/resources/LibraryConfig.properties";
 
     private static String readProperty(final String KEY, final String PATH) {

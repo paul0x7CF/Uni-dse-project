@@ -16,8 +16,8 @@ import java.util.concurrent.BlockingQueue;
 
 public class ProsumerMessageHandler implements IMessageHandler {
     private static final Logger logger = LogManager.getLogger(ProsumerMessageHandler.class);
-    private BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest;
-    private BlockingQueue<ProsumerSolarRequest> incomingSolarRequest;
+    private final BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest;
+    private final BlockingQueue<ProsumerSolarRequest> incomingSolarRequest;
 
     public ProsumerMessageHandler(BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest, BlockingQueue<ProsumerSolarRequest> incomingSolarRequest) {
         this.incomingConsumptionRequest = incomingConsumptionRequest;
@@ -25,7 +25,7 @@ public class ProsumerMessageHandler implements IMessageHandler {
     }
 
     @Override
-    public void handleMessage(Message message) throws MessageProcessingException, RemoteException {
+    public void handleMessage(Message message) {
         try {
             switch (message.getSubCategory()) {
                 case "Production" -> handleProduction(message);
