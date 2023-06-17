@@ -146,13 +146,14 @@ public class ConsumptionBuilding implements RESTData, Runnable {
     // Define the methods for the Logic
 
     private CallbackTransaction actOnTransactionFinished() {
-        CallbackTransaction callbackOnTransaction = price -> {
-            logger.debug("Transaction callback received with price {}", price);
-            if (price > 0) {
-                wallet.incrementCashBalance(price);
+        CallbackTransaction callbackOnTransaction = (totalPrice, singlePrice) -> {
+            logger.debug("Transaction callback received with price {}", totalPrice);
+            if (totalPrice > 0) {
+                wallet.incrementCashBalance(totalPrice);
             } else {
-                wallet.decrementCashBalance(price);
+                wallet.decrementCashBalance(totalPrice);
             }
+            this.scheduler.insertValue(singlePrice);
             logger.debug("New cash balance {}", wallet.getCashBalance());
             logger.info("---------------------TimeSlot finished---------------------------");
         };

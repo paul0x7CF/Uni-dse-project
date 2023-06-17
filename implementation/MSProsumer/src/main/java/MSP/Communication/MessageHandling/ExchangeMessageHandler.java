@@ -59,7 +59,7 @@ public class ExchangeMessageHandler implements IMessageHandler {
         if (validateTransaction(newTransaction)) {
             double transactionPrice = calculateTransactionPrice(newTransaction);
             logger.debug("Call callbackOnTransaction with price: {}", newTransaction.getPrice());
-            this.callbackOnTransaction.callback(transactionPrice);
+            this.callbackOnTransaction.callback(transactionPrice, newTransaction.getPrice());
         } else {
             logger.warn("Transaction was Ignored");
         }

@@ -80,13 +80,14 @@ public class ForecastMessageHandler implements IMessageHandler {
 
         final int MAX_RESPONSES_FORECAST = Integer.parseInt(ConfigFileReader.getCommunicationProperty("forecastAmount"));
         PollProductionForecast pollForecastForTimeSlotID = this.pollForecastProductionMap.get(solarResponse.getResponseTimeSlotId());
-        logger.debug("Until now {} Production Forecast Results were received for the TimeSlot", pollForecastForTimeSlotID.getResponseSize());
         if (pollForecastForTimeSlotID.getResponseSize() < MAX_RESPONSES_FORECAST) {
-            logger.debug("Adding Production Forecast Response to Poll Object");
             pollForecastForTimeSlotID.setPollResult(solarResponse.getSolarProduction());
+            logger.debug("Production Forecast Response was added to Poll Object and the size is now {}", pollForecastForTimeSlotID.getResponseSize());
         } else if (pollForecastForTimeSlotID.getResponseSize() == MAX_RESPONSES_FORECAST) {
             pollForecastForTimeSlotID.setAvailable(true);
-            logger.debug("Production Forecast Response was set on Poll Object because all 3 responses were received");
+            logger.debug("Production Forecast Poll Object was set on available because all expected responses were received");
+        } else if (pollForecastForTimeSlotID.getResponseSize() > MAX_RESPONSES_FORECAST) {
+            logger.warn("More Production Forecast Responses were received than expected for the TimeSlot, Message was ignored");
         }
 
     }
