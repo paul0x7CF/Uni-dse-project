@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+/**
+ * MessageScheduler class that is used to schedule messages to be sent to other brokers.
+ */
 public class MessageScheduler {
     private static final Logger log = LogManager.getLogger(MessageScheduler.class);
     private final ScheduledExecutorService scheduler;

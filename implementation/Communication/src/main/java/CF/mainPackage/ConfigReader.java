@@ -3,6 +3,9 @@ package CF.mainPackage;
 import java.io.InputStream;
 import java.util.Properties;
 
+/**
+ * This class is used to read the properties file located in the "resources" folder.
+ */
 public class ConfigReader {
     private static final String PROPERTIES_FILE = "LibraryConfig.properties";
     private final Properties properties;

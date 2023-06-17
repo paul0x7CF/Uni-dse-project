@@ -4,7 +4,8 @@ import java.io.Serializable;
 import java.util.UUID;
 
 /**
- * This class holds the information about other microservices in the network.
+ * This class holds the information about other microservices in the network. It is used to identify other microservices
+ * and to connect to them via the discovery and sync services.
  */
 public class MSData implements ISendable, Serializable {
     private final UUID id;

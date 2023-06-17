@@ -9,13 +9,10 @@ import MSF.data.EForecastType;
 import MSF.data.ProsumerConsumptionRequest;
 import MSF.data.ProsumerSolarRequest;
 import MSF.exceptions.UnknownForecastTypeException;
-import MSF.historicData.HistoricDataReader;
-import MSF.propertyHandler.PropertiesReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import CF.sendable.EServiceType;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -41,9 +38,7 @@ public class MSForecast implements Runnable {
 
     @Override
     public void run() {
-        Thread communicationThread = new Thread(() -> {
-            this.forecastCommunicationHandler.startBrokerRunner();
-        }, "ForecastCommunicationThread");
+        Thread communicationThread = new Thread(this.forecastCommunicationHandler::startBrokerRunner, "ForecastCommunicationThread");
         communicationThread.start();
 
         this.forecastCommunicationHandler.addMessageHandler(ECategory.Exchange);
@@ -54,15 +49,17 @@ public class MSForecast implements Runnable {
 
         try {
             currentTimeSlot = this.inputQueueTimeSlots.take();
-            updateTimeSlots(currentTimeSlot);
         } catch (InterruptedException e) {
             logger.error("Error while taking from inputQueueTimeSlot: {}", e.getMessage());
         }
 
-        new Thread(new ConsumptionForecast(this.incomingConsumptionRequest, this.forecastCommunicationHandler, this.currentTimeSlot), "ConsumptionForecast").start();
+        ConsumptionForecast consumptionForecast = new ConsumptionForecast(this.incomingConsumptionRequest, this.forecastCommunicationHandler, this.currentTimeSlot);
+        new Thread(consumptionForecast, "ConsumptionForecast").start();
 
+        ProductionForecast productionForecast = null;
         try {
-            new Thread(new ProductionForecast(this.incomingSolarRequest, this.forecastCommunicationHandler, this.currentTimeSlot, this.forecastType), "ProductionForecast").start();
+            productionForecast = new ProductionForecast(this.incomingSolarRequest, this.forecastCommunicationHandler, this.currentTimeSlot, this.forecastType);
+            new Thread(productionForecast, "ProductionForecast").start();
         } catch (UnknownForecastTypeException e) {
             throw new RuntimeException(e);
         }
@@ -71,15 +68,11 @@ public class MSForecast implements Runnable {
         {
             try {
                 currentTimeSlot = this.inputQueueTimeSlots.take();
-                updateTimeSlots(currentTimeSlot);
+                consumptionForecast.setCurrentTimeSlot(currentTimeSlot);
+                productionForecast.setCurrentTimeSlot(currentTimeSlot);
             } catch (InterruptedException e) {
                 logger.error("Error while taking from inputQueueTimeSlot: {}", e.getMessage());
             }
         }
-    }
-
-    private void updateTimeSlots(TimeSlot currentTimeSlot) {
-        this.currentTimeSlot = currentTimeSlot;
-        logger.info("New TimeSlot received!");
     }
 }

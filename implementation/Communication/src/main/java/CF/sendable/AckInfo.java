@@ -2,6 +2,9 @@ package CF.sendable;
 
 import java.util.UUID;
 
+/**
+ * AckInfo is a class that contains the information for an Acknowledgement message.
+ */
 public class AckInfo implements ISendable {
     private final UUID messageID;
     private final String category;

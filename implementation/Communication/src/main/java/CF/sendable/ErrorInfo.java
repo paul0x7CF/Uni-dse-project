@@ -1,5 +1,8 @@
 package CF.sendable;
 
+/**
+ * ErrorInfo is a class that is used to send error messages to another microservice.
+ */
 public class ErrorInfo implements ISendable {
     private String name;
     private String message;

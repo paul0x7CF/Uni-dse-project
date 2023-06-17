@@ -59,4 +59,8 @@ public class ConsumptionForecast implements Runnable {
         ConsumptionResponse consumptionResponse = new ConsumptionResponse(consumption, prosumerConsumptionRequest.getCurrentTimeSlotID());
         this.forecastCommunicationHandler.sendConsumptionResponseMessage(consumptionResponse, prosumerConsumptionRequest.getSenderAddress(), prosumerConsumptionRequest.getSenderPort(), prosumerConsumptionRequest.getSenderID());
     }
+
+    public void setCurrentTimeSlot(TimeSlot currentTimeSlot) {
+        this.currentTimeSlot = currentTimeSlot;
+    }
 }

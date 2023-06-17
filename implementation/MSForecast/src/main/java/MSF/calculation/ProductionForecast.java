@@ -17,12 +17,12 @@ import java.util.concurrent.BlockingQueue;
 
 public class ProductionForecast implements Runnable {
     private static final Logger logger = LogManager.getLogger(ProductionForecast.class);
-    private final BlockingQueue<ProsumerSolarRequest> incomingSolarRequest;
-    private final ForecastCommunicationHandler forecastCommunicationHandler;
-    private final EForecastType forecastType;
+    private BlockingQueue<ProsumerSolarRequest> incomingSolarRequest;
+    private ForecastCommunicationHandler forecastCommunicationHandler;
+    private EForecastType forecastType;
     private TimeSlot currentTimeSlot;
-    private final double smoothingFactor;
-    private final List<Double> lastForecasts;
+    private double smoothingFactor;
+    private List<Double> lastForecasts;
 
     public ProductionForecast(BlockingQueue<ProsumerSolarRequest> incomingSolarRequest, ForecastCommunicationHandler forecastCommunicationHandler, TimeSlot currentTimeSlot, EForecastType forecastType) throws UnknownForecastTypeException {
         this.incomingSolarRequest = incomingSolarRequest;
@@ -110,5 +110,9 @@ public class ProductionForecast implements Runnable {
 
         SolarResponse solarResponse = new SolarResponse(prosumerSolarRequest.getCurrentTimeSlotID(), production);
         this.forecastCommunicationHandler.sendProductionResponseMessage(solarResponse, prosumerSolarRequest.getSenderAddress(), prosumerSolarRequest.getSenderPort(), prosumerSolarRequest.getSenderID());
+    }
+
+    public void setCurrentTimeSlot(TimeSlot currentTimeSlot) {
+        this.currentTimeSlot = currentTimeSlot;
     }
 }
