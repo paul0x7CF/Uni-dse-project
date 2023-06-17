@@ -85,14 +85,14 @@ public class AuctionManager implements Runnable {
                         openTimeSlot = entry.getValue();
                     }
                 } else {
-                    assert openTimeSlot != null;
-                    if (entry.getValue().getEndTime() == openTimeSlot.getStartTime()) {
+
+                    if (openTimeSlot != null && entry.getValue().getEndTime() == openTimeSlot.getStartTime()) {
                         logger.debug("EXCHANGE: Close TimeSlot: " + entry.getValue().getTimeSlotId());
                         List<Auction> filteredAuctions = auctions.values().stream()
                                 .filter(auction -> auction.getTimeSlotID().equals(entry.getValue().getTimeSlotId())).toList();
                         filteredAuctions.forEach(Auction::endAuction);
-
                     }
+
                     if (entry.getValue().getEndTime().plusMinutes(MINUTES_TO_LIVE_AFTER_EXPIRING).isAfter(LocalDateTime.now())) {
                         iterator.remove(); // Remove the entry
                     }
