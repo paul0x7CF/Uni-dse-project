@@ -18,6 +18,7 @@ public class MSExchange implements Runnable {
     private final int INSTANCE_NUMBER;
     private final boolean DUPLICATED;
     private boolean atCapacity = false;
+    private boolean first = true; //TODO: remove after testing
     private BlockingQueue<Message> incomingMessages = new LinkedBlockingQueue<>();
     private BlockingQueue<Transaction> outgoingTransactions = new LinkedBlockingQueue<>();
     private CommunicationExchange communication;
@@ -26,6 +27,13 @@ public class MSExchange implements Runnable {
 
 
     public MSExchange(boolean duplicated, int instanceNumber) {
+        String loggingMessage = "";
+        if (duplicated) {
+            loggingMessage += "duplicated ";
+        } else {
+            loggingMessage += "non-duplicated ";
+        }
+        logger.info("EXCHANGE: Starting Exchange as {}, instance. Number {}", loggingMessage, instanceNumber);
         this.DUPLICATED = duplicated;
         this.INSTANCE_NUMBER = instanceNumber;
     }
@@ -73,6 +81,16 @@ public class MSExchange implements Runnable {
         if (!atCapacity) {
             if (incomingMessages.size() >= CAPACITY) {
                 logger.warn("EXCHANGE: BidQueue is full!");
+                communication.sendMessage(messageBuilder.buildCapacityMessage());
+            }
+            //TODO: remove this if statement after testing
+            if (!isDuplicated() && first) {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                first = false;
                 communication.sendMessage(messageBuilder.buildCapacityMessage());
             }
         } else {

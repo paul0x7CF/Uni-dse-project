@@ -25,6 +25,11 @@ public class LoadManager {
             logger.debug("LOAD_MANAGER: Added ExchangeServiceInformation with ID: {}", exchangeServiceInformation.getExchangeID());
 
         }
+
+        //TODO: remove this statement after testing
+        if ((nextServiceID + 4) % 5 == 0) {
+            duplicateExchange();
+        }
     }
 
     //TODO: remove Exchange Service
@@ -42,6 +47,7 @@ public class LoadManager {
     }
 
     public void setExchangeCapacity(UUID exchangeID) {
+        logger.debug("LOAD_MANAGER: In Setting capacity for exchange with ID: {}", exchangeID);
         if (exchangeID == null) {
             throw new IllegalArgumentException("LOAD_MANAGER: ExchangeID is null");
         }
@@ -68,7 +74,6 @@ public class LoadManager {
 
     public ExchangeServiceInformation getFreeExchange() throws AllExchangesAtCapacityException {
         // Returns the first ExchangeServiceInformation object in the list that is not at capacity.
-        logger.trace("LOAD_MANAGER: Exchange Services: {}", listExchangeServices.size());
         for (ExchangeServiceInformation exchangeServiceInformation : listExchangeServices) {
             if (!exchangeServiceInformation.isAtCapacity()) {
                 return exchangeServiceInformation;
@@ -134,6 +139,11 @@ public class LoadManager {
         }*/
 
         //alternative
-        new MSExchange(true, nextServiceID++);
+        logger.debug("LOAD_MANAGER: Duplicating Exchange Service. New instance ID: {}", nextServiceID);
+
+        MSExchange msExchange = new MSExchange(true, ++nextServiceID);
+        Thread exchangeThread = new Thread(msExchange, "ExchangeThread");
+        exchangeThread.start();
+
     }
 }

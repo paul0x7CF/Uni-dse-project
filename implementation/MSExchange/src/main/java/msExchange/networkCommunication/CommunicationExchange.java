@@ -1,15 +1,15 @@
 package msExchange.networkCommunication;
 
-import mainPackage.BaseCommunication;
-import mainPackage.networkHelper.IncomingMessageHandler;
 import CF.protocol.ECategory;
 import CF.protocol.Message;
 import CF.sendable.EServiceType;
+import mainPackage.networkHelper.BaseCommunication;
+import mainPackage.networkHelper.IncomingMessageHandler;
 
 import java.util.concurrent.BlockingQueue;
 
 public class CommunicationExchange extends BaseCommunication {
-     private static final EServiceType SERVICE_TYPE = EServiceType.ExchangeWorker;
+    private static final EServiceType SERVICE_TYPE = EServiceType.ExchangeWorker;
 
     public CommunicationExchange(BlockingQueue<Message> incomingMessages, int instanceNumber) {
         super(incomingMessages, SERVICE_TYPE, instanceNumber);

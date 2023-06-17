@@ -1,4 +1,4 @@
-package mainPackage;
+package mainPackage.networkHelper;
 
 import CF.broker.BrokerRunner;
 import CF.communication.NetworkHandler;
@@ -7,6 +7,7 @@ import CF.messageHandling.IMessageHandler;
 import CF.protocol.ECategory;
 import CF.protocol.Message;
 import CF.sendable.EServiceType;
+import mainPackage.PropertyFileReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,6 +31,7 @@ public abstract class BaseCommunication {
         switch (exchangeType) {
             case ExchangeWorker -> {
                 PORT = PORT + Integer.parseInt(configReader.getProperty("portJumpSize")) * instanceNumber;
+                logger.debug("new Port: {}", PORT);
                 serviceType = EServiceType.valueOf(properties.getExchangeServiceType());
             }
             case Exchange -> {

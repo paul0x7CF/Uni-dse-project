@@ -129,7 +129,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
     }
 
     private void handleCapacity(Message message) {
-        logger.trace("LOAD_MANAGER: Handling capacity");
+        logger.debug("LOAD_MANAGER: Handling capacity");
         loadManager.setExchangeCapacity(message.getSenderID());
     }
 

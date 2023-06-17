@@ -24,8 +24,15 @@ public class MessageBuilder {
     }
 
     public Message buildCapacityMessage() {
+        while (communicationExchange.getBroker().getServicesByType(EServiceType.Exchange).isEmpty()) {
+            logger.trace("EXCHANGE: Waiting for Exchange to register.");
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         MSData receiverMS = communicationExchange.getBroker().getServicesByType(EServiceType.Exchange).get(0);
-        logger.trace("EXCHANGE: Sending capacity message.");
         return IMessageBuilder.senderAndReceiverTemplate(receiverMS, communicationExchange.getBroker().getCurrentService()).setCategory(ECategory.Exchange, String.valueOf(ESubCategory.Capacity)).build();
     }
 
