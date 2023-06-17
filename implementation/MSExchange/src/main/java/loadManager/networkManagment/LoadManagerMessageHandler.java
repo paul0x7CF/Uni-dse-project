@@ -140,6 +140,13 @@ public class LoadManagerMessageHandler implements IMessageHandler {
 
         Transaction transaction = (Transaction) message.getSendable(Transaction.class);
         prosumerManager.handleIncomingTransaction(transaction);
+
+        MessageContent messageContent = new MessageContent(transaction, EBuildCategory.Transaction);
+        try {
+            outgoingQueue.put(messageContent);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void addExchangeServiceInformation(ExchangeServiceInformation exchangeServiceInformation) {

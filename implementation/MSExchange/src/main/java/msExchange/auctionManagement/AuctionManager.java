@@ -143,6 +143,12 @@ public class AuctionManager implements Runnable {
                 }
             }
         }
+
+        // End auctions associated with the current open time slot (if any)
+        if (openTimeSlot != null) {
+            List<Auction> currentAuctions = filterAuctionsByTimeSlot(openTimeSlot.getTimeSlotId());
+            endAuctions(currentAuctions);
+        }
     }
 
     private List<Auction> filterAuctionsByTimeSlot(UUID timeSlotID) {
@@ -196,7 +202,7 @@ public class AuctionManager implements Runnable {
                 throw new AuctionNotFoundException("EXCHANGE: The Auction ID is missing", Optional.empty(), Optional.empty(), Optional.of(bid));
             }
             if (!auctionExists(auctionID.get())) {
-                logger.warn("EXCHANGE: Auction doesn't exist yet?");
+                //logger.warn("EXCHANGE: Auction doesn't exist yet?");
                 try {
                     bidQueue.put(bid);
                 } catch (InterruptedException e) {

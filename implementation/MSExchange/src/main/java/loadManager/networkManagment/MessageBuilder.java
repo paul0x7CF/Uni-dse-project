@@ -34,6 +34,7 @@ public class MessageBuilder {
                     messages.add(buildSellToExchangeMessage(messageContent.getContent(), messageContent.getBuildCategory()));
             case BidToStorage -> messages.addAll(buildBidToStorageMessage(messageContent.getContent()));
             case SellToStorage -> messages.addAll(buildSellToStorageMessage(messageContent.getContent()));
+            case Transaction -> messages.addAll(buildTransactionMessages(messageContent.getContent()));
             default ->
                     throw new IllegalSendableException("LOAD_MANAGER: Illegal message content type: " + messageContent.getBuildCategory());
         }
@@ -96,14 +97,15 @@ public class MessageBuilder {
     }
 
 
-    /*
+
     private List<Message> buildTransactionMessages(ISendable content) {
         logger.trace("LOAD_MANAGER:  in build Transaction Message");
         List<Message> messages = new ArrayList<>();
         List<MSData> receiverMS = new ArrayList<>();
         Transaction transaction = (Transaction) content;
 
-        logger.info("LOAD_MANAGER:  Building Transaction Message: price: {}, volume:{}", transaction.getPrice(), transaction.getAmount());
+        logger.info("LOAD_MANAGER: Transaction for buyer {} to seller {}: price: {}, volume: {}.",
+                transaction.getBuyerID(), transaction.getSellerID(), transaction.getPrice(), transaction.getAmount());
 
         receiverMS.add(communication.getBroker().findService(transaction.getSellerID()));
         receiverMS.add(communication.getBroker().findService(transaction.getBuyerID()));
@@ -115,7 +117,7 @@ public class MessageBuilder {
         }
         return messages;
     }
-*/
+
     private Message buildTransactionMessage(MessageFactory messageFactory, Transaction transaction) {
         messageFactory.setCategory(ECategory.Exchange, String.valueOf(ESubCategory.Transaction)).setPayload(transaction);
         return messageFactory.build();
