@@ -105,10 +105,16 @@ public class Communication {
         this.callbackOnBidHigher = callbackBidHigher;
     }
 
+
+    public void resetPollingMaps(){
+        this.pollForecastConsumptionMap.clear();
+        this.pollForecastProductionMap.clear();
+    }
+
     // Define the methods for sending messages
 
     public PollConsumptionForecast sendConsumptionRequestMessage(ConsumptionRequest consumptionRequest) throws ServiceNotFoundException {
-        logger.debug("Executing Send Consumption Request Message");
+        logger.trace("Executing Send Consumption Request Message");
         this.pollForecastConsumptionMap.put(consumptionRequest.getRequestTimeSlotId(), new PollConsumptionForecast());
         logger.trace("added ConsumptionPoll");
 
@@ -133,7 +139,7 @@ public class Communication {
     }
 
     public PollProductionForecast sendProductionRequestMessage(SolarRequest solarRequest) throws ServiceNotFoundException {
-        logger.debug("Executing Send Production Request Message");
+        logger.trace("Executing Send Production Request Message");
         this.pollForecastProductionMap.put(solarRequest.getRequestTimeSlotId(), new PollProductionForecast());
         logger.trace("added ProductionPoll");
         Optional<Message> messageToSend = Optional.empty();
@@ -153,7 +159,7 @@ public class Communication {
     }
 
     public void sendBid(double energyAmount, double price, TimeSlot auctionTimeSlot) throws ServiceNotFoundException {
-        logger.debug("Executing Send Bid Message");
+        logger.trace("Executing Send Bid Message");
         Bid bidToSend = new Bid(energyAmount, price, auctionTimeSlot.getTimeSlotID(), this.myMSData.getId());
         logger.trace("Bid created with: energyAmount: {}, price: {}", energyAmount, price);
         sendBid(bidToSend);
@@ -161,7 +167,7 @@ public class Communication {
     }
 
     public void sendSell(double energyAmount, double price, TimeSlot auctionTimeSlot) throws ServiceNotFoundException {
-        logger.debug("Executing Send Sell Message");
+        logger.trace("Executing Send Sell Message");
         Sell sellToSend = new Sell(energyAmount, price, auctionTimeSlot.getTimeSlotID(), this.myMSData.getId());
         logger.trace("Sell created with: energyAmount: {}, price: {}", energyAmount, price);
         sendSell(sellToSend);
@@ -169,13 +175,13 @@ public class Communication {
     }
 
     public void sendLowerSell(Sell sellToSend) throws ServiceNotFoundException {
-        logger.debug("Executing Send Lower Sell Message");
+        logger.trace("Executing Send Lower Sell Message");
         sendSell(sellToSend);
 
     }
 
     public void sendHigherBid(Bid bidToChange) throws ServiceNotFoundException {
-        logger.debug("Executing Send Higher Bid Message");
+        logger.trace("Executing Send Higher Bid Message");
         sendBid(bidToChange);
     }
 

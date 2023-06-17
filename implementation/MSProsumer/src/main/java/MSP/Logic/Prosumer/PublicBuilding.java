@@ -10,7 +10,7 @@ public class PublicBuilding extends ConsumptionBuilding {
     }
 
     @Override
-    protected void createConsumer() {
+    protected void initializeConsumer() {
         final int INITIALIZED_CONSUMER_AMOUNT = Integer.parseInt(ConfigFileReader.getProperty("consumer.amount.OfPublicBuilding"));
         for (int i = 1; i <= INITIALIZED_CONSUMER_AMOUNT; i++) {
             createConsumer(EConsumerType.valueOf(ConfigFileReader.getProperty("consumer.type"+i+".OfPublicBuilding")));

@@ -84,7 +84,7 @@ public class WeightedMechanism implements IPriceMechanism {
             askSum += sortedAskPrices.get(i) * askWeight;
         }
 
-        weightedPrice = (bidSum + askSum) / 2.0;
+        weightedPrice = (bidSum + askSum) / (2 * k);
 
         logger.debug("LOAD_MANAGER: Weighted price is {}", weightedPrice);
     }
