@@ -1,6 +1,7 @@
 package MSP.Logic.Prosumer;
 
 import CF.sendable.TimeSlot;
+import MSP.Communication.callback.CallbackSellLower;
 import MSP.Communication.polling.PollProductionForecast;
 import MSP.Configuration.ConfigFileReader;
 import MSP.Data.*;
@@ -34,14 +35,72 @@ public class NettoZeroBuilding extends ConsumptionBuilding {
 
     public NettoZeroBuilding(EProsumerType prosumerType, double cashBalance, int port) {
         super(prosumerType, cashBalance, port);
+
         final int INITIALIZED_PRODUCER_AMOUNT = Integer.parseInt(ConfigFileReader.getProperty("producer.amount"));
         for (int i = 0; i < INITIALIZED_PRODUCER_AMOUNT; i++) {
-            createProducer(EProducerType.valueOf(ConfigFileReader.getProperty("producer.type" + ++i)));
+            createProducer(EProducerType.valueOf(ConfigFileReader.getProperty("producer.type" + (i + 1))));
         }
+        communicator.setCallbackOnSellLower(actSellLowerQuestion());
 
         logger.info("{} Producer created", producerList.size() + 1);
 
     }
+
+    private CallbackSellLower actSellLowerQuestion() {
+        CallbackSellLower callbackOnSellLower = sellToChange -> {
+            logger.info("SellLower callback received with min sell price from Exchange {}", sellToChange.getAskPrice());
+            double priceToChange = sellToChange.getAskPrice();
+            priceToChange = this.wallet.getLowerSellPrice(priceToChange);
+            sellToChange.setAskPrice(priceToChange);
+            try {
+                logger.debug("SellLower Response with price {}", sellToChange.getAskPrice());
+                this.communicator.sendLowerSell(sellToChange);
+            } catch (ServiceNotFoundException e) {
+                logger.error(e.getMessage());
+            }
+
+        };
+        return callbackOnSellLower;
+    }
+
+    // Define the methods for the Logic
+
+    @Override
+    protected void executeAccountingStrategy(TimeSlot newTimeSlot) throws ServiceNotFoundException, DeviceNotSupportedException, UndefinedStrategyException {
+        super.executeAccountingStrategy(newTimeSlot);
+        try {
+
+            ContextCalcAcct contextCalcAcct = new ContextCalcAcct();
+            contextCalcAcct.setCalcAcctAStrategy(new CalcProduction(super.communicator));
+
+            this.pollOnProduction = (PollProductionForecast) contextCalcAcct.calculateAccounting(new ArrayList<>(producerList), newTimeSlot);
+
+        } catch (DeviceNotSupportedException | UndefinedStrategyException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    protected double scheduleEnergyAmount(TimeSlot currTimeSlot) {
+        double resultEnergyAmount;
+        double neededEnergyAmount = super.scheduleEnergyAmount(currTimeSlot);
+        double producedEnergyAmount = (double) this.pollOnProduction.getForecastResult();
+        resultEnergyAmount = neededEnergyAmount - producedEnergyAmount;
+        return resultEnergyAmount;
+    }
+
+    @Override
+    protected void reset() {
+        super.reset();
+        this.pollOnProduction = null;
+    }
+    @Override
+    protected boolean isForecastResultAvailable() {
+        boolean resultForConsumption = super.isForecastResultAvailable();
+        boolean resultForProduction = this.pollOnProduction.isAvailable();
+        return resultForConsumption && resultForProduction;
+    }
+
 
     // Define the CRUD methods
 
@@ -82,8 +141,11 @@ public class NettoZeroBuilding extends ConsumptionBuilding {
     public boolean deleteProducer(EProducerType panelType) {
         AtomicInteger countDeleted = new AtomicInteger();
         this.producerList.removeIf(producer -> {
-            countDeleted.getAndIncrement();
-            return producer.getProducerType().equals(panelType);
+            if(producer.getProducerType().equals(panelType)){
+                countDeleted.getAndIncrement();
+                return true;
+            }
+            return false;
         });
         if (countDeleted.get() > 0) {
             logger.info("Deleted {} Producer from type {}", countDeleted.get(), panelType);
@@ -95,43 +157,6 @@ public class NettoZeroBuilding extends ConsumptionBuilding {
 
     }
 
-    // Define the methods for the Logic
-
-    @Override
-    protected void executeAccountingStrategy(TimeSlot newTimeSlot) throws ServiceNotFoundException, DeviceNotSupportedException, UndefinedStrategyException {
-        super.executeAccountingStrategy(newTimeSlot);
-        try {
-
-            ContextCalcAcct contextCalcAcct = new ContextCalcAcct();
-            contextCalcAcct.setCalcAcctAStrategy(new CalcProduction(super.communicator));
-
-            this.pollOnProduction = (PollProductionForecast) contextCalcAcct.calculateAccounting(new ArrayList<>(producerList), newTimeSlot);
-
-        } catch (DeviceNotSupportedException | UndefinedStrategyException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    protected double scheduleEnergyAmount(TimeSlot currTimeSlot) {
-        double resultEnergyAmount;
-        double neededEnergyAmount = super.scheduleEnergyAmount(currTimeSlot);
-        double producedEnergyAmount = (double) this.pollOnProduction.getForecastResult();
-        resultEnergyAmount = neededEnergyAmount - producedEnergyAmount;
-        return resultEnergyAmount;
-    }
-
-    @Override
-    protected void reset() {
-        super.reset();
-        this.pollOnProduction = null;
-    }
-    @Override
-    protected boolean isForecastResultAvailable() {
-        boolean resultForConsumption = super.isForecastResultAvailable();
-        boolean resultForProduction = this.pollOnProduction.isAvailable();
-        return resultForConsumption && resultForProduction;
-    }
 
 
 }

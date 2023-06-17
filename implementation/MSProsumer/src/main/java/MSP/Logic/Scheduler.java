@@ -26,10 +26,11 @@ public class Scheduler {
             if(currConsumer.isHeavyConsumer()){
                 if (isPriceDescending()) {
                     summedNeededConsumption += currConsumer.getResultOfForecast();
+                    logger.debug("Price is descending, adding heavy consumer: {} to summed needed consumption", currConsumer.getConsumerType().toString());
                     currConsumer.decrementStillNeededEnergy(currConsumer.getResultOfForecast());
                 }
                 else {
-                    logger.info("Price is not descending, so no heavy consumer");
+                    logger.debug("Price is not descending, removing heavy consumer: {} from summed needed consumption", currConsumer.getConsumerType().toString());
                 }
             }
             else{
@@ -38,6 +39,7 @@ public class Scheduler {
             }
         }
         logger.trace("Summed needed consumption: " + summedNeededConsumption);
+
         return summedNeededConsumption;
     }
 

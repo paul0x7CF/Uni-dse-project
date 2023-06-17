@@ -44,13 +44,13 @@ public class Wallet {
     }
 
     public void decrementCashBalance(double moneyToRemove) {
-        if(this.cashBalance - moneyToRemove < 0) {
+        if (this.cashBalance - moneyToRemove < 0) {
             try {
-                throw new WalletEmptyException("only {} in wallet but {} needed to be removed; Prosumer is bankrupt");
+                throw new WalletEmptyException("only" + this.cashBalance + " in wallet but " + moneyToRemove + " needed to be removed; Prosumer is bankrupt");
             } catch (WalletEmptyException e) {
-                logger.warn(e.getMessage());
+                logger.warn("WalletEmptyException:"+ e.getMessage());
             }
-        }else {
+        } else {
             this.cashBalance += moneyToRemove;
         }
     }

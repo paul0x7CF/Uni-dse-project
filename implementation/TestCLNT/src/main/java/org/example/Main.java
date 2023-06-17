@@ -1,8 +1,11 @@
 package org.example;
 
+import MSP.Configuration.ConfigFileReader;
+
 public class Main {
     public static void main(String[] args) {
-        String address = "http://localhost";
+        final String ip = ConfigFileReader.getCommunicationProperty("prosumerAddress");
+        String address = "http://"+ip;
 
         int prosumerPort = 6000;    // Port of the Prosumer you want to test
         int portRestJump = 2;

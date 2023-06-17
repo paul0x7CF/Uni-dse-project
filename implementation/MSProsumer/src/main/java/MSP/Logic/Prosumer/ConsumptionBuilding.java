@@ -18,7 +18,6 @@ import MSP.Logic.AccountingStrategy.CalcConsumption;
 import MSP.Logic.AccountingStrategy.ContextCalcAcct;
 
 import CF.protocol.ECategory;
-import CF.protocol.Message;
 import CF.sendable.EServiceType;
 import CF.sendable.TimeSlot;
 
@@ -26,12 +25,10 @@ import MSP.Logic.Scheduler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.random.RandomGenerator;
 
 public class ConsumptionBuilding implements RESTData, Runnable {
 
@@ -43,7 +40,7 @@ public class ConsumptionBuilding implements RESTData, Runnable {
 
     private final EProsumerType prosumerType;
     private LinkedHashSet<Consumer> consumerList = new LinkedHashSet<>();
-    private Wallet wallet;
+    protected Wallet wallet;
     protected Communication communicator;
     private BlockingQueue<TimeSlot> incomingMessages;
     protected PollConsumptionForecast pollOnConsumption;
@@ -61,97 +58,31 @@ public class ConsumptionBuilding implements RESTData, Runnable {
 
         // Set Callbacks
         communicator.setCallbackOnTransaction(this.actOnTransactionFinished());
-        communicator.setCallbackOnSellLower(this.actSellLowerQuestion());
         communicator.setCallbackOnBidHigher(this.actBidHigherQuestion());
 
-        createConsumer();
+        initializeConsumer();
 
         logger.info("Prosumer created from type {} with: {} Consumer from type, cash balance {}", prosumerType.toString(), consumerList.size(), cashBalance);
     }
 
-    protected void createConsumer() {
+    protected void initializeConsumer() {
         final int INITIALIZED_CONSUMER_AMOUNT = Integer.parseInt(ConfigFileReader.getProperty("consumer.amount"));
         for (int i = 1; i <= INITIALIZED_CONSUMER_AMOUNT; i++) {
             createConsumer(EConsumerType.valueOf(ConfigFileReader.getProperty("consumer.type" + i)));
         }
     }
 
-    protected void setInstanceforREST() {
-        Singleton.getInstance().setConsumptionBuilding(this);
-    }
-
     public EProsumerType getProsumerType() {
         return prosumerType;
     }
 
-    // Define the CRUD methods
 
-    // Create
-    @Override
-    public boolean createConsumer(EConsumerType type) {
-        Consumer consumer = new Consumer(type);
-        consumerList.add(consumer);
-        logger.info("Created Consumer from type {}", type);
-        return true;
-    }
-
-    // Read
-    @Override
-    public ArrayList<EConsumerType> getConsumers() {
-        ArrayList<EConsumerType> consumerList = new ArrayList<>();
-        for (Consumer consumer : this.consumerList) {
-            consumerList.add(consumer.getConsumerType());
-        }
-        return consumerList;
-    }
-
-    public HashSet<Consumer> getConsumerss() {
-        return consumerList;
-    }
-
-
-    // Update
-    @Override
-    public int updateConsumer(EConsumerType consumerType, int averageConsumption) {
-        AtomicInteger countUpdated = new AtomicInteger();
-        this.consumerList.forEach(consumer -> {
-            if (consumer.getConsumerType().equals(consumerType)) {
-                consumer.setAverageConsumption(averageConsumption);
-                countUpdated.getAndIncrement();
-            }
-        });
-        if (countUpdated.get() > 0) {
-            logger.info("Updated {} Consumer from type {}", countUpdated.get(), consumerType);
-            return countUpdated.get();
-        } else {
-            logger.info("No Producer Consumer from type {}", consumerType);
-            return countUpdated.get();
-        }
-
-    }
-
-    // Delete
-    @Override
-    public boolean deleteConsumer(EConsumerType type) {
-        AtomicInteger countDeleted = new AtomicInteger();
-        this.consumerList.removeIf(consumer -> {
-            countDeleted.getAndIncrement();
-            return consumer.getConsumerType().equals(type);
-        });
-        if (countDeleted.get() > 0) {
-            logger.info("Deleted {} Consumer from type {}", countDeleted.get(), type);
-            return true;
-        } else {
-            logger.info("No Producer Consumer from type {}", type);
-            return false;
-        }
-    }
 
     // Define the methods for the Logic
 
     private CallbackTransaction actOnTransactionFinished() {
         CallbackTransaction callbackOnTransaction = (totalPrice, singlePrice) -> {
-            logger.debug("Transaction callback received with price {}", totalPrice);
+            logger.debug("Transaction callback received with Total price {}", totalPrice);
             if (totalPrice > 0) {
                 logger.debug("Prosumer is Seller");
                 wallet.incrementCashBalance(totalPrice);
@@ -166,23 +97,6 @@ public class ConsumptionBuilding implements RESTData, Runnable {
         return callbackOnTransaction;
     }
 
-    private CallbackSellLower actSellLowerQuestion() {
-        CallbackSellLower callbackOnSellLower = sellToChange -> {
-            logger.info("SellLower callback received with min sell price from Exchange {}", sellToChange.getAskPrice());
-            double priceToChange = sellToChange.getAskPrice();
-            priceToChange = this.wallet.getLowerSellPrice(priceToChange);
-            sellToChange.setAskPrice(priceToChange);
-            try {
-                logger.debug("SellLower Response with price {}", sellToChange.getAskPrice());
-                this.communicator.sendLowerSell(sellToChange);
-            } catch (ServiceNotFoundException e) {
-                logger.error(e.getMessage());
-            }
-
-        };
-        return callbackOnSellLower;
-
-    }
 
     public CallbackBidHigher actBidHigherQuestion() {
         return bidToChange -> {
@@ -246,6 +160,7 @@ public class ConsumptionBuilding implements RESTData, Runnable {
 
     protected void reset() {
         this.pollOnConsumption = null;
+        communicator.resetPollingMaps();
     }
 
     @Override
@@ -264,7 +179,7 @@ public class ConsumptionBuilding implements RESTData, Runnable {
                 reset();
                 logger.info("Waiting for new TimeSlot");
                 TimeSlot newTimeSlot = incomingMessages.take();
-                // TODO: check if new Day
+
                 logger.info("------------------Start executing Prosumer logic for new TimeSlot---------------------");
                 this.executeAccountingStrategy(newTimeSlot);
                 logger.info("Waiting for forecast result");
@@ -272,7 +187,7 @@ public class ConsumptionBuilding implements RESTData, Runnable {
                 do {
                     timeoutcounter++;
                     Thread.sleep(1000);
-                    if(timeoutcounter > 15){
+                    if(timeoutcounter > 30){
                         throw new TimeOutWaitingRuntimeException("Timeout waiting for forecast result");
                     }
                 } while (!isForecastResultAvailable());
@@ -301,5 +216,74 @@ public class ConsumptionBuilding implements RESTData, Runnable {
         }
 
 
+    }
+
+    // REST Methods
+
+    protected void setInstanceforREST() {
+        Singleton.getInstance().setConsumptionBuilding(this);
+    }
+
+
+    // Define the CRUD methods
+
+    // Create
+    @Override
+    public boolean createConsumer(EConsumerType type) {
+        Consumer consumer = new Consumer(type);
+        consumerList.add(consumer);
+        logger.info("Created Consumer from type {}", type);
+        return true;
+    }
+
+    // Read
+    @Override
+    public ArrayList<EConsumerType> getConsumers() {
+        ArrayList<EConsumerType> consumerList = new ArrayList<>();
+        for (Consumer consumer : this.consumerList) {
+            consumerList.add(consumer.getConsumerType());
+        }
+        return consumerList;
+    }
+
+
+    // Update
+    @Override
+    public int updateConsumer(EConsumerType consumerType, int averageConsumption) {
+        AtomicInteger countUpdated = new AtomicInteger();
+        this.consumerList.forEach(consumer -> {
+            if (consumer.getConsumerType().equals(consumerType)) {
+                consumer.setAverageConsumption(averageConsumption);
+                countUpdated.getAndIncrement();
+            }
+        });
+        if (countUpdated.get() > 0) {
+            logger.info("Updated {} Consumer from type {}", countUpdated.get(), consumerType);
+            return countUpdated.get();
+        } else {
+            logger.info("No Producer Consumer from type {}", consumerType);
+            return countUpdated.get();
+        }
+
+    }
+
+    // Delete
+    @Override
+    public boolean deleteConsumer(EConsumerType type) {
+        AtomicInteger countDeleted = new AtomicInteger();
+        this.consumerList.removeIf(consumer -> {
+            if(consumer.getConsumerType().equals(type)){
+                countDeleted.getAndIncrement();
+                return true;
+            }
+            return false;
+        });
+        if (countDeleted.get() > 0) {
+            logger.info("Deleted {} Consumer from type {}", countDeleted.get(), type);
+            return true;
+        } else {
+            logger.info("No Producer Consumer from type {}", type);
+            return false;
+        }
     }
 }
