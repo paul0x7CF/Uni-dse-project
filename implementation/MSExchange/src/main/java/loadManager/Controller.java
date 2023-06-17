@@ -44,15 +44,23 @@ public class Controller implements Runnable {
         Thread timeSlotThread = new Thread(this::addNewTimeSlotsPeriodically);
         timeSlotThread.start();
 
+        long lastCheckTime = System.currentTimeMillis(); // Track the last check time
+
+
         while (true) {
             processIncomingQueue();
-            checkExchangeService();
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - lastCheckTime >= 2000) { // Check every 2 seconds
+                checkExchangeService();
+                lastCheckTime = currentTime; // Update the last check time
+            }
             processOutgoingQueue();
         }
     }
 
-    private void checkExchangeService() {
+    private synchronized void checkExchangeService() {
         List<MSData> exchanges = communication.getBroker().getServicesByType(EServiceType.ExchangeWorker);
+        //logger.debug("Still working");
         for (MSData exchange : exchanges) {
             if (!exchangeServiceIds.contains(exchange.getId())) {
                 exchangeServiceIds.add(exchange.getId());

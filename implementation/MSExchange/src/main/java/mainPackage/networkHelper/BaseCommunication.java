@@ -44,7 +44,7 @@ public abstract class BaseCommunication {
         this.incomingMessages = incomingMessages;
         createBroker(PORT, serviceType);
 
-        logger.debug("COMMUNICATION: MS registered with Id: {}, Address: {}, Port: {}" + this.communicationBroker.getCurrentService().getId(), this.communicationBroker.getCurrentService().getAddress(), this.communicationBroker.getCurrentService().getPort());
+        logger.debug("COMMUNICATION: MS registered with Id: {}, Address: {}, Port: {}" , this.communicationBroker.getCurrentService().getId(), this.communicationBroker.getCurrentService().getAddress(), this.communicationBroker.getCurrentService().getPort());
     }
 
     private void createBroker(int port, EServiceType serviceType) {

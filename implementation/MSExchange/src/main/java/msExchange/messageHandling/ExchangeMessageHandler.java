@@ -73,7 +73,6 @@ public class ExchangeMessageHandler {
 
         //add timeSlot to auctionManager
         auctionManager.addTimeSlots(timeSlot);
-        logger.debug("EXCHANGE: Added TimeSlot: " + timeSlot);
     }
 
     /**

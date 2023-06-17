@@ -25,11 +25,11 @@ public class LoadManager {
             logger.debug("LOAD_MANAGER: Added ExchangeServiceInformation with ID: {}", exchangeServiceInformation.getExchangeID());
 
         }
-
+/*
         //TODO: remove this statement after testing
         if ((nextServiceID + 4) % 5 == 0) {
             duplicateExchange();
-        }
+        }*/
     }
 
     //TODO: remove Exchange Service
