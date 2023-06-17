@@ -33,7 +33,6 @@ public class MessageBuilder {
             }
         }
         MSData receiverMS = communicationExchange.getBroker().getServicesByType(EServiceType.Exchange).get(0);
-        logger.trace("EXCHANGE: Sending capacity message.");
         return IMessageBuilder.senderAndReceiverTemplate(receiverMS, communicationExchange.getBroker().getCurrentService()).setCategory(ECategory.Exchange, String.valueOf(ESubCategory.Capacity)).build();
     }
 

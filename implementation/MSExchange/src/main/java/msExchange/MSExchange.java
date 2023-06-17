@@ -83,8 +83,13 @@ public class MSExchange implements Runnable {
                 logger.warn("EXCHANGE: BidQueue is full!");
                 communication.sendMessage(messageBuilder.buildCapacityMessage());
             }
+            //TODO: remove this if statement after testing
             if (!isDuplicated() && first) {
-                //TODO: remove this statement after testing
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
                 first = false;
                 communication.sendMessage(messageBuilder.buildCapacityMessage());
             }
