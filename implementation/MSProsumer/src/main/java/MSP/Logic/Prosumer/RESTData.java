@@ -1,16 +1,11 @@
 package MSP.Logic.Prosumer;
 
-import MSP.Data.Consumer;
 import MSP.Data.EConsumerType;
 import MSP.Data.EProducerType;
-import MSP.Data.Producer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 /**
  * Interface for the Prosumer classes to forward itself to the REST API.
