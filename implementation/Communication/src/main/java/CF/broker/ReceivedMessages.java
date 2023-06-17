@@ -51,7 +51,7 @@ public class ReceivedMessages {
     public boolean isMessageAlreadyReceived(Message message) {
         UUID messageID = message.getMessageID();
         boolean isPresent = receivedMessages.containsKey(messageID);
-        log.debug("{}: Message {} already received: {}", message.getReceiverPort(), messageID, isPresent);
+        log.debug("{}: Message {} already received: {}", message.getReceiverPort(), message.getSubCategory(), isPresent);
         return isPresent;
     }
 }
