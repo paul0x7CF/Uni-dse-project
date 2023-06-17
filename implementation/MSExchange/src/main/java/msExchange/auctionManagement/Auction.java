@@ -16,7 +16,8 @@ public class Auction {
     private UUID sellerID;
     private UUID timeSlotID;
     private double pricePerKWh;
-    private double volume;
+    private double totalVolume;
+    private double soldVolume = 0;
     private boolean auctionEnded = false;
     private BlockingQueue<Transaction> transactionQueue;
 
@@ -24,7 +25,7 @@ public class Auction {
         this.auctionID = auctionID;
         this.sellerID = sellPosition.getSellerID();
         this.pricePerKWh = sellPosition.getAskPrice();
-        this.volume = sellPosition.getVolume();
+        this.totalVolume = sellPosition.getVolume();
         this.transactionQueue = transactionQueue;
         this.timeSlotID = sellPosition.getTimeSlot();
     }
@@ -35,19 +36,21 @@ public class Auction {
                 if (bidPosition.getPrice() > pricePerKWh) {
                     this.pricePerKWh = bidPosition.getPrice();
                     this.bidderID = bidPosition.getBidderID();
+                    this.soldVolume = bidPosition.getVolume();
                 }
             } else {
                 this.pricePerKWh = bidPosition.getPrice();
                 this.bidderID = bidPosition.getBidderID();
+                this.soldVolume = bidPosition.getVolume();
             }
         }
     }
 
     public void endAuction() {
         //Create a transaction and add it to blockingQueue
-        logger.info("EXCHANGE: Auction " + auctionID + " has ended for timeSlot " + timeSlotID);
+        logger.debug("EXCHANGE: Auction " + auctionID + " has ended for timeSlot " + timeSlotID);
         auctionEnded = true;
-        Transaction transaction = new Transaction(sellerID, bidderID, volume, pricePerKWh, auctionID);
+        Transaction transaction = new Transaction(sellerID, bidderID, soldVolume, pricePerKWh, auctionID);
 
         try {
             transactionQueue.put(transaction);
@@ -73,7 +76,7 @@ public class Auction {
     }
 
     public double getVolume() {
-        return this.volume;
+        return this.totalVolume;
     }
 
     public UUID getTimeSlotID() {

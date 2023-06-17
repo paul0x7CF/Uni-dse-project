@@ -16,7 +16,7 @@ public class Main {
         boolean duplicated = false;
         int instanceNumber = 1;
         if (args.length == 0) {
-            logger.info("MAIN: No arguments passed, running as non-duplicated");
+            logger.debug("MAIN: No arguments passed, running as non-duplicated");
         } else {
             if ("-d".equals(args[0])) {
                 duplicated = true;

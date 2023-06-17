@@ -35,7 +35,7 @@ public class MessageBuilder {
 
             case SellToExchange ->
                     messages.add(buildSellToExchangeMessage(messageContent.getContent(), messageContent.getBuildCategory()));
-            case Transaction -> messages.addAll(buildTransactionMessages(messageContent.getContent()));
+            //case Transaction -> messages.addAll(buildTransactionMessages(messageContent.getContent()));
             case BidToStorage -> messages.addAll(buildBidToStorageMessage(messageContent.getContent()));
             case SellToStorage -> messages.addAll(buildSellToStorageMessage(messageContent.getContent()));
             default ->
@@ -45,7 +45,7 @@ public class MessageBuilder {
     }
 
     private List<Message> buildSellToStorageMessage(ISendable content) {
-        logger.debug("LOAD_MANAGER: in building sell to stoarage message");
+        logger.trace("LOAD_MANAGER: in building sell to stoarage message");
         Sell sell = (Sell) content;
         List<Message> messages = new ArrayList<>();
         List<MSData> receiverMS = new ArrayList<>();
@@ -57,8 +57,9 @@ public class MessageBuilder {
             MSData storage = communication.getBroker().getServicesByType(EServiceType.Storage).get(0);
             buyerID = storage.getId();
         }
-        logger.debug("LOAD_MANAGER: Sell to Storage: price: {}", sell.getAskPrice());
         transaction = new Transaction(sell.getSellerID(), buyerID, sell.getVolume(), sell.getAskPrice(), UUID.randomUUID());
+        logger.info("LOAD_MANAGER: Transaction for seller {} to storage {}: price: {}, volume: {}.",
+                transaction.getSellerID(), transaction.getBuyerID(), transaction.getPrice(), transaction.getAmount());
 
         receiverMS.add(communication.getBroker().findService(transaction.getSellerID()));
 
@@ -71,7 +72,7 @@ public class MessageBuilder {
     }
 
     private List<Message> buildBidToStorageMessage(ISendable content) {
-        logger.debug("LOAD_MANAGER: in building bid to storage Message");
+        logger.trace("LOAD_MANAGER: in building bid to storage Message");
         List<Message> messages = new ArrayList<>();
         List<MSData> receiverMS = new ArrayList<>();
         Bid bid = (Bid) content;
@@ -84,7 +85,8 @@ public class MessageBuilder {
         }
 
         transaction = new Transaction(sellerID, bid.getBidderID(), bid.getVolume(), bid.getPrice(), UUID.randomUUID());
-        logger.debug("LOAD_MANAGER: Sending Transaction: {}, Price: {}, Volume: {}", bid.getBidderID(), transaction.getPrice(), bid.getVolume());
+        logger.info("LOAD_MANAGER: Transaction for buyer {} to storage {}: price: {}, volume: {}.",
+                transaction.getBuyerID(), transaction.getSellerID(), transaction.getPrice(), transaction.getAmount());
 
         receiverMS.add(communication.getBroker().findService(transaction.getBuyerID()));
 
@@ -98,13 +100,14 @@ public class MessageBuilder {
     }
 
 
+    /*
     private List<Message> buildTransactionMessages(ISendable content) {
-        logger.debug("LOAD_MANAGER:  in build Transaction Message");
+        logger.trace("LOAD_MANAGER:  in build Transaction Message");
         List<Message> messages = new ArrayList<>();
         List<MSData> receiverMS = new ArrayList<>();
         Transaction transaction = (Transaction) content;
 
-        logger.debug("LOAD_MANAGER:  Building Transaction Message: price: {}, volume:{}", transaction.getPrice(), transaction.getAmount());
+        logger.info("LOAD_MANAGER:  Building Transaction Message: price: {}, volume:{}", transaction.getPrice(), transaction.getAmount());
 
         receiverMS.add(communication.getBroker().findService(transaction.getSellerID()));
         receiverMS.add(communication.getBroker().findService(transaction.getBuyerID()));
@@ -116,15 +119,14 @@ public class MessageBuilder {
         }
         return messages;
     }
-
+*/
     private Message buildTransactionMessage(MessageFactory messageFactory, Transaction transaction) {
-        logger.debug("LOAD_MANAGER: Building Transaction Message private: price: {} , volume: {}", transaction.getPrice(), transaction.getAmount());
-
         messageFactory.setCategory(ECategory.Exchange, String.valueOf(ESubCategory.Transaction)).setPayload(transaction);
         return messageFactory.build();
     }
 
     public List<Message> buildTimeSlotMessages(TimeSlot newTimeSlot) {
+        logger.trace("LOAD_MANAGER: in build TimeSlot Message");
         List<Message> messages = new ArrayList<>();
 
         for (MSData msData : communication.getBroker().getServices()) {
@@ -141,6 +143,7 @@ public class MessageBuilder {
 
 
     private Message buildBidToProsumerMessage(ISendable content) {
+        logger.trace("LOAD_MANAGER: Building bid to prosumer message");
         Bid bid = (Bid) content;
         MSData receiverMS = communication.getBroker().findService(bid.getBidderID());
         MessageFactory messageFactory = IMessageBuilder.senderAndReceiverTemplate(receiverMS, communication.getBroker().getCurrentService());
@@ -149,6 +152,7 @@ public class MessageBuilder {
     }
 
     private Message buildBidToExchangeMessage(ISendable content, EBuildCategory buildCategory) {
+        logger.trace("LOAD_MANAGER: building bid to exchange message");
         Bid bid = (Bid) content;
         MSData receiverMS = communication.getBroker().findService(buildCategory.getUuid());
         MessageFactory messageFactory = IMessageBuilder.senderAndReceiverTemplate(receiverMS, communication.getBroker().getCurrentService());
@@ -157,7 +161,7 @@ public class MessageBuilder {
     }
 
     private Message buildSellToProsumerMessage(ISendable content) {
-        logger.debug("LOAD_MANAGER: Building sell to prosumer message");
+        logger.trace("LOAD_MANAGER: Building sell to prosumer message");
         Sell sell = (Sell) content;
         MSData receiverMS = communication.getBroker().findService(sell.getSellerID());
         MessageFactory messageFactory = IMessageBuilder.senderAndReceiverTemplate(receiverMS, communication.getBroker().getCurrentService());
@@ -166,7 +170,7 @@ public class MessageBuilder {
     }
 
     private Message buildSellToExchangeMessage(ISendable content, EBuildCategory buildCategory) {
-        logger.debug("LOAD_MANAGER: building sell to exchange message");
+        logger.trace("LOAD_MANAGER: building sell to exchange message");
         Sell sell = (Sell) content;
         MSData receiverMS = communication.getBroker().findService(buildCategory.getUuid());
         MessageFactory messageFactory = IMessageBuilder.senderAndReceiverTemplate(receiverMS, communication.getBroker().getCurrentService());

@@ -13,14 +13,14 @@ import java.util.concurrent.BlockingQueue;
 
 public class ExchangeMessageHandler implements IMessageHandler {
     private static final Logger logger = LogManager.getLogger(ExchangeMessageHandler.class);
-    private BlockingQueue<TimeSlot> inputQueueTimeSlot;
+    private final BlockingQueue<TimeSlot> inputQueueTimeSlot;
 
     public ExchangeMessageHandler(BlockingQueue<TimeSlot> inputQueueTimeSlot) {
         this.inputQueueTimeSlot = inputQueueTimeSlot;
     }
 
     @Override
-    public void handleMessage(Message message) throws MessageProcessingException, RemoteException {
+    public void handleMessage(Message message) {
         try {
             switch (message.getSubCategory()) {
                 case "TimeSlot" -> handleTimeSlot(message);

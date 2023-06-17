@@ -13,8 +13,8 @@ import loadManager.auctionManagement.AuctionManager;
 import loadManager.networkManagment.EBuildCategory;
 import loadManager.networkManagment.MessageContent;
 import loadManager.prosumerActionManagement.bidManagement.Bidder;
-import loadManager.prosumerActionManagement.priceCalculationStrategy.AverageMechanism;
-import loadManager.prosumerActionManagement.priceCalculationStrategy.PriceMechanism;
+import loadManager.prosumerActionManagement.priceCalculationStrategy.IPriceMechanism;
+import mainPackage.PropertyFileReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,15 +27,16 @@ import java.util.concurrent.BlockingQueue;
 public class ProsumerManager {
     private static final Logger logger = LogManager.getLogger(ProsumerManager.class);
     private final AuctionManager auctionManager;
-    private final PriceMechanism priceMechanism;
+    private final IPriceMechanism priceMechanism;
     private final AuctionProsumerTracker auctionProsumerTracker;
     private final List<Bidder> bidders;
     private final BlockingQueue<MessageContent> outgoingQueue;
 
     public ProsumerManager(BlockingQueue<MessageContent> outgoingQueue) {
+        PropertyFileReader propertyFileReader = new PropertyFileReader();
         this.outgoingQueue = outgoingQueue;
         this.auctionManager = new AuctionManager();
-        this.priceMechanism = new AverageMechanism();
+        this.priceMechanism = propertyFileReader.getPriceMechanism();
         this.auctionProsumerTracker = new AuctionProsumerTracker();
         this.bidders = new ArrayList<>();
     }
@@ -60,7 +61,7 @@ public class ProsumerManager {
                 outgoingQueue.put(new MessageContent(bid, EBuildCategory.BidToProsumer));
             }
         } catch (PriceNotOKException e) {
-            logger.warn("LOAD_MANAGER: Prosumer's price was not okay. Sending Bid back to prosumer");
+            logger.warn("LOAD_MANAGER: Prosumer price was not okay. Sending Bid back to prosumer");
             bid.setPrice(0);
             MessageContent messageContent = new MessageContent(bid, EBuildCategory.BidToProsumer);
             try {
@@ -117,7 +118,7 @@ public class ProsumerManager {
     }
 
     public void handleIncomingTransaction(Transaction transaction) throws ProsumerUnknownException {
-        logger.info("LOAD_MANAGER: Incoming Transaction: {} ", transaction.getTransactionID());
+        logger.debug("LOAD_MANAGER: Incoming Transaction: {} ", transaction.getTransactionID());
 
         UUID timeSlotID = auctionManager.getAuctionByID(transaction.getAuctionID()).getTIMESLOT_ID();
         Bid bid = new Bid(transaction.getAmount(), transaction.getPrice(), timeSlotID, transaction.getBuyerID());
@@ -153,6 +154,5 @@ public class ProsumerManager {
                 throw new RuntimeException(e);
             }
         }
-
     }
 }

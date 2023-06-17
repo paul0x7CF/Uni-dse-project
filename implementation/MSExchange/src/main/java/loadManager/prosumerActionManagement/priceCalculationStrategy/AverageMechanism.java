@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class AverageMechanism implements PriceMechanism {
+public class AverageMechanism implements IPriceMechanism {
     private static final Logger logger = LogManager.getLogger(AverageMechanism.class);
     private final int K_VALUES;
     private double averagePrice = 0.0;
@@ -18,6 +18,7 @@ public class AverageMechanism implements PriceMechanism {
     private List<Double> askPrices = new ArrayList<Double>();
 
     public AverageMechanism() {
+        logger.info("LOAD_MANAGER: Using the AverageMechanism");
         PropertyFileReader propertyFileReader = new PropertyFileReader();
         K_VALUES = Integer.parseInt(propertyFileReader.getK());
     }

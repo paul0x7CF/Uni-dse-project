@@ -24,12 +24,20 @@ public class MessageBuilder {
     }
 
     public Message buildCapacityMessage() {
+        while (communicationExchange.getBroker().getServicesByType(EServiceType.Exchange).isEmpty()) {
+            logger.trace("EXCHANGE: Waiting for Exchange to register.");
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         MSData receiverMS = communicationExchange.getBroker().getServicesByType(EServiceType.Exchange).get(0);
         return IMessageBuilder.senderAndReceiverTemplate(receiverMS, communicationExchange.getBroker().getCurrentService()).setCategory(ECategory.Exchange, String.valueOf(ESubCategory.Capacity)).build();
     }
 
     public List<Message> buildMessage(Transaction transaction) {
-        logger.debug("Exchange: sending Transaction, seller: " + transaction.getSellerID() + ", buyer: " + transaction.getBuyerID() + ", price: " + transaction.getPrice() + ", volume: " + transaction.getAmount());
+        logger.info("EXCHANGE: Transaction: seller: " + transaction.getSellerID() + ", buyer: " + transaction.getBuyerID() + ", price: " + transaction.getPrice() + ", volume: " + transaction.getAmount());
         List<Message> messages = new ArrayList<>();
         List<MSData> receiverMS = new ArrayList<>();
 
@@ -48,7 +56,7 @@ public class MessageBuilder {
     }
 
     private Message buildTransactionMessage(MessageFactory messageFactory, Transaction transaction) {
-        logger.debug("Exchange: in transaction Message");
+        logger.trace("Exchange: in transaction Message");
         messageFactory.setCategory(ECategory.Exchange, String.valueOf(ESubCategory.Transaction)).setPayload(transaction);
         return messageFactory.build();
     }

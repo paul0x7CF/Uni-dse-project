@@ -58,7 +58,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
                         throw new MessageProcessingException("LOAD_MANAGER: Unknown message subCategory: {}" + message.getSubCategory());
             }
         } catch (InvalidBidException e) {
-            logger.error("LOAD_MANAGER: Bid has to be sent back to prosumer {}", e.getBid().getPrice());
+            logger.error("LOAD_MANAGER: Bid has to be sent back to prosumer {}. Error Message: {}", e.getBid().getPrice(), e.getMessage());
             MessageContent messageContent = new MessageContent(e.getBid(), EBuildCategory.BidToProsumer);
             try {
                 outgoingQueue.put(messageContent);
@@ -66,7 +66,7 @@ public class LoadManagerMessageHandler implements IMessageHandler {
                 throw new RuntimeException(ex);
             }
         } catch (InvalidSellException e) {
-            logger.error("LOAD_MANAGER: Sell has to be sent back to prosumer {}", e.getSell().getAskPrice());
+            logger.error("LOAD_MANAGER: Sell has to be sent back to prosumer {}. Error Message: {}", e.getSell().getAskPrice(), e.getMessage());
             MessageContent messageContent = new MessageContent(e.getSell(), EBuildCategory.SellToProsumer);
             try {
                 outgoingQueue.put(messageContent);
@@ -83,24 +83,23 @@ public class LoadManagerMessageHandler implements IMessageHandler {
     }
 
     private void handleBid(Message message) throws InvalidBidException, IllegalSendableException {
-        logger.info("LOAD_MANAGER: Handling bid");
-
+        logger.trace("LOAD_MANAGER: Handling bid");
         BidValidator bidValidator = new BidValidator();
         bidValidator.validateSendable(message.getSendable(Bid.class));
         Bid bid = (Bid) message.getSendable(Bid.class);
         IValidator.validateAuctionID(bid.getAuctionID(), myMSData.getType());
-        logger.debug("LOAD_MANAGER: Bid is valid: price: {}, volume: {} for TimeSlot: {}", bid.getPrice(), bid.getVolume(), bid.getTimeSlot());
+        logger.info("LOAD_MANAGER: Bid is valid: price: {}, volume: {} for TimeSlot: {}", bid.getPrice(), bid.getVolume(), bid.getTimeSlot());
         prosumerManager.handleNewBid(bid);
     }
 
     private void handleSell(Message message) throws InvalidSellException, IllegalSendableException {
-        logger.info("LOAD_MANAGER: Handling sell");
+        logger.trace("LOAD_MANAGER: Handling sell");
         SellValidator sellValidator = new SellValidator();
         sellValidator.validateSendable(message.getSendable(Sell.class));
 
         Sell sell = (Sell) message.getSendable(Sell.class);
         IValidator.validateAuctionID(sell.getAuctionID(), myMSData.getType());
-        logger.debug("LOAD_MANAGER: Sell is valid: price: {}, volume: {} for TimeSlot: {} ", sell.getAskPrice(), sell.getVolume(), sell.getTimeSlot());
+        logger.info("LOAD_MANAGER: Sell is valid: price: {}, volume: {} for TimeSlot: {} ", sell.getAskPrice(), sell.getVolume(), sell.getTimeSlot());
 
         SellInformation sellInformation = waitForFreeExchange();
         sellInformation.setSell(sell);
@@ -130,12 +129,12 @@ public class LoadManagerMessageHandler implements IMessageHandler {
     }
 
     private void handleCapacity(Message message) {
-        logger.info("LOAD_MANAGER: Handling capacity");
+        logger.debug("LOAD_MANAGER: Handling capacity");
         loadManager.setExchangeCapacity(message.getSenderID());
     }
 
     private void handleTransaction(Message message) throws IllegalSendableException, ProsumerUnknownException {
-        logger.info("LOAD_MANAGER: Handling transaction");
+        logger.trace("LOAD_MANAGER: Handling transaction");
         TransactionValidator transactionValidator = new TransactionValidator();
         transactionValidator.validateSendable(message.getSendable(Transaction.class));
 

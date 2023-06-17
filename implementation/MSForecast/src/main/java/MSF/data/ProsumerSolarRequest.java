@@ -4,15 +4,15 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class ProsumerSolarRequest {
-    private int amountOfPanels;
-    private double[] area;
-    private int[] compassAngle;
-    private int[] standingAngle;
-    private int[] efficiency;
-    private UUID currentTimeSlotID;
-    private String senderAddress;
-    private int senderPort;
-    private UUID senderID;
+    private final int amountOfPanels;
+    private final double[] area;
+    private final int[] compassAngle;
+    private final int[] standingAngle;
+    private final int[] efficiency;
+    private final UUID currentTimeSlotID;
+    private final String senderAddress;
+    private final int senderPort;
+    private final UUID senderID;
 
     public ProsumerSolarRequest(int amountOfPanels, double[] area, int[] compassAngle, int[] standingAngle, int[] efficiency, UUID currentTimeSlotID, String senderAddress, int senderPort, UUID senderID) {
         this.amountOfPanels = amountOfPanels;

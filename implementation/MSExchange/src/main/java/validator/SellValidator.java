@@ -15,6 +15,7 @@ public final class SellValidator implements IValidator {
             Sell sell = (Sell) sendable;
             IValidator.validateSendableNotNull(sell);
             IValidator.validateSenderIDNotNull(sell.getSellerID());
+
             try {
                 IValidator.validatePriceNotNegative(sell.getAskPrice());
                 IValidator.validateVolumeNotNegative(sell.getVolume());

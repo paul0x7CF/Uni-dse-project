@@ -51,7 +51,7 @@ public class AuctionManager {
     private synchronized void removeAllAuctionsFromSlot(UUID slotId) throws CommandNotPossibleException {
         // Removes all auctions from the specified slot
         if (!auctionsPerSlot.containsKey(slotId)) {
-            throw new CommandNotPossibleException("Slot ID not found: " + slotId);
+            throw new CommandNotPossibleException("LOAD_MANAGER: Slot ID not found: " + slotId);
         }
         auctionsPerSlot.remove(slotId);
     }
@@ -65,7 +65,7 @@ public class AuctionManager {
                 }
             }
         }
-        throw new IllegalAuctionException("Auction not found with ID: " + auctionId);
+        throw new IllegalAuctionException("LOAD_MANAGER: Auction not found with ID: " + auctionId);
     }
 
     public List<Auction> getAllAuctionsForSlot(UUID slotId) throws InvalidTimeSlotException {
@@ -87,7 +87,7 @@ public class AuctionManager {
                         transactions.add(transaction);
                     } else {
                         //Handle the case where the transaction is not available
-                        throw new RuntimeException("Transaction not available for auction: " + auction.getAuctionId());
+                        throw new RuntimeException("LOAD_MANAGER: Transaction not available for auction: " + auction.getAuctionId());
                     }
                 } catch (CommandNotPossibleException e) {
                     logger.error(e.getMessage());
@@ -103,7 +103,7 @@ public class AuctionManager {
             return transactions;
         }
         //Throw an exception if the slot is not found
-        throw new InvalidTimeSlotException("Slot not found with ID: " + slotId, Optional.of(slotId));
+        throw new InvalidTimeSlotException("LOAD_MANAGER: Slot not found with ID: " + slotId, Optional.of(slotId));
     }
 
     //expected to get called, after receiving the transaction from the market
@@ -132,6 +132,7 @@ public class AuctionManager {
             for (Auction auction : auctions) {
                 if (auction.getTOTAL_VOLUME() - auction.getCoveredVolume() != 0) {
                     unsatisfiedSellers.put(auction.getSELLER_ID(), auction.getTOTAL_VOLUME() - auction.getCoveredVolume());
+                    logger.info("LOAD_MANAGER: The sell from {} with volume {} has been fully covered. {} kw are covered by auctions, {} are offset by storage.", auction.getSELLER_ID(), auction.getTOTAL_VOLUME(), auction.getCoveredVolume(), auction.getTOTAL_VOLUME() - auction.getCoveredVolume());
                 }
             }
             return unsatisfiedSellers;

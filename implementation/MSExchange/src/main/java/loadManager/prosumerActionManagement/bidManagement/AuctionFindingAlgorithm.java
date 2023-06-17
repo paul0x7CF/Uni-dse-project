@@ -62,11 +62,11 @@ public class AuctionFindingAlgorithm implements Runnable {
 
 
         double volumeInAuctions = getVolumeInAuctions();
-        logger.info("LOAD_MANAGER: The volume in auctions is {}", volumeInAuctions);
+        logger.debug("LOAD_MANAGER: The volume in auctions is {}", volumeInAuctions);
         double notCoveredVolume = bidForTimeSlot.getIncomingBid().getVolume() - volumeInAuctions;
         if (notCoveredVolume != 0.0) {
             createMessageContent(new Bid(notCoveredVolume, bidForTimeSlot.getIncomingBid().getPrice(), bidForTimeSlot.getIncomingBid().getTimeSlot(), bidForTimeSlot.getIncomingBid().getBidderID()));
-            logger.info("LOAD_MANAGER: Part {}  of the bid with volume {} was sent to storage", notCoveredVolume, bidForTimeSlot.getIncomingBid().getVolume());
+            logger.debug("LOAD_MANAGER: Part {}  of the bid with volume {} was sent to storage", notCoveredVolume, bidForTimeSlot.getIncomingBid().getVolume());
 
             while (!timeSlotIsOpen && shouldContinue) {
                 synchronized (lock) {
@@ -79,11 +79,12 @@ public class AuctionFindingAlgorithm implements Runnable {
                             volumeInAuctions -= bidInAuction.getVolume();
                             createMessageContent(new Bid(bidInAuction.getVolume(), bidInAuction.getPrice(), bidInAuction.getTimeSlot(), bidInAuction.getBidderID()));
                             iterator.remove(); // Remove the Bid from the list
-                            logger.info("LOAD_MANAGER: Part of the bid with volume {}  has been sent to storage.", bidInAuction.getVolume());
+                            logger.debug("LOAD_MANAGER: Part of the bid with volume {}  has been sent to storage. The remaining volume drops to {}", bidInAuction.getVolume(), volumeInAuctions);
                         }
                     }
 
                     if (volumeInAuctions == 0) {
+                        logger.info("LOAD_MANAGER: The bid with volume {} has been fully covered.", bidForTimeSlot.getIncomingBid().getVolume());
                         shouldContinue = false;
                     }
 
@@ -124,7 +125,7 @@ public class AuctionFindingAlgorithm implements Runnable {
                 double volume = Math.min(auction.getTOTAL_VOLUME(), remainingVolume);
 
                 if (auction.getPrice() * auction.getCoveredVolume() < bidForTimeSlot.getIncomingBid().getPrice() * volume) {
-                    logger.debug("LOAD_MANAGER: In Auction finder, found auction to cover volume: {}  for Bidder {}", volume, bidForTimeSlot.getIncomingBid().getBidderID());
+                    logger.trace("LOAD_MANAGER: In Auction finder, found auction to cover volume: {}  for Bidder {}", volume, bidForTimeSlot.getIncomingBid().getBidderID());
                     Bid newBid = new Bid(volume, bidForTimeSlot.getIncomingBid().getPrice(), bidForTimeSlot.getIncomingBid().getTimeSlot(), bidForTimeSlot.getIncomingBid().getBidderID());
                     newBid.setAuctionID(auction.getAuctionId());
                     try {
@@ -134,7 +135,7 @@ public class AuctionFindingAlgorithm implements Runnable {
                     }
                     auctionProsumerTracker.addBidderToAuction(auction.getAuctionId(), bidForTimeSlot.getIncomingBid().getBidderID());
                     bidForTimeSlot.addBid(newBid);
-                    logger.info("LOAD_MANAGER: Added bid to bidForTimeSlot: " + newBid.getVolume());
+                    logger.debug("LOAD_MANAGER: Added bid to bidForTimeSlot: " + newBid.getVolume());
                     remainingVolume -= volume;
 
                     EBuildCategory bidToExchange = EBuildCategory.BidToExchange;

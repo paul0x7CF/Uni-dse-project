@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class ProsumerConsumptionRequest {
-    private HashMap<String, Double> consumptionMap;
-    private UUID currentTimeSlotID;
-    private String senderAddress;
-    private int senderPort;
-    private UUID senderID;
+    private final HashMap<String, Double> consumptionMap;
+    private final UUID currentTimeSlotID;
+    private final String senderAddress;
+    private final int senderPort;
+    private final UUID senderID;
 
     public ProsumerConsumptionRequest(EProsumerRequestType type, HashMap<String, Double> consumptionMap, UUID currentTimeSlotID, String senderAddress, int senderPort, UUID senderID) {
         this.consumptionMap = consumptionMap;

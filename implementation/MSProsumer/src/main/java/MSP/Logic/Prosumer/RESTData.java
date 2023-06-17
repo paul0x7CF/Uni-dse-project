@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -37,26 +38,26 @@ public interface RESTData {
 
 
     // Read
-    default HashSet<Producer> getProducers() {
+    default ArrayList<EProducerType> getProducers() {
         logger.error("getProducers() not implemented");
-        return new HashSet<>();
+        return new ArrayList<>();
     }
 
-    default HashSet<Consumer> getConsumers() {
+    default ArrayList<EConsumerType> getConsumers() {
         logger.error("getConsumers() not implemented");
-        return new HashSet<>();
+        return new ArrayList<>();
     }
 
 
     // Update
-    default boolean updateProducer(EProducerType producerType, int efficiency) {
+    default int updateProducer(EProducerType producerType, int efficiency) {
         logger.error("updateProducer() not implemented");
-        return false;
+        return 0;
     }
 
-    default boolean updateConsumer(EConsumerType consumerType, int efficiency) {
+    default int updateConsumer(EConsumerType consumerType, int efficiency) {
         logger.error("updateConsumer() not implemented");
-        return false;
+        return 0;
     }
 
     // Delete

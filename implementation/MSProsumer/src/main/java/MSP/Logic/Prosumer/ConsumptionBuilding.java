@@ -25,7 +25,6 @@ import CF.sendable.TimeSlot;
 import MSP.Logic.Scheduler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.context.annotation.Bean;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -57,6 +56,7 @@ public class ConsumptionBuilding implements RESTData, Runnable {
         this.prosumerType = prosumerType;
         this.wallet = new Wallet(cashBalance);
         this.incomingMessages = new LinkedBlockingQueue<>();
+        setInstanceforREST();
         this.communicator = new Communication(this.incomingMessages, port, EServiceType.Prosumer, this);
 
         // Set Callbacks
@@ -72,6 +72,14 @@ public class ConsumptionBuilding implements RESTData, Runnable {
         logger.info("Prosumer created from type {} with: {} Consumer from type, cash balance {}", prosumerType, consumerList.size(), cashBalance);
     }
 
+    protected void setInstanceforREST() {
+        Singleton.getInstance().setConsumptionBuilding(this);
+    }
+
+    public EProsumerType getProsumerType() {
+        return prosumerType;
+    }
+
     // Define the CRUD methods
 
     // Create
@@ -85,13 +93,22 @@ public class ConsumptionBuilding implements RESTData, Runnable {
 
     // Read
     @Override
-    public HashSet<Consumer> getConsumers() {
+    public ArrayList<EConsumerType> getConsumers() {
+        ArrayList<EConsumerType> consumerList = new ArrayList<>();
+        for (Consumer consumer : this.consumerList) {
+            consumerList.add(consumer.getConsumerType());
+        }
         return consumerList;
     }
 
+    public HashSet<Consumer> getConsumerss() {
+        return consumerList;
+    }
+
+
     // Update
     @Override
-    public boolean updateConsumer(EConsumerType consumerType, int averageConsumption) {
+    public int updateConsumer(EConsumerType consumerType, int averageConsumption) {
         AtomicInteger countUpdated = new AtomicInteger();
         this.consumerList.forEach(consumer -> {
             if (consumer.getConsumerType().equals(consumerType)) {
@@ -101,10 +118,10 @@ public class ConsumptionBuilding implements RESTData, Runnable {
         });
         if (countUpdated.get() > 0) {
             logger.info("Updated {} Consumer from type {}", countUpdated.get(), consumerType);
-            return true;
+            return countUpdated.get();
         } else {
             logger.info("No Producer Consumer from type {}", consumerType);
-            return false;
+            return countUpdated.get();
         }
 
     }
