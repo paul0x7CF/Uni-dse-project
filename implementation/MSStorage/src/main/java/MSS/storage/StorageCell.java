@@ -15,15 +15,15 @@ public class StorageCell implements Runnable {
     private volatile boolean isRunning;
     private final int storageCellID;
     private double currentVolume;
-    private final double maxVolume;
+    private final double maxVolumeInWh;
     private final CallbackStorageCellTerminated callbackTermination;
     private Instant lastUsed;
     private final Duration idleDuration;
 
-    public StorageCell(Duration period, double maxVolume, CallbackStorageCellTerminated callbackTermination, int storageCellID) {
+    public StorageCell(Duration period, double maxVolumeInWh, CallbackStorageCellTerminated callbackTermination, int storageCellID) {
         this.idleDuration = period;
-        this.maxVolume = maxVolume;
-        this.currentVolume = 10;
+        this.maxVolumeInWh = maxVolumeInWh;
+        this.currentVolume = 0;
         this.callbackTermination = callbackTermination;
         this.storageCellID = storageCellID;
         this.isRunning = true;
@@ -48,20 +48,20 @@ public class StorageCell implements Runnable {
 
     private boolean isEnoughSpace(double volumeToAdd) {
         isTerminated();
-        return (this.currentVolume + volumeToAdd) <= this.maxVolume;
+        return (this.currentVolume + volumeToAdd) <= this.maxVolumeInWh;
     }
 
     public double increaseVolume(double volumeToAdd) {
         isTerminated();
-        if(this.currentVolume == this.maxVolume) return volumeToAdd;
+        if(this.currentVolume == this.maxVolumeInWh) return volumeToAdd;
         if(isEnoughSpace(volumeToAdd)) {
             this.currentVolume += volumeToAdd;
             logger.debug("StorageCell with ID {} volume increased by {}; new Volume: {}", storageCellID,volumeToAdd, this.currentVolume);
             return 0;
         }
         else {
-            double addedVolume = this.maxVolume - this.currentVolume;
-            this.currentVolume = this.maxVolume;
+            double addedVolume = this.maxVolumeInWh - this.currentVolume;
+            this.currentVolume = this.maxVolumeInWh;
             logger.debug("StorageCell with ID {} volume increased by {}; new Volume: {}", storageCellID,addedVolume, this.currentVolume);
             return volumeToAdd - addedVolume;
         }
@@ -94,7 +94,7 @@ public class StorageCell implements Runnable {
 
                 if (elapsedDuration.compareTo(idleDuration) >= 0) {
                     isRunning = false;
-                    logger.info("StorageCell stopped");
+                    logger.info("StorageCell stopped because of inactivity");
                     this.callbackTermination.callback(storageCellID);
                     break;
                 }

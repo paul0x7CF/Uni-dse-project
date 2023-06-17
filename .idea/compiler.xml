@@ -21,13 +21,13 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="Communication" options="-parameters" />
-      <module name="MSExchange" options="-parameters" />
-      <module name="MSForecast" options="-parameters" />
-      <module name="MSProsumer" options="-parameters" />
-      <module name="MSStorage" options="-parameters" />
-      <module name="TestCLNT" options="-parameters" />
-      <module name="implementation" options="-parameters" />
+      <module name="Communication" options="" />
+      <module name="MSExchange" options="" />
+      <module name="MSForecast" options="" />
+      <module name="MSProsumer" options="" />
+      <module name="MSStorage" options="" />
+      <module name="TestCLNT" options="" />
+      <module name="implementation" options="" />
     </option>
   </component>
 </project>

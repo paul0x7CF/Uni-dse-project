@@ -3,7 +3,10 @@ package MSS.storage;
 import CF.sendable.EServiceType;
 import CF.sendable.Transaction;
 import MSS.communication.Communication;
+import MSS.configuration.ConfigFileReader;
 import MSS.data.Wallet;
+import MSS.dataBase.DbTransaction;
+import MSS.dataBase.TransactionConverter;
 import MSS.dataBase.TransactionDAO;
 import MSS.exceptions.StorageEmptyException;
 import MSS.exceptions.StorageExiredException;
@@ -36,12 +39,18 @@ public class MSStorageManager implements Runnable {
     /**
      * Constructs an instance of the MSStorageManager class. It initializes the callbackTermination object.
      */
-    public MSStorageManager(final int port) {
+    public MSStorageManager(final int port, double walletBalance) {
         this.callbackTermination = actOnCallback();
         this.transactionDAO = new TransactionDAO();
         this.transactionDAO.deleteAll();
         this.communicator = new Communication(this.incomingTransactionQueue, port, EServiceType.Storage);
         this.incomingTransactionQueue = new LinkedBlockingQueue<>();
+        this.wallet = new Wallet(walletBalance);
+        int STORAGE_CELL_COUNT = Integer.parseInt(ConfigFileReader.getProperty("storageCell.amount"));
+        for (int i = 0; i < STORAGE_CELL_COUNT; i++) {
+            createStorageCell();
+        }
+        logger.info(("MS Storage created witch cash Balance: {} and {} storage cells"), wallet.getCashBalance(), this.storageCells.size());
 
     }
 
@@ -53,7 +62,7 @@ public class MSStorageManager implements Runnable {
      * @param maxVolume The maximum volume for the storage cell.
      */
     private void createStorageCell(Duration period, double maxVolume) {
-        int nextStorageCellID = this.storageCells.size() + 1;
+        int nextStorageCellID = this.storageCells.size();
         StorageCell storageCellToStart = new StorageCell(period, maxVolume, this.callbackTermination, nextStorageCellID);
         this.storageCells.put(nextStorageCellID, storageCellToStart);
         new Thread(storageCellToStart, "Storage-Cell-" + nextStorageCellID).start();
@@ -64,6 +73,8 @@ public class MSStorageManager implements Runnable {
      * cell is added to the storageCells map and started in a new thread.
      */
     private void createStorageCell() {
+        final double DEFAULT_MAX_VOLUME = Double.parseDouble(ConfigFileReader.getProperty("storageCell.capacityInWh"));
+        final int DEFAULT_PERIOD = Integer.parseInt(ConfigFileReader.getProperty("storageCell.unusedTimeInSec"));
         createStorageCell(Duration.ofSeconds(10), 10);
     }
 
@@ -78,6 +89,7 @@ public class MSStorageManager implements Runnable {
         return storageCellID -> {
             logger.warn("callback from Storage Cell about termination with Id {}", storageCellID);
             this.storageCells.remove(storageCellID);
+            logger.debug("{} storage cells remaining", this.storageCells.size());
         };
     }
 
@@ -120,7 +132,7 @@ public class MSStorageManager implements Runnable {
      */
     private void decrementStorageCellVolume(double volumeToDecrement) {
         double result = volumeToDecrement;
-        // Durchlaufe die LinkedHashMap von hinten nach vorne mit einem Iterator
+
         ListIterator<Map.Entry<Integer, StorageCell>> iterator = new ArrayList<>(this.storageCells.entrySet()).listIterator(this.storageCells.size());
         while (iterator.hasPrevious()) {
             Map.Entry<Integer, StorageCell> entry = iterator.previous();
@@ -151,15 +163,27 @@ public class MSStorageManager implements Runnable {
         communicator.startBrokerRunner(Thread.currentThread().getName());
 
         while (true) {
+            logger.info("Waiting for new transaction");
             try {
                 Transaction newTransaction = this.incomingTransactionQueue.take();
+
+                logger.info("---------------------New transaction received---------------------");
+
                 if (newTransaction.getBuyerID().equals(communicator.getMyMSData().getId())) {
                     logger.info("Storage is buyer of the transaction");
+                    increaseStorageCellVolume(newTransaction.getAmount());
+                    this.wallet.decrementCashBalance(newTransaction.getPrice() * newTransaction.getAmount());
                 } else if (newTransaction.getSellerID().equals(communicator.getMyMSData().getId())) {
                     logger.info("Storage is seller of the transaction");
+                    decrementStorageCellVolume(newTransaction.getAmount());
+                    this.wallet.incrementCashBalance(newTransaction.getPrice() * newTransaction.getAmount());
                 } else {
-                    logger.info("Storage is not involved in the transaction");
+                    logger.info("Storage is not involved in the transaction and will only save it in the DB");
                 }
+
+                DbTransaction dbTransaction = TransactionConverter.convertToDbTransaction(newTransaction);
+                this.transactionDAO.create(dbTransaction);
+                logger.info("Transaction saved in DB");
 
 
             } catch (InterruptedException e) {
@@ -168,15 +192,5 @@ public class MSStorageManager implements Runnable {
 
 
         }
-
-
-    }
-
-    public void handleFinishedTransaction(Transaction finishedTransaction) {
-
-    }
-
-    private Transaction saveFinishedTransaction(Transaction transactionToAdd) {
-        return null;
     }
 }

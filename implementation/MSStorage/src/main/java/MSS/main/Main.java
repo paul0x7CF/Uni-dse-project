@@ -1,5 +1,7 @@
 package MSS.main;
 
+import MSS.dataBase.DbTransaction;
+
 import MSS.configuration.ConfigFileReader;
 import MSS.dataBase.DbTransaction;
 import MSS.dataBase.TransactionDAO;
@@ -17,9 +19,10 @@ public class Main {
     private static final Logger log = LogManager.getLogger(Main.class);
     public static void main(String[] args) {
         // Create a new transaction
-      /*  TransactionDAO transactionDAO = new TransactionDAO();
+        /*TransactionDAO transactionDAO = new TransactionDAO();
         UUID buyerID = UUID.randomUUID();
         UUID sellerID = UUID.randomUUID();
+
 
         DbTransaction transaction = new DbTransaction(sellerID, buyerID, 100.0, 10.0, UUID.randomUUID());
         transactionDAO.create(transaction);
@@ -31,22 +34,23 @@ public class Main {
         DbTransaction retrievedTransaction = transactionDAO.read(transaction.getTransactionID());
         System.out.println("Retrieved transaction ID: " + retrievedTransaction.getTransactionID());
         System.out.println("Retrieved amount: " + retrievedTransaction.getAmount());
-        System.out.println("Retrieved price: " + retrievedTransaction.getPrice());*/
+        System.out.println("Retrieved price: " + retrievedTransaction.getPrice());
 
 
 
-       /* // Delete the transaction
+        // Delete the transaction
         transactionDAO.delete(retrievedTransaction.getTransactionID());
-        System.out.println("Deleted transaction");*/
-
+        System.out.println("Deleted transaction");
+*/
 
 
         //int count = transactionDAO.deleteAll();
         //logger.warn("Deleting all transactions{}" + count);
 
         final int STORAGE_START_PORT = Integer.parseInt(ConfigFileReader.getCommunicationProperty("storagePort"));
+        final double WALLET_START_MONEY = Double.parseDouble(ConfigFileReader.getProperty("walletStartMoney"));
 
-        new Thread(new MSStorageManager(STORAGE_START_PORT),"Storage").start();
+        new Thread(new MSStorageManager(STORAGE_START_PORT, WALLET_START_MONEY),"Storage").start();
         System.out.println("----------------MAIN Thread Ended----------------");
 
     }
