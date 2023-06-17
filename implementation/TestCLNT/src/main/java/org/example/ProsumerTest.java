@@ -14,19 +14,9 @@ import org.springframework.web.client.RestTemplate;
 
 public class ProsumerTest {
     private static final Logger logger = LogManager.getLogger(ProsumerTest.class);
-
-    /*@Value("${receiver.address}")
-    private String receiverAddress;
-
-    @Value("${sender.address}")
-    private String senderAddress;
-
-    @Value("${port}")
-    private int port;*/
-
-    private String api;
-    private String consumersEndpoint;
-    private String producersEndpoint;
+    private final String api;
+    private final String consumersEndpoint;
+    private final String producersEndpoint;
 
     public ProsumerTest(String address, int port) {
         logger.info("NetworkManager created");
