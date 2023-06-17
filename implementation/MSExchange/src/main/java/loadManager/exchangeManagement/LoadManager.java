@@ -25,6 +25,11 @@ public class LoadManager {
             logger.debug("LOAD_MANAGER: Added ExchangeServiceInformation with ID: {}", exchangeServiceInformation.getExchangeID());
 
         }
+
+        //TODO: remove this statement after testing
+        if ((nextServiceID + 4) % 5 == 0) {
+            duplicateExchange();
+        }
     }
 
     //TODO: remove Exchange Service
@@ -134,6 +139,10 @@ public class LoadManager {
         }*/
 
         //alternative
-        new MSExchange(true, nextServiceID++);
+        logger.debug("LOAD_MANAGER: Duplicating Exchange Service");
+        nextServiceID++;
+        MSExchange msExchange = new MSExchange(true, nextServiceID++);
+        msExchange.run();
+
     }
 }

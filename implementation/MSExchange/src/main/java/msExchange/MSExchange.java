@@ -26,6 +26,13 @@ public class MSExchange implements Runnable {
 
 
     public MSExchange(boolean duplicated, int instanceNumber) {
+        String loggingMessage = "";
+        if (duplicated) {
+            loggingMessage += "duplicated ";
+        } else {
+            loggingMessage += "non-duplicated ";
+        }
+        logger.info("EXCHANGE: Starting Exchange as {}, instance. Number {}", loggingMessage, instanceNumber);
         this.DUPLICATED = duplicated;
         this.INSTANCE_NUMBER = instanceNumber;
     }

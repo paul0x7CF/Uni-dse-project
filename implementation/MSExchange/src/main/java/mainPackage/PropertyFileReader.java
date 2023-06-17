@@ -10,7 +10,7 @@ public class PropertyFileReader {
         //read Properties
         Properties properties = new Properties();
         try {
-            FileInputStream configFile = new FileInputStream("C:\\Universität\\DSE\\Gruppenprojekt\\DSE_Team_202\\implementation\\MSExchange\\src\\main\\java\\config.properties");
+            FileInputStream configFile = new FileInputStream("C:\\Universität\\DSE\\Gruppenprojekt\\DSE_Team_202\\implementation\\MSExchange\\src\\main\\resources\\config.properties");
             properties.load(configFile);
             configFile.close();
             return properties.getProperty(key);

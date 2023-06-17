@@ -30,6 +30,7 @@ public abstract class BaseCommunication {
         switch (exchangeType) {
             case ExchangeWorker -> {
                 PORT = PORT + Integer.parseInt(configReader.getProperty("portJumpSize")) * instanceNumber;
+                logger.debug("new Port: {}", PORT);
                 serviceType = EServiceType.valueOf(properties.getExchangeServiceType());
             }
             case Exchange -> {
