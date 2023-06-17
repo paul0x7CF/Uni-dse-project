@@ -14,12 +14,12 @@ import java.util.UUID;
  * This is necessary because the broker may receive the same message multiple times due to resending of messages
  * through the AckHandler. The MessageHandler should only process a message once.
  */
-public class MessageReceiver {
+public class ReceivedMessages {
     private final Map<UUID, Message> receivedMessages;
     private final Map<UUID, Instant> messageTimestamps;
     private final Duration messageRetentionDuration;
 
-    public MessageReceiver() {
+    public ReceivedMessages() {
         receivedMessages = new HashMap<>();
         messageTimestamps = new HashMap<>();
 

@@ -132,7 +132,7 @@ public class Broker implements IServiceBroker, IScheduleBroker {
      * @throws MessageProcessingException if the message could not be processed
      */
     protected void receiveMessage() throws MessageProcessingException {
-        MessageReceiver receiver = new MessageReceiver();
+        ReceivedMessages receiver = new ReceivedMessages();
         // TODO: maybe catch exceptions and try again
         while (true) {
             byte[] receivedMessage = networkHandler.receiveMessage();

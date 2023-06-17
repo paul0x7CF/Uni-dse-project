@@ -1,15 +1,16 @@
 package CF.communication;
 
 import CF.mainPackage.ConfigReader;
+import CF.sendable.EServiceType;
 import CF.sendable.MSData;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import CF.sendable.EServiceType;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.UUID;
-import java.util.concurrent.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * This class handles the network communication for a microservice and provides methods to send and receive messages.
@@ -26,11 +27,11 @@ public class NetworkHandler {
     private final EServiceType serviceType;
     private final int listeningPort;
     private final ExecutorService executor;
-    private final ScheduledExecutorService scheduler;
+
 
     /**
      * Constructor for the NetworkHandler. It initializes the input and output queues and the input and output sockets.
-     * It also initializes the executor and the scheduler.
+     * It also initializes the ExecutorService.
      *
      * @param serviceType   The type of the service.
      * @param listeningPort The port the broker should listen on. The sending port is always the listening port + 1.
@@ -46,7 +47,6 @@ public class NetworkHandler {
         outputSocket = new OutputSocket(outputQueue, listeningPort + 1);
 
         executor = Executors.newFixedThreadPool(3);
-        scheduler = Executors.newScheduledThreadPool(20);
     }
 
     /**
@@ -59,7 +59,6 @@ public class NetworkHandler {
 
     public void stop() {
         executor.shutdown();
-        scheduler.shutdown();
     }
 
     public void sendMessage(LocalMessage localMessage) {
@@ -88,7 +87,7 @@ public class NetworkHandler {
      */
     public MSData getMSData() {
             ConfigReader configReader = new ConfigReader();
-            String ipAddresss = configReader.getProperty(serviceType+ ".Address");
-            return new MSData(UUID.randomUUID(), serviceType, ipAddresss, listeningPort);
+            String ipAddress = configReader.getProperty(serviceType+ ".Address");
+            return new MSData(UUID.randomUUID(), serviceType, ipAddress, listeningPort);
     }
 }
