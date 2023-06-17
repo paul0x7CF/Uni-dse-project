@@ -13,6 +13,10 @@ import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * SyncService class that is used to send sync messages to other services. The services are retrieved from the
+ * {@link IScheduleBroker}.
+ */
 public class SyncService implements IMessageSchedulerObserver {
     private static final Logger log = LogManager.getLogger(SyncService.class);
     private final IScheduleBroker broker;

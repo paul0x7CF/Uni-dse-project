@@ -11,6 +11,9 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Objects;
 
+/**
+ * This class handles all messages with the mainCategory "Info".
+ */
 public class InfoMessageHandler implements IMessageHandler {
     private static final Logger log = LogManager.getLogger(InfoMessageHandler.class);
     private final IServiceBroker broker;

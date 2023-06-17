@@ -22,14 +22,14 @@ public class Message implements Serializable {
     private final UUID messageID = UUID.randomUUID();
     private final String senderAddress;
     /**
-     * @category: interprets the main and sub category of the message in form of "MainCategory;SubCategory"
-     * @mainCategory: Info:
-     * @subCategoryInfo: Ping, Register, Unregister, Ack, Error
-     * @mainCategory: Auction:
-     * @subCategoryAuction: Bid, Sell, BidHigher, SellLower
-     * @mainCategory: Exchange:
+     * @category:            Interprets the main and sub category of the message in form of "MainCategory;SubCategory"
+     * @mainCategory:        Info:
+     * @subCategoryInfo:     Ping, Register, Unregister, Ack, Error
+     * @mainCategory:        Auction:
+     * @subCategoryAuction:  Bid, Sell, BidHigher, SellLower
+     * @mainCategory:        Exchange:
      * @subCategoryExchange: Transaction, TimeSlot
-     * @mainCategory: Forecast:
+     * @mainCategory:        Forecast:
      * @subCategoryForecast: Production, Consumption
      */
     private String category;

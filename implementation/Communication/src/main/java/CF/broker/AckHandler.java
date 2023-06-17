@@ -11,6 +11,12 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.*;
 
+/**
+ * AckHandler class that is used to track messages and resend them if no ack is received within the timeout. It is
+ * used by the Broker to track messages that are sent to other services. If no ack is received within the timeout from
+ * the {@link ConfigReader}, the message is resent. If an ack is received, the message is removed from the tracker. If
+ * an ack is received for a message that is not tracked, a warning is logged.
+ */
 public class AckHandler {
     private static final Logger log = LogManager.getLogger(AckHandler.class);
 
@@ -54,6 +60,11 @@ public class AckHandler {
         }, timeout, TimeUnit.SECONDS);
     }
 
+    /**
+     * Removes a message from the tracker if an ack is received.
+     *
+     * @param ack The ack to remove.
+     */
     public void ackReceived(AckInfo ack) {
         if (!pendingAcks.containsKey(ack.getMessageID())) {
             pendingAcks.remove(ack.getMessageID());

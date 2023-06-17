@@ -13,24 +13,26 @@ import org.apache.logging.log4j.Logger;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
 public class ProductionForecast implements Runnable {
     private static final Logger logger = LogManager.getLogger(ProductionForecast.class);
-    private final BlockingQueue<ProsumerSolarRequest> incomingSolarRequest;
-    private final ForecastCommunicationHandler forecastCommunicationHandler;
-    private final EForecastType forecastType;
-    private TimeSlot currentTimeSlot;
-    private final double smoothingFactor;
-    private final List<Double> lastForecasts;
+    private BlockingQueue<ProsumerSolarRequest> incomingSolarRequest;
+    private ForecastCommunicationHandler forecastCommunicationHandler;
+    private EForecastType forecastType;
+    private Map<UUID, TimeSlot> currentTimeSlots;
+    private double smoothingFactor;
+    private List<Double> lastForecasts;
 
-    public ProductionForecast(BlockingQueue<ProsumerSolarRequest> incomingSolarRequest, ForecastCommunicationHandler forecastCommunicationHandler, TimeSlot currentTimeSlot, EForecastType forecastType) throws UnknownForecastTypeException {
+    public ProductionForecast(BlockingQueue<ProsumerSolarRequest> incomingSolarRequest, ForecastCommunicationHandler forecastCommunicationHandler, Map<UUID, TimeSlot> currentTimeSlot, EForecastType forecastType) throws UnknownForecastTypeException {
         this.incomingSolarRequest = incomingSolarRequest;
         this.forecastCommunicationHandler = forecastCommunicationHandler;
-        this.currentTimeSlot = currentTimeSlot;
+        this.currentTimeSlots = currentTimeSlot;
         this.forecastType = forecastType;
         this.lastForecasts = new ArrayList<>();
-        this.smoothingFactor = 0.8;
+        this.smoothingFactor = 0.5;
     }
     @Override
     public void run() {
@@ -46,8 +48,8 @@ public class ProductionForecast implements Runnable {
         }
     }
 
-    private double getHistoricMeasurements() throws UnknownForecastTypeException {
-        List<String> historicData = HistoricDataReader.getHistoricData(currentTimeSlot, forecastType);
+    private double getHistoricMeasurements(TimeSlot timeSlot) throws UnknownForecastTypeException {
+        List<String> historicData = HistoricDataReader.getHistoricData(timeSlot, forecastType);
 
         double smoothedData = 0;
         boolean firstValue = true;
@@ -68,22 +70,30 @@ public class ProductionForecast implements Runnable {
     }
 
     private void predictProduction(ProsumerSolarRequest prosumerSolarRequest) throws UnknownForecastTypeException {
+        double production = 0;
+        double irradiation = 0;
+        UUID timeSlotID = UUID.randomUUID();
 
-        //TODO: REMOVE THIS
+        boolean timeSlotReceived = false;
 
-        if (true)
-        {
-            SolarResponse solarResponse = new SolarResponse(prosumerSolarRequest.getCurrentTimeSlotID(), 100);
-            this.forecastCommunicationHandler.sendProductionResponseMessage(solarResponse, prosumerSolarRequest.getSenderAddress(), prosumerSolarRequest.getSenderPort(), prosumerSolarRequest.getSenderID());
+        for (var entry : currentTimeSlots.entrySet()) {
+            timeSlotID = entry.getKey();
+            irradiation = getHistoricMeasurements(entry.getValue());
+
+            if (entry.getKey().equals(prosumerSolarRequest.getCurrentTimeSlotID())) {
+                timeSlotReceived = true;
+                break;
+            }
         }
 
-        double production = 0;
-        double irradiation = getHistoricMeasurements();
+
+        if (timeSlotReceived)
+            irradiation = getHistoricMeasurements(currentTimeSlots.get(prosumerSolarRequest.getCurrentTimeSlotID()));
 
         logger.trace("Historic Irradiation: " + irradiation);
         logger.trace("Forecasting production for prosumer " + prosumerSolarRequest.getSenderID() + " for timeslot " + prosumerSolarRequest.getCurrentTimeSlotID());
 
-        Duration duration = Duration.between(currentTimeSlot.getStartTime(), currentTimeSlot.getEndTime());
+        Duration duration = Duration.between(currentTimeSlots.get(timeSlotID).getStartTime(), currentTimeSlots.get(timeSlotID).getEndTime());
 
         for (int i = 0; i < prosumerSolarRequest.getAmountOfPanels(); i++) {
             double standingAngleRad = prosumerSolarRequest.getStandingAngle()[i] * (Math.PI / 180);
@@ -99,16 +109,22 @@ public class ProductionForecast implements Runnable {
             production += panelProduction;
         }
 
-        for (Double lastForecast : lastForecasts) {
-            production = smoothingFactor * production + (1 - smoothingFactor) * lastForecast;
-        }
+        // was removed, because it caused the forecast to be too low
+        /*for (int i = 0; i < lastForecasts.size() - 1; i++) {
+            production = smoothingFactor * lastForecasts.get(i) + (1 - smoothingFactor) * lastForecasts.get(i + 1);
+        }*/
+
+        // to account for the faulty data in the historic data
+        production = production * 1.5;
 
         production = production / ((double) 3600 / duration.getSeconds());
         lastForecasts.add(production);
 
-        logger.trace("Forecasted production: " + production);
-
         SolarResponse solarResponse = new SolarResponse(prosumerSolarRequest.getCurrentTimeSlotID(), production);
         this.forecastCommunicationHandler.sendProductionResponseMessage(solarResponse, prosumerSolarRequest.getSenderAddress(), prosumerSolarRequest.getSenderPort(), prosumerSolarRequest.getSenderID());
+    }
+
+    public void setCurrentTimeSlot(TimeSlot currentTimeSlot) {
+        this.currentTimeSlots.put(currentTimeSlot.getTimeSlotID(), currentTimeSlot);
     }
 }

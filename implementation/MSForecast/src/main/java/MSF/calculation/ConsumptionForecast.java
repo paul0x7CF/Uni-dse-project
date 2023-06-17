@@ -10,18 +10,20 @@ import MSF.exceptions.InvalidTimeSlotException;
 
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 
 public class ConsumptionForecast implements Runnable {
     private static final Logger logger = LogManager.getLogger(ConsumptionForecast.class);
     private final BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest;
     private final ForecastCommunicationHandler forecastCommunicationHandler;
-    private TimeSlot currentTimeSlot;
+    private Map<UUID, TimeSlot> currentTimeSlots;
 
-    public ConsumptionForecast(BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest, ForecastCommunicationHandler forecastCommunicationHandler, TimeSlot currentTimeSlot) {
+    public ConsumptionForecast(BlockingQueue<ProsumerConsumptionRequest> incomingConsumptionRequest, ForecastCommunicationHandler forecastCommunicationHandler, Map<UUID, TimeSlot> currentTimeSlot) {
         this.incomingConsumptionRequest = incomingConsumptionRequest;
         this.forecastCommunicationHandler = forecastCommunicationHandler;
-        this.currentTimeSlot = currentTimeSlot;
+        this.currentTimeSlots = currentTimeSlot;
     }
     @Override
     public void run() {
@@ -40,13 +42,26 @@ public class ConsumptionForecast implements Runnable {
     private void predictConsumption(ProsumerConsumptionRequest prosumerConsumptionRequest) throws InvalidTimeSlotException {
         HashMap<String, Double> consumption = new HashMap<>();
 
-        if (!prosumerConsumptionRequest.getCurrentTimeSlotID().equals(currentTimeSlot.getTimeSlotID())) {
-            logger.warn("Received consumption request for timeslot " + prosumerConsumptionRequest.getCurrentTimeSlotID() + " but current timeslot is " + currentTimeSlot.getTimeSlotID());
+        UUID timeSlotID = UUID.randomUUID();
+
+        boolean timeSlotFound = false;
+
+        for (var entry : currentTimeSlots.entrySet()) {
+            timeSlotID = entry.getKey();
+
+            if (timeSlotID.equals(prosumerConsumptionRequest.getCurrentTimeSlotID())) {
+                timeSlotFound = true;
+                break;
+            }
+        }
+
+        if (!timeSlotFound) {
+            logger.warn("Received consumption request for timeslot " + prosumerConsumptionRequest.getCurrentTimeSlotID());
         }
 
         logger.trace("Forecasting consumption for prosumer " + prosumerConsumptionRequest.getSenderID() + " for timeslot " + prosumerConsumptionRequest.getCurrentTimeSlotID());
 
-        Duration duration = Duration.between(currentTimeSlot.getStartTime(), currentTimeSlot.getEndTime());
+        Duration duration = Duration.between(currentTimeSlots.get(timeSlotID).getStartTime(), currentTimeSlots.get(timeSlotID).getEndTime());
 
         for (String key : prosumerConsumptionRequest.getConsumptionMap().keySet()) {
             double consumptionValue = prosumerConsumptionRequest.getConsumptionMap().get(key);
@@ -58,5 +73,9 @@ public class ConsumptionForecast implements Runnable {
 
         ConsumptionResponse consumptionResponse = new ConsumptionResponse(consumption, prosumerConsumptionRequest.getCurrentTimeSlotID());
         this.forecastCommunicationHandler.sendConsumptionResponseMessage(consumptionResponse, prosumerConsumptionRequest.getSenderAddress(), prosumerConsumptionRequest.getSenderPort(), prosumerConsumptionRequest.getSenderID());
+    }
+
+    public void setCurrentTimeSlot(TimeSlot currentTimeSlot) {
+        this.currentTimeSlots.put(currentTimeSlot.getTimeSlotID(), currentTimeSlot);
     }
 }

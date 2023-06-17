@@ -1,7 +1,7 @@
 package CF.protocol;
 
 /**
- * Category for messages
+ * MainCategory for messages
  */
 public enum ECategory {
     Info,

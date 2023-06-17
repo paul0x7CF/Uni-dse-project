@@ -3,6 +3,10 @@ package CF.sendable;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * This class is used to send a sell order to the exchange. It contains the volume, ask price, time slot and seller ID.
+ * The auction ID is optional and is set by and for the exchange.
+ */
 public class Sell implements ISendable {
     private final UUID sellerID;
     private final double volume;

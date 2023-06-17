@@ -69,6 +69,11 @@ public class Broker implements IServiceBroker, IScheduleBroker {
         messageScheduler = new MessageScheduler();
     }
 
+    /**
+     * Starts the broker. This will schedule register and sync messages and start the sockets to receive messages.
+     *
+     * @throws UnknownHostException
+     */
     protected void startBroker() throws UnknownHostException {
         // register Microservices
         messageScheduler.addObserver(new DiscoveryService(this));
@@ -89,14 +94,16 @@ public class Broker implements IServiceBroker, IScheduleBroker {
     /**
      * Stops the broker and sends unregister messages for all services. This is called in the {@link BrokerRunner} when
      * the process is terminated.
-     *
-     * @throws InterruptedException
      */
-    protected void stop() throws InterruptedException {
+    protected void stop() {
         for (MSData service : getServices()) {
             sendMessage(InfoMessageBuilder.createUnregisterMessage(serviceRegistry.getCurrentService(), service));
         }
-        Thread.sleep(1000);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            log.error("Error while stopping broker: ", e);
+        }
         networkHandler.stop();
     }
 
@@ -114,7 +121,7 @@ public class Broker implements IServiceBroker, IScheduleBroker {
                 message.getReceiverAddress(),
                 message.getReceiverPort()));
 
-        print(message,true);
+        printMessage(message,true);
         // Ack and Register messages should not be acknowledged as this would cause an infinite loop and register
         // has an answer in the form of "Ping" anyway.
         if (!Objects.equals(message.getSubCategory(), "Ack")
@@ -126,8 +133,6 @@ public class Broker implements IServiceBroker, IScheduleBroker {
     /**
      * while true loop to receive messages and handle them
      *
-     * @throws IOException                if an I/O error occurs
-     * @throws ClassNotFoundException     if the class of a serialized object could not be found
      * @throws MessageProcessingException if the message could not be processed
      */
     protected void receiveMessage() throws MessageProcessingException {
@@ -156,7 +161,13 @@ public class Broker implements IServiceBroker, IScheduleBroker {
         }
     }
 
-    private void print(Message message, boolean isSender) {
+    /**
+     * Debug
+     *
+     * @param message   The message to be printed.
+     * @param isSender  True if the message was sent, false if it was received.
+     */
+    private void printMessage(Message message, boolean isSender) {
         int port = getCurrentService().getPort();
         if (port == 11001) {
             String sr = isSender ? "S" : "R ";
@@ -181,6 +192,12 @@ public class Broker implements IServiceBroker, IScheduleBroker {
         }
     }
 
+    /**
+     * This method is called by the {@link InfoMessageHandler} when an ack is received. It will then be removed from the
+     * tracking list.
+     *
+     * @param ack   The {@link AckInfo} that was received.
+     */
     @Override
     public void ackReceived(AckInfo ack) {
         ackHandler.ackReceived(ack);
@@ -221,4 +238,3 @@ public class Broker implements IServiceBroker, IScheduleBroker {
         return serviceRegistry.getServicesByType(serviceType);
     }
 }
-

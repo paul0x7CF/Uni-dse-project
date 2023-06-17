@@ -2,6 +2,10 @@ package CF.sendable;
 
 import java.util.UUID;
 
+/**
+ * This class is used to send a transaction from the exchange to the prosumer and storage. It contains the sellerID,
+ * buyerID, amount, price and auctionID. The auctionID is not used by the prosumer.
+ */
 public class Transaction implements ISendable {
 
     private final UUID transactionID = UUID.randomUUID();

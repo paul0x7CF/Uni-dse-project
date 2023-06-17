@@ -81,7 +81,7 @@ public class ProsumerManager {
             if (priceMechanism.isAskPriceLowEnough(sell.getSell().getAskPrice())) {
                 startNewAuction(sell);
             } else {
-                logger.warn("LOAD_MANAGER: Price did not match the average price {} ... sending Sell back to prosumer: original Price: {}", priceMechanism.getWPrice(), sell.getSell().getAskPrice());
+                logger.info("LOAD_MANAGER: Price did not match the average price {} ... sending Sell back to prosumer: original Price: {}", priceMechanism.getWPrice(), sell.getSell().getAskPrice());
 
                 Sell s = sell.getSell();
                 s.setAskPrice(priceMechanism.getWPrice());
