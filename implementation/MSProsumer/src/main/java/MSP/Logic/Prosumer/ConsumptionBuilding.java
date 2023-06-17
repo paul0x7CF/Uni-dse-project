@@ -72,6 +72,13 @@ public class ConsumptionBuilding implements RESTData, Runnable {
         logger.info("Prosumer created from type {} with: {} Consumer from type, cash balance {}", prosumerType, consumerList.size(), cashBalance);
     }
 
+    protected void createConsumer() {
+        final int INITIALIZED_CONSUMER_AMOUNT = Integer.parseInt(ConfigFileReader.getProperty("consumer.amount"));
+        for (int i = 1; i <= INITIALIZED_CONSUMER_AMOUNT; i++) {
+            createConsumer(EConsumerType.valueOf(ConfigFileReader.getProperty("consumer.type" + i)));
+        }
+    }
+
     protected void setInstanceforREST() {
         Singleton.getInstance().setConsumptionBuilding(this);
     }

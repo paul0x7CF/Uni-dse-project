@@ -86,7 +86,7 @@ public class ForecastMessageHandler implements IMessageHandler {
         } else if (pollForecastForTimeSlotID.getResponseSize() == MAX_RESPONSES_FORECAST) {
             pollForecastForTimeSlotID.setAvailable(true);
             logger.debug("Production Forecast Poll Object was set on available because all expected responses were received");
-        } else if (pollForecastForTimeSlotID.getResponseSize() > MAX_RESPONSES_FORECAST) {
+        } else {
             logger.warn("More Production Forecast Responses were received than expected for the TimeSlot, Message was ignored");
         }
 

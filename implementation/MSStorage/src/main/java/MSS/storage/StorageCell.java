@@ -20,13 +20,14 @@ public class StorageCell implements Runnable {
     private Instant lastUsed;
     private final Duration idleDuration;
 
-    public StorageCell(Duration period, double maxVolumeInWh, CallbackStorageCellTerminated callbackTermination, int storageCellID) {
+    public StorageCell(Duration period, double maxVolumeInWh, double currentVolume, CallbackStorageCellTerminated callbackTermination, int storageCellID) {
         this.idleDuration = period;
         this.maxVolumeInWh = maxVolumeInWh;
-        this.currentVolume = 0;
+        this.currentVolume = currentVolume;
         this.callbackTermination = callbackTermination;
         this.storageCellID = storageCellID;
         this.isRunning = true;
+        logger.debug("New Storage Cell ID:{} Cell created with maxVolume: {} and currentVolume: {}", storageCellID, maxVolumeInWh, currentVolume);
     }
 
     public void setLastUsed() {
@@ -48,7 +49,8 @@ public class StorageCell implements Runnable {
 
     private boolean isEnoughSpace(double volumeToAdd) {
         isTerminated();
-        return (this.currentVolume + volumeToAdd) <= this.maxVolumeInWh;
+        if(this.currentVolume + volumeToAdd <= this.maxVolumeInWh) return true;
+        else return false;
     }
 
     public double increaseVolume(double volumeToAdd) {
