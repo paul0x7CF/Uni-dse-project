@@ -53,6 +53,10 @@ public class Auction {
         }
     }
 
+    public void endAuction() {
+        auctionEnded = true;
+    }
+
     public Transaction getTransaction() throws CommandNotPossibleException {
         if (!auctionEnded) {
             throw new CommandNotPossibleException("LOAD_MANAGER: Auction has not ended yet");

@@ -112,6 +112,14 @@ public class AuctionManager {
         auction.setBid(bid);
     }
 
+    public void endTimeSlot(UUID slotId) {
+        if (auctionsPerSlot.containsKey(slotId)) {
+            for (Auction auction : auctionsPerSlot.get(slotId)) {
+                auction.endAuction();
+            }
+        }
+    }
+
     //Tested and is working
     public Map<UUID, Double> getUnsatisfiedSellers(UUID timeSlotID) throws InvalidTimeSlotException {
         if (!auctionsPerSlot.containsKey(timeSlotID)) {
