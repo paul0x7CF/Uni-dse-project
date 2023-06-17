@@ -17,8 +17,6 @@ public class Scheduler {
     private static final int maxSize = 5;
 
 
-    // TODO: add last prices
-
     public Scheduler() {
     }
 
