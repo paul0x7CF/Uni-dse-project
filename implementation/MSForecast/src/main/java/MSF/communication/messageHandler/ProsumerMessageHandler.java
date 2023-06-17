@@ -38,7 +38,7 @@ public class ProsumerMessageHandler implements IMessageHandler {
     }
 
     private void handleConsumption(Message message) {
-        logger.trace("Consumption message received");
+        logger.trace("Consumption message received with ID: " + message.getMessageID());
 
         ConsumptionRequest consumptionRequest = (ConsumptionRequest) message.getSendable(ConsumptionRequest.class);
         ProsumerConsumptionRequest request = new ProsumerConsumptionRequest(EProsumerRequestType.CONSUMPTION,
@@ -56,7 +56,7 @@ public class ProsumerMessageHandler implements IMessageHandler {
     }
 
     private void handleProduction(Message message) {
-        logger.trace("Production message received");
+        logger.trace("Production message received with ID: " + message.getMessageID());
 
         SolarRequest solarRequest = (SolarRequest) message.getSendable(SolarRequest.class);
 
