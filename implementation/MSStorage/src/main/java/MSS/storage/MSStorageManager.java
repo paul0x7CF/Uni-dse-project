@@ -44,8 +44,8 @@ public class MSStorageManager implements Runnable {
         this.callbackTermination = actOnCallback();
         this.transactionDAO = new TransactionDAO();
         this.transactionDAO.deleteAll();
-        this.communicator = new Communication(this.incomingTransactionQueue, port, EServiceType.Storage);
         this.incomingTransactionQueue = new LinkedBlockingQueue<>();
+        this.communicator = new Communication(this.incomingTransactionQueue, port, EServiceType.Storage);
         this.wallet = new Wallet(walletBalance);
         int STORAGE_CELL_COUNT = Integer.parseInt(ConfigFileReader.getProperty("storageCell.amount"));
         for (int i = 0; i < STORAGE_CELL_COUNT; i++) {
