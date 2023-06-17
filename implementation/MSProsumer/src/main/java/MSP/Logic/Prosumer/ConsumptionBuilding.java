@@ -25,7 +25,6 @@ import CF.sendable.TimeSlot;
 import MSP.Logic.Scheduler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.context.annotation.Bean;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -57,7 +56,8 @@ public class ConsumptionBuilding implements RESTData, Runnable {
         this.prosumerType = prosumerType;
         this.wallet = new Wallet(cashBalance);
         this.incomingMessages = new LinkedBlockingQueue<>();
-        this.communicator = new Communication(this.incomingMessages, port, EServiceType.Prosumer, this);
+        Singleton.getInstance().setConsumptionBuilding(this);
+        this.communicator = new Communication(this.incomingMessages, port, EServiceType.Prosumer, consumerList);
 
         // Set Callbacks
         communicator.setCallbackOnTransaction(this.actOnTransactionFinished());

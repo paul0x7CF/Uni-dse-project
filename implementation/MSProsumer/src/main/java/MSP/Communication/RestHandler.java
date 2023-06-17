@@ -2,6 +2,8 @@ package MSP.Communication;
 
 import MSP.Data.Consumer;
 import MSP.Data.EConsumerType;
+import MSP.Logic.Prosumer.ConsumptionBuilding;
+import MSP.Logic.Prosumer.Singleton;
 import MSP.Data.EProducerType;
 import MSP.Data.Producer;
 import MSP.Logic.Prosumer.RESTData;
@@ -25,17 +27,18 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Rest manager which takes care of the Communication over the REST-Endpoints
+ *  Rest manager which takes care of the Communication over the REST-Endpoints
  */
 
 // Example: http://localhost:8081/dserestapi/test
 @SpringBootApplication
-@ComponentScan(basePackages = {"MSP"})
 @RestController
 @RequestMapping(value = "/api")
 public class RestHandler {
     private static final Logger logger = LogManager.getLogger(RestHandler.class);
     private LinkedHashSet<Consumer> consumerList;
+    private String test;
+    private final ConsumptionBuilding consumptionBuilding = Singleton.getInstance().getConsumptionBuilding();
 
 
     private RESTData restData;
@@ -85,13 +88,19 @@ public class RestHandler {
 */
 
     @CrossOrigin
-    @RequestMapping(value = "/consumers", method = RequestMethod.POST, consumes = {"application/json"})
-    private ResponseEntity<String> createConsumer(@RequestBody EConsumerType type) {
-        Consumer newConsumer = new Consumer(type);
-        consumerList.add(newConsumer);
+    @RequestMapping(value = "/consumers", method = RequestMethod.POST,consumes={"application/json"})
+    private ResponseEntity<String> createConsumer(@RequestBody String type) {
+        /*Consumer newConsumer = new Consumer(type);
+        consumerList.add(newConsumer);*/
 
-        logger.info("Created new Consumer from type {}", type);
-        return new ResponseEntity<>("Created new Consumer from type " + type, HttpStatus.CREATED);
+
+
+        EConsumerType type1 = EConsumerType.valueOf(type);
+
+        consumptionBuilding.createConsumer(type1);
+
+        logger.info("Created new Consumer from type {}", type1);
+        return new ResponseEntity<>("Created new Consumer from type " + type1, HttpStatus.CREATED);
     }
 
     @CrossOrigin
