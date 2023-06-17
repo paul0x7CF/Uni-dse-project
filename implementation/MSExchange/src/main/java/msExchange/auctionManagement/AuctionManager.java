@@ -13,17 +13,16 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public class AuctionManager implements Runnable {
     private static final Logger logger = LogManager.getLogger(AuctionManager.class);
     private final int CHECK_DURATION; //in millisecs
     private final int MINUTES_TO_LIVE_AFTER_EXPIRING; //in millisecs
-    private Map<UUID, Auction> auctions;    //key: auctionId, value: auction
-    private Map<UUID, TimeSlot> timeSlots;
-    private BlockingQueue<Transaction> transactionQueue;
-    private BlockingQueue<Bid> bidQueue;
-    private BlockingQueue<Sell> sellQueue;
+    private final Map<UUID, Auction> auctions;    //key: auctionId, value: auction
+    private final Map<UUID, TimeSlot> timeSlots;
+    private final BlockingQueue<Transaction> transactionQueue;
+    private final BlockingQueue<Bid> bidQueue;
+    private final BlockingQueue<Sell> sellQueue;
 
     public AuctionManager(BlockingQueue<Transaction> transactionQueue, BlockingQueue<Bid> bidQueue, BlockingQueue<Sell> sellQueue) {
         this.auctions = new ConcurrentHashMap<>();
@@ -39,7 +38,7 @@ public class AuctionManager implements Runnable {
 
     @Override
     public void run() {
-        logger.info("EXCHANGE: AuctionManager started");
+        logger.trace("EXCHANGE: AuctionManager started");
         long lastCheckTime = System.currentTimeMillis();
         while (true) {
             try {
@@ -86,12 +85,12 @@ public class AuctionManager implements Runnable {
                         openTimeSlot = entry.getValue();
                     }
                 } else {
+                    assert openTimeSlot != null;
                     if (entry.getValue().getEndTime() == openTimeSlot.getStartTime()) {
                         logger.debug("EXCHANGE: Close TimeSlot: " + entry.getValue().getTimeSlotId());
                         List<Auction> filteredAuctions = auctions.values().stream()
-                                .filter(auction -> auction.getTimeSlotID().equals(entry.getValue()))
-                                .collect(Collectors.toList());
-                        filteredAuctions.forEach(auction -> auction.endAuction());
+                                .filter(auction -> auction.getTimeSlotID().equals(entry.getValue().getTimeSlotId())).toList();
+                        filteredAuctions.forEach(Auction::endAuction);
 
                     }
                     if (entry.getValue().getEndTime().plusMinutes(MINUTES_TO_LIVE_AFTER_EXPIRING).isAfter(LocalDateTime.now())) {
@@ -165,7 +164,7 @@ public class AuctionManager implements Runnable {
         Sell sell = sellQueue.poll(); // Non-blocking call, retrieves the next sell or null if empty
         if (sell != null) {
             if (timeSlots.containsKey(sell.getTimeSlot())) {
-                logger.info("EXCHANGE: Creating new Auction...");
+                logger.debug("EXCHANGE: Creating new Auction...");
                 addNewAuction(sell);
             } else {
                 throw new InvalidTimeSlotException("EXCHANGE: TimeSlot doesn't exist, therefore the UUID was invalid.", Optional.of(sell.getTimeSlot()));
@@ -184,9 +183,13 @@ public class AuctionManager implements Runnable {
      * @throws AuctionNotFoundException if the auction is not found
      */
     private void addNewAuction(Sell sell) throws AuctionNotFoundException {
+        if (sell.getAuctionID().isEmpty()) {
+            throw new AuctionNotFoundException("EXCHANGE: The Auction ID is missing", Optional.empty(), Optional.of(sell), Optional.empty());
+        }
+
         Auction auction = new Auction(sell.getAuctionID().get(), sell, transactionQueue);
         auctions.put(sell.getAuctionID().get(), auction);
-        logger.info("EXCHANGE: Auction has been added: " + auctions.get(sell.getAuctionID().get()));
+        logger.info("EXCHANGE: Auction has been added: {} for sell from {} with askPrice {} and totalVolume of {}.", auctions.get(sell.getAuctionID().get()), sell.getSellerID(), sell.getAskPrice(), sell.getVolume());
     }
 
     /**
@@ -196,13 +199,11 @@ public class AuctionManager implements Runnable {
      * @param bid       the bid to be added
      */
     private void addBidToAuction(UUID auctionID, Bid bid) {
-        TimeSlot timeSlot = timeSlots.get(bid.getTimeSlot());
-
         Auction auction = auctions.get(auctionID);
         auction.setBid(bid);
 
         // Log the successful addition of the bid
-        logger.info("EXCHANGE: Bid has been set");
+        logger.info("EXCHANGE: Bid from {} has been added to auction {} with a price of {} and volume {}. The occupancy rate of the auction is {}/{}.", bid.getBidderID(), auctionID, bid.getPrice(), bid.getVolume(), bid.getVolume(), auction.getVolume());
     }
 
     public Map<UUID, Auction> getAuctions() {
@@ -217,7 +218,7 @@ public class AuctionManager implements Runnable {
     public void addTimeSlots(CF.sendable.TimeSlot newTimeSlot) {
         if (timeSlots.get(newTimeSlot.getTimeSlotID()) == null) {
             timeSlots.put(newTimeSlot.getTimeSlotID(), new TimeSlot(newTimeSlot.getTimeSlotID(), newTimeSlot.getStartTime(), newTimeSlot.getEndTime()));
-            logger.info("EXCHANGE: TimeSlot has been added: " + timeSlots.get(newTimeSlot.getTimeSlotID()));
+            logger.debug("EXCHANGE: TimeSlot has been added: " + timeSlots.get(newTimeSlot.getTimeSlotID()));
         }
     }
 }

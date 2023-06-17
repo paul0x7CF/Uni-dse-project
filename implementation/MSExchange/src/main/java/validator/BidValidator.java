@@ -11,6 +11,7 @@ public final class BidValidator implements IValidator {
 
     @Override
     public void validateSendable(ISendable sendable) throws InvalidBidException, IllegalSendableException {
+
         IValidator.validateSendableNotNull(sendable);
 
         if (sendable instanceof Bid) {
@@ -23,10 +24,9 @@ public final class BidValidator implements IValidator {
             } catch (IllegalSendableException e) {
                 throw new InvalidBidException(e.getMessage(), bid);
             }
-
-        } else {
-            throw new IllegalSendableException("VALIDATOR: The ISendable object was not an instance of Bid");
         }
+
+        throw new IllegalSendableException("VALIDATOR: The ISendable object was not an instance of Bid");
     }
 
 

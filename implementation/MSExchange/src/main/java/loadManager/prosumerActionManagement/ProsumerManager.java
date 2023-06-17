@@ -60,7 +60,7 @@ public class ProsumerManager {
                 outgoingQueue.put(new MessageContent(bid, EBuildCategory.BidToProsumer));
             }
         } catch (PriceNotOKException e) {
-            logger.warn("LOAD_MANAGER: Prosumer's price was not okay. Sending Bid back to prosumer");
+            logger.warn("LOAD_MANAGER: Prosumer price was not okay. Sending Bid back to prosumer");
             bid.setPrice(0);
             MessageContent messageContent = new MessageContent(bid, EBuildCategory.BidToProsumer);
             try {
@@ -117,7 +117,7 @@ public class ProsumerManager {
     }
 
     public void handleIncomingTransaction(Transaction transaction) throws ProsumerUnknownException {
-        logger.info("LOAD_MANAGER: Incoming Transaction: {} ", transaction.getTransactionID());
+        logger.debug("LOAD_MANAGER: Incoming Transaction: {} ", transaction.getTransactionID());
 
         UUID timeSlotID = auctionManager.getAuctionByID(transaction.getAuctionID()).getTIMESLOT_ID();
         Bid bid = new Bid(transaction.getAmount(), transaction.getPrice(), timeSlotID, transaction.getBuyerID());
@@ -153,6 +153,5 @@ public class ProsumerManager {
                 throw new RuntimeException(e);
             }
         }
-
     }
 }

@@ -22,7 +22,7 @@ public class LoadManager {
 
         if (!listExchangeServices.contains(exchangeServiceInformation)) {
             listExchangeServices.add(exchangeServiceInformation);
-            logger.info("LOAD_MANAGER: Added ExchangeServiceInformation with ID: {}", exchangeServiceInformation.getExchangeID());
+            logger.debug("LOAD_MANAGER: Added ExchangeServiceInformation with ID: {}", exchangeServiceInformation.getExchangeID());
 
         }
     }
@@ -38,7 +38,7 @@ public class LoadManager {
         }
 
         listExchangeServices.remove(exchangeServiceInformation);
-        logger.info("LOAD_MANAGER: Removed ExchangeServiceInformation with ID: {}", exchangeServiceInformation.getExchangeID());
+        logger.debug("LOAD_MANAGER: Removed ExchangeServiceInformation with ID: {}", exchangeServiceInformation.getExchangeID());
     }
 
     public void setExchangeCapacity(UUID exchangeID) {

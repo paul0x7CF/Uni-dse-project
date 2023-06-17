@@ -83,7 +83,7 @@ public class ExchangeMessageHandler {
      * @throws InvalidSellException if the Sell is invalid
      */
     private void handleSell(Message message) throws InvalidSellException, IllegalSendableException {
-        logger.info("EXCHANGE: Received Sell");
+        logger.debug("EXCHANGE: Received Sell");
         SellValidator sellValidator = new SellValidator();
         sellValidator.validateSendable(message.getSendable(Sell.class));
 
@@ -107,7 +107,7 @@ public class ExchangeMessageHandler {
      * @throws InvalidBidException if the Bid is invalid
      */
     private void handleBid(Message message) throws InvalidBidException, IllegalSendableException {
-        logger.info("EXCHANGE: Received Bid");
+        logger.debug("EXCHANGE: Received Bid");
         BidValidator bidValidator = new BidValidator();
         bidValidator.validateSendable(message.getSendable(Bid.class));
 

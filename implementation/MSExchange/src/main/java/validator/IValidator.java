@@ -41,14 +41,14 @@ public interface IValidator {
     static void validatePriceNotNegative(double price) throws IllegalSendableException {
 
         if (price <= 0) {
-            logger.warn("VALIDATOR: Price is not larger than 0: {}", price);
-            throw new IllegalSendableException("VALIDATOR: Price is <= 0");
+            logger.warn("VALIDATOR: Price is not higher than 0: {}", price);
+            throw new IllegalSendableException("VALIDATOR: Price is " + price + ", but should be higher than 0");
         }
     }
 
     static void validateVolumeNotNegative(double volume) throws IllegalSendableException {
         if (volume <= 0) {
-            throw new IllegalSendableException("VALIDATOR: Volume is smaller than zero");
+            throw new IllegalSendableException("VALIDATOR: Volume is "+volume+", but should be higher than 0");
         }
     }
 
