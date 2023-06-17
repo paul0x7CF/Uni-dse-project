@@ -18,6 +18,7 @@ public class MSExchange implements Runnable {
     private final int INSTANCE_NUMBER;
     private final boolean DUPLICATED;
     private boolean atCapacity = false;
+    private boolean first = true; //TODO: remove after testing
     private BlockingQueue<Message> incomingMessages = new LinkedBlockingQueue<>();
     private BlockingQueue<Transaction> outgoingTransactions = new LinkedBlockingQueue<>();
     private CommunicationExchange communication;
@@ -80,6 +81,11 @@ public class MSExchange implements Runnable {
         if (!atCapacity) {
             if (incomingMessages.size() >= CAPACITY) {
                 logger.warn("EXCHANGE: BidQueue is full!");
+                communication.sendMessage(messageBuilder.buildCapacityMessage());
+            }
+            if (!isDuplicated() && first) {
+                //TODO: remove this statement after testing
+                first = false;
                 communication.sendMessage(messageBuilder.buildCapacityMessage());
             }
         } else {
