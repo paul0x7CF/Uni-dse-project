@@ -56,6 +56,7 @@ public class ConsumptionBuilding implements RESTData, Runnable {
         this.prosumerType = prosumerType;
         this.wallet = new Wallet(cashBalance);
         this.incomingMessages = new LinkedBlockingQueue<>();
+        Singleton.getInstance().setConsumptionBuilding(this);
         this.communicator = new Communication(this.incomingMessages, port, EServiceType.Prosumer, consumerList);
 
         // Set Callbacks

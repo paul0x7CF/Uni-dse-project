@@ -2,6 +2,8 @@ package MSP.Communication;
 
 import MSP.Data.Consumer;
 import MSP.Data.EConsumerType;
+import MSP.Logic.Prosumer.ConsumptionBuilding;
+import MSP.Logic.Prosumer.Singleton;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.SpringApplication;
@@ -31,23 +33,30 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class RestHandler {
     private static final Logger logger = LogManager.getLogger(RestHandler.class);
     private LinkedHashSet<Consumer> consumerList;
+    private String test;
+    private final ConsumptionBuilding consumptionBuilding = Singleton.getInstance().getConsumptionBuilding();
 
-   /* protected RestHandler(LinkedHashSet<Consumer> consumerList) {
-        this.consumerList = consumerList;
+    /*protected RestHandler(String asd) {
+        this.test = asd;
     }*/
 
     protected RestHandler() {
-
     }
 
     @CrossOrigin
     @RequestMapping(value = "/consumers", method = RequestMethod.POST,consumes={"application/json"})
-    private ResponseEntity<String> createConsumer(@RequestBody EConsumerType type) {
-        Consumer newConsumer = new Consumer(type);
-        consumerList.add(newConsumer);
+    private ResponseEntity<String> createConsumer(@RequestBody String type) {
+        /*Consumer newConsumer = new Consumer(type);
+        consumerList.add(newConsumer);*/
 
-        logger.info("Created new Consumer from type {}", type);
-        return new ResponseEntity<>("Created new Consumer from type " + type, HttpStatus.CREATED);
+
+
+        EConsumerType type1 = EConsumerType.valueOf(type);
+
+        consumptionBuilding.createConsumer(type1);
+
+        logger.info("Created new Consumer from type {}", type1);
+        return new ResponseEntity<>("Created new Consumer from type " + type1, HttpStatus.CREATED);
     }
 
     @CrossOrigin
