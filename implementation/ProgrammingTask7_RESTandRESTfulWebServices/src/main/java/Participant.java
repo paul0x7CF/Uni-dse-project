@@ -20,11 +20,29 @@ public class Participant {
         return firstName;
     }
 
+    public void setFirstName(String firstName) {
+        if (firstName != null) {
+            this.firstName = firstName;
+        }
+    }
+
     public String getLastName() {
         return lastName;
     }
 
+    public void setLastName(String lastName) {
+        if (lastName != null) {
+            this.lastName = lastName;
+        }
+    }
+
     public String getEmail() {
         return email;
+    }
+
+    public void setEmail(String email) {
+        if (email != null) {
+            this.email = email;
+        }
     }
 }

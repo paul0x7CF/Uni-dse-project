@@ -55,4 +55,17 @@ public class Meeting {
         participantList.add(participant);
     }
 
+    public void removeParticipant(int participantId) {
+        participantList.remove(participantId);
+    }
+
+    public Participant getParticipant(int participantId) {
+        return participantList.get(participantId);
+    }
+
+    public void updateParticipant(int participantId, String firstName, String lastName, String email) {
+        Participant participant = participantList.get(participantId);
+        participant.setFirstName(firstName);
+        participant.setLastName(lastName);
+        participant.setEmail(email);    }
 }
