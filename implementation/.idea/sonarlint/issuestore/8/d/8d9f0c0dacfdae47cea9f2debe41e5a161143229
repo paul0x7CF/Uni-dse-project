@@ -1,0 +1,7 @@
+
+n	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ÁøÔ
+p	java:S116"VRename this field "EXCHANGE_ID" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ÃíÑþøÿÿÿÿ
+v
+java:S1845"`Rename method "getExchangeID" to prevent any misunderstanding/clash with method "getExchangeId".(û¶Ò‰
+s
+java:S4144"]Update this method so that its implementation is not identical to "getExchangeId" on line 14.(û¶Ò‰

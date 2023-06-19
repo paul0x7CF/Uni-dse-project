@@ -1,0 +1,14 @@
+
+y
+java:S11929"^Define a constant instead of duplicating this literal "Payload is not of type MSData" 3 times.(üØ“×ıÿÿÿÿ
+k
+java:S11923"PDefine a constant instead of duplicating this literal "Payload is null" 5 times.(’ë‡ùÿÿÿÿ
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(²ÀìŒúÿÿÿÿ
+\
+java:S62015"FReplace this instanceof check and cast with 'instanceof MSData msdata'(‚›
+\
+java:S6201T"FReplace this instanceof check and cast with 'instanceof MSData msdata'(‚›
+c
+java:S6201b"HReplace this instanceof check and cast with 'instanceof AckInfo ackinfo'(ìî‰üÿÿÿÿ
+H
+java:S1135r"2Complete the task associated to this TODO comment.(ûğ†ä

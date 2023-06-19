@@ -1,0 +1,27 @@
+
+a	java:S112Ñ"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(µŠ Ë
+=
+java:S2189,""Add an end condition to this loop.(˜ïˆÿÿÿÿÿ
+l
+java:S3655ÿ"PCall "Optional#isPresent()" or "!Optional#isEmpty()" before accessing the value.(Õ’ş®øÿÿÿÿ
+l
+java:S3655"PCall "Optional#isPresent()" or "!Optional#isEmpty()" before accessing the value.(´š¼ñÿÿÿÿÿ
+l
+java:S3655€"PCall "Optional#isPresent()" or "!Optional#isEmpty()" before accessing the value.(ıÒˆïüÿÿÿÿ
+n	java:S116"YRename this field "CHECK_DURATION" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(à÷ñ˜
+ƒ	java:S116"iRename this field "MINUTES_TO_LIVE_AFTER_EXPIRING" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ğ£¾Èıÿÿÿÿ
+h
+java:S3776t"RRefactor this method to reduce its Cognitive Complexity from 21 to the 15 allowed.(¾±ïÊ
+Q	java:S125G"<This block of commented-out lines of code should be removed.(¾±ïÊ
+i
+java:S6204"RReplace this usage of 'Stream.collect(Collectors.toList())' with 'Stream.toList()'(ª™¨¹
+“
+java:S1130§"wRemove the declaration of thrown exception 'java.lang.InterruptedException', as it cannot be thrown from method's body.(×°¦åüÿÿÿÿ
+u
+java:S2142Ğ"^Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.(ä ¹€
+W	java:S125Í"<This block of commented-out lines of code should be removed.(‡Ë‘·úÿÿÿÿ
+X
+java:S3457×"AFormat specifiers should be used instead of string concatenation.(ÿÉĞİ
+]
+java:S3457"AFormat specifiers should be used instead of string concatenation.(ìÀšâúÿÿÿÿ

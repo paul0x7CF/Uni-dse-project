@@ -1,0 +1,14 @@
+
+M
+java:S2629#"7Use the built-in formatting to construct this argument.(Çİ®£
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ğıæıÿÿÿÿ
+G
+java:S1874",Remove this use of "save"; it is deprecated.(Ò¤»¹üÿÿÿÿ
+W
+java:S3457#"AFormat specifiers should be used instead of string concatenation.(Çİ®£
+D
+java:S1874,".Remove this use of "update"; it is deprecated.(°òÂ“
+D
+java:S18744".Remove this use of "delete"; it is deprecated.(ïÔ
+N
+java:S1874;"3Remove this use of "createQuery"; it is deprecated.(¼èõ–üÿÿÿÿ

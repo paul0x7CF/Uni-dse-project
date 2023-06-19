@@ -1,0 +1,9 @@
+
+`	java:S1122"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ
+a
+java:S1301""KReplace this "switch" statement by "if" statements to increase readability.(ä“‰¤
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(øÓã¼ÿÿÿÿÿ
+t
+java:S21421"^Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.(ä ¹€
+G
+java:S1068",Remove this unused "myMSData" private field.(‡ô·–ùÿÿÿÿ

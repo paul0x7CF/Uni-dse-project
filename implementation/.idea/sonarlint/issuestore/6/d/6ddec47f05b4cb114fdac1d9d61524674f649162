@@ -1,0 +1,16 @@
+
+b	java:S112."FDefine and throw a dedicated exception instead of using a generic one.(¥ßşë8™ÿòÙŒ1
+g	java:S112B"FDefine and throw a dedicated exception instead of using a generic one.(¼ÿ¾¹ÿÿÿÿÿ8™ÿòÙŒ1
+g	java:S112J"FDefine and throw a dedicated exception instead of using a generic one.(¼ÿ¾¹ÿÿÿÿÿ8™ÿòÙŒ1
+g	java:S112O"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ8šÿòÙŒ1
+g	java:S112{"FDefine and throw a dedicated exception instead of using a generic one.(¼ÿ¾¹ÿÿÿÿÿ8šÿòÙŒ1
+h	java:S112”"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ8šÿòÙŒ1
+v	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ï£Ä8¡ÿòÙŒ1
+€
+java:S2142A"^Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.(è®ã¶øÿÿÿÿ8ÛÿòÙŒ1
+€
+java:S2142I"^Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.(è®ã¶øÿÿÿÿ8ŞÿòÙŒ1
+€
+java:S2142z"^Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.(è®ã¶øÿÿÿÿ8ğÿòÙŒ1
+|
+java:S2142“"^Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.(ä ¹€8õÿòÙŒ1

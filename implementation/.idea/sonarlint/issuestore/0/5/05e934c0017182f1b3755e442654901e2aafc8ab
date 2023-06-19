@@ -1,0 +1,17 @@
+
+S
+java:S2629‚"7Use the built-in formatting to construct this argument.(ÚíÚğüÿÿÿÿ
+S
+java:S2629Š"7Use the built-in formatting to construct this argument.(ÚíÚğüÿÿÿÿ
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ÊìâÃúÿÿÿÿ
+V	java:S107+"AConstructor has 8 parameters, which is greater than 7 authorized.(îş
+c
+java:S4275J"MRefactor this setter so that it actually refers to the field "senderAddress".(·°ØÚ
+]
+java:S3457‚"AFormat specifiers should be used instead of string concatenation.(ÚíÚğüÿÿÿÿ
+]
+java:S3457Š"AFormat specifiers should be used instead of string concatenation.(ÚíÚğüÿÿÿÿ
+]
+java:S1128"BRemove this unused import 'CF.exceptions.InvalidMessageException'.(äğ’ûÿÿÿÿ
+X
+java:S1128"BRemove this unused import 'CF.messageHandling.InfoMessageHandler'.(ãÒ–‰

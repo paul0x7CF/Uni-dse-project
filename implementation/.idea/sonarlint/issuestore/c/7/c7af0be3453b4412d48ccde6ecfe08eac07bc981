@@ -1,0 +1,6 @@
+
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ÍÌ÷ó
+o	java:S116"[Rename this field "DURATION_IN_SECS" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(£•™
+}	java:S116"cRename this field "MAX_NUM_TIME_SLOTS_SAVED" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ÍýýŽþÿÿÿÿ
+T
+java:S1155I">Use isEmpty() to check whether the collection is empty or not.(¾ëœ“

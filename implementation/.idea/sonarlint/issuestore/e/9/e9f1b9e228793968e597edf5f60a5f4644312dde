@@ -1,0 +1,14 @@
+
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(©˜¼ùÿÿÿÿ
+J
+java:S11723"/Remove this unused method parameter "restData".(´ßÈŸùÿÿÿÿ
+G
+java:S14819",Remove this unused "context" local variable.(§Ë…åøÿÿÿÿ
+2
+java:S6205L"Remove this redundant block.(å¬¾†
+2
+java:S6205O"Remove this redundant block.(†×Ä÷
+2
+java:S6205R"Remove this redundant block.(‡×®
+2
+java:S6205U"Remove this redundant block.(üØô

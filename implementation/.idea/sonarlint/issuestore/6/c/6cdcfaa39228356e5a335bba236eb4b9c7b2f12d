@@ -1,0 +1,6 @@
+
+’
+java:S1319"wThe type of "pollForecastConsumptionMap" should be an interface such as "Map" rather than the implementation "HashMap".(â»ïÝýÿÿÿÿ
+‘
+java:S1319"vThe type of "pollForecastProductionMap" should be an interface such as "Map" rather than the implementation "HashMap".(â»ïÝýÿÿÿÿ
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(¤”åÑ

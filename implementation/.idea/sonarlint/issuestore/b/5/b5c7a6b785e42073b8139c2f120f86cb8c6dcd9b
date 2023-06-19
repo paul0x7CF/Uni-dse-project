@@ -1,0 +1,42 @@
+
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(©Ž˜¼ùÿÿÿÿ
+V	java:S125+"<This block of commented-out lines of code should be removed.(ìöá‘úÿÿÿÿ
+:
+java:S37515"Make this method non "private".(Šÿ§Ãþÿÿÿÿ
+`
+java:S44884"JReplace "@RequestMapping(method = RequestMethod.POST)" with "@PostMapping"(‚„öâ
+5
+java:S3751C"Make this method non "private".(Å„°ß
+c
+java:S4488B"HReplace "@RequestMapping(method = RequestMethod.GET)" with "@GetMapping"(½Ñ‘Žþÿÿÿÿ
+5
+java:S3751L"Make this method non "private".(ôúô‚
+c
+java:S4488K"HReplace "@RequestMapping(method = RequestMethod.PUT)" with "@PutMapping"(Ý¯ê¼ûÿÿÿÿ
+5
+java:S3751Z"Make this method non "private".(¸œŒ®
+i
+java:S4488Y"NReplace "@RequestMapping(method = RequestMethod.DELETE)" with "@DeleteMapping"(ÎÈ‚òþÿÿÿÿ
+:
+java:S3751h"Make this method non "private".(½Î¥ûþÿÿÿÿ
+`
+java:S4488g"JReplace "@RequestMapping(method = RequestMethod.POST)" with "@PostMapping"(™™ö­
+:
+java:S3751s"Make this method non "private".(˜óã¼üÿÿÿÿ
+^
+java:S4488r"HReplace "@RequestMapping(method = RequestMethod.GET)" with "@GetMapping"(‚ÀÊ»
+4
+java:S3751y"Make this method non "private".(…˜¯
+c
+java:S4488x"HReplace "@RequestMapping(method = RequestMethod.PUT)" with "@PutMapping"(ÀÚ§÷ýÿÿÿÿ
+R	java:S125…"<This block of commented-out lines of code should be removed.(æóˆ¾
+;
+java:S3751"Make this method non "private".(”“è™üÿÿÿÿ
+e
+java:S4488œ"NReplace "@RequestMapping(method = RequestMethod.DELETE)" with "@DeleteMapping"(´àÉ·
+E
+java:S1068#"0Remove this unused "consumerList" private field.(øÏÛ 
+C
+java:S1068$"(Remove this unused "test" private field.(–Œúùÿÿÿÿ
+B
+java:S1068(",Remove this unused "restData" private field.(Ýá«ª

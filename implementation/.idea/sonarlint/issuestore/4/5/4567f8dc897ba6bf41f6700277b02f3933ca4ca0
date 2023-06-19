@@ -1,0 +1,9 @@
+
+t
+java:S2293"YReplace the type specification in this constructor call with the diamond operator ("<>").(ıŸêıÿÿÿÿ
+o
+java:S2293"YReplace the type specification in this constructor call with the diamond operator ("<>").(Ôì§ú
+f
+java:S1301V"KReplace this "switch" statement by "if" statements to increase readability.(ë´åİşÿÿÿÿ
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ƒ¹Å
+m	java:S116"SRename this field "K_VALUES" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(öÿŸÕüÿÿÿÿ

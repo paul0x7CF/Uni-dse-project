@@ -1,0 +1,16 @@
+
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(å½±œüÿÿÿÿ
+8
+java:S1165
+"Make this "sell" field final.(Ø¯‚ýÿÿÿÿÿ
+1
+java:S1165"Make this "bid" field final.(òâ‚7
+=
+java:S1165""Make this "auctionID" field final.(ð†¿Íýÿÿÿÿ
+A
+java:S1948
+"&Make "sell" transient or serializable.(Ø¯‚ýÿÿÿÿÿ
+:
+java:S1948"%Make "bid" transient or serializable.(òâ‚7
+F
+java:S1948"+Make "auctionID" transient or serializable.(ð†¿Íýÿÿÿÿ

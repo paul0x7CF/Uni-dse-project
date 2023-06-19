@@ -1,0 +1,13 @@
+
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(§ãÆ¨
+j	java:S116"URename this field "AUCTION_ID" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Õ…ÔÜ
+n	java:S116"TRename this field "SELLER_ID" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(£´Ûûÿÿÿÿ
+p	java:S116"VRename this field "TIMESLOT_ID" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(é»éşÿÿÿÿ
+q	java:S116"WRename this field "TOTAL_VOLUME" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ıÌÆ€úÿÿÿÿ
+p	java:S116"VRename this field "EXCHANGE_ID" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ÃíÑşøÿÿÿÿ
+m
+java:S3776"RRefactor this method to reduce its Cognitive Complexity from 16 to the 15 allowed.(·ÀÊşÿÿÿÿ
+h	java:S100T"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(÷Ùã«øÿÿÿÿ
+c	java:S100X"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ÕÏÿÂ
+c	java:S100\"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¨àÎ‚
+h	java:S100`"NRename this method name to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(Áşï’ÿÿÿÿÿ

@@ -1,0 +1,6 @@
+
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(Ÿ–¦°úÿÿÿÿ
+5
+java:S1640"Convert this Map to an EnumMap.(Ï©¡‰
+d
+java:S3824)"NReplace this "Map.get()" and condition with a call to "Map.computeIfAbsent()".(›şŒ

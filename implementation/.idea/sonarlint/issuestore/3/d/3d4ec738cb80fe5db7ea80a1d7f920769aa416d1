@@ -1,0 +1,15 @@
+
+a	java:S112×"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ
+?
+java:S2629A"$Invoke method(s) only conditionally.(úèº©şÿÿÿÿ
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(÷¼¨ùÿÿÿÿ
+|
+java:S3457A"aNo need to call "toString()" method as formatting and string conversion is done by the Formatter.(úèº©şÿÿÿÿ
+u
+java:S2142Ö"^Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.(ä ¹€
+4
+java:S2119É"Save and re-use this "Random".(¼İÅf
+]
+java:S3457Ù"AFormat specifiers should be used instead of string concatenation.(±Ôñşÿÿÿÿ
+\
+java:S1117ô"@Rename "consumerList" which hides the field declared at line 42.(şÏç‡şÿÿÿÿ

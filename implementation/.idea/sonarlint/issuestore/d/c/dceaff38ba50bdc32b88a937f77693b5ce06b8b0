@@ -1,0 +1,26 @@
+
+`	java:S1123"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ
+`	java:S1129"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ
+`	java:S112^"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ
+`	java:S112k"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ
+a	java:S112†"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ
+a	java:S112”"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ý·´¾øÿÿÿÿ
+k
+java:S3655N"PCall "Optional#isPresent()" or "!Optional#isEmpty()" before accessing the value.(ö–Í‘ýÿÿÿÿ
+h
+java:S3776("RRefactor this method to reduce its Cognitive Complexity from 28 to the 15 allowed.(“–ýþ
+t
+java:S21428"^Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.(ä ¹€
+t
+java:S2142]"^Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.(ä ¹€
+t
+java:S2142j"^Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.(ä ¹€
+š
+java:S1130w"ƒRemove the declaration of thrown exception 'MSP.Exceptions.CommandNotPossibleException', as it cannot be thrown from method's body.(Ž¨ °
+]
+java:S3457Š"AFormat specifiers should be used instead of string concatenation.(°Þùèùÿÿÿÿ
+u
+java:S2142“"^Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.(ä ¹€
+G
+java:S2446Ÿ"0"notify" may not wake up the appropriate thread.(ŒâÌ†

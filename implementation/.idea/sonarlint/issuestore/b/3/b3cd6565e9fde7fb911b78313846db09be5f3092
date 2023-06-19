@@ -1,0 +1,6 @@
+
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ε½±όÿÿÿÿ
+8
+java:S1165"Make this "sell" field final.(ΠΆ¨θώÿÿÿÿ
+A
+java:S1948"&Make "sell" transient or serializable.(ΠΆ¨θώÿÿÿÿ

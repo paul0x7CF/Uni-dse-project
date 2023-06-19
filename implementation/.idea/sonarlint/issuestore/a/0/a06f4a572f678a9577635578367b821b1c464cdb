@@ -1,0 +1,20 @@
+
+E
+java:S1066R"/Merge this if statement with the enclosing one.(Îç¥
+E
+java:S1066^"/Merge this if statement with the enclosing one.(¼¦‰°
+k	java:S117h"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(©‘µ«ýÿÿÿÿ
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ìœ±î
+=
+java:S2189H""Add an end condition to this loop.(˜ïˆžÿÿÿÿÿ
+t	java:S116"ZRename this field "INSTANCE_NUMBER" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(©£üŠøÿÿÿÿ
+j	java:S116"URename this field "DUPLICATED" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(žÒ¹
+q	java:S116"\Rename this field "TERMINATE_MINUTES" to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ªÍ–ä
+B
+java:S1602/",Remove useless curly braces around statement(¿¡Ý›
+\
+java:S3457V"AFormat specifiers should be used instead of string concatenation.(´¬–ßûÿÿÿÿ
+T
+java:S1155]">Use isEmpty() to check whether the collection is empty or not.(šõÇ³
+\
+java:S3457}"AFormat specifiers should be used instead of string concatenation.(Ú’µæÿÿÿÿÿ

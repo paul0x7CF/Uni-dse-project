@@ -1,0 +1,10 @@
+
+e
+java:S1192%"JDefine a constant instead of duplicating this literal "Prosumer-" 3 times.(¹š³–üÿÿÿÿ
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(‡ŽÊÄ
+Z
+java:S1854 "?Remove this useless assignment to local variable "randomValue".(Ø…’úûÿÿÿÿ
+V	java:S125"<This block of commented-out lines of code should be removed.(œìîüÿÿÿÿ
+K
+java:S1481 "0Remove this unused "randomValue" local variable.(Ø…’úûÿÿÿÿ
+N	java:S1064"9Replace this use of System.out or System.err by a logger.(˜œÙ¾

@@ -1,0 +1,28 @@
+
+`	java:S112]"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ
+`	java:S112h"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ
+`	java:S112t"FDefine and throw a dedicated exception instead of using a generic one.(Ò‚Òéüÿÿÿÿ
+E
+java:S1066~"/Merge this if statement with the enclosing one.(Îç¥
+k	java:S117T"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(ïªì³ûÿÿÿÿ
+f	java:S117U"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¾îĞ¸
+;
+java:S2629Š"$Invoke method(s) only conditionally.(ù×¡¸
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(æüÒéÿÿÿÿÿ
+=
+java:S21892""Add an end condition to this loop.(˜ïˆÿÿÿÿÿ
+f
+java:S3655c"PCall "Optional#isPresent()" or "!Optional#isEmpty()" before accessing the value.(ãß¼å
+V	java:S125?"<This block of commented-out lines of code should be removed.(•ÏáŠÿÿÿÿÿ
+B
+java:S1602L",Remove useless curly braces around statement(¿¡İ›
+h
+java:S3776R"RRefactor this method to reduce its Cognitive Complexity from 18 to the 15 allowed.(óÓóÅ
+E
+java:S1481V"*Remove this unused "first" local variable.(èó»Ïøÿÿÿÿ
+E
+java:S1905|"*Remove this unnecessary cast to "Message".(›ëêğşÿÿÿÿ
+H
+java:S1905…"1Remove this unnecessary cast to "MessageContent".(Ê‚úâ
+x
+java:S3457Š"aNo need to call "toString()" method as formatting and string conversion is done by the Formatter.(ù×¡¸

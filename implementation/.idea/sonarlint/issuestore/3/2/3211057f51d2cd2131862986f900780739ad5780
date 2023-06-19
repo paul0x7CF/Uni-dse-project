@@ -1,0 +1,8 @@
+
+€
+java:S1319"kThe type of "consumptionMap" should be an interface such as "Map" rather than the implementation "HashMap".(Ïü²Q
+ˆ
+java:S1319"mThe return type of this method should be an interface such as "Map" rather than the implementation "HashMap".(¨¬—†øÿÿÿÿ
+o	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(úüÛ
+@
+java:S1172"+Remove this unused method parameter "type".(Ïü²Q

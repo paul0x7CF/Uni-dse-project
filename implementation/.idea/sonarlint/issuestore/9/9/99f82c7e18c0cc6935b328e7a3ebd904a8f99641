@@ -1,0 +1,6 @@
+
+t	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(°òôäûÿÿÿÿ
+y
+java:S2142""^Either re-interrupt this method or rethrow the "InterruptedException" that can be caught here.(üÍ”ûÿÿÿÿ
+E
+java:S2093"*Change this "try" to a try-with-resources.(¡»¢üùÿÿÿÿ
