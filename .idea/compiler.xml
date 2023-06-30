@@ -27,7 +27,7 @@
       <module name="MSProsumer" options="-parameters" />
       <module name="MSStorage" options="-parameters" />
       <module name="TestCLNT" options="-parameters" />
-      <module name="implementation" options="-parameters" />
+      <module name="implementation" options="" />
     </option>
   </component>
 </project>
